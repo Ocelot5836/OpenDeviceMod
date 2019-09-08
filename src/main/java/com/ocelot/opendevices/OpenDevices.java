@@ -1,7 +1,9 @@
 package com.ocelot.opendevices;
 
 import com.ocelot.opendevices.init.DeviceBlocks;
+import com.ocelot.opendevices.init.DeviceItems;
 import net.minecraft.block.Block;
+import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -35,6 +37,12 @@ public class OpenDevices
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
     public static class RegistryEvents
     {
+        @SubscribeEvent
+        public static void registerItems(RegistryEvent.Register<Item> event)
+        {
+            event.getRegistry().registerAll(DeviceItems.getItems());
+        }
+
         @SubscribeEvent
         public static void registerBlocks(RegistryEvent.Register<Block> event)
         {
