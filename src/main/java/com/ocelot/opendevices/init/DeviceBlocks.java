@@ -1,13 +1,17 @@
 package com.ocelot.opendevices.init;
 
+import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.block.LaptopBlock;
 import com.ocelot.opendevices.tileentity.LaptopTileEntity;
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
+import net.minecraft.block.material.MaterialColor;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.ResourceLocation;
 import org.apache.commons.lang3.Validate;
 
 import java.util.HashSet;
@@ -46,7 +50,7 @@ public class DeviceBlocks
     public static <T extends TileEntity> TileEntityType<T> registerTileEntity(String name, Supplier<T> factory, Block... validBlocks)
     {
         TileEntityType<T> type = TileEntityType.Builder.create(factory, validBlocks).build(null);
-        TILE_ENTITIES.add(type);
+        TILE_ENTITIES.add(type.setRegistryName(new ResourceLocation(OpenDevices.MOD_ID, name)));
         return type;
     }
 

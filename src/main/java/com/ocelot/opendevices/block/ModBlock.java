@@ -1,7 +1,7 @@
 package com.ocelot.opendevices.block;
 
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.api.device.INameChangeable;
+import com.ocelot.opendevices.api.util.INameChangeable;
 import com.ocelot.opendevices.api.util.ISimpleInventory;
 import com.ocelot.opendevices.init.DeviceBlocks;
 import net.minecraft.block.Block;
@@ -18,9 +18,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.DirectionProperty;
 import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.tileentity.ShulkerBoxTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.INameable;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Rotation;

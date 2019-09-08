@@ -1,6 +1,5 @@
-package com.ocelot.opendevices.tileentity;
+package com.ocelot.opendevices.api.device;
 
-import com.ocelot.opendevices.api.device.Device;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
@@ -10,13 +9,19 @@ import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
 
-public class ModTileEntity extends TileEntity
+/**
+ * A tile entity that defines a device.
+ */
+public abstract class DeviceTileEntity extends TileEntity
 {
-    public ModTileEntity(TileEntityType<?> type)
+    public DeviceTileEntity(TileEntityType<?> type)
     {
         super(type);
     }
 
+    /**
+     * Notifies the world that an update has occurred. Should be called whenever something should be saved to file.
+     */
     public void notifyUpdate()
     {
         this.markDirty();
@@ -25,51 +30,55 @@ public class ModTileEntity extends TileEntity
         }
     }
 
+    /**
+     * Writes any required data to a tag.
+     *
+     * @param nbt The tag to write the data to
+     */
+    public abstract void save(CompoundNBT nbt);
+
+    /**
+     * Reads any required data from a tag.
+     *
+     * @param nbt The tag to read the data from
+     */
+    public abstract void load(CompoundNBT nbt);
+
     @Override
     public void read(CompoundNBT nbt)
     {
-        if (this instanceof Device && nbt.contains("data", Constants.NBT.TAG_COMPOUND)) {
-            CompoundNBT data = nbt.getCompound("data");
-            ((Device) this).load(data);
-        }
         super.read(nbt);
+
+        if (nbt.contains("device", Constants.NBT.TAG_COMPOUND)) {
+            CompoundNBT data = nbt.getCompound("device");
+            this.load(data);
+        }
     }
 
     @Override
     public CompoundNBT write(CompoundNBT nbt)
     {
         super.write(nbt);
-        if (this instanceof Device) {
-            CompoundNBT data = new CompoundNBT();
-            ((Device) this).save(data);
-            nbt.put("data", data);
-        }
+
+        CompoundNBT data = new CompoundNBT();
+        this.save(data);
+        nbt.put("device", data);
+
         return nbt;
-    }
-
-    protected void readClient(CompoundNBT nbt)
-    {
-        this.read(nbt);
-    }
-
-    protected CompoundNBT writeClient(CompoundNBT nbt)
-    {
-        return this.write(nbt);
     }
 
     @Override
     public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt)
     {
-        this.readClient(pkt.getNbtCompound());
+        this.read(pkt.getNbtCompound());
     }
 
     @Override
     public CompoundNBT getUpdateTag()
     {
-        return this.writeClient(new CompoundNBT());
+        return this.write(new CompoundNBT());
     }
 
-    @Nullable
     @Override
     public SUpdateTileEntityPacket getUpdatePacket()
     {
