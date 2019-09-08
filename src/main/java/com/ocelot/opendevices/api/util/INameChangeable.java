@@ -1,4 +1,4 @@
-package com.ocelot.opendevices.api.device;
+package com.ocelot.opendevices.api.util;
 
 import net.minecraft.util.INameable;
 import net.minecraft.util.text.ITextComponent;

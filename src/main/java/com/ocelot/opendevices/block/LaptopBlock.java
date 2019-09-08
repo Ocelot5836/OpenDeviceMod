@@ -1,29 +1,76 @@
 package com.ocelot.opendevices.block;
 
+import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.init.DeviceBlocks;
 import com.ocelot.opendevices.item.DeviceBlockItem;
 import com.ocelot.opendevices.tileentity.LaptopTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.DyeColor;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Hand;
 import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
+import net.minecraft.world.World;
+import net.minecraftforge.common.ToolType;
 
-public class LaptopBlock extends ModBlock
+public class LaptopBlock extends DeviceBlock
 {
+    public static final ResourceLocation LOOT_TABLE = new ResourceLocation(OpenDevices.MOD_ID, "laptop");
     public static final EnumProperty<Type> TYPE = EnumProperty.create("type", Type.class);
 
     private DyeColor color;
 
     public LaptopBlock(DyeColor color)
     {
-        super(color.getTranslationKey() + "_laptop", Block.Properties.create(Material.ANVIL, color));
+        super(color.getTranslationKey() + "_laptop", Block.Properties.create(Material.MISCELLANEOUS, color).doesNotBlockMovement());
         this.setDefaultState(this.getStateContainer().getBaseState().with(TYPE, Type.BASE));
         DeviceBlocks.register(this, new DeviceBlockItem(this));
+    }
+
+    @Override
+    public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult result)
+    {
+        if (world.getTileEntity(pos) instanceof LaptopTileEntity)
+        {
+            LaptopTileEntity te = (LaptopTileEntity) world.getTileEntity(pos);
+            assert te != null;
+            if (player.isSneaking())
+            {
+                return te.toggleOpen(player);
+            }
+            else if (te.view(player))
+            {
+                // TODO open GUI
+                System.out.println("Open GUI");
+                te.stopView(player);
+            }
+            else
+            {
+                if (!world.isRemote())
+                {
+                    PlayerEntity userPlayer = te.getUserPlayer();
+                    if (userPlayer != null)
+                    {
+                        player.sendStatusMessage(new TranslationTextComponent(this.getTranslationKey() + ".using.specific", userPlayer.getDisplayName().getFormattedText()), true);
+                    }
+                    else
+                    {
+                        player.sendStatusMessage(new TranslationTextComponent(this.getTranslationKey() + ".using"), true);
+                    }
+                }
+                return false;
+            }
+        }
+        return false;
     }
 
     @Override
