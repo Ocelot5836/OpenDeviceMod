@@ -1,8 +1,0 @@
-{
-	"variants": {
-		"facing=north": { "model": "cdm:paper" },
-		"facing=east":  { "model": "cdm:paper" },
-		"facing=south": { "model": "cdm:paper" },
-		"facing=west":  { "model": "cdm:paper" }
-	}
-}
