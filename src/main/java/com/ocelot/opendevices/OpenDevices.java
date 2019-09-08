@@ -4,6 +4,8 @@ import com.ocelot.opendevices.init.DeviceBlocks;
 import com.ocelot.opendevices.init.DeviceItems;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -19,6 +21,14 @@ public class OpenDevices
 {
     public static final Logger LOGGER = LogManager.getLogger();
     public static final String MOD_ID = "opendevices";
+
+    public static final ItemGroup TAB = new ItemGroup(MOD_ID) {
+        @Override
+        public ItemStack createIcon()
+        {
+            return new ItemStack(DeviceBlocks.WHITE_LAPTOP);
+        }
+    };
 
     public OpenDevices()
     {

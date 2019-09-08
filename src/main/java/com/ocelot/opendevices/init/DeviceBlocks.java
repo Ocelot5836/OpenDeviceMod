@@ -1,7 +1,10 @@
 package com.ocelot.opendevices.init;
 
+import com.ocelot.opendevices.block.LaptopBlock;
+import com.ocelot.opendevices.tileentity.LaptopTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
@@ -17,7 +20,9 @@ public class DeviceBlocks
     private static final Set<Block> BLOCKS = new HashSet<>();
     private static final Set<TileEntityType<?>> TILE_ENTITIES = new HashSet<>();
 
-    // TODO add blocks
+    public static final Block WHITE_LAPTOP = new LaptopBlock(DyeColor.WHITE);
+
+    public static final TileEntityType<LaptopTileEntity> TE_LAPTOP = registerTileEntity("laptop", LaptopTileEntity::new, WHITE_LAPTOP);
 
     public static Block register(Block block, Item.Properties itemProperties)
     {
@@ -27,7 +32,7 @@ public class DeviceBlocks
     public static Block register(Block block, Item item)
     {
         register(block);
-        DeviceItems.register(item);
+        DeviceItems.register(item.setRegistryName(Objects.requireNonNull(block.getRegistryName())));
         return block;
     }
 
