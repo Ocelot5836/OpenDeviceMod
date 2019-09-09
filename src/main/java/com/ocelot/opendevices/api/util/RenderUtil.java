@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.opengl.GL11;
 
+//TODO documentation
 public class RenderUtil
 {
     public static void renderItem(int x, int y, ItemStack stack, boolean overlay)
