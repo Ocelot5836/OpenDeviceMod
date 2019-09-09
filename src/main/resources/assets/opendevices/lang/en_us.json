@@ -1,5 +1,10 @@
 {
 	"itemGroup.opendevices": "OpenDevice Mod",
 	
-	"block.opendevices.white_laptop": "White Laptop"
+	"block.opendevices.white_laptop": "White Laptop",
+
+	"block.opendevices.laptop.using": "Someone is using the Laptop!",
+	"block.opendevices.laptop.using.specific": "%s is using the Laptop!",
+
+	"screen.opendevices.laptop": "Laptop"
 }
