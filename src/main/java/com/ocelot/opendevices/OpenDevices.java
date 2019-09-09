@@ -2,6 +2,9 @@ package com.ocelot.opendevices;
 
 import com.ocelot.opendevices.init.DeviceBlocks;
 import com.ocelot.opendevices.init.DeviceItems;
+import com.ocelot.opendevices.init.DeviceMessages;
+import com.ocelot.opendevices.proxy.ClientProxy;
+import com.ocelot.opendevices.proxy.ServerProxy;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -9,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -20,9 +24,11 @@ import org.apache.logging.log4j.Logger;
 public class OpenDevices
 {
     public static final Logger LOGGER = LogManager.getLogger();
+    public static final ServerProxy PROXY = DistExecutor.runForDist(() -> ClientProxy::new, () -> ServerProxy::new);
     public static final String MOD_ID = "opendevices";
 
-    public static final ItemGroup TAB = new ItemGroup(MOD_ID) {
+    public static final ItemGroup TAB = new ItemGroup(MOD_ID)
+    {
         @Override
         public ItemStack createIcon()
         {
@@ -38,6 +44,7 @@ public class OpenDevices
 
     private void init(FMLCommonSetupEvent event)
     {
+        DeviceMessages.init();
     }
 
     private void initClient(FMLClientSetupEvent event)
