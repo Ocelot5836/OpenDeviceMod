@@ -30,37 +30,43 @@ public class DeviceBlock extends ModBlock
         super(id, properties, itemProperties);
     }
 
-    @Override
-    public boolean canHarvestBlock(BlockState state, IBlockReader world, BlockPos pos, PlayerEntity player)
-    {
-        return super.canHarvestBlock(state, world, pos, player);
-    }
-
     public void onBlockHarvested(World world, BlockPos pos, BlockState state, PlayerEntity player)
     {
-        TileEntity te = world.getTileEntity(pos);
-        if (te instanceof DeviceTileEntity) {
-            DeviceTileEntity device = (DeviceTileEntity) te;
-            if (!world.isRemote && player.isCreative()) {
-                ItemStack stack = new ItemStack(this);
-                CompoundNBT nbt = new CompoundNBT();
-                device.save(nbt);
-                if (!nbt.isEmpty()) {
-                    CompoundNBT entityTag = new CompoundNBT();
-                    entityTag.put("device", nbt);
-                    stack.setTagInfo("BlockEntityTag", entityTag);
-                }
+        if (this.dropInCreative())
+        {
+            TileEntity te = world.getTileEntity(pos);
+            if (te instanceof DeviceTileEntity)
+            {
+                DeviceTileEntity device = (DeviceTileEntity) te;
+                if (!world.isRemote && player.isCreative())
+                {
+                    ItemStack stack = new ItemStack(this);
+                    CompoundNBT nbt = new CompoundNBT();
+                    device.save(nbt);
+                    if (!nbt.isEmpty())
+                    {
+                        CompoundNBT entityTag = new CompoundNBT();
+                        entityTag.put("device", nbt);
+                        stack.setTagInfo("BlockEntityTag", entityTag);
+                    }
 
-                if (te instanceof INameable && ((INameable) te).hasCustomName()) {
-                    stack.setDisplayName(((INameable) te).getCustomName());
-                }
+                    if (te instanceof INameable && ((INameable) te).hasCustomName())
+                    {
+                        stack.setDisplayName(((INameable) te).getCustomName());
+                    }
 
-                ItemEntity entity = new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), stack);
-                entity.setDefaultPickupDelay();
-                world.addEntity(entity);
+                    ItemEntity entity = new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), stack);
+                    entity.setDefaultPickupDelay();
+                    world.addEntity(entity);
+                }
             }
         }
 
         super.onBlockHarvested(world, pos, state, player);
+    }
+
+    protected boolean dropInCreative()
+    {
+        return true;
     }
 }
