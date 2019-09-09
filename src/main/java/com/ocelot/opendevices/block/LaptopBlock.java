@@ -3,10 +3,13 @@ package com.ocelot.opendevices.block;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.init.DeviceBlocks;
 import com.ocelot.opendevices.item.DeviceBlockItem;
+import com.ocelot.opendevices.proxy.ServerProxy;
 import com.ocelot.opendevices.tileentity.LaptopTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screen.DemoScreen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.DyeColor;
 import net.minecraft.state.EnumProperty;
@@ -20,7 +23,6 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ToolType;
 
 public class LaptopBlock extends DeviceBlock
 {
@@ -49,9 +51,7 @@ public class LaptopBlock extends DeviceBlock
             }
             else if (te.view(player))
             {
-                // TODO open GUI
-                System.out.println("Open GUI");
-                te.stopView(player);
+                OpenDevices.PROXY.openGui(player, ServerProxy.GuiType.LAPTOP, pos);
             }
             else
             {
@@ -60,15 +60,15 @@ public class LaptopBlock extends DeviceBlock
                     PlayerEntity userPlayer = te.getUserPlayer();
                     if (userPlayer != null)
                     {
-                        player.sendStatusMessage(new TranslationTextComponent(this.getTranslationKey() + ".using.specific", userPlayer.getDisplayName().getFormattedText()), true);
+                        player.sendStatusMessage(new TranslationTextComponent("block." + OpenDevices.MOD_ID + ".laptop.using.specific", userPlayer.getDisplayName().getFormattedText()), true);
                     }
                     else
                     {
-                        player.sendStatusMessage(new TranslationTextComponent(this.getTranslationKey() + ".using"), true);
+                        player.sendStatusMessage(new TranslationTextComponent("block." + OpenDevices.MOD_ID + ".laptop.using"), true);
                     }
                 }
-                return false;
             }
+            return true;
         }
         return false;
     }
