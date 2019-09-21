@@ -4,7 +4,7 @@ import com.ocelot.opendevices.OpenDevices;
 import net.minecraft.util.ResourceLocation;
 
 /**
- * Contains constants that are used by core classes.
+ * Contains static values that are used by core classes.
  */
 public class Constants
 {
