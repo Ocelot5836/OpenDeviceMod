@@ -1,4 +1,4 @@
-package com.ocelot.opendevices.api.util;
+package com.ocelot.opendevices.api.render;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
@@ -29,22 +29,22 @@ public class RenderUtil
         GlStateManager.disableLighting();
     }
 
-    public static void drawRectWithTexture(double x, double y, float u, float v, int width, int height, float textureWidth, float textureHeight)
+    public static void drawRectWithTexture(double x, double y, float u, float v, float width, float height, float textureWidth, float textureHeight)
     {
         drawRectWithTexture(x, y, 0, u, v, width, height, textureWidth, textureHeight, 256, 256);
     }
 
-    public static void drawRectWithTexture(double x, double y, float u, float v, int width, int height, float textureWidth, float textureHeight, int sourceWidth, int sourceHeight)
+    public static void drawRectWithTexture(double x, double y, float u, float v, float width, float height, float textureWidth, float textureHeight, int sourceWidth, int sourceHeight)
     {
         drawRectWithTexture(x, y, 0, u, v, width, height, textureWidth, textureHeight, sourceWidth, sourceHeight);
     }
 
-    public static void drawRectWithTexture(double x, double y, double z, float u, float v, int width, int height, float textureWidth, float textureHeight)
+    public static void drawRectWithTexture(double x, double y, double z, float u, float v, float width, float height, float textureWidth, float textureHeight)
     {
         drawRectWithTexture(x, y, z, u, v, width, height, textureWidth, textureHeight, 256, 256);
     }
 
-    public static void drawRectWithTexture(double x, double y, double z, float u, float v, int width, int height, float textureWidth, float textureHeight, int sourceWidth, int sourceHeight)
+    public static void drawRectWithTexture(double x, double y, double z, float u, float v, float width, float height, float textureWidth, float textureHeight, int sourceWidth, int sourceHeight)
     {
         float scaleWidth = 1.0F / sourceWidth;
         float scaleHeight = 1.0F / sourceHeight;
