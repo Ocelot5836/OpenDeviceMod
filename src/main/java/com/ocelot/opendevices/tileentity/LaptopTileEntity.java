@@ -2,12 +2,9 @@ package com.ocelot.opendevices.tileentity;
 
 import com.ocelot.opendevices.api.device.DeviceTileEntity;
 import com.ocelot.opendevices.init.DeviceBlocks;
-import net.minecraft.client.renderer.texture.ITickable;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
@@ -19,10 +16,8 @@ public class LaptopTileEntity extends DeviceTileEntity implements ITickableTileE
     private UUID user;
     private boolean open;
 
-    @OnlyIn(Dist.CLIENT)
-    private int rotation;
-    @OnlyIn(Dist.CLIENT)
-    private int prevRotation;
+    //    private int rotation;
+    //    private int prevRotation;
 
     public LaptopTileEntity()
     {
@@ -34,19 +29,39 @@ public class LaptopTileEntity extends DeviceTileEntity implements ITickableTileE
     @Override
     public void tick()
     {
-        if (this.world != null && this.world.isRemote) {
-            this.prevRotation = this.rotation;
-            if (!open) {
-                if (rotation > 0) {
-                    rotation -= 10F;
-                }
-            }
-            else {
-                if (rotation < OPENED_ANGLE) {
-                    rotation += 10F;
-                }
-            }
-        }
+        //        if (this.world != null && this.world.isRemote)
+        //        {
+        //            this.prevRotation = this.rotation;
+        //            if (!open)
+        //            {
+        //                if (rotation > 0)
+        //                {
+        //                    rotation -= 10F;
+        //                }
+        //            }
+        //            else
+        //            {
+        //                if (rotation < OPENED_ANGLE)
+        //                {
+        //                    rotation += 10F;
+        //                }
+        //            }
+        //        }
+    }
+
+    @Override
+    public CompoundNBT write(CompoundNBT nbt)
+    {
+        super.write(nbt);
+        nbt.putBoolean("open", this.open);
+        return nbt;
+    }
+
+    @Override
+    public void read(CompoundNBT nbt)
+    {
+        super.read(nbt);
+        this.open = nbt.getBoolean("open");
     }
 
     @Override
@@ -59,19 +74,20 @@ public class LaptopTileEntity extends DeviceTileEntity implements ITickableTileE
     {
     }
 
-    public boolean toggleOpen(PlayerEntity player)
+    public void toggleOpen(PlayerEntity player)
     {
-        if (this.hasUser())
-            return false;
+        if (this.hasUser() || !this.canInteract(player))
+            return;
         this.open = !this.open;
-        return this.canInteract(player);
+        this.notifyUpdate();
     }
 
     public boolean view(PlayerEntity player)
     {
-        if (this.hasUser())
+        if (this.hasUser() || !this.open)
             return false;
-        if (this.canInteract(player)) {
+        if (this.canInteract(player))
+        {
             this.user = player.getUniqueID();
             return true;
         }
@@ -84,6 +100,13 @@ public class LaptopTileEntity extends DeviceTileEntity implements ITickableTileE
             return;
         if (this.user.equals(player.getUniqueID()))
             this.user = null;
+    }
+
+    public boolean canInteract(@Nullable PlayerEntity player)
+    {
+        if (player == null)
+            return false;
+        return player.getDistanceSq(this.pos.getX(), this.pos.getY(), this.pos.getZ()) <= 64D;
     }
 
     @Nullable
@@ -106,16 +129,14 @@ public class LaptopTileEntity extends DeviceTileEntity implements ITickableTileE
         return player != null && this.canInteract(player);
     }
 
-    public boolean canInteract(@Nullable PlayerEntity player)
+    public boolean isOpen()
     {
-        if (player == null)
-            return false;
-        return player.getDistanceSq(this.pos.getX(), this.pos.getY(), this.pos.getZ()) <= 64D;
+        return open;
     }
 
-    @OnlyIn(Dist.CLIENT)
-    public float getScreenAngle(float partialTicks)
-    {
-        return -OPENED_ANGLE * ((this.prevRotation + (this.rotation - this.prevRotation) * partialTicks) / OPENED_ANGLE); //TODO optimize
-    }
+    //    @OnlyIn(Dist.CLIENT)
+    //    public float getScreenAngle(float partialTicks)
+    //    {
+    //        return -OPENED_ANGLE * ((this.prevRotation + (this.rotation - this.prevRotation) * partialTicks) / OPENED_ANGLE); //TODO optimize
+    //    }
 }

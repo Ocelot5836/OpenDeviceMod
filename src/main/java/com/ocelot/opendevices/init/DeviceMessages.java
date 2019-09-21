@@ -3,6 +3,8 @@ package com.ocelot.opendevices.init;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.network.MessageCloseLaptop;
 import com.ocelot.opendevices.network.MessageCloseLaptopHandler;
+import com.ocelot.opendevices.network.MessageOpenGui;
+import com.ocelot.opendevices.network.MessageOpenGuiHandler;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -22,6 +24,7 @@ public class DeviceMessages
 
     public static void init()
     {
+        registerMessage(MessageOpenGui.class, MessageOpenGui::encode, MessageOpenGui::decode, MessageOpenGuiHandler::handle);
         registerMessage(MessageCloseLaptop.class, MessageCloseLaptop::encode, MessageCloseLaptop::decode, MessageCloseLaptopHandler::handle);
     }
 

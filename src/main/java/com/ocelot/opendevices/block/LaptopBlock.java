@@ -2,7 +2,9 @@ package com.ocelot.opendevices.block;
 
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.init.DeviceBlocks;
+import com.ocelot.opendevices.init.DeviceMessages;
 import com.ocelot.opendevices.item.DeviceBlockItem;
+import com.ocelot.opendevices.network.MessageOpenGui;
 import com.ocelot.opendevices.proxy.ServerProxy;
 import com.ocelot.opendevices.tileentity.LaptopTileEntity;
 import net.minecraft.block.Block;
@@ -11,6 +13,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.DemoScreen;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.DyeColor;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
@@ -23,6 +26,9 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.fml.network.NetworkDirection;
+import net.minecraftforge.fml.network.NetworkHooks;
 
 public class LaptopBlock extends DeviceBlock
 {
@@ -43,19 +49,22 @@ public class LaptopBlock extends DeviceBlock
     {
         if (world.getTileEntity(pos) instanceof LaptopTileEntity)
         {
-            LaptopTileEntity te = (LaptopTileEntity) world.getTileEntity(pos);
-            assert te != null;
-            if (player.isSneaking())
+            if (!world.isRemote())
             {
-                return te.toggleOpen(player);
-            }
-            else if (te.view(player))
-            {
-                OpenDevices.PROXY.openGui(player, ServerProxy.GuiType.LAPTOP, pos);
-            }
-            else
-            {
-                if (!world.isRemote())
+                LaptopTileEntity te = (LaptopTileEntity) world.getTileEntity(pos);
+                assert te != null;
+                if (player.isSneaking())
+                {
+                    te.toggleOpen(player);
+                }
+                else if (te.view(player))
+                {
+                    if (player instanceof ServerPlayerEntity)
+                    {
+                        DeviceMessages.INSTANCE.sendTo(new MessageOpenGui(ServerProxy.GuiType.LAPTOP, pos), ((ServerPlayerEntity) player).connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
+                    }
+                }
+                else if(te.isOpen())
                 {
                     PlayerEntity userPlayer = te.getUserPlayer();
                     if (userPlayer != null)
