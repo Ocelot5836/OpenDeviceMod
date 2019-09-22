@@ -6,7 +6,9 @@ import com.ocelot.opendevices.api.device.laptop.Laptop;
 import com.ocelot.opendevices.api.device.laptop.settings.LaptopSetting;
 import com.ocelot.opendevices.api.device.laptop.settings.SettingsManager;
 import com.ocelot.opendevices.api.device.laptop.desktop.LaptopDesktop;
+import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.init.DeviceBlocks;
+import com.ocelot.opendevices.task.SyncSettingsTask;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 
@@ -36,7 +38,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop
         this.desktop = new LaptopDesktop(this);
     }
 
-//    @Override
+    //    @Override
     //    public void tick()
     //    {
     //                if (this.world != null && this.world.isRemote)
@@ -88,6 +90,18 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop
         this.desktop.deserializeNBT(nbt.getCompound("desktop"));
     }
 
+    public void syncSettings(CompoundNBT nbt)
+    {
+        if (this.world != null)
+        {
+            this.settings.merge(nbt);
+            if (!this.world.isRemote())
+            {
+                TaskManager.sendTask(new SyncSettingsTask(this.pos, nbt));
+            }
+        }
+    }
+
     @Override
     public <T> T readSetting(LaptopSetting<T> setting)
     {
@@ -97,14 +111,21 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop
     @Override
     public <T> void writeSetting(LaptopSetting<T> setting, T value)
     {
-        if (this.world != null && !this.world.isRemote())
+        if (!SettingsManager.isRegistered(setting))
         {
-            if (!SettingsManager.isRegistered(setting))
+            OpenDevices.LOGGER.warn("Setting " + setting.getRegistryName() + " is not registered! In order to write to a setting it needs to be registered!");
+            return;
+        }
+
+        if (this.world != null)
+        {
+            CompoundNBT nbt = new CompoundNBT();
+            setting.write(value, nbt);
+            this.syncSettings(nbt);
+            if (this.world.isRemote())
             {
-                OpenDevices.LOGGER.warn("Setting " + setting.getRegistryName() + " is not registered! In order to write to a setting it needs to be registered!");
-                return;
+                TaskManager.sendTask(new SyncSettingsTask(this.pos, nbt));
             }
-            setting.write(value, this.settings);
         }
     }
 
