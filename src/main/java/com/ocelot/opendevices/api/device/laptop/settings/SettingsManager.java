@@ -22,12 +22,19 @@ public class SettingsManager
 {
     private static final Type AUTO_REGISTRY = Type.getType(SettingsManager.Register.class);
     private static final Map<ResourceLocation, LaptopSetting<?>> REGISTRY = new HashMap<>();
+    private static boolean initialized = false;
 
     /**
-     * Search for annotations and register them.
+     * This should never be used by the consumer. Core use only!
      */
     public static void init()
     {
+        if (initialized)
+        {
+            OpenDevices.LOGGER.warn("Attempted to initialize Settings Manager even though it has already been initialized. This should NOT happen!");
+            return;
+        }
+
         List<ModFileScanData.AnnotationData> annotations = ModList.get().getAllScanData().stream().map(ModFileScanData::getAnnotations).flatMap(Collection::stream).filter(it -> it.getAnnotationType().equals(AUTO_REGISTRY)).collect(Collectors.toList());
 
         for (ModFileScanData.AnnotationData data : annotations)
@@ -42,16 +49,18 @@ public class SettingsManager
                 ResourceLocation registryName = setting.getRegistryName();
 
                 if (REGISTRY.containsKey(registryName))
-                    throw new RuntimeException("Setting: " + registryName + " attempted to override existing setting!");
+                    throw new RuntimeException("Setting: " + registryName + " attempted to override existing setting. Skipping!");
 
                 REGISTRY.put(registryName, setting);
                 OpenDevices.LOGGER.warn("Registered setting: " + registryName);
             }
             catch (Exception e)
             {
-                OpenDevices.LOGGER.warn("Could not register setting field " + fieldName + " in " + className + ". Skipping!", e);
+                OpenDevices.LOGGER.error("Could not register setting field " + fieldName + " in " + className + ". Skipping!", e);
             }
         }
+
+        initialized = true;
     }
 
     /**
