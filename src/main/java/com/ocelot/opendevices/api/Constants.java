@@ -18,7 +18,4 @@ public class Constants
     public static final int LAPTOP_SCREEN_WIDTH = LAPTOP_DEVICE_WIDTH - LAPTOP_BORDER * 2;
     public static final int LAPTOP_SCREEN_HEIGHT = LAPTOP_DEVICE_HEIGHT - LAPTOP_BORDER * 2;
 
-    @SettingsManager.Register
-    public static final LaptopSetting<String> TEST = new StringLaptopSetting(new ResourceLocation(OpenDevices.MOD_ID, "test"), "missingno");
-
 }
