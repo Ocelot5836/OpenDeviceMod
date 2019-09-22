@@ -1,5 +1,7 @@
 package com.ocelot.opendevices;
 
+import com.ocelot.opendevices.api.Constants;
+import com.ocelot.opendevices.api.device.laptop.desktop.LaptopDesktop;
 import com.ocelot.opendevices.api.device.laptop.settings.SettingsManager;
 import com.ocelot.opendevices.init.DeviceBlocks;
 import com.ocelot.opendevices.init.DeviceItems;
@@ -50,6 +52,7 @@ public class OpenDevices
     {
         DeviceMessages.init();
         SettingsManager.init();
+        LaptopDesktop.registerBackgroundLocation(Constants.DEFAULT_BACKGROUND_LOCATION);
     }
 
     private void initClient(FMLClientSetupEvent event)
