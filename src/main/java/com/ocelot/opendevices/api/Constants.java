@@ -7,7 +7,9 @@ import com.ocelot.opendevices.api.device.laptop.settings.StringLaptopSetting;
 import net.minecraft.util.ResourceLocation;
 
 /**
- * Contains static values that are used by core classes.
+ * <p>Contains static values that are used by core classes.</p>
+ *
+ * @author Ocelot
  */
 public class Constants
 {

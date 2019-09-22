@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  * <p>To register a task, use the {@link Register} annotation on the task class and extend {@link Task}.<p>
  * <p>To send a task, see {@link TaskManager#sendTask(Task)}.<p>
  *
- * @author Ocelot5836
+ * @author Ocelot
  * @see Task
  */
 public final class TaskManager

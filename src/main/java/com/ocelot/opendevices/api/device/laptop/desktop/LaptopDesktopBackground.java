@@ -7,7 +7,15 @@ import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nullable;
 
-//TODO potentially limit the valid backgrounds to some registry
+/**
+ * TODO potentially limit the valid backgrounds to some registry
+ *
+ * <p>An image that can be rendered onto the back of the {@link LaptopDesktop}.</p>
+ * <p>Supports {@link ResourceLocation} and a URL string to get the image source.</p>
+ *
+ * @author Ocelot
+ * @see LaptopDesktop
+ */
 public class LaptopDesktopBackground implements INBTSerializable<CompoundNBT>
 {
     public static final LaptopDesktopBackground DEFAULT = new LaptopDesktopBackground(Constants.DEFAULT_BACKGROUND_LOCATION, 0, 0, Constants.LAPTOP_DEVICE_WIDTH / 2f, Constants.LAPTOP_DEVICE_HEIGHT / 2f, Constants.LAPTOP_DEVICE_WIDTH / 2, Constants.LAPTOP_DEVICE_HEIGHT / 2);
@@ -86,53 +94,83 @@ public class LaptopDesktopBackground implements INBTSerializable<CompoundNBT>
         this.imageHeight = nbt.getInt("imageHeight");
     }
 
+    /**
+     * @return An exact copy of this background
+     */
     public LaptopDesktopBackground copy()
     {
         return this.online ? new LaptopDesktopBackground(this.url, this.u, this.v, this.width, this.height) : new LaptopDesktopBackground(this.location, this.u, this.v, this.width, this.height, this.imageWidth, this.imageHeight);
     }
 
+    /**
+     * @return Whether or not this background is an online image
+     */
     public boolean isOnline()
     {
         return online;
     }
 
+    /**
+     * @return The location of the background. Returns null if this is an online image.
+     */
     @Nullable
     public ResourceLocation getLocation()
     {
         return location;
     }
 
+    /**
+     * @return The location of the background. Returns null if this is not an online image.
+     */
     @Nullable
     public String getUrl()
     {
         return url;
     }
 
+    /**
+     * @return The x position on the texture to start
+     */
     public float getU()
     {
         return u;
     }
 
+    /**
+     * @return The y position on the texture to start
+     */
     public float getV()
     {
         return v;
     }
 
+    /**
+     * @return The x size on the texture to go to
+     */
     public float getWidth()
     {
         return width;
     }
 
+    /**
+     * @return The y size on the texture to go to
+     */
     public float getHeight()
     {
         return height;
     }
 
+    /**
+     * @return The width of the entire image
+     */
     public int getImageWidth()
     {
         return imageWidth;
     }
 
+    /**
+     * @return The height of the entire image
+     */
     public int getImageHeight()
     {
         return imageHeight;

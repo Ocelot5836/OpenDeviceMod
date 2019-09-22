@@ -6,9 +6,11 @@ import net.minecraft.util.ResourceLocation;
 import javax.annotation.Nullable;
 
 /**
- * An abstract setting that can be set on the {@link com.ocelot.opendevices.api.device.laptop.Laptop}.
+ * <p>An abstract setting that can be set on the {@link com.ocelot.opendevices.api.device.laptop.Laptop}.</>
  *
  * @param <T> The type of data the setting handles
+ * @author Ocelot
+ * @see SettingsManager
  */
 public interface LaptopSetting<T>
 {
@@ -23,13 +25,15 @@ public interface LaptopSetting<T>
 
     /**
      * Writes the specified value to NBT.
+     *
      * @param value The value to write
-     * @param nbt The nbt to write the data to
+     * @param nbt   The nbt to write the data to
      */
     void write(T value, CompoundNBT nbt);
 
     /**
      * Checks to see if this setting is on the {@link com.ocelot.opendevices.api.device.laptop.Laptop}.
+     *
      * @param nbt The nbt to check
      * @return Whether or not the setting was found on the Laptop.
      */

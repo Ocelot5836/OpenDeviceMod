@@ -16,7 +16,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Manages all the setting handling for the {@link Laptop}. To read/write to settings use {@link Laptop#readSetting(LaptopSetting)} and {@link Laptop#writeSetting(LaptopSetting, Object)} respectively.
+ * <p>Manages all the setting handling for the {@link Laptop}.<p/>
+ * <p>To read to settings use {@link Laptop#readSetting(LaptopSetting)}. To write to settings use {@link Laptop#writeSetting(LaptopSetting, Object)}.</p>
+ *
+ * @author Ocelot
+ * @see Laptop
+ * @see LaptopSetting
  */
 public class SettingsManager
 {

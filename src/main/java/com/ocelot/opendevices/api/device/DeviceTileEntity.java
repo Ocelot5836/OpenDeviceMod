@@ -10,7 +10,10 @@ import net.minecraftforge.common.util.Constants;
 import javax.annotation.Nullable;
 
 /**
- * A tile entity that defines a device.
+ * <p>A tile entity that defines a device. Make sure to extend this class if you want to make your own device.</p>
+ *
+ * @author Ocelot
+ * @see com.ocelot.opendevices.tileentity.LaptopTileEntity
  */
 public abstract class DeviceTileEntity extends TileEntity
 {
@@ -25,7 +28,8 @@ public abstract class DeviceTileEntity extends TileEntity
     public void notifyUpdate()
     {
         this.markDirty();
-        if (this.world != null) {
+        if (this.world != null)
+        {
             this.world.notifyBlockUpdate(this.pos, this.getBlockState(), this.getBlockState(), 3);
         }
     }
@@ -49,7 +53,8 @@ public abstract class DeviceTileEntity extends TileEntity
     {
         super.read(nbt);
 
-        if (nbt.contains("device", Constants.NBT.TAG_COMPOUND)) {
+        if (nbt.contains("device", Constants.NBT.TAG_COMPOUND))
+        {
             CompoundNBT data = nbt.getCompound("device");
             this.load(data);
         }

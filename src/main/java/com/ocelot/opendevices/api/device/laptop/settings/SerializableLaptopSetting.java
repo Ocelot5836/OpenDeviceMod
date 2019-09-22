@@ -9,6 +9,12 @@ import net.minecraftforge.common.util.INBTSerializable;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+/**
+ * <p>Represents a {@link LaptopSetting} for the type {@link INBTSerializable<CompoundNBT>}. Can be used to read/write any serializable NBT to/from the system settings.</p>
+ *
+ * @author Ocelot
+ * @see LaptopSetting
+ */
 public class SerializableLaptopSetting<T extends INBTSerializable<CompoundNBT>> implements LaptopSetting<T>
 {
     private ResourceLocation registryName;

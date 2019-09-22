@@ -6,6 +6,12 @@ import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
 
+/**
+ * <p>Represents a {@link LaptopSetting} for the type {@link String}. Can be used to read/write any string to/from the system settings.</p>
+ *
+ * @author Ocelot
+ * @see LaptopSetting
+ */
 public class StringLaptopSetting implements LaptopSetting<String>
 {
     private ResourceLocation registryName;

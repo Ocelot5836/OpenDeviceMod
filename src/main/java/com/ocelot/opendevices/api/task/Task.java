@@ -17,7 +17,7 @@ import net.minecraft.world.World;
  * <p>Please check out the example applications to get a better understanding
  * how this could be useful to your application.</p>
  *
- * @author MrCrayfish
+ * @author MrCrayfish, Ocelot
  * @see TaskManager
  */
 public abstract class Task

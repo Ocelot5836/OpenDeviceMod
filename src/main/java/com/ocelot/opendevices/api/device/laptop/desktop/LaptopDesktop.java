@@ -10,6 +10,12 @@ import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * <p>Represents the desktop for the {@link Laptop}. Manages the {@link LaptopDesktopBackground}, desktop icons, and applications.</p>
+ *
+ * @author Ocelot
+ * @see Laptop
+ */
 public class LaptopDesktop implements INBTSerializable<CompoundNBT>
 {
     private static final Set<ResourceLocation> VALID_BACKGROUND_LOCATIONS = new HashSet<>();

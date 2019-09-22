@@ -6,7 +6,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 
 /**
- * The most abstract form of a Laptop. This contains all the required functionality for the API.
+ * <p>The most abstract form of a Laptop. This contains all the required functionality for the API.</p>
+ *
+ * @author Ocelot
  */
 public interface Laptop
 {

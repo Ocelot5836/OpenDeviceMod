@@ -12,9 +12,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * An async way to make requests to the internet. Uses {@link Callback} for managing what to do with said data.
+ * <p>An async way to make requests to the internet. Uses {@link Callback} for handling the data returned.</p>
  *
- * @author Ocelot5836
+ * @author Ocelot
+ * @see Callback
+ * @see ExecutorService
  */
 public class OnlineRequest
 {
@@ -28,7 +30,7 @@ public class OnlineRequest
      */
     public static void make(String url, Callback<InputStream> handler)
     {
-		POOL.execute(() ->
+        POOL.execute(() ->
         {
             try (CloseableHttpClient client = HttpClients.createDefault())
             {

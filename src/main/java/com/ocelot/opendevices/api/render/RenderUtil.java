@@ -14,7 +14,11 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.opengl.GL11;
 
-//TODO documentation
+/**
+ * TODO documentation
+ *
+ * @author MrCrayfish, Ocelot
+ */
 @OnlyIn(Dist.CLIENT)
 public class RenderUtil
 {
