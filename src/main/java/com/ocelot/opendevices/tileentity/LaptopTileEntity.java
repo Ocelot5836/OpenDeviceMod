@@ -1,6 +1,9 @@
 package com.ocelot.opendevices.tileentity;
 
 import com.ocelot.opendevices.api.device.DeviceTileEntity;
+import com.ocelot.opendevices.api.device.laptop.Laptop;
+import com.ocelot.opendevices.core.laptop.LaptopDesktop;
+import com.ocelot.opendevices.core.laptop.LaptopSettings;
 import com.ocelot.opendevices.init.DeviceBlocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
@@ -9,12 +12,15 @@ import net.minecraft.tileentity.ITickableTileEntity;
 import javax.annotation.Nullable;
 import java.util.UUID;
 
-public class LaptopTileEntity extends DeviceTileEntity implements ITickableTileEntity
+public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITickableTileEntity
 {
     public static final int OPENED_ANGLE = 102;
 
     private UUID user;
     private boolean open;
+
+    private LaptopSettings settings;
+    private LaptopDesktop desktop;
 
     //    private int rotation;
     //    private int prevRotation;
@@ -24,6 +30,9 @@ public class LaptopTileEntity extends DeviceTileEntity implements ITickableTileE
         super(DeviceBlocks.TE_LAPTOP);
         this.user = null;
         this.open = false;
+
+        this.settings = new LaptopSettings();
+        this.desktop = new LaptopDesktop();
     }
 
     @Override
@@ -67,11 +76,15 @@ public class LaptopTileEntity extends DeviceTileEntity implements ITickableTileE
     @Override
     public void save(CompoundNBT nbt)
     {
+        nbt.put("settings", this.settings.serializeNBT());
+        nbt.put("desktop", this.desktop.serializeNBT());
     }
 
     @Override
     public void load(CompoundNBT nbt)
     {
+        this.settings.deserializeNBT(nbt.getCompound("settings"));
+        this.desktop.deserializeNBT(nbt.getCompound("desktop"));
     }
 
     public void toggleOpen(PlayerEntity player)
@@ -110,12 +123,6 @@ public class LaptopTileEntity extends DeviceTileEntity implements ITickableTileE
     }
 
     @Nullable
-    public UUID getUser()
-    {
-        return user;
-    }
-
-    @Nullable
     public PlayerEntity getUserPlayer()
     {
         if (this.user == null || this.world == null)
@@ -125,13 +132,29 @@ public class LaptopTileEntity extends DeviceTileEntity implements ITickableTileE
 
     public boolean hasUser()
     {
-        PlayerEntity player = this.getUserPlayer();
-        return player != null && this.canInteract(player);
+        return this.canInteract(this.getUserPlayer());
     }
 
     public boolean isOpen()
     {
         return open;
+    }
+
+    @Nullable
+    public UUID getUser()
+    {
+        return user;
+    }
+
+    @Override
+    public LaptopSettings getSettings()
+    {
+        return settings;
+    }
+
+    public LaptopDesktop getDesktop()
+    {
+        return desktop;
     }
 
     //    @OnlyIn(Dist.CLIENT)
