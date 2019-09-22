@@ -1,8 +1,12 @@
 package com.ocelot.opendevices.client.screen;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.datafixers.kinds.Const;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.Constants;
+import com.ocelot.opendevices.api.device.laptop.Laptop;
+import com.ocelot.opendevices.api.device.laptop.desktop.LaptopDesktop;
+import com.ocelot.opendevices.api.device.laptop.desktop.LaptopDesktopBackground;
 import com.ocelot.opendevices.api.device.laptop.settings.SettingsManager;
 import com.ocelot.opendevices.api.render.RenderUtil;
 import com.ocelot.opendevices.init.DeviceMessages;
@@ -18,12 +22,12 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 @OnlyIn(Dist.CLIENT)
 public class LaptopScreen extends Screen
 {
-    private static LaptopTileEntity laptop;
+    private Laptop laptop;
 
-    public LaptopScreen(LaptopTileEntity te)
+    public LaptopScreen(Laptop laptop)
     {
         super(new TranslationTextComponent("screen." + OpenDevices.MOD_ID + ".laptop"));
-        laptop = te;
+        this.laptop = laptop;
     }
 
     @Override
@@ -31,7 +35,7 @@ public class LaptopScreen extends Screen
     {
         Minecraft minecraft = this.getMinecraft();
 
-        if (!minecraft.player.isAlive() || laptop == null)
+        if (!minecraft.player.isAlive() || this.laptop == null)
         {
             minecraft.player.closeScreen();
         }
@@ -48,8 +52,8 @@ public class LaptopScreen extends Screen
         minecraft.textureManager.bindTexture(Constants.LAPTOP_GUI);
 
         /* Physical Screen Position */
-        int posX = (width - Constants.LAPTOP_DEVICE_WIDTH) / 2;
-        int posY = (height - Constants.LAPTOP_DEVICE_HEIGHT) / 2;
+        int posX = (this.width - Constants.LAPTOP_DEVICE_WIDTH) / 2;
+        int posY = (this.height - Constants.LAPTOP_DEVICE_HEIGHT) / 2;
 
         /* Corners */
         this.blit(posX, posY, 0, 0, Constants.LAPTOP_BORDER, Constants.LAPTOP_BORDER); // TOP-LEFT
@@ -67,6 +71,20 @@ public class LaptopScreen extends Screen
         /* Center */
         RenderUtil.drawRectWithTexture(posX + Constants.LAPTOP_BORDER, posY + Constants.LAPTOP_BORDER, Constants.LAPTOP_BORDER, Constants.LAPTOP_BORDER, Constants.LAPTOP_SCREEN_WIDTH, Constants.LAPTOP_SCREEN_HEIGHT, 1, 1);
 
+        LaptopDesktop desktop = this.laptop.getDesktop();
+
+        LaptopDesktopBackground desktopBackground = desktop.getBackground();
+        if (!desktopBackground.isOnline())
+        {
+            assert desktopBackground.getLocation() != null;
+            minecraft.getTextureManager().bindTexture(desktopBackground.getLocation());
+            RenderUtil.drawRectWithTexture(posX + Constants.LAPTOP_BORDER, posY + Constants.LAPTOP_BORDER, desktopBackground.getU(), desktopBackground.getV(), Constants.LAPTOP_SCREEN_WIDTH, Constants.LAPTOP_SCREEN_HEIGHT, desktopBackground.getWidth(), desktopBackground.getHeight(), desktopBackground.getImageWidth(), desktopBackground.getImageHeight());
+        }
+        else
+        {
+            assert desktopBackground.getUrl() != null;
+            //TODO download and render online image
+        }
 
         super.render(mouseX, mouseY, partialTicks);
     }
@@ -82,10 +100,9 @@ public class LaptopScreen extends Screen
     {
         super.onClose();
 
-        if (laptop != null)
+        if (this.laptop != null)
         {
-            DeviceMessages.INSTANCE.sendToServer(new MessageCloseLaptop(laptop.getPos()));
-            laptop = null;
+            DeviceMessages.INSTANCE.sendToServer(new MessageCloseLaptop(this.laptop.getPos()));
         }
     }
 }

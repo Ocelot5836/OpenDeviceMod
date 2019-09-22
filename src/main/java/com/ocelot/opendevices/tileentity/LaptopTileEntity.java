@@ -5,16 +5,15 @@ import com.ocelot.opendevices.api.device.DeviceTileEntity;
 import com.ocelot.opendevices.api.device.laptop.Laptop;
 import com.ocelot.opendevices.api.device.laptop.settings.LaptopSetting;
 import com.ocelot.opendevices.api.device.laptop.settings.SettingsManager;
-import com.ocelot.opendevices.core.laptop.LaptopDesktop;
+import com.ocelot.opendevices.api.device.laptop.desktop.LaptopDesktop;
 import com.ocelot.opendevices.init.DeviceBlocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.ITickableTileEntity;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
 
-public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITickableTileEntity
+public class LaptopTileEntity extends DeviceTileEntity implements Laptop
 {
     public static final int OPENED_ANGLE = 102;
 
@@ -34,31 +33,31 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
         this.open = false;
 
         this.settings = new CompoundNBT();
-        this.desktop = new LaptopDesktop();
+        this.desktop = new LaptopDesktop(this);
     }
 
-    @Override
-    public void tick()
-    {
-        //        if (this.world != null && this.world.isRemote)
-        //        {
-        //            this.prevRotation = this.rotation;
-        //            if (!open)
-        //            {
-        //                if (rotation > 0)
-        //                {
-        //                    rotation -= 10F;
-        //                }
-        //            }
-        //            else
-        //            {
-        //                if (rotation < OPENED_ANGLE)
-        //                {
-        //                    rotation += 10F;
-        //                }
-        //            }
-        //        }
-    }
+//    @Override
+    //    public void tick()
+    //    {
+    //                if (this.world != null && this.world.isRemote)
+    //                {
+    //                    this.prevRotation = this.rotation;
+    //                    if (!open)
+    //                    {
+    //                        if (rotation > 0)
+    //                        {
+    //                            rotation -= 10F;
+    //                        }
+    //                    }
+    //                    else
+    //                    {
+    //                        if (rotation < OPENED_ANGLE)
+    //                        {
+    //                            rotation += 10F;
+    //                        }
+    //                    }
+    //                }
+    //    }
 
     @Override
     public CompoundNBT write(CompoundNBT nbt)

@@ -17,5 +17,5 @@ public class Constants
     public static final int LAPTOP_DEVICE_HEIGHT = 216;
     public static final int LAPTOP_SCREEN_WIDTH = LAPTOP_DEVICE_WIDTH - LAPTOP_BORDER * 2;
     public static final int LAPTOP_SCREEN_HEIGHT = LAPTOP_DEVICE_HEIGHT - LAPTOP_BORDER * 2;
-
+    public static final ResourceLocation DEFAULT_BACKGROUND_LOCATION = new ResourceLocation(OpenDevices.MOD_ID, "textures/laptop/default_background.png");
 }

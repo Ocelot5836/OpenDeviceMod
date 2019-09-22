@@ -1,6 +1,7 @@
 package com.ocelot.opendevices.api.device.laptop;
 
 import com.ocelot.opendevices.api.device.laptop.settings.LaptopSetting;
+import com.ocelot.opendevices.api.device.laptop.desktop.LaptopDesktop;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 
@@ -36,4 +37,9 @@ public interface Laptop
      * @return The position of the laptop
      */
     BlockPos getPos();
+
+    /**
+     * @return The laptop's desktop
+     */
+    LaptopDesktop getDesktop();
 }
