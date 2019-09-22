@@ -105,4 +105,11 @@ public class RenderUtil
     {
         return mouseX >= x1 && mouseX < x2 && mouseY >= y1 && mouseY < y2;
     }
+
+    public static String timeToString(long time)
+    {
+        int hours = (int) ((Math.floor(time / 1000.0) + 7) % 24);
+        int minutes = (int) Math.floor((time % 1000) / 1000.0 * 60);
+        return String.format("%02d:%02d", hours, minutes);
+    }
 }
