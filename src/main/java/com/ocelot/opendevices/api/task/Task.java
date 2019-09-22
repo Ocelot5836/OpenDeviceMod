@@ -76,5 +76,5 @@ public abstract class Task
      *
      * @param nbt The NBT Tag received from the server
      */
-    public abstract void processResponse(CompoundNBT nbt);
+    public abstract void processResponse(CompoundNBT nbt, World world, PlayerEntity player);
 }

@@ -36,7 +36,7 @@ public class TestTask extends Task
     }
 
     @Override
-    public void processResponse(CompoundNBT nbt)
+    public void processResponse(CompoundNBT nbt, World world, PlayerEntity player)
     {
         if (this.isSucessful())
         {

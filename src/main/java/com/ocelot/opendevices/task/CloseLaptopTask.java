@@ -57,7 +57,7 @@ public class CloseLaptopTask extends Task
     }
 
     @Override
-    public void processResponse(CompoundNBT nbt)
+    public void processResponse(CompoundNBT nbt, World world, PlayerEntity player)
     {
     }
 }
