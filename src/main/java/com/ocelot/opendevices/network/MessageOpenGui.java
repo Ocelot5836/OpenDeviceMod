@@ -4,6 +4,7 @@ import com.ocelot.opendevices.proxy.ServerProxy;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 
+// TODO remove this at some point
 public class MessageOpenGui
 {
     ServerProxy.GuiType type;

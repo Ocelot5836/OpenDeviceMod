@@ -1,20 +1,17 @@
 package com.ocelot.opendevices.client.screen;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.datafixers.kinds.Const;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.Constants;
 import com.ocelot.opendevices.api.device.laptop.Laptop;
 import com.ocelot.opendevices.api.device.laptop.desktop.LaptopDesktop;
 import com.ocelot.opendevices.api.device.laptop.desktop.LaptopDesktopBackground;
-import com.ocelot.opendevices.api.device.laptop.settings.SettingsManager;
 import com.ocelot.opendevices.api.render.RenderUtil;
+import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.init.DeviceMessages;
-import com.ocelot.opendevices.network.MessageCloseLaptop;
-import com.ocelot.opendevices.tileentity.LaptopTileEntity;
+import com.ocelot.opendevices.task.CloseLaptopTask;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -102,7 +99,7 @@ public class LaptopScreen extends Screen
 
         if (this.laptop != null)
         {
-            DeviceMessages.INSTANCE.sendToServer(new MessageCloseLaptop(this.laptop.getPos()));
+            TaskManager.sendTask(new CloseLaptopTask(this.laptop.getPos()));
         }
     }
 }

@@ -22,7 +22,6 @@ public class DeviceMessages
     public static void init()
     {
         registerMessage(MessageOpenGui.class, MessageOpenGui::encode, MessageOpenGui::decode, MessageOpenGuiHandler::handle);
-        registerMessage(MessageCloseLaptop.class, MessageCloseLaptop::encode, MessageCloseLaptop::decode, MessageCloseLaptopHandler::handle);
         registerMessage(MessageRequest.class, MessageRequest::encode, MessageRequest::decode, MessageRequestHandler::handle);
         registerMessage(MessageResponse.class, MessageResponse::encode, MessageResponse::decode, MessageResponseHandler::handle);
     }
