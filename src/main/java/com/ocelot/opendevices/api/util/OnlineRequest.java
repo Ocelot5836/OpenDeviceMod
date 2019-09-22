@@ -1,6 +1,6 @@
 package com.ocelot.opendevices.api.util;
 
-import com.ocelot.opendevices.api.handler.ResponseHandler;
+import com.ocelot.opendevices.api.handler.Callback;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -12,7 +12,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * An async way to make requests to the internet. Uses {@link ResponseHandler} for managing what to do with said data.
+ * An async way to make requests to the internet. Uses {@link Callback} for managing what to do with said data.
  *
  * @author Ocelot5836
  */
@@ -26,7 +26,7 @@ public class OnlineRequest
      * @param url     the URL to make a request to
      * @param handler the response handler for the request
      */
-    public static void make(String url, ResponseHandler<InputStream> handler)
+    public static void make(String url, Callback<InputStream> handler)
     {
 		POOL.execute(() ->
         {
