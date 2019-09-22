@@ -1,6 +1,5 @@
 package com.ocelot.opendevices.api.device.laptop.desktop;
 
-import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.Constants;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
@@ -8,8 +7,11 @@ import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nullable;
 
+//TODO potentially limit the valid backgrounds to some registry
 public class LaptopDesktopBackground implements INBTSerializable<CompoundNBT>
 {
+    public static final LaptopDesktopBackground DEFAULT = new LaptopDesktopBackground(Constants.DEFAULT_BACKGROUND_LOCATION, 0, 0, Constants.LAPTOP_DEVICE_WIDTH / 2f, Constants.LAPTOP_DEVICE_HEIGHT / 2f, Constants.LAPTOP_DEVICE_WIDTH / 2, Constants.LAPTOP_DEVICE_HEIGHT / 2);
+
     private ResourceLocation location;
     private String url;
     private boolean online;
@@ -84,6 +86,11 @@ public class LaptopDesktopBackground implements INBTSerializable<CompoundNBT>
         this.imageHeight = nbt.getInt("imageHeight");
     }
 
+    public LaptopDesktopBackground copy()
+    {
+        return this.online ? new LaptopDesktopBackground(this.url, this.u, this.v, this.width, this.height) : new LaptopDesktopBackground(this.location, this.u, this.v, this.width, this.height, this.imageWidth, this.imageHeight);
+    }
+
     public boolean isOnline()
     {
         return online;
@@ -129,10 +136,5 @@ public class LaptopDesktopBackground implements INBTSerializable<CompoundNBT>
     public int getImageHeight()
     {
         return imageHeight;
-    }
-
-    public static LaptopDesktopBackground createDefault()
-    {
-        return new LaptopDesktopBackground(Constants.DEFAULT_BACKGROUND_LOCATION, 0, 0, Constants.LAPTOP_DEVICE_WIDTH / 2f, Constants.LAPTOP_DEVICE_HEIGHT / 2f, Constants.LAPTOP_DEVICE_WIDTH / 2, Constants.LAPTOP_DEVICE_HEIGHT / 2);
     }
 }
