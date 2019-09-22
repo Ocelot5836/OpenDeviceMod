@@ -4,23 +4,46 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.Constants;
 
-public class StringLaptopSetting implements LaptopSettingFactory<String>
+import javax.annotation.Nullable;
+
+public class StringLaptopSetting implements LaptopSetting<String>
 {
-    @Override
-    public void write(ResourceLocation registryName, String value, CompoundNBT nbt)
+    private ResourceLocation registryName;
+    private String defaultValue;
+
+    public StringLaptopSetting(ResourceLocation registryName, String defaultValue)
     {
-        nbt.putString(registryName.toString(), value);
+        this.registryName = registryName;
+        this.defaultValue = defaultValue;
     }
 
     @Override
-    public String read(ResourceLocation registryName, CompoundNBT nbt)
+    public String read(CompoundNBT nbt)
     {
-        return nbt.getString(registryName.toString());
+        return nbt.getString(this.registryName.toString());
     }
 
     @Override
-    public boolean contains(ResourceLocation registryName, CompoundNBT nbt)
+    public void write(String value, CompoundNBT nbt)
     {
-        return nbt.contains(registryName.toString(), Constants.NBT.TAG_STRING);
+        nbt.putString(this.registryName.toString(), value);
+    }
+
+    @Override
+    public boolean contains(CompoundNBT nbt)
+    {
+        return nbt.contains(this.registryName.toString(), Constants.NBT.TAG_STRING);
+    }
+
+    @Override
+    public ResourceLocation getRegistryName()
+    {
+        return registryName;
+    }
+
+    @Override
+    public String getDefaultValue()
+    {
+        return defaultValue;
     }
 }

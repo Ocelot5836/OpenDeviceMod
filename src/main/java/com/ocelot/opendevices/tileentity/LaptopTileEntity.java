@@ -1,9 +1,11 @@
 package com.ocelot.opendevices.tileentity;
 
+import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.device.DeviceTileEntity;
 import com.ocelot.opendevices.api.device.laptop.Laptop;
+import com.ocelot.opendevices.api.device.laptop.settings.LaptopSetting;
+import com.ocelot.opendevices.api.device.laptop.settings.SettingsManager;
 import com.ocelot.opendevices.core.laptop.LaptopDesktop;
-import com.ocelot.opendevices.core.laptop.LaptopSettings;
 import com.ocelot.opendevices.init.DeviceBlocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
@@ -19,7 +21,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
     private UUID user;
     private boolean open;
 
-    private LaptopSettings settings;
+    private CompoundNBT settings;
     private LaptopDesktop desktop;
 
     //    private int rotation;
@@ -31,7 +33,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
         this.user = null;
         this.open = false;
 
-        this.settings = new LaptopSettings();
+        this.settings = new CompoundNBT();
         this.desktop = new LaptopDesktop();
     }
 
@@ -76,15 +78,35 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
     @Override
     public void save(CompoundNBT nbt)
     {
-        nbt.put("settings", this.settings.serializeNBT());
+        nbt.put("settings", this.settings);
         nbt.put("desktop", this.desktop.serializeNBT());
     }
 
     @Override
     public void load(CompoundNBT nbt)
     {
-        this.settings.deserializeNBT(nbt.getCompound("settings"));
+        this.settings = nbt.getCompound("settings");
         this.desktop.deserializeNBT(nbt.getCompound("desktop"));
+    }
+
+    @Override
+    public <T> T readSetting(LaptopSetting<T> setting)
+    {
+        return setting.contains(this.settings) ? setting.read(this.settings) : setting.getDefaultValue();
+    }
+
+    @Override
+    public <T> void writeSetting(LaptopSetting<T> setting, T value)
+    {
+        if (this.world != null && !this.world.isRemote())
+        {
+            if (!SettingsManager.isRegistered(setting))
+            {
+                OpenDevices.LOGGER.warn("Setting " + setting.getRegistryName() + " is not registered! In order to write to a setting it needs to be registered!");
+                return;
+            }
+            setting.write(value, this.settings);
+        }
     }
 
     public void toggleOpen(PlayerEntity player)
@@ -144,12 +166,6 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
     public UUID getUser()
     {
         return user;
-    }
-
-    @Override
-    public LaptopSettings getSettings()
-    {
-        return settings;
     }
 
     public LaptopDesktop getDesktop()

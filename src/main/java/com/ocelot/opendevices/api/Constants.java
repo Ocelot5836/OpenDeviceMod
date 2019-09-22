@@ -1,6 +1,9 @@
 package com.ocelot.opendevices.api;
 
 import com.ocelot.opendevices.OpenDevices;
+import com.ocelot.opendevices.api.device.laptop.settings.LaptopSetting;
+import com.ocelot.opendevices.api.device.laptop.settings.SettingsManager;
+import com.ocelot.opendevices.api.device.laptop.settings.StringLaptopSetting;
 import net.minecraft.util.ResourceLocation;
 
 /**
@@ -14,4 +17,8 @@ public class Constants
     public static final int LAPTOP_DEVICE_HEIGHT = 216;
     public static final int LAPTOP_SCREEN_WIDTH = LAPTOP_DEVICE_WIDTH - LAPTOP_BORDER * 2;
     public static final int LAPTOP_SCREEN_HEIGHT = LAPTOP_DEVICE_HEIGHT - LAPTOP_BORDER * 2;
+
+    @SettingsManager.Register
+    public static final LaptopSetting<String> TEST = new StringLaptopSetting(new ResourceLocation(OpenDevices.MOD_ID, "test"), "missingno");
+
 }

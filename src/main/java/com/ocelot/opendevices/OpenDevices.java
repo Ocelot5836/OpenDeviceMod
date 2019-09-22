@@ -1,5 +1,6 @@
 package com.ocelot.opendevices;
 
+import com.ocelot.opendevices.api.device.laptop.settings.SettingsManager;
 import com.ocelot.opendevices.init.DeviceBlocks;
 import com.ocelot.opendevices.init.DeviceItems;
 import com.ocelot.opendevices.init.DeviceMessages;
@@ -10,9 +11,11 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.LifecycleEventProvider;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -40,11 +43,13 @@ public class OpenDevices
     {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::init);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::initClient);
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
     private void init(FMLCommonSetupEvent event)
     {
         DeviceMessages.init();
+        SettingsManager.init();
     }
 
     private void initClient(FMLClientSetupEvent event)
