@@ -10,9 +10,12 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.opengl.GL11;
 
 //TODO documentation
+@OnlyIn(Dist.CLIENT)
 public class RenderUtil
 {
     public static void renderItem(int x, int y, ItemStack stack, boolean overlay)

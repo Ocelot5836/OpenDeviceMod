@@ -31,14 +31,14 @@ public abstract class DeviceTileEntity extends TileEntity
     }
 
     /**
-     * Writes any required data to a tag.
+     * Use this to save any information that should be saved on destroy. Otherwise use {@link DeviceTileEntity#write(CompoundNBT)}.
      *
      * @param nbt The tag to write the data to
      */
     public abstract void save(CompoundNBT nbt);
 
     /**
-     * Reads any required data from a tag.
+     * Use this to load any information that should be read on place. Otherwise use {@link DeviceTileEntity#read(CompoundNBT)}.
      *
      * @param nbt The tag to read the data from
      */
