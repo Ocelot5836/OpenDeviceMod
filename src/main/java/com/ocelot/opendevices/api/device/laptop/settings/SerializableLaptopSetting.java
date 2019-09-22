@@ -45,7 +45,7 @@ public class SerializableLaptopSetting<T extends INBTSerializable<CompoundNBT>> 
     @Override
     public boolean contains(CompoundNBT nbt)
     {
-        return nbt.contains(this.registryName.toString(), Constants.NBT.TAG_STRING);
+        return nbt.contains(this.registryName.toString(), Constants.NBT.TAG_COMPOUND);
     }
 
     @Override

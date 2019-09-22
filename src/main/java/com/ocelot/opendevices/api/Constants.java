@@ -1,10 +1,13 @@
 package com.ocelot.opendevices.api;
 
 import com.ocelot.opendevices.OpenDevices;
+import com.ocelot.opendevices.api.device.laptop.settings.IntegerLaptopSetting;
 import com.ocelot.opendevices.api.device.laptop.settings.LaptopSetting;
 import com.ocelot.opendevices.api.device.laptop.settings.SettingsManager;
 import com.ocelot.opendevices.api.device.laptop.settings.StringLaptopSetting;
 import net.minecraft.util.ResourceLocation;
+
+import java.awt.*;
 
 /**
  * <p>Contains static values that are used by core classes.</p>
@@ -20,4 +23,10 @@ public class Constants
     public static final int LAPTOP_SCREEN_WIDTH = LAPTOP_DEVICE_WIDTH - LAPTOP_BORDER * 2;
     public static final int LAPTOP_SCREEN_HEIGHT = LAPTOP_DEVICE_HEIGHT - LAPTOP_BORDER * 2;
     public static final ResourceLocation DEFAULT_BACKGROUND_LOCATION = new ResourceLocation(OpenDevices.MOD_ID, "textures/laptop/default_background.png");
+
+    public static final LaptopSetting<Integer> TASKBAR_COLOR = new IntegerLaptopSetting(new ResourceLocation(OpenDevices.MOD_ID, "taskbar_color"), 0x45494D);
+    public static final LaptopSetting<Integer> TASKBAR_HIGHLIGHT_COLOR = new IntegerLaptopSetting(new ResourceLocation(OpenDevices.MOD_ID, "taskbar_highlight_color"), 0xBDC6FF);
+
+    public static final LaptopSetting<Integer> WINDOW_COLOR = new IntegerLaptopSetting(new ResourceLocation(OpenDevices.MOD_ID, "window_color"), 0x45494D);
+
 }
