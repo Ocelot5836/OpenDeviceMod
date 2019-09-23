@@ -55,7 +55,7 @@ public class DeviceBlock extends ModBlock
                         stack.setDisplayName(((INameable) te).getCustomName());
                     }
 
-                    ItemEntity entity = new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), stack);
+                    ItemEntity entity = new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, stack);
                     entity.setDefaultPickupDelay();
                     world.addEntity(entity);
                 }
