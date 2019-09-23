@@ -6,12 +6,10 @@ import com.ocelot.opendevices.init.DeviceMessages;
 import com.ocelot.opendevices.item.DeviceBlockItem;
 import com.ocelot.opendevices.network.MessageOpenGui;
 import com.ocelot.opendevices.proxy.ServerProxy;
-import com.ocelot.opendevices.tileentity.LaptopTileEntity;
+import com.ocelot.opendevices.core.LaptopTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.DemoScreen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.DyeColor;
@@ -26,9 +24,7 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkHooks;
 
 public class LaptopBlock extends DeviceBlock
 {

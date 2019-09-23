@@ -1,7 +1,7 @@
-package com.ocelot.opendevices.api.device.laptop.desktop;
+package com.ocelot.opendevices.api.laptop.desktop;
 
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.api.device.laptop.Laptop;
+import com.ocelot.opendevices.api.laptop.Laptop;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.INBTSerializable;

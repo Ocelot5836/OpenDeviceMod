@@ -2,10 +2,8 @@ package com.ocelot.opendevices.init;
 
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.block.LaptopBlock;
-import com.ocelot.opendevices.tileentity.LaptopTileEntity;
+import com.ocelot.opendevices.core.LaptopTileEntity;
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.material.MaterialColor;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;

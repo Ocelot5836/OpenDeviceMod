@@ -1,7 +1,7 @@
-package com.ocelot.opendevices.api.device.laptop;
+package com.ocelot.opendevices.api.laptop;
 
-import com.ocelot.opendevices.api.device.laptop.settings.LaptopSetting;
-import com.ocelot.opendevices.api.device.laptop.desktop.LaptopDesktop;
+import com.ocelot.opendevices.api.laptop.settings.LaptopSetting;
+import com.ocelot.opendevices.api.laptop.desktop.LaptopDesktop;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 

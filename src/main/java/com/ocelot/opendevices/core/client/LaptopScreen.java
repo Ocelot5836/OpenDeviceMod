@@ -1,16 +1,14 @@
-package com.ocelot.opendevices.client.screen;
+package com.ocelot.opendevices.core.client;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.Constants;
-import com.ocelot.opendevices.api.device.laptop.Laptop;
-import com.ocelot.opendevices.api.device.laptop.desktop.LaptopDesktop;
-import com.ocelot.opendevices.api.device.laptop.desktop.LaptopDesktopBackground;
+import com.ocelot.opendevices.api.laptop.desktop.LaptopDesktop;
+import com.ocelot.opendevices.api.laptop.desktop.LaptopDesktopBackground;
 import com.ocelot.opendevices.api.render.RenderUtil;
 import com.ocelot.opendevices.api.task.TaskManager;
-import com.ocelot.opendevices.init.DeviceMessages;
-import com.ocelot.opendevices.task.CloseLaptopTask;
-import com.ocelot.opendevices.tileentity.LaptopTileEntity;
+import com.ocelot.opendevices.core.task.CloseLaptopTask;
+import com.ocelot.opendevices.core.LaptopTileEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
@@ -19,11 +17,8 @@ import net.minecraft.util.StringUtils;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.ModLoader;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 
 import java.util.Optional;

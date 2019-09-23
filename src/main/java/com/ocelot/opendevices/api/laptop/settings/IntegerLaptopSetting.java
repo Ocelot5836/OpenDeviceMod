@@ -1,4 +1,4 @@
-package com.ocelot.opendevices.api.device.laptop.settings;
+package com.ocelot.opendevices.api.laptop.settings;
 
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;

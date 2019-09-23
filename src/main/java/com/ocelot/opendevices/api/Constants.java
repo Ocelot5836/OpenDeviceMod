@@ -1,13 +1,10 @@
 package com.ocelot.opendevices.api;
 
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.api.device.laptop.settings.IntegerLaptopSetting;
-import com.ocelot.opendevices.api.device.laptop.settings.LaptopSetting;
-import com.ocelot.opendevices.api.device.laptop.settings.SettingsManager;
-import com.ocelot.opendevices.api.device.laptop.settings.StringLaptopSetting;
+import com.ocelot.opendevices.api.laptop.settings.IntegerLaptopSetting;
+import com.ocelot.opendevices.api.laptop.settings.LaptopSetting;
+import com.ocelot.opendevices.api.laptop.settings.SettingsManager;
 import net.minecraft.util.ResourceLocation;
-
-import java.awt.*;
 
 /**
  * <p>Contains static values that are used by core classes.</p>

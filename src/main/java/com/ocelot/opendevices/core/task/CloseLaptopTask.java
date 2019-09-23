@@ -1,10 +1,9 @@
-package com.ocelot.opendevices.task;
+package com.ocelot.opendevices.core.task;
 
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.api.device.laptop.Laptop;
 import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.api.task.TaskManager;
-import com.ocelot.opendevices.tileentity.LaptopTileEntity;
+import com.ocelot.opendevices.core.LaptopTileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
@@ -13,21 +12,19 @@ import net.minecraftforge.common.util.Constants;
 
 import java.util.Objects;
 
-@TaskManager.Register(OpenDevices.MOD_ID + ":sync_settings")
-public class SyncSettingsTask extends Task
+@TaskManager.Register(OpenDevices.MOD_ID + ":close_laptop")
+public class CloseLaptopTask extends Task
 {
     private BlockPos pos;
-    private CompoundNBT nbt;
 
-    public SyncSettingsTask()
+    public CloseLaptopTask()
     {
-        this(null, new CompoundNBT());
+        this(null);
     }
 
-    public SyncSettingsTask(BlockPos pos, CompoundNBT nbt)
+    public CloseLaptopTask(BlockPos pos)
     {
         this.pos = pos;
-        this.nbt = nbt;
     }
 
     @Override
@@ -37,7 +34,6 @@ public class SyncSettingsTask extends Task
         {
             nbt.putLong("pos", this.pos.toLong());
         }
-        nbt.put("nbt", this.nbt);
     }
 
     @Override
@@ -47,11 +43,10 @@ public class SyncSettingsTask extends Task
         {
             this.pos = BlockPos.fromLong(nbt.getLong("pos"));
         }
-        this.nbt = nbt.getCompound("nbt");
 
         if (this.pos != null && world.getTileEntity(this.pos) instanceof LaptopTileEntity)
         {
-            ((LaptopTileEntity) Objects.requireNonNull(world.getTileEntity(this.pos))).syncSettings(this.nbt);
+            ((LaptopTileEntity) Objects.requireNonNull(world.getTileEntity(this.pos))).stopView(player);
             this.setSuccessful();
         }
     }
@@ -59,12 +54,10 @@ public class SyncSettingsTask extends Task
     @Override
     public void prepareResponse(CompoundNBT nbt)
     {
-        this.prepareRequest(nbt);
     }
 
     @Override
     public void processResponse(CompoundNBT nbt, World world, PlayerEntity player)
     {
-        this.processRequest(nbt, world, player);
     }
 }

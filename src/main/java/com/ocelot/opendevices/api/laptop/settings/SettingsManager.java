@@ -1,8 +1,7 @@
-package com.ocelot.opendevices.api.device.laptop.settings;
+package com.ocelot.opendevices.api.laptop.settings;
 
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.api.device.laptop.Laptop;
-import net.minecraft.nbt.CompoundNBT;
+import com.ocelot.opendevices.api.laptop.Laptop;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.forgespi.language.ModFileScanData;

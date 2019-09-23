@@ -1,4 +1,4 @@
-package com.ocelot.opendevices.api.device.laptop.desktop;
+package com.ocelot.opendevices.api.laptop.desktop;
 
 import com.ocelot.opendevices.api.Constants;
 import net.minecraft.nbt.CompoundNBT;

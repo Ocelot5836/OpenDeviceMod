@@ -1,12 +1,10 @@
-package com.ocelot.opendevices.api.device.laptop.settings;
+package com.ocelot.opendevices.api.laptop.settings;
 
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
 
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**

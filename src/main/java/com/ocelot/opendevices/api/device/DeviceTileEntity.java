@@ -1,5 +1,6 @@
 package com.ocelot.opendevices.api.device;
 
+import com.ocelot.opendevices.core.LaptopTileEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
@@ -7,13 +8,11 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.common.util.Constants;
 
-import javax.annotation.Nullable;
-
 /**
  * <p>A tile entity that defines a device. Make sure to extend this class if you want to make your own device.</p>
  *
  * @author Ocelot
- * @see com.ocelot.opendevices.tileentity.LaptopTileEntity
+ * @see LaptopTileEntity
  */
 public abstract class DeviceTileEntity extends TileEntity
 {

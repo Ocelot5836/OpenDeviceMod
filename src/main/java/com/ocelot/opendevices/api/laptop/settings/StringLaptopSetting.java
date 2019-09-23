@@ -1,10 +1,8 @@
-package com.ocelot.opendevices.api.device.laptop.settings;
+package com.ocelot.opendevices.api.laptop.settings;
 
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.Constants;
-
-import javax.annotation.Nullable;
 
 /**
  * <p>Represents a {@link LaptopSetting} for the type {@link String}. Can be used to read/write any string to/from the system settings.</p>

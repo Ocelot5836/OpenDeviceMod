@@ -2,21 +2,16 @@ package com.ocelot.opendevices.api.task;
 
 import com.google.common.collect.HashBiMap;
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.api.device.laptop.settings.LaptopSetting;
-import com.ocelot.opendevices.api.device.laptop.settings.SettingsManager;
 import com.ocelot.opendevices.init.DeviceMessages;
 import com.ocelot.opendevices.network.MessageRequest;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.forgespi.language.ModFileScanData;
-import org.apache.commons.lang3.tuple.Pair;
 import org.objectweb.asm.Type;
 
 import javax.annotation.Nullable;
 import java.lang.annotation.ElementType;
-import java.lang.reflect.Field;
 import java.util.*;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**

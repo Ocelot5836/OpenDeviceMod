@@ -1,8 +1,6 @@
-package com.ocelot.opendevices.task;
+package com.ocelot.opendevices.core.task;
 
-import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.task.*;
-import com.ocelot.opendevices.api.task.TaskManager.Register;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.world.World;

@@ -1,4 +1,4 @@
-package com.ocelot.opendevices.api.device.laptop.settings;
+package com.ocelot.opendevices.api.laptop.settings;
 
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
@@ -6,7 +6,7 @@ import net.minecraft.util.ResourceLocation;
 import javax.annotation.Nullable;
 
 /**
- * <p>An abstract setting that can be set on the {@link com.ocelot.opendevices.api.device.laptop.Laptop}.</>
+ * <p>An abstract setting that can be set on the {@link com.ocelot.opendevices.api.laptop.Laptop}.</>
  *
  * @param <T> The type of data the setting handles
  * @author Ocelot
@@ -32,7 +32,7 @@ public interface LaptopSetting<T>
     void write(T value, CompoundNBT nbt);
 
     /**
-     * Checks to see if this setting is on the {@link com.ocelot.opendevices.api.device.laptop.Laptop}.
+     * Checks to see if this setting is on the {@link com.ocelot.opendevices.api.laptop.Laptop}.
      *
      * @param nbt The nbt to check
      * @return Whether or not the setting was found on the Laptop.

@@ -1,7 +1,7 @@
 package com.ocelot.opendevices.proxy;
 
-import com.ocelot.opendevices.client.screen.LaptopScreen;
-import com.ocelot.opendevices.tileentity.LaptopTileEntity;
+import com.ocelot.opendevices.core.client.LaptopScreen;
+import com.ocelot.opendevices.core.LaptopTileEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;

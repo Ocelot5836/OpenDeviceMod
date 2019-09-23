@@ -1,14 +1,14 @@
-package com.ocelot.opendevices.tileentity;
+package com.ocelot.opendevices.core;
 
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.device.DeviceTileEntity;
-import com.ocelot.opendevices.api.device.laptop.Laptop;
-import com.ocelot.opendevices.api.device.laptop.settings.LaptopSetting;
-import com.ocelot.opendevices.api.device.laptop.settings.SettingsManager;
-import com.ocelot.opendevices.api.device.laptop.desktop.LaptopDesktop;
+import com.ocelot.opendevices.api.laptop.Laptop;
+import com.ocelot.opendevices.api.laptop.desktop.LaptopDesktop;
+import com.ocelot.opendevices.api.laptop.settings.LaptopSetting;
+import com.ocelot.opendevices.api.laptop.settings.SettingsManager;
 import com.ocelot.opendevices.api.task.TaskManager;
+import com.ocelot.opendevices.core.task.SyncSettingsTask;
 import com.ocelot.opendevices.init.DeviceBlocks;
-import com.ocelot.opendevices.task.SyncSettingsTask;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 
