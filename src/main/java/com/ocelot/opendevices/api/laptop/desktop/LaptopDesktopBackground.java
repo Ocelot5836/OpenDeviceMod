@@ -18,7 +18,7 @@ import javax.annotation.Nullable;
  */
 public class LaptopDesktopBackground implements INBTSerializable<CompoundNBT>
 {
-    public static final LaptopDesktopBackground DEFAULT = new LaptopDesktopBackground(Constants.DEFAULT_BACKGROUND_LOCATION, 0, 0, Constants.LAPTOP_DEVICE_WIDTH / 2f, Constants.LAPTOP_DEVICE_HEIGHT / 2f, Constants.LAPTOP_DEVICE_WIDTH / 2, Constants.LAPTOP_DEVICE_HEIGHT / 2);
+    public static final LaptopDesktopBackground DEFAULT = new LaptopDesktopBackground(Constants.DEFAULT_BACKGROUND_LOCATION, 0, 0, Constants.LAPTOP_GUI_WIDTH / 2f, Constants.LAPTOP_GUI_HEIGHT / 2f, Constants.LAPTOP_GUI_WIDTH / 2, Constants.LAPTOP_GUI_HEIGHT / 2);
 
     private ResourceLocation location;
     private String url;

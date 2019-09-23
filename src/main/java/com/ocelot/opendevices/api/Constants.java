@@ -17,10 +17,10 @@ public class Constants
 
     public static final ResourceLocation LAPTOP_GUI = new ResourceLocation(OpenDevices.MOD_ID, "textures/gui/laptop.png");
     public static final int LAPTOP_BORDER = 10;
-    public static final int LAPTOP_DEVICE_WIDTH = 384;
-    public static final int LAPTOP_DEVICE_HEIGHT = 216;
-    public static final int LAPTOP_SCREEN_WIDTH = LAPTOP_DEVICE_WIDTH - LAPTOP_BORDER * 2;
-    public static final int LAPTOP_SCREEN_HEIGHT = LAPTOP_DEVICE_HEIGHT - LAPTOP_BORDER * 2;
+    public static final int LAPTOP_GUI_WIDTH = 384;
+    public static final int LAPTOP_GUI_HEIGHT = 216;
+    public static final int LAPTOP_SCREEN_WIDTH = LAPTOP_GUI_WIDTH - LAPTOP_BORDER * 2;
+    public static final int LAPTOP_SCREEN_HEIGHT = LAPTOP_GUI_HEIGHT - LAPTOP_BORDER * 2;
     public static final int LAPTOP_TASK_BAR_HEIGHT = 18;
 
     public static final ResourceLocation DEFAULT_BACKGROUND_LOCATION = new ResourceLocation(OpenDevices.MOD_ID, "textures/laptop/default_background.png");
