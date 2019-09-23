@@ -10,21 +10,54 @@ import com.ocelot.opendevices.api.render.RenderUtil;
 import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.init.DeviceMessages;
 import com.ocelot.opendevices.task.CloseLaptopTask;
+import com.ocelot.opendevices.tileentity.LaptopTileEntity;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.util.StringUtils;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.ForgeMod;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.ModLoader;
+import org.apache.maven.artifact.versioning.ArtifactVersion;
+
+import java.util.Optional;
 
 @OnlyIn(Dist.CLIENT)
 public class LaptopScreen extends Screen
 {
-    private Laptop laptop;
+    private LaptopTileEntity laptop;
+    private String modVersion;
 
-    public LaptopScreen(Laptop laptop)
+    public LaptopScreen(LaptopTileEntity laptop)
     {
         super(new TranslationTextComponent("screen." + OpenDevices.MOD_ID + ".laptop"));
         this.laptop = laptop;
+
+        Optional<? extends ModContainer> modContainer = ModList.get().getModContainerById(OpenDevices.MOD_ID);
+        if (modContainer.isPresent())
+        {
+            ArtifactVersion version = modContainer.get().getModInfo().getVersion();
+            int majorVersion = version.getMajorVersion();
+            int minorVersion = version.getMinorVersion();
+            int buildVersion = version.getBuildNumber();
+            String qualifier = version.getQualifier();
+
+            this.modVersion = Constants.DEVELOPER_MODE ? String.format("%s.%s build %s", majorVersion, minorVersion, buildVersion) : String.format("%s.%s.%s", majorVersion, minorVersion, buildVersion);
+            if (!StringUtils.isNullOrEmpty(qualifier))
+            {
+                this.modVersion += " " + qualifier;
+            }
+        }
+        else
+        {
+            this.modVersion = I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.version.unknown");
+        }
     }
 
     @Override
@@ -32,7 +65,7 @@ public class LaptopScreen extends Screen
     {
         Minecraft minecraft = this.getMinecraft();
 
-        if (!minecraft.player.isAlive() || this.laptop == null)
+        if (!minecraft.player.isAlive() || this.laptop == null || this.laptop.isRemoved())
         {
             minecraft.player.closeScreen();
         }
@@ -42,6 +75,7 @@ public class LaptopScreen extends Screen
     public void render(int mouseX, int mouseY, float partialTicks)
     {
         Minecraft minecraft = this.getMinecraft();
+        FontRenderer fontRenderer = minecraft.fontRenderer;
 
         this.renderBackground();
         GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -91,6 +125,15 @@ public class LaptopScreen extends Screen
             }
         }
 
+        if (!Constants.DEVELOPER_MODE)
+        {
+            drawString(fontRenderer, I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.version", this.modVersion), posX + 5, posY + 5, this.laptop.readSetting(Constants.DESKTOP_TEXT_COLOR));
+        }
+        else
+        {
+            drawString(fontRenderer, I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.dev_version", this.modVersion), posX + 5, posY + 5, this.laptop.readSetting(Constants.DESKTOP_TEXT_COLOR));
+        }
+
         /* Task bar */
         {
             minecraft.getTextureManager().bindTexture(Constants.WINDOW_LOCATION);
@@ -106,16 +149,20 @@ public class LaptopScreen extends Screen
     }
 
     @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int mouseButton, double p_mouseDragged_6_, double p_mouseDragged_8_)
+    {
+        return false;
+    }
+
+    @Override
     public boolean isPauseScreen()
     {
         return false;
     }
 
     @Override
-    public void onClose()
+    public void removed()
     {
-        super.onClose();
-
         if (this.laptop != null)
         {
             TaskManager.sendTask(new CloseLaptopTask(this.laptop.getPos()));

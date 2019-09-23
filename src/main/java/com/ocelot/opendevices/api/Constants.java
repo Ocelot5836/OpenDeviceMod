@@ -16,6 +16,8 @@ import java.awt.*;
  */
 public class Constants
 {
+    public static final boolean DEVELOPER_MODE = true;
+
     public static final ResourceLocation LAPTOP_GUI = new ResourceLocation(OpenDevices.MOD_ID, "textures/gui/laptop.png");
     public static final int LAPTOP_BORDER = 10;
     public static final int LAPTOP_DEVICE_WIDTH = 384;
@@ -27,6 +29,8 @@ public class Constants
     public static final ResourceLocation DEFAULT_BACKGROUND_LOCATION = new ResourceLocation(OpenDevices.MOD_ID, "textures/laptop/default_background.png");
     public static final ResourceLocation WINDOW_LOCATION = new ResourceLocation(OpenDevices.MOD_ID, "textures/laptop/window.png");
 
+    @SettingsManager.Register
+    public static final LaptopSetting<Integer> DESKTOP_TEXT_COLOR = new IntegerLaptopSetting(new ResourceLocation(OpenDevices.MOD_ID, "desktop_text_color"), 0xffffffff);
     @SettingsManager.Register
     public static final LaptopSetting<Integer> TASKBAR_COLOR = new IntegerLaptopSetting(new ResourceLocation(OpenDevices.MOD_ID, "taskbar_color"), 0xFF45494D);
     @SettingsManager.Register
