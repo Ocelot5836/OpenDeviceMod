@@ -101,7 +101,7 @@ public class RenderUtil
         return clipped;
     }
 
-    public static boolean isMouseInside(int mouseX, int mouseY, int x1, int y1, int x2, int y2)
+    public static boolean isMouseInside(double mouseX, double mouseY, double x1, double y1, double x2, double y2)
     {
         return mouseX >= x1 && mouseX < x2 && mouseY >= y1 && mouseY < y2;
     }

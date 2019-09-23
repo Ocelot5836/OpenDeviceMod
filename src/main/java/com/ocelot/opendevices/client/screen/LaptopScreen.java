@@ -43,15 +43,10 @@ public class LaptopScreen extends Screen
         if (modContainer.isPresent())
         {
             ArtifactVersion version = modContainer.get().getModInfo().getVersion();
-            int majorVersion = version.getMajorVersion();
-            int minorVersion = version.getMinorVersion();
-            int buildVersion = version.getBuildNumber();
-            String qualifier = version.getQualifier();
-
-            this.modVersion = Constants.DEVELOPER_MODE ? String.format("%s.%s build %s", majorVersion, minorVersion, buildVersion) : String.format("%s.%s.%s", majorVersion, minorVersion, buildVersion);
-            if (!StringUtils.isNullOrEmpty(qualifier))
+            this.modVersion = String.format("%s.%s.%s", version.getMajorVersion(), version.getMinorVersion(), version.getIncrementalVersion());
+            if (!StringUtils.isNullOrEmpty(version.getQualifier()))
             {
-                this.modVersion += " " + qualifier;
+                this.modVersion += " " + version.getQualifier();
             }
         }
         else
@@ -151,7 +146,8 @@ public class LaptopScreen extends Screen
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int mouseButton, double p_mouseDragged_6_, double p_mouseDragged_8_)
     {
-        return false;
+        System.out.println(p_mouseDragged_6_);
+        return true;
     }
 
     @Override
