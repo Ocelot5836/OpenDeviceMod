@@ -23,12 +23,14 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
     private LaptopTileEntity laptop;
     private DesktopBackground background;
     private Stack<Window> windows;
+    private Window[] windowsArray;
 
     public LaptopDesktop(LaptopTileEntity laptop)
     {
         this.laptop = laptop;
         this.background = DesktopBackground.DEFAULT.copy();
         this.windows = new Stack<>();
+        this.windowsArray = new Window[Constants.MAX_OPEN_APPS];
     }
 
     protected Window createNewWindow(float x, float y, int width, int height)
@@ -112,12 +114,18 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
     }
 
     @Override
+    public Window[] getWindows()
+    {
+        return this.windows.toArray(this.windowsArray);
+    }
+
+    @Override
     public DesktopBackground getBackground()
     {
         return background;
     }
 
-    public Stack<Window> getWindows()
+    public Stack<Window> getWindowStack()
     {
         return windows;
     }

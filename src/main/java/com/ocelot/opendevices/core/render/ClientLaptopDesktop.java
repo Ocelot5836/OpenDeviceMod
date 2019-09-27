@@ -21,7 +21,6 @@ import net.minecraftforge.fml.ModList;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 
 import java.util.Optional;
-import java.util.Stack;
 
 @OnlyIn(Dist.CLIENT)
 public class ClientLaptopDesktop extends AbstractGui
@@ -79,7 +78,7 @@ public class ClientLaptopDesktop extends AbstractGui
         }
 
         /* Applications */
-        Stack<Window> windows = this.desktop.getWindows();
+        Window[] windows = this.desktop.getWindows();
         for (Window window : windows)
         {
             if (window instanceof WindowClient)

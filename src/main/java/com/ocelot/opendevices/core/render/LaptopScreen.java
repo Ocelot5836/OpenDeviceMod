@@ -25,7 +25,7 @@ public class LaptopScreen extends Screen
         super(new TranslationTextComponent("screen." + OpenDevices.MOD_ID + ".laptop"));
         this.laptop = laptop;
         this.desktop = new ClientLaptopDesktop(this.laptop);
-        if (this.laptop.getDesktop().getWindows().isEmpty())
+        if (this.laptop.getDesktop().getWindowStack().isEmpty())
         {
             this.laptop.getDesktop().openApplicationTest();
         }
@@ -83,7 +83,7 @@ public class LaptopScreen extends Screen
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int mouseButton, double deltaX, double deltaY)
     {
-        this.laptop.getDesktop().getWindows().forEach(window -> window.move((float) deltaX, (float) deltaY));
+        this.laptop.getDesktop().getWindowStack().forEach(window -> window.move((float) deltaX, (float) deltaY));
         return true;
     }
 

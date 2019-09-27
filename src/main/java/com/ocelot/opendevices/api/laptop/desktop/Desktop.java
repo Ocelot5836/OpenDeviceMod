@@ -60,6 +60,11 @@ public interface Desktop
     Window getWindow(UUID windowId);
 
     /**
+     * @return All currently opened windows
+     */
+    Window[] getWindows();
+
+    /**
      * @return The current desktop background
      */
     DesktopBackground getBackground();
