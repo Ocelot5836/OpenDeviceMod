@@ -2,13 +2,14 @@ package com.ocelot.opendevices.core.window;
 
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.laptop.Laptop;
+import com.ocelot.opendevices.api.laptop.window.Window;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import java.util.Objects;
 import java.util.UUID;
 
-public class Window implements INBTSerializable<CompoundNBT>
+public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
 {
     private Laptop laptop;
     private UUID id;
@@ -17,12 +18,17 @@ public class Window implements INBTSerializable<CompoundNBT>
     private int width;
     private int height;
 
-    public Window(Laptop laptop)
+    public LaptopWindow(Laptop laptop)
     {
         this.laptop = laptop;
     }
 
-    public Window(Laptop laptop, float x, float y, int width, int height)
+    public LaptopWindow(Laptop laptop, int width, int height)
+    {
+        this(laptop, (DeviceConstants.LAPTOP_SCREEN_WIDTH - width) / 2f, (DeviceConstants.LAPTOP_SCREEN_HEIGHT - DeviceConstants.LAPTOP_TASK_BAR_HEIGHT - height) / 2f, width, height);
+    }
+
+    public LaptopWindow(Laptop laptop, float x, float y, int width, int height)
     {
         this.laptop = laptop;
         this.id = UUID.randomUUID();
@@ -32,12 +38,7 @@ public class Window implements INBTSerializable<CompoundNBT>
         this.height = height + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + 2;
     }
 
-    public Window(Laptop laptop, int width, int height)
-    {
-        this(laptop, (DeviceConstants.LAPTOP_SCREEN_WIDTH - width) / 2f, (DeviceConstants.LAPTOP_SCREEN_HEIGHT - DeviceConstants.LAPTOP_TASK_BAR_HEIGHT - height) / 2f, width, height);
-    }
-
-    void checkPosition()
+    private void checkPosition()
     {
         if (this.x < 0)
             this.x = 0;
@@ -47,6 +48,30 @@ public class Window implements INBTSerializable<CompoundNBT>
             this.x = DeviceConstants.LAPTOP_SCREEN_WIDTH - this.width;
         if (this.y >= DeviceConstants.LAPTOP_SCREEN_HEIGHT - DeviceConstants.LAPTOP_TASK_BAR_HEIGHT - this.height)
             this.y = DeviceConstants.LAPTOP_SCREEN_HEIGHT - DeviceConstants.LAPTOP_TASK_BAR_HEIGHT - this.height;
+    }
+
+    @Override
+    public void focus()
+    {
+        if (!this.id.equals(this.laptop.getDesktop().getFocusedWindowId()))
+        {
+            this.laptop.getDesktop().focusWindow(this.id);
+        }
+    }
+
+    @Override
+    public void close()
+    {
+        this.laptop.getDesktop().closeWindow(this.id);
+    }
+
+    @Override
+    public void move(float xDirection, float yDirection)
+    {
+        this.x += xDirection;
+        this.y += yDirection;
+        this.checkPosition();
+        // TODO send to server and back to clients
     }
 
     public void update()
@@ -93,39 +118,36 @@ public class Window implements INBTSerializable<CompoundNBT>
     {
     }
 
-    public void move(float xDirection, float yDirection)
-    {
-        this.x += xDirection;
-        this.y += yDirection;
-        this.checkPosition();
-        // TODO send to server and back to clients
-    }
-
     public Laptop getLaptop()
     {
         return laptop;
     }
 
+    @Override
     public UUID getId()
     {
         return id;
     }
 
+    @Override
     public float getX()
     {
         return x;
     }
 
+    @Override
     public float getY()
     {
         return y;
     }
 
+    @Override
     public int getWidth()
     {
         return width;
     }
 
+    @Override
     public int getHeight()
     {
         return height;
@@ -158,8 +180,8 @@ public class Window implements INBTSerializable<CompoundNBT>
     public boolean equals(Object o)
     {
         if (this == o) return true;
-        if (!(o instanceof Window)) return false;
-        Window window = (Window) o;
+        if (!(o instanceof LaptopWindow)) return false;
+        LaptopWindow window = (LaptopWindow) o;
         return this.id.equals(window.id);
     }
 

@@ -7,7 +7,7 @@ import com.ocelot.opendevices.api.laptop.desktop.DesktopBackground;
 import com.ocelot.opendevices.api.render.RenderUtil;
 import com.ocelot.opendevices.core.LaptopDesktop;
 import com.ocelot.opendevices.core.LaptopTileEntity;
-import com.ocelot.opendevices.core.window.Window;
+import com.ocelot.opendevices.core.window.LaptopWindow;
 import com.ocelot.opendevices.core.window.WindowClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
@@ -78,7 +78,7 @@ public class ClientLaptopDesktop extends AbstractGui
         }
 
         /* Applications */
-        Window[] windows = this.desktop.getWindows();
+        LaptopWindow[] windows = this.desktop.getWindows();
         for (int i = 0; i < windows.length; i++)
         {
             WindowClient window = (WindowClient) windows[i];

@@ -7,7 +7,7 @@ import com.ocelot.opendevices.api.render.RenderUtil;
 import com.ocelot.opendevices.core.render.WindowButton;
 import net.minecraft.client.Minecraft;
 
-public class WindowClient extends Window
+public class WindowClient extends LaptopWindow
 {
     private int screenX;
     private int screenY;
@@ -19,21 +19,21 @@ public class WindowClient extends Window
     public WindowClient(Laptop laptop, float x, float y, int width, int height)
     {
         super(laptop, x, y, width, height);
-        this.closeButton = new WindowButton(laptop, button -> laptop.getDesktop().closeWindow(this.getId()));
+        this.closeButton = new WindowButton(laptop, button -> this.close());
         this.requiresContentUpdate = true;
     }
 
     public WindowClient(Laptop laptop, int width, int height)
     {
         super(laptop, width, height);
-        this.closeButton = new WindowButton(laptop, button -> laptop.getDesktop().closeWindow(this.getId()));
+        this.closeButton = new WindowButton(laptop, button -> this.close());
         this.requiresContentUpdate = true;
     }
 
     public WindowClient(Laptop laptop)
     {
         super(laptop);
-        this.closeButton = new WindowButton(laptop, button -> laptop.getDesktop().closeWindow(this.getId()));
+        this.closeButton = new WindowButton(laptop, button -> this.close());
         this.requiresContentUpdate = true;
     }
 

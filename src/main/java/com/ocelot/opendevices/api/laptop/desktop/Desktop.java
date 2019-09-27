@@ -1,7 +1,7 @@
 package com.ocelot.opendevices.api.laptop.desktop;
 
 import com.ocelot.opendevices.api.laptop.Laptop;
-import com.ocelot.opendevices.core.window.Window;
+import com.ocelot.opendevices.api.laptop.window.Window;
 
 import javax.annotation.Nullable;
 import java.util.UUID;

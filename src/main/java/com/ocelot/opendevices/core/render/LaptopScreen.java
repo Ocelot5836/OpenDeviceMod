@@ -4,12 +4,14 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.laptop.desktop.Desktop;
+import com.ocelot.opendevices.api.laptop.window.Window;
 import com.ocelot.opendevices.api.render.RenderUtil;
 import com.ocelot.opendevices.api.task.TaskManager;
+import com.ocelot.opendevices.core.LaptopDesktop;
 import com.ocelot.opendevices.core.LaptopTileEntity;
 import com.ocelot.opendevices.core.task.CloseLaptopTask;
 import com.ocelot.opendevices.core.task.MoveWindowTask;
-import com.ocelot.opendevices.core.window.Window;
+import com.ocelot.opendevices.core.window.LaptopWindow;
 import com.ocelot.opendevices.core.window.WindowClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -48,7 +50,7 @@ public class LaptopScreen extends Screen
         this.draggingWindow = null;
         this.clickable = false;
 
-        Window[] windows = this.laptop.getDesktop().getWindows();
+        LaptopWindow[] windows = this.laptop.getDesktop().getWindows();
         for (int i = 0; i < windows.length; i++)
         {
             WindowClient window = (WindowClient) windows[windows.length - i - 1];
@@ -109,8 +111,8 @@ public class LaptopScreen extends Screen
     {
         if (this.draggingWindow == null)
         {
-            Desktop desktop = this.laptop.getDesktop();
-            Window focusedWindow = desktop.getFocusedWindow();
+            LaptopDesktop desktop = this.laptop.getDesktop();
+            LaptopWindow focusedWindow = desktop.getFocusedWindow();
             if (focusedWindow != null)
             {
                 focusedWindow.onKeyPressed(keyCode);
@@ -125,8 +127,8 @@ public class LaptopScreen extends Screen
     {
         if (this.draggingWindow == null)
         {
-            Desktop desktop = this.laptop.getDesktop();
-            Window focusedWindow = desktop.getFocusedWindow();
+            LaptopDesktop desktop = this.laptop.getDesktop();
+            LaptopWindow focusedWindow = desktop.getFocusedWindow();
             if (focusedWindow != null)
             {
                 focusedWindow.onKeyReleased(keyCode);
@@ -139,7 +141,7 @@ public class LaptopScreen extends Screen
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int mouseButton, double deltaX, double deltaY)
     {
-        Desktop desktop = this.laptop.getDesktop();
+        LaptopDesktop desktop = this.laptop.getDesktop();
         if (this.draggingWindow != null)
         {
             this.draggingWindow.move((float) deltaX, (float) deltaY);
@@ -178,7 +180,7 @@ public class LaptopScreen extends Screen
                     }
                     if (window.isWithin(mouseX, mouseY))
                     {
-                        desktop.focusWindow(window.getId());
+                        window.focus();
                         loseFocus = false;
                     }
                     if (window.isWithinContent(mouseX, mouseY))
@@ -196,7 +198,7 @@ public class LaptopScreen extends Screen
             }
         }
 
-        if(loseFocus)
+        if (loseFocus)
         {
             desktop.focusWindow(null);
         }

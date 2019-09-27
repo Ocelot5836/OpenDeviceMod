@@ -4,7 +4,7 @@ import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.core.LaptopTileEntity;
-import com.ocelot.opendevices.core.window.Window;
+import com.ocelot.opendevices.core.window.LaptopWindow;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
@@ -16,14 +16,14 @@ import java.util.Objects;
 public class OpenWindowTask extends Task
 {
     private BlockPos pos;
-    private Window window;
+    private LaptopWindow window;
 
     public OpenWindowTask()
     {
         this(null, null);
     }
 
-    public OpenWindowTask(BlockPos pos, Window window)
+    public OpenWindowTask(BlockPos pos, LaptopWindow window)
     {
         this.pos = pos;
         this.window = window;
