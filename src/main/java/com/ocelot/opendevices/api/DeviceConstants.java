@@ -39,6 +39,8 @@ public class DeviceConstants
     @SettingsManager.Register
     public static final LaptopSetting<Integer> WINDOW_COLOR = new IntegerLaptopSetting(new ResourceLocation(OpenDevices.MOD_ID, "window_color"), 0x45494D);
     @SettingsManager.Register
+    public static final LaptopSetting<Integer> FOCUSED_WINDOW_COLOR = new IntegerLaptopSetting(new ResourceLocation(OpenDevices.MOD_ID, "focused_window_color"), 0xFF00FF);
+    @SettingsManager.Register
     public static final LaptopSetting<Integer> WINDOW_BUTTON_COLOR = new IntegerLaptopSetting(new ResourceLocation(OpenDevices.MOD_ID, "window_button_color"), 0xCCCCCC);
 
 }

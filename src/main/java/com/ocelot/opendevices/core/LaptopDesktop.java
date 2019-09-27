@@ -81,7 +81,11 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
     {
         if (this.windows.stream().noneMatch(frame -> frame.equals(window)))
         {
-            this.laptop.execute(() -> this.windows.push(window));
+            this.laptop.execute(() ->
+            {
+                this.windows.push(window);
+                window.focus();
+            });
         }
     }
 
@@ -109,12 +113,15 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
 
     public void syncCloseWindow(LaptopWindow window)
     {
-        window.onClose();
-        this.windows.remove(window);
-        if (this.focusedWindowId != null && this.focusedWindowId.equals(window.getId()))
+        this.laptop.execute(() ->
         {
-            this.focusWindow(null);
-        }
+            window.onClose();
+            this.windows.remove(window);
+            if (this.focusedWindowId != null && this.focusedWindowId.equals(window.getId()))
+            {
+                this.focusWindow(null);
+            }
+        });
     }
 
     @Override

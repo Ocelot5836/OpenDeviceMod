@@ -50,7 +50,7 @@ public class WindowClient extends LaptopWindow
         renderWindow(this.screenX, this.screenY, this, color, partialTicks, false);
         if (this.getId().equals(this.getLaptop().getDesktop().getFocusedWindowId()))
         {
-            renderWindow(this.screenX, this.screenY, this, 0xff00ff, partialTicks, true);
+            renderWindow(this.screenX, this.screenY, this, this.getLaptop().readSetting(DeviceConstants.FOCUSED_WINDOW_COLOR), partialTicks, true);
         }
 
         GlStateManager.color4f(((color >> 16) & 0xff) / 255f, ((color >> 8) & 0xff) / 255f, (color & 0xff) / 255f, 1);
