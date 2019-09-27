@@ -1,10 +1,11 @@
-package com.ocelot.opendevices.core;
+package com.ocelot.opendevices.core.render;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.Constants;
 import com.ocelot.opendevices.api.render.RenderUtil;
 import com.ocelot.opendevices.api.task.TaskManager;
+import com.ocelot.opendevices.core.LaptopTileEntity;
 import com.ocelot.opendevices.core.task.CloseLaptopTask;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -24,7 +25,10 @@ public class LaptopScreen extends Screen
         super(new TranslationTextComponent("screen." + OpenDevices.MOD_ID + ".laptop"));
         this.laptop = laptop;
         this.desktop = new ClientLaptopDesktop(this.laptop);
-        this.laptop.getDesktop().openApplicationTest();
+        if (this.laptop.getDesktop().getWindows().isEmpty())
+        {
+            this.laptop.getDesktop().openApplicationTest();
+        }
     }
 
     @Override
@@ -71,7 +75,7 @@ public class LaptopScreen extends Screen
         }
 
         /* Renders the Desktop */
-        this.desktop.render(minecraft, fontRenderer, posX + Constants.LAPTOP_BORDER, posY + Constants.LAPTOP_BORDER);
+        this.desktop.render(minecraft, fontRenderer, posX + Constants.LAPTOP_BORDER, posY + Constants.LAPTOP_BORDER, partialTicks);
 
         super.render(mouseX, mouseY, partialTicks);
     }
@@ -79,6 +83,7 @@ public class LaptopScreen extends Screen
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int mouseButton, double deltaX, double deltaY)
     {
+        this.laptop.getDesktop().getWindows().forEach(window -> window.move((float) deltaX, (float) deltaY));
         return true;
     }
 

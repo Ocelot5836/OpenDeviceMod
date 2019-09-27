@@ -46,6 +46,11 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
     @Override
     public void tick()
     {
+        if (!this.executionQueue.isEmpty())
+        {
+            OpenDevices.LOGGER.debug("Executing {} tasks", this.executionQueue.size());
+        }
+
         Runnable runnable;
         while ((runnable = this.executionQueue.poll()) != null)
         {
