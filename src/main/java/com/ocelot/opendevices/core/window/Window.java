@@ -45,6 +45,34 @@ public class Window implements INBTSerializable<CompoundNBT>
     {
     }
 
+    public void onGainFocus()
+    {
+    }
+
+    public void onLostFocus()
+    {
+    }
+
+    public void onMousePressed(double mouseX, double mouseY, float partialTicks)
+    {
+    }
+
+    public void onMouseReleased(double mouseX, double mouseY, float partialTicks)
+    {
+    }
+
+    public void onMouseDragged(double mouseX, double mouseY, float partialTicks, double deltaX, double detaY)
+    {
+    }
+
+    public void onKeyPressed(int keyCode)
+    {
+    }
+
+    public void onKeyReleased(int keyCode)
+    {
+    }
+
     public void saveState(CompoundNBT nbt)
     {
     }

@@ -29,19 +29,16 @@ public interface Desktop
     //    void closeApplication(AppInfo info);
 
     /**
+     * Focuses the window with the specified ID and moves it to the front.
+     *
+     * @param windowId The id of the window to focus or null to unfocus
+     */
+    void focusWindow(@Nullable UUID windowId);
+
+    /**
      * Closes all the windows that are currently open.
      */
     void closeAllWindows();
-
-    /**
-     * Closes the specified window.
-     *
-     * @param window The window to close
-     */
-    default void closeWindow(Window window)
-    {
-        this.closeWindow(window.getId());
-    }
 
     /**
      * Closes the specified window.
@@ -63,6 +60,21 @@ public interface Desktop
      * @return All currently opened windows
      */
     Window[] getWindows();
+
+    /**
+     * @return The currently focused window or null if there is no window focused
+     */
+    @Nullable
+    default Window getFocusedWindow()
+    {
+        return this.getWindow(this.getFocusedWindowId());
+    }
+
+    /**
+     * @return The id of the currently focused window or null if there is no window focused
+     */
+    @Nullable
+    UUID getFocusedWindowId();
 
     /**
      * @return The current desktop background

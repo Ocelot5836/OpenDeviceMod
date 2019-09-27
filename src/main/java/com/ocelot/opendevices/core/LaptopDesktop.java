@@ -7,6 +7,7 @@ import com.ocelot.opendevices.api.laptop.desktop.DesktopBackground;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopManager;
 import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.core.task.CloseWindowTask;
+import com.ocelot.opendevices.core.task.FocusWindowTask;
 import com.ocelot.opendevices.core.task.OpenWindowTask;
 import com.ocelot.opendevices.core.window.Window;
 import com.ocelot.opendevices.core.window.WindowClient;
@@ -28,6 +29,7 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
     private DesktopBackground background;
     private Stack<Window> windows;
     private Window[] windowsArray;
+    private UUID focusedWindowId;
 
     public LaptopDesktop(LaptopTileEntity laptop)
     {
@@ -35,6 +37,7 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
         this.background = DesktopBackground.DEFAULT.copy();
         this.windows = new Stack<>();
         this.windowsArray = new Window[DeviceConstants.MAX_OPEN_APPS];
+        this.focusedWindowId = null;
     }
 
     protected Window createNewWindow(float x, float y, int width, int height)
@@ -75,22 +78,50 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
         }
     }
 
-    @Override
-    public void closeAllWindows()
+    public void syncFocusWindow(@Nullable UUID windowId)
     {
-        this.laptop.execute(() -> this.windows.forEach(this::closeWindow));
-    }
+        if (this.focusedWindowId == windowId)
+            return;
 
-    @Override
-    public void closeWindow(UUID windowId)
-    {
-        TaskManager.sendTaskToNearby(new CloseWindowTask(this.laptop.getPos(), windowId));
+        Window lastFocusWindow = this.getWindow(this.focusedWindowId);
+        Window window = this.getWindow(windowId);
+
+        if (window != null)
+        {
+            this.windows.remove(window);
+            this.windows.push(window);
+            window.onGainFocus();
+        }
+
+        if (lastFocusWindow != null)
+        {
+            lastFocusWindow.onLostFocus();
+        }
+        this.focusedWindowId = windowId == null ? null : window != null ? windowId : null;
     }
 
     public void syncCloseWindow(Window window)
     {
         window.onClose();
         this.windows.remove(window);
+    }
+
+    @Override
+    public void focusWindow(@Nullable UUID windowId)
+    {
+        TaskManager.sendTaskToNearby(new FocusWindowTask(this.laptop.getPos(), windowId));
+    }
+
+    @Override
+    public void closeAllWindows()
+    {
+        this.laptop.execute(() -> this.windows.forEach(window -> this.closeWindow(window.getId())));
+    }
+
+    @Override
+    public void closeWindow(UUID windowId)
+    {
+        TaskManager.sendTaskToNearby(new CloseWindowTask(this.laptop.getPos(), windowId));
     }
 
     @Override
@@ -111,6 +142,10 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
             windowsNbt.add(windowNbt);
         }
         nbt.put("windows", windowsNbt);
+        if (focusedWindowId != null)
+        {
+            nbt.putUniqueId("focusedWindowId", this.focusedWindowId);
+        }
         return nbt;
     }
 
@@ -128,6 +163,7 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
             window.loadState(windowNbt.getCompound("state"));
             this.openWindow(window);
         }
+        this.focusedWindowId = nbt.hasUniqueId("focusedWindowId") ? nbt.getUniqueId("focusedWindowId") : null;
     }
 
     @Nullable
@@ -142,6 +178,13 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
     public Window[] getWindows()
     {
         return this.windows.toArray(this.windowsArray);
+    }
+
+    @Nullable
+    @Override
+    public UUID getFocusedWindowId()
+    {
+        return focusedWindowId;
     }
 
     @Override

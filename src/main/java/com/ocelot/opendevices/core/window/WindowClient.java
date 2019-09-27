@@ -60,6 +60,13 @@ public class WindowClient extends Window
         return RenderUtil.isMouseInside(mouseX, mouseY, posX + x, posY + y, posX + x + this.getWidth(), posY + y + this.getHeight());
     }
 
+    public boolean isWithinContent(float posX, float posY, double mouseX, double mouseY, float partialTicks)
+    {
+        float x = this.getInterpolatedX(partialTicks);
+        float y = this.getInterpolatedY(partialTicks);
+        return RenderUtil.isMouseInside(mouseX, mouseY, posX + x + 1, posY + y + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + 1, posX + x + this.getWidth() - 1, posY + y + this.getHeight() - 1);
+    }
+
     public boolean isWithinWindowBar(float posX, float posY, double mouseX, double mouseY, float partialTicks)
     {
         float x = this.getInterpolatedX(partialTicks);

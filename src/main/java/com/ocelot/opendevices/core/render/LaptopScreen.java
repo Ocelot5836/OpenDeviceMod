@@ -32,7 +32,7 @@ public class LaptopScreen extends Screen
         super(new TranslationTextComponent("screen." + OpenDevices.MOD_ID + ".laptop"));
         this.laptop = laptop;
         this.desktop = new ClientLaptopDesktop(this.laptop);
-        if (this.laptop.getDesktop().getWindowStack().isEmpty())
+        if (this.laptop.getDesktop().getWindowStack().size() < 2)
         {
             this.laptop.getDesktop().openApplicationTest();
         }
@@ -93,6 +93,36 @@ public class LaptopScreen extends Screen
     }
 
     @Override
+    public boolean keyPressed(int keyCode, int p_keyPressed_2_, int p_keyPressed_3_)
+    {
+        if (this.draggingWindow == null)
+        {
+            Desktop desktop = this.laptop.getDesktop();
+            Window focusedWindow = desktop.getFocusedWindow();
+            if (focusedWindow != null)
+            {
+                focusedWindow.onKeyPressed(keyCode);
+            }
+        }
+        return super.keyPressed(keyCode, p_keyPressed_2_, p_keyPressed_3_);
+    }
+
+    @Override
+    public boolean keyReleased(int keyCode, int p_223281_2_, int p_223281_3_)
+    {
+        if (this.draggingWindow == null)
+        {
+            Desktop desktop = this.laptop.getDesktop();
+            Window focusedWindow = desktop.getFocusedWindow();
+            if (focusedWindow != null)
+            {
+                focusedWindow.onKeyReleased(keyCode);
+            }
+        }
+        return super.keyReleased(keyCode, p_223281_2_, p_223281_3_);
+    }
+
+    @Override
     public boolean mouseDragged(double mouseX, double mouseY, int mouseButton, double deltaX, double deltaY)
     {
         if (this.draggingWindow != null)
@@ -100,6 +130,23 @@ public class LaptopScreen extends Screen
             this.draggingWindow.move((float) deltaX, (float) deltaY);
             TaskManager.sendTaskToNearbyExceptSender(new MoveWindowTask(this.laptop.getPos(), this.draggingWindow.getId(), (float) deltaX, (float) deltaY));
             return true;
+        }
+        else
+        {
+            Desktop desktop = this.laptop.getDesktop();
+            Window[] windows = desktop.getWindows();
+            for (Window window : windows)
+            {
+                if (window instanceof WindowClient)
+                {
+                    WindowClient clientWindow = (WindowClient) window;
+                    if (clientWindow.isWithinContent(this.posX + DeviceConstants.LAPTOP_BORDER, this.posY + DeviceConstants.LAPTOP_BORDER, mouseX, mouseY, Minecraft.getInstance().getRenderPartialTicks()))
+                    {
+                        window.onMouseDragged(mouseX - (this.posX + DeviceConstants.LAPTOP_BORDER + 1), mouseY - (this.posY + DeviceConstants.LAPTOP_BORDER + 1), mouseButton, deltaX, deltaY);
+                        return true;
+                    }
+                }
+            }
         }
 
         return super.mouseDragged(mouseX, mouseY, mouseButton, deltaX, deltaY);
@@ -112,12 +159,22 @@ public class LaptopScreen extends Screen
         Window[] windows = desktop.getWindows();
         if (this.draggingWindow == null)
         {
-            for (Window window : windows)
+            for (int i = 0; i < windows.length; i++)
             {
+                Window window = windows[windows.length - i - 1];
                 if (window instanceof WindowClient)
                 {
                     WindowClient clientWindow = (WindowClient) window;
-                    if (clientWindow.isWithinWindowBar(this.posX + DeviceConstants.LAPTOP_BORDER, this.posY + DeviceConstants.LAPTOP_BORDER, mouseX, mouseY, Minecraft.getInstance().getRenderPartialTicks()))
+                    if (clientWindow.isWithin(this.posX + DeviceConstants.LAPTOP_BORDER, this.posY + DeviceConstants.LAPTOP_BORDER, mouseX, mouseY, Minecraft.getInstance().getRenderPartialTicks()))
+                    {
+                        desktop.focusWindow(clientWindow.getId());
+                    }
+                    if (clientWindow.isWithinContent(this.posX + DeviceConstants.LAPTOP_BORDER, this.posY + DeviceConstants.LAPTOP_BORDER, mouseX, mouseY, Minecraft.getInstance().getRenderPartialTicks()))
+                    {
+                        window.onMousePressed(mouseX - (this.posX + DeviceConstants.LAPTOP_BORDER + 1), mouseY - (this.posY + DeviceConstants.LAPTOP_BORDER + 1), mouseButton);
+                        return true;
+                    }
+                    else if (clientWindow.isWithinWindowBar(this.posX + DeviceConstants.LAPTOP_BORDER, this.posY + DeviceConstants.LAPTOP_BORDER, mouseX, mouseY, Minecraft.getInstance().getRenderPartialTicks()))
                     {
                         this.draggingWindow = clientWindow;
                         break;
@@ -125,6 +182,7 @@ public class LaptopScreen extends Screen
                 }
             }
         }
+        desktop.focusWindow(null);
 
         return super.mouseClicked(mouseX, mouseY, mouseButton);
     }
@@ -136,6 +194,23 @@ public class LaptopScreen extends Screen
         {
             this.draggingWindow = null;
             return true;
+        }
+        else
+        {
+            Desktop desktop = this.laptop.getDesktop();
+            Window[] windows = desktop.getWindows();
+            for (Window window : windows)
+            {
+                if (window instanceof WindowClient)
+                {
+                    WindowClient clientWindow = (WindowClient) window;
+                    if (clientWindow.isWithinContent(this.posX + DeviceConstants.LAPTOP_BORDER, this.posY + DeviceConstants.LAPTOP_BORDER, mouseX, mouseY, Minecraft.getInstance().getRenderPartialTicks()))
+                    {
+                        window.onMouseReleased(mouseX - (this.posX + DeviceConstants.LAPTOP_BORDER + 1), mouseY - (this.posX + DeviceConstants.LAPTOP_BORDER + 1), mouseButton);
+                        return true;
+                    }
+                }
+            }
         }
 
         return super.mouseReleased(mouseX, mouseY, mouseButton);
