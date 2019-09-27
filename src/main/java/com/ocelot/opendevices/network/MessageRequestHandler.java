@@ -20,7 +20,7 @@ public class MessageRequestHandler
                 msg.request.processRequest(msg.nbt, player.world, player);
                 if (msg.returnToNearby)
                 {
-                    DeviceMessages.INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player), new MessageResponse(msg.id, msg.request));
+                    DeviceMessages.INSTANCE.send((msg.returnToSender ? PacketDistributor.TRACKING_ENTITY_AND_SELF : PacketDistributor.TRACKING_ENTITY).with(() -> player), new MessageResponse(msg.id, msg.request));
                 }
                 else
                 {

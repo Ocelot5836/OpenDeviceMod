@@ -2,7 +2,7 @@ package com.ocelot.opendevices.core.render;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.api.Constants;
+import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopBackground;
 import com.ocelot.opendevices.api.render.RenderUtil;
 import com.ocelot.opendevices.core.LaptopDesktop;
@@ -59,7 +59,7 @@ public class ClientLaptopDesktop extends AbstractGui
             {
                 assert desktopBackground.getLocation() != null;
                 minecraft.getTextureManager().bindTexture(desktopBackground.getLocation());
-                RenderUtil.drawRectWithTexture(posX, posY, desktopBackground.getU(), desktopBackground.getV(), Constants.LAPTOP_SCREEN_WIDTH, Constants.LAPTOP_SCREEN_HEIGHT, desktopBackground.getWidth(), desktopBackground.getHeight(), desktopBackground.getImageWidth(), desktopBackground.getImageHeight());
+                RenderUtil.drawRectWithTexture(posX, posY, desktopBackground.getU(), desktopBackground.getV(), DeviceConstants.LAPTOP_SCREEN_WIDTH, DeviceConstants.LAPTOP_SCREEN_HEIGHT, desktopBackground.getWidth(), desktopBackground.getHeight(), desktopBackground.getImageWidth(), desktopBackground.getImageHeight());
             }
             else
             {
@@ -68,13 +68,13 @@ public class ClientLaptopDesktop extends AbstractGui
             }
         }
 
-        if (!Constants.DEVELOPER_MODE)
+        if (!DeviceConstants.DEVELOPER_MODE)
         {
-            drawString(fontRenderer, I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.version", this.modVersion), posX + 5, posY + 5, this.laptop.readSetting(Constants.DESKTOP_TEXT_COLOR));
+            drawString(fontRenderer, I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.version", this.modVersion), posX + 5, posY + 5, this.laptop.readSetting(DeviceConstants.DESKTOP_TEXT_COLOR));
         }
         else
         {
-            drawString(fontRenderer, I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.dev_version", this.modVersion), posX + 5, posY + 5, this.laptop.readSetting(Constants.DESKTOP_TEXT_COLOR));
+            drawString(fontRenderer, I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.dev_version", this.modVersion), posX + 5, posY + 5, this.laptop.readSetting(DeviceConstants.DESKTOP_TEXT_COLOR));
         }
 
         /* Applications */
@@ -83,18 +83,18 @@ public class ClientLaptopDesktop extends AbstractGui
         {
             if (window instanceof WindowClient)
             {
-                ((WindowClient) window).render(posX, posY, this.laptop.readSetting(Constants.WINDOW_COLOR), partialTicks);
+                ((WindowClient) window).render(posX, posY, this.laptop.readSetting(DeviceConstants.WINDOW_COLOR), partialTicks);
             }
         }
 
         /* Task bar */
         {
-            minecraft.getTextureManager().bindTexture(Constants.WINDOW_LOCATION);
-            int color = laptop.readSetting(Constants.TASKBAR_COLOR);
+            minecraft.getTextureManager().bindTexture(DeviceConstants.WINDOW_LOCATION);
+            int color = laptop.readSetting(DeviceConstants.TASKBAR_COLOR);
             GlStateManager.color4f(((color >> 16) & 0xff) / 255f, ((color >> 8) & 0xff) / 255f, (color & 0xff) / 255f, ((color >> 24) & 0xff) / 255f);
-            RenderUtil.drawRectWithTexture(posX, posY + Constants.LAPTOP_SCREEN_HEIGHT - Constants.LAPTOP_TASK_BAR_HEIGHT, 0, 15, 1, Constants.LAPTOP_TASK_BAR_HEIGHT, 1, Constants.LAPTOP_TASK_BAR_HEIGHT);
-            RenderUtil.drawRectWithTexture(posX + 1, posY + Constants.LAPTOP_SCREEN_HEIGHT - Constants.LAPTOP_TASK_BAR_HEIGHT, 1, 15, Constants.LAPTOP_SCREEN_WIDTH - 2, Constants.LAPTOP_TASK_BAR_HEIGHT, 1, Constants.LAPTOP_TASK_BAR_HEIGHT);
-            RenderUtil.drawRectWithTexture(posX + Constants.LAPTOP_SCREEN_WIDTH - 1, posY + Constants.LAPTOP_SCREEN_HEIGHT - Constants.LAPTOP_TASK_BAR_HEIGHT, 2, 15, 1, Constants.LAPTOP_TASK_BAR_HEIGHT, 1, Constants.LAPTOP_TASK_BAR_HEIGHT);
+            RenderUtil.drawRectWithTexture(posX, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - DeviceConstants.LAPTOP_TASK_BAR_HEIGHT, 0, 15, 1, DeviceConstants.LAPTOP_TASK_BAR_HEIGHT, 1, DeviceConstants.LAPTOP_TASK_BAR_HEIGHT);
+            RenderUtil.drawRectWithTexture(posX + 1, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - DeviceConstants.LAPTOP_TASK_BAR_HEIGHT, 1, 15, DeviceConstants.LAPTOP_SCREEN_WIDTH - 2, DeviceConstants.LAPTOP_TASK_BAR_HEIGHT, 1, DeviceConstants.LAPTOP_TASK_BAR_HEIGHT);
+            RenderUtil.drawRectWithTexture(posX + DeviceConstants.LAPTOP_SCREEN_WIDTH - 1, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - DeviceConstants.LAPTOP_TASK_BAR_HEIGHT, 2, 15, 1, DeviceConstants.LAPTOP_TASK_BAR_HEIGHT, 1, DeviceConstants.LAPTOP_TASK_BAR_HEIGHT);
             GlStateManager.color4f(1, 1, 1, 1);
         }
     }

@@ -1,7 +1,7 @@
 package com.ocelot.opendevices.core.window;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import com.ocelot.opendevices.api.Constants;
+import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.render.RenderUtil;
 import net.minecraft.client.Minecraft;
 
@@ -53,10 +53,24 @@ public class WindowClient extends Window
         return this.getLastY() + (this.getY() - this.lastY) * partialTicks;
     }
 
+    public boolean isWithin(float posX, float posY, double mouseX, double mouseY, float partialTicks)
+    {
+        float x = this.getInterpolatedX(partialTicks);
+        float y = this.getInterpolatedY(partialTicks);
+        return RenderUtil.isMouseInside(mouseX, mouseY, posX + x, posY + y, posX + x + this.getWidth(), posY + y + this.getHeight());
+    }
+
+    public boolean isWithinWindowBar(float posX, float posY, double mouseX, double mouseY, float partialTicks)
+    {
+        float x = this.getInterpolatedX(partialTicks);
+        float y = this.getInterpolatedY(partialTicks);
+        return RenderUtil.isMouseInside(mouseX, mouseY, posX + x, posY + y, posX + x + this.getWidth() - DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE, posY + y + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT);
+    }
+
     // TODO improve
     public static void renderWindow(int posX, int posY, WindowClient window, int color, float partialTicks)
     {
-        Minecraft.getInstance().getTextureManager().bindTexture(Constants.WINDOW_LOCATION);
+        Minecraft.getInstance().getTextureManager().bindTexture(DeviceConstants.WINDOW_LOCATION);
         GlStateManager.color4f(((color >> 16) & 0xff) / 255f, ((color >> 8) & 0xff) / 255f, (color & 0xff) / 255f, ((color >> 24) & 0xff) / 255f);
 
         /* Corners */

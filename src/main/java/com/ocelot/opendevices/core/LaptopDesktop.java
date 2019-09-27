@@ -1,7 +1,7 @@
 package com.ocelot.opendevices.core;
 
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.api.Constants;
+import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.laptop.desktop.Desktop;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopBackground;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopManager;
@@ -9,8 +9,12 @@ import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.core.task.CloseWindowTask;
 import com.ocelot.opendevices.core.task.OpenWindowTask;
 import com.ocelot.opendevices.core.window.Window;
+import com.ocelot.opendevices.core.window.WindowClient;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraftforge.fml.DistExecutor;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -30,17 +34,17 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
         this.laptop = laptop;
         this.background = DesktopBackground.DEFAULT.copy();
         this.windows = new Stack<>();
-        this.windowsArray = new Window[Constants.MAX_OPEN_APPS];
+        this.windowsArray = new Window[DeviceConstants.MAX_OPEN_APPS];
     }
 
     protected Window createNewWindow(float x, float y, int width, int height)
     {
-        return new Window(x, y, width, height);
+        return DistExecutor.runForDist(() -> () -> new WindowClient(x, y, width, height), () -> () -> new Window(x, y, width, height));
     }
 
     protected Window createNewWindow(int width, int height)
     {
-        return new Window(width, height);
+        return DistExecutor.runForDist(() -> () -> new WindowClient(width, height), () -> () -> new Window(width, height));
     }
 
     public void update()
@@ -54,15 +58,13 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
     @Deprecated
     public void openApplicationTest()
     {
-        if (this.windows.size() >= Constants.MAX_OPEN_APPS)
+        if (this.windows.size() >= DeviceConstants.MAX_OPEN_APPS)
         {
-            this.windows.setSize(Constants.MAX_OPEN_APPS);
+            this.windows.setSize(DeviceConstants.MAX_OPEN_APPS);
             return;
         }
 
-        Window window = this.createNewWindow(200, 100);
-        this.openWindow(window);
-        TaskManager.sendTaskToNearby(new OpenWindowTask(this.laptop.getPos(), window));
+        TaskManager.sendTaskToNearby(new OpenWindowTask(this.laptop.getPos(), this.createNewWindow(200, 100)));
     }
 
     public void openWindow(Window window)
@@ -96,6 +98,19 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
     {
         CompoundNBT nbt = new CompoundNBT();
         nbt.put("background", this.background.serializeNBT());
+        ListNBT windowsNbt = new ListNBT();
+        for (Window window : this.windows)
+        {
+            CompoundNBT windowNbt = new CompoundNBT();
+            {
+                CompoundNBT windowStateNbt = new CompoundNBT();
+                window.saveState(windowStateNbt);
+                windowNbt.put("data", window.serializeNBT());
+                windowNbt.put("state", windowStateNbt);
+            }
+            windowsNbt.add(windowNbt);
+        }
+        nbt.put("windows", windowsNbt);
         return nbt;
     }
 
@@ -103,6 +118,16 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
     public void deserializeNBT(CompoundNBT nbt)
     {
         this.background.deserializeNBT(nbt.getCompound("background"));
+        this.windows.clear();
+        ListNBT windowsNbt = nbt.getList("windows", Constants.NBT.TAG_COMPOUND);
+        for (int i = 0; i < windowsNbt.size(); i++)
+        {
+            CompoundNBT windowNbt = windowsNbt.getCompound(i);
+            Window window = this.createNewWindow(0, 0);
+            window.deserializeNBT(windowNbt.getCompound("data"));
+            window.loadState(windowNbt.getCompound("state"));
+            this.openWindow(window);
+        }
     }
 
     @Nullable

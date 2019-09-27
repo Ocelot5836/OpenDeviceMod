@@ -11,7 +11,7 @@ import net.minecraft.util.ResourceLocation;
  *
  * @author Ocelot
  */
-public class Constants
+public class DeviceConstants
 {
     public static final boolean DEVELOPER_MODE = true;
     public static final int MAX_OPEN_APPS = 5;
@@ -23,6 +23,8 @@ public class Constants
     public static final int LAPTOP_SCREEN_WIDTH = LAPTOP_GUI_WIDTH - LAPTOP_BORDER * 2;
     public static final int LAPTOP_SCREEN_HEIGHT = LAPTOP_GUI_HEIGHT - LAPTOP_BORDER * 2;
     public static final int LAPTOP_TASK_BAR_HEIGHT = 18;
+    public static final int LAPTOP_WINDOW_BUTTON_SIZE = 12;
+    public static final int LAPTOP_WINDOW_BAR_HEIGHT = 12;
 
     public static final ResourceLocation DEFAULT_BACKGROUND_LOCATION = new ResourceLocation(OpenDevices.MOD_ID, "textures/laptop/default_background.png");
     public static final ResourceLocation WINDOW_LOCATION = new ResourceLocation(OpenDevices.MOD_ID, "textures/laptop/window.png");

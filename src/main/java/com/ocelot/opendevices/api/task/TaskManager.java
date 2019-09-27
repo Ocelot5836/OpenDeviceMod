@@ -83,20 +83,30 @@ public final class TaskManager
      */
     public static void sendTask(Task task)
     {
-        sendTask(task, false);
+        sendTask(task, false, true);
     }
 
     /**
-     * Sends a task from the client to the server and returns it to all nearby clients if specified.
+     * Sends a task from the client to the server and returns it to all nearby clients.
      *
      * @param task The task to send
      */
     public static void sendTaskToNearby(Task task)
     {
-        sendTask(task, true);
+        sendTask(task, true, true);
     }
 
-    private static void sendTask(Task task, boolean returnToNearby)
+    /**
+     * Sends a task from the client to the server and returns it to all nearby clients except for the sender.
+     *
+     * @param task The task to send
+     */
+    public static void sendTaskToNearbyExceptSender(Task task)
+    {
+        sendTask(task, true, false);
+    }
+
+    private static void sendTask(Task task, boolean returnToNearby, boolean returnToSender)
     {
         if (!REGISTRY.containsValue(task.getClass()))
         {
@@ -105,7 +115,7 @@ public final class TaskManager
 
         int requestId = currentId++;
         requests.put(requestId, task);
-        DeviceMessages.INSTANCE.sendToServer(new MessageRequest(requestId, task, returnToNearby));
+        DeviceMessages.INSTANCE.sendToServer(new MessageRequest(requestId, task, returnToNearby,returnToSender));
     }
 
     /**

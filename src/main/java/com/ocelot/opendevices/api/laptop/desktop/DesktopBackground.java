@@ -1,6 +1,6 @@
 package com.ocelot.opendevices.api.laptop.desktop;
 
-import com.ocelot.opendevices.api.Constants;
+import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.core.LaptopDesktop;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
@@ -19,7 +19,7 @@ import javax.annotation.Nullable;
  */
 public class DesktopBackground implements INBTSerializable<CompoundNBT>
 {
-    public static final DesktopBackground DEFAULT = new DesktopBackground(Constants.DEFAULT_BACKGROUND_LOCATION, 0, 0, Constants.LAPTOP_GUI_WIDTH / 2f, Constants.LAPTOP_GUI_HEIGHT / 2f, Constants.LAPTOP_GUI_WIDTH / 2, Constants.LAPTOP_GUI_HEIGHT / 2);
+    public static final DesktopBackground DEFAULT = new DesktopBackground(DeviceConstants.DEFAULT_BACKGROUND_LOCATION, 0, 0, DeviceConstants.LAPTOP_GUI_WIDTH / 2f, DeviceConstants.LAPTOP_GUI_HEIGHT / 2f, DeviceConstants.LAPTOP_GUI_WIDTH / 2, DeviceConstants.LAPTOP_GUI_HEIGHT / 2);
 
     private ResourceLocation location;
     private String url;

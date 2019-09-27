@@ -12,18 +12,20 @@ public class MessageRequest
     Task request;
     CompoundNBT nbt;
     boolean returnToNearby;
+    boolean returnToSender;
 
-    private MessageRequest(int id, Task request, CompoundNBT nbt, boolean returnToNearby)
+    private MessageRequest(int id, Task request, CompoundNBT nbt, boolean returnToNearby, boolean returnToSender)
     {
         this.id = id;
         this.request = request;
         this.nbt = nbt;
         this.returnToNearby = returnToNearby;
+        this.returnToSender = returnToSender;
     }
 
-    public MessageRequest(int id, Task request, boolean returnToNearby)
+    public MessageRequest(int id, Task request, boolean returnToNearby, boolean returnToSender)
     {
-        this(id, request, new CompoundNBT(), returnToNearby);
+        this(id, request, new CompoundNBT(), returnToNearby, returnToSender);
     }
 
     //	@Override
@@ -40,6 +42,7 @@ public class MessageRequest
         msg.request.prepareRequest(msg.nbt);
         buf.writeCompoundTag(msg.nbt);
         buf.writeBoolean(msg.returnToNearby);
+        buf.writeBoolean(msg.returnToSender);
     }
 
     public static MessageRequest decode(PacketBuffer buf)
@@ -49,6 +52,6 @@ public class MessageRequest
         Task task = TaskManager.createTask(registryName);
         if (task == null)
             throw new NullPointerException("Could not decode task: " + registryName + " as it was null!");
-        return new MessageRequest(id, task, buf.readCompoundTag(), buf.readBoolean());
+        return new MessageRequest(id, task, buf.readCompoundTag(), buf.readBoolean(), buf.readBoolean());
     }
 }

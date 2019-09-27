@@ -1,6 +1,6 @@
 package com.ocelot.opendevices.core.window;
 
-import com.ocelot.opendevices.api.Constants;
+import com.ocelot.opendevices.api.DeviceConstants;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.INBTSerializable;
 
@@ -26,7 +26,7 @@ public class Window implements INBTSerializable<CompoundNBT>
 
     public Window(int width, int height)
     {
-        this((Constants.LAPTOP_SCREEN_WIDTH - width) / 2f, (Constants.LAPTOP_SCREEN_HEIGHT - Constants.LAPTOP_TASK_BAR_HEIGHT - height) / 2f, width, height);
+        this((DeviceConstants.LAPTOP_SCREEN_WIDTH - width) / 2f, (DeviceConstants.LAPTOP_SCREEN_HEIGHT - DeviceConstants.LAPTOP_TASK_BAR_HEIGHT - height) / 2f, width, height);
     }
 
     void checkPosition()
@@ -35,13 +35,21 @@ public class Window implements INBTSerializable<CompoundNBT>
             this.x = 0;
         if (this.y < 0)
             this.y = 0;
-        if (this.x >= Constants.LAPTOP_SCREEN_WIDTH - this.width)
-            this.x = Constants.LAPTOP_SCREEN_WIDTH - this.width;
-        if (this.y >= Constants.LAPTOP_SCREEN_HEIGHT - Constants.LAPTOP_TASK_BAR_HEIGHT - this.height)
-            this.y = Constants.LAPTOP_SCREEN_HEIGHT - Constants.LAPTOP_TASK_BAR_HEIGHT - this.height;
+        if (this.x >= DeviceConstants.LAPTOP_SCREEN_WIDTH - this.width)
+            this.x = DeviceConstants.LAPTOP_SCREEN_WIDTH - this.width;
+        if (this.y >= DeviceConstants.LAPTOP_SCREEN_HEIGHT - DeviceConstants.LAPTOP_TASK_BAR_HEIGHT - this.height)
+            this.y = DeviceConstants.LAPTOP_SCREEN_HEIGHT - DeviceConstants.LAPTOP_TASK_BAR_HEIGHT - this.height;
     }
 
     public void update()
+    {
+    }
+
+    public void saveState(CompoundNBT nbt)
+    {
+    }
+
+    public void loadState(CompoundNBT nbt)
     {
     }
 

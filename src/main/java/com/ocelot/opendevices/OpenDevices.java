@@ -1,6 +1,6 @@
 package com.ocelot.opendevices;
 
-import com.ocelot.opendevices.api.Constants;
+import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopManager;
 import com.ocelot.opendevices.api.laptop.settings.SettingsManager;
 import com.ocelot.opendevices.api.task.TaskManager;
@@ -31,9 +31,9 @@ import org.apache.logging.log4j.Logger;
 @Mod(OpenDevices.MOD_ID)
 public class OpenDevices
 {
-    public static final Logger LOGGER = LogManager.getLogger();
     public static final ServerProxy PROXY = DistExecutor.runForDist(() -> ClientProxy::new, () -> ServerProxy::new);
     public static final String MOD_ID = "opendevices";
+    public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
     public static final ItemGroup TAB = new ItemGroup(MOD_ID)
     {
@@ -57,7 +57,7 @@ public class OpenDevices
         SettingsManager.init();
         TaskManager.init();
 
-        DesktopManager.registerBackgroundLocation(Constants.DEFAULT_BACKGROUND_LOCATION);
+        DesktopManager.registerBackgroundLocation(DeviceConstants.DEFAULT_BACKGROUND_LOCATION);
     }
 
     private void initClient(FMLClientSetupEvent event)
