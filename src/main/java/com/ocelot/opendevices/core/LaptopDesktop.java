@@ -40,14 +40,19 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
         this.focusedWindowId = null;
     }
 
-    protected Window createNewWindow(float x, float y, int width, int height)
+    public Window createWindow(float x, float y, int width, int height)
     {
-        return DistExecutor.runForDist(() -> () -> new WindowClient(x, y, width, height), () -> () -> new Window(x, y, width, height));
+        return DistExecutor.runForDist(() -> () -> new WindowClient(this.laptop, x, y, width, height), () -> () -> new Window(this.laptop, x, y, width, height));
     }
 
-    protected Window createNewWindow(int width, int height)
+    public Window createWindow(int width, int height)
     {
-        return DistExecutor.runForDist(() -> () -> new WindowClient(width, height), () -> () -> new Window(width, height));
+        return DistExecutor.runForDist(() -> () -> new WindowClient(this.laptop, width, height), () -> () -> new Window(this.laptop, width, height));
+    }
+
+    public Window createWindow()
+    {
+        return DistExecutor.runForDist(() -> () -> new WindowClient(this.laptop), () -> () -> new Window(this.laptop));
     }
 
     public void update()
@@ -67,10 +72,10 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
             return;
         }
 
-        TaskManager.sendTaskToNearby(new OpenWindowTask(this.laptop.getPos(), this.createNewWindow(200, 100)));
+        TaskManager.sendTaskToNearby(new OpenWindowTask(this.laptop.getPos(), this.createWindow(200, 100)));
     }
 
-    public void openWindow(Window window)
+    public void syncOpenWindow(Window window)
     {
         if (this.windows.stream().noneMatch(frame -> frame.equals(window)))
         {
@@ -158,10 +163,10 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
         for (int i = 0; i < windowsNbt.size(); i++)
         {
             CompoundNBT windowNbt = windowsNbt.getCompound(i);
-            Window window = this.createNewWindow(0, 0);
+            Window window = this.createWindow(0, 0);
             window.deserializeNBT(windowNbt.getCompound("data"));
             window.loadState(windowNbt.getCompound("state"));
-            this.openWindow(window);
+            this.syncOpenWindow(window);
         }
         this.focusedWindowId = nbt.hasUniqueId("focusedWindowId") ? nbt.getUniqueId("focusedWindowId") : null;
     }

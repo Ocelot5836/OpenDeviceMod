@@ -2,6 +2,7 @@ package com.ocelot.opendevices.core.window;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.ocelot.opendevices.api.DeviceConstants;
+import com.ocelot.opendevices.api.laptop.Laptop;
 import com.ocelot.opendevices.api.render.RenderUtil;
 import net.minecraft.client.Minecraft;
 
@@ -10,14 +11,19 @@ public class WindowClient extends Window
     private float lastX;
     private float lastY;
 
-    public WindowClient(float x, float y, int width, int height)
+    public WindowClient(Laptop laptop, float x, float y, int width, int height)
     {
-        super(x, y, width, height);
+        super(laptop, x, y, width, height);
     }
 
-    public WindowClient(int width, int height)
+    public WindowClient(Laptop laptop, int width, int height)
     {
-        super(width, height);
+        super(laptop, width, height);
+    }
+
+    public WindowClient(Laptop laptop)
+    {
+        super(laptop);
     }
 
     @Override
@@ -30,7 +36,11 @@ public class WindowClient extends Window
 
     public void render(int posX, int posY, int color, float partialTicks)
     {
-        renderWindow(posX, posY, this, color, partialTicks);
+        renderWindow(posX, posY, this, color, partialTicks, false);
+        if (this.getId().equals(this.getLaptop().getDesktop().getFocusedWindowId()))
+        {
+            renderWindow(posX, posY, this, 0xff00ff, partialTicks, true);
+        }
     }
 
     public float getLastX()
@@ -53,32 +63,26 @@ public class WindowClient extends Window
         return this.getLastY() + (this.getY() - this.lastY) * partialTicks;
     }
 
-    public boolean isWithin(float posX, float posY, double mouseX, double mouseY, float partialTicks)
+    public boolean isWithin(float posX, float posY, double mouseX, double mouseY)
     {
-        float x = this.getInterpolatedX(partialTicks);
-        float y = this.getInterpolatedY(partialTicks);
-        return RenderUtil.isMouseInside(mouseX, mouseY, posX + x, posY + y, posX + x + this.getWidth(), posY + y + this.getHeight());
+        return RenderUtil.isMouseInside(mouseX, mouseY, posX + this.getX(), posY + this.getY(), posX + this.getX() + this.getWidth(), posY + this.getY() + this.getHeight());
     }
 
-    public boolean isWithinContent(float posX, float posY, double mouseX, double mouseY, float partialTicks)
+    public boolean isWithinContent(float posX, float posY, double mouseX, double mouseY)
     {
-        float x = this.getInterpolatedX(partialTicks);
-        float y = this.getInterpolatedY(partialTicks);
-        return RenderUtil.isMouseInside(mouseX, mouseY, posX + x + 1, posY + y + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + 1, posX + x + this.getWidth() - 1, posY + y + this.getHeight() - 1);
+        return RenderUtil.isMouseInside(mouseX, mouseY, posX + this.getX() + 1, posY + this.getY() + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + 1, posX + this.getX() + this.getWidth() - 1, posY + this.getY() + this.getHeight() - 1);
     }
 
-    public boolean isWithinWindowBar(float posX, float posY, double mouseX, double mouseY, float partialTicks)
+    public boolean isWithinWindowBar(float posX, float posY, double mouseX, double mouseY)
     {
-        float x = this.getInterpolatedX(partialTicks);
-        float y = this.getInterpolatedY(partialTicks);
-        return RenderUtil.isMouseInside(mouseX, mouseY, posX + x, posY + y, posX + x + this.getWidth() - DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE, posY + y + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT);
+        return RenderUtil.isMouseInside(mouseX, mouseY, posX + this.getX(), posY + this.getY(), posX + this.getX() + this.getWidth() - DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE, posY + this.getY() + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT);
     }
 
     // TODO improve
-    public static void renderWindow(int posX, int posY, WindowClient window, int color, float partialTicks)
+    public static void renderWindow(int posX, int posY, WindowClient window, int color, float partialTicks, boolean cutout)
     {
         Minecraft.getInstance().getTextureManager().bindTexture(DeviceConstants.WINDOW_LOCATION);
-        GlStateManager.color4f(((color >> 16) & 0xff) / 255f, ((color >> 8) & 0xff) / 255f, (color & 0xff) / 255f, ((color >> 24) & 0xff) / 255f);
+        GlStateManager.color4f(((color >> 16) & 0xff) / 255f, ((color >> 8) & 0xff) / 255f, (color & 0xff) / 255f, 1);
 
         /* Corners */
         RenderUtil.drawRectWithTexture(posX + window.getInterpolatedX(partialTicks), posY + window.getInterpolatedY(partialTicks), 0, 0, 1, 13, 1, 13);
@@ -93,7 +97,10 @@ public class WindowClient extends Window
         RenderUtil.drawRectWithTexture(posX + window.getInterpolatedX(partialTicks), posY + window.getInterpolatedY(partialTicks) + 13, 0, 13, 1, window.getHeight() - 14, 1, 1);
 
         /* Center */
-        RenderUtil.drawRectWithTexture(posX + window.getInterpolatedX(partialTicks) + 1, posY + window.getInterpolatedY(partialTicks) + 13, 1, 13, window.getWidth() - 2, window.getHeight() - 14, 13, 1);
+        if (!cutout)
+        {
+            RenderUtil.drawRectWithTexture(posX + window.getInterpolatedX(partialTicks) + 1, posY + window.getInterpolatedY(partialTicks) + 13, 1, 13, window.getWidth() - 2, window.getHeight() - 14, 13, 1);
+        }
 
         GlStateManager.color4f(1, 1, 1, 1);
     }

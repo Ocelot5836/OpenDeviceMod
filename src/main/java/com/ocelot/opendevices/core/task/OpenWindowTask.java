@@ -20,7 +20,7 @@ public class OpenWindowTask extends Task
 
     public OpenWindowTask()
     {
-        this(null, new Window(0, 0));
+        this(null, null);
     }
 
     public OpenWindowTask(BlockPos pos, Window window)
@@ -34,17 +34,26 @@ public class OpenWindowTask extends Task
     {
         nbt.putLong("pos", this.pos.toLong());
         nbt.put("window", this.window.serializeNBT());
+
+        CompoundNBT stateNbt = new CompoundNBT();
+        this.window.saveState(stateNbt);
+        nbt.put("state", stateNbt);
     }
 
     @Override
     public void processRequest(CompoundNBT nbt, World world, PlayerEntity player)
     {
         this.pos = BlockPos.fromLong(nbt.getLong("pos"));
-        this.window.deserializeNBT(nbt.getCompound("window"));
 
         if (world.getTileEntity(this.pos) instanceof LaptopTileEntity)
         {
-            ((LaptopTileEntity) Objects.requireNonNull(world.getTileEntity(this.pos))).getDesktop().openWindow(this.window);
+            LaptopTileEntity laptop = (LaptopTileEntity) Objects.requireNonNull(world.getTileEntity(this.pos));
+
+            this.window = laptop.getDesktop().createWindow();
+            this.window.deserializeNBT(nbt.getCompound("window"));
+            this.window.loadState(nbt.getCompound("state"));
+            laptop.getDesktop().syncOpenWindow(this.window);
+
             this.setSuccessful();
         }
     }

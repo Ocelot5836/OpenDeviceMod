@@ -1,6 +1,7 @@
 package com.ocelot.opendevices.core.window;
 
 import com.ocelot.opendevices.api.DeviceConstants;
+import com.ocelot.opendevices.api.laptop.Laptop;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.INBTSerializable;
 
@@ -9,24 +10,31 @@ import java.util.UUID;
 
 public class Window implements INBTSerializable<CompoundNBT>
 {
+    private Laptop laptop;
     private UUID id;
     private float x;
     private float y;
     private int width;
     private int height;
 
-    public Window(float x, float y, int width, int height)
+    public Window(Laptop laptop)
     {
+        this.laptop = laptop;
+    }
+
+    public Window(Laptop laptop, float x, float y, int width, int height)
+    {
+        this.laptop = laptop;
         this.id = UUID.randomUUID();
         this.x = x;
         this.y = y;
-        this.width = width;
-        this.height = height;
+        this.width = width + 2;
+        this.height = height + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + 2;
     }
 
-    public Window(int width, int height)
+    public Window(Laptop laptop, int width, int height)
     {
-        this((DeviceConstants.LAPTOP_SCREEN_WIDTH - width) / 2f, (DeviceConstants.LAPTOP_SCREEN_HEIGHT - DeviceConstants.LAPTOP_TASK_BAR_HEIGHT - height) / 2f, width, height);
+        this(laptop, (DeviceConstants.LAPTOP_SCREEN_WIDTH - width) / 2f, (DeviceConstants.LAPTOP_SCREEN_HEIGHT - DeviceConstants.LAPTOP_TASK_BAR_HEIGHT - height) / 2f, width, height);
     }
 
     void checkPosition()
@@ -53,16 +61,17 @@ public class Window implements INBTSerializable<CompoundNBT>
     {
     }
 
-    public void onMousePressed(double mouseX, double mouseY, float partialTicks)
+    public void onMousePressed(double mouseX, double mouseY, int mouseButton)
     {
     }
 
-    public void onMouseReleased(double mouseX, double mouseY, float partialTicks)
+    public void onMouseReleased(double mouseX, double mouseY, int mouseButton)
     {
     }
 
-    public void onMouseDragged(double mouseX, double mouseY, float partialTicks, double deltaX, double detaY)
+    public void onMouseDragged(double mouseX, double mouseY, int mouseButton, double deltaX, double detaY)
     {
+        System.out.println("Mouse Dragged: " + (int) mouseX + ", " + (int) mouseY);
     }
 
     public void onKeyPressed(int keyCode)
@@ -91,6 +100,11 @@ public class Window implements INBTSerializable<CompoundNBT>
         this.y += yDirection;
         this.checkPosition();
         // TODO send to server and back to clients
+    }
+
+    public Laptop getLaptop()
+    {
+        return laptop;
     }
 
     public UUID getId()
