@@ -86,24 +86,29 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
     {
     }
 
-    public void onMousePressed(double mouseX, double mouseY, int mouseButton)
+    public boolean onMousePressed(double mouseX, double mouseY, int mouseButton)
     {
+        return false;
     }
 
-    public void onMouseReleased(double mouseX, double mouseY, int mouseButton)
+    public boolean onMouseReleased(double mouseX, double mouseY, int mouseButton)
     {
+        return false;
     }
 
-    public void onMouseDragged(double mouseX, double mouseY, int mouseButton, double deltaX, double detaY)
+    public boolean onMouseDragged(double mouseX, double mouseY, int mouseButton, double deltaX, double detaY)
     {
+        return false;
     }
 
-    public void onKeyPressed(int keyCode)
+    public boolean onKeyPressed(int keyCode)
     {
+        return false;
     }
 
-    public void onKeyReleased(int keyCode)
+    public boolean onKeyReleased(int keyCode)
     {
+        return false;
     }
 
     public void saveState(CompoundNBT nbt)

@@ -16,6 +16,7 @@ import com.ocelot.opendevices.core.window.WindowClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.util.InputMappings;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -35,10 +36,7 @@ public class LaptopScreen extends Screen
         super(new TranslationTextComponent("screen." + OpenDevices.MOD_ID + ".laptop"));
         this.laptop = laptop;
         this.desktop = new ClientLaptopDesktop(this.laptop);
-        if (this.laptop.getDesktop().getWindowCount() < 2)
-        {
-            this.laptop.getDesktop().openApplicationTest();
-        }
+        this.laptop.getDesktop().openApplicationTest();
     }
 
     @Override
@@ -50,11 +48,11 @@ public class LaptopScreen extends Screen
         this.draggingWindow = null;
         this.clickable = false;
 
-        LaptopWindow[] windows = this.laptop.getDesktop().getWindows();
+        Window[] windows = this.laptop.getDesktop().getWindows();
         for (int i = 0; i < windows.length; i++)
         {
             WindowClient window = (WindowClient) windows[windows.length - i - 1];
-            if (window != null && window.requiresContentUpdate())
+            if (window != null)
             {
                 window.setRequiresContentUpdate(true);
             }
@@ -107,35 +105,39 @@ public class LaptopScreen extends Screen
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int p_keyPressed_2_, int p_keyPressed_3_)
+    public boolean keyPressed(int keyCode, int scanCode, int p_keyPressed_3_)
     {
         if (this.draggingWindow == null)
         {
             LaptopDesktop desktop = this.laptop.getDesktop();
             LaptopWindow focusedWindow = desktop.getFocusedWindow();
-            if (focusedWindow != null)
+            if (focusedWindow != null && focusedWindow.onKeyPressed(keyCode))
             {
-                focusedWindow.onKeyPressed(keyCode);
                 return true;
             }
         }
-        return super.keyPressed(keyCode, p_keyPressed_2_, p_keyPressed_3_);
+        InputMappings.Input mouseKey = InputMappings.getInputByCode(keyCode, scanCode);
+        if (keyCode == 256 || this.getMinecraft().gameSettings.keyBindInventory.isActiveAndMatches(mouseKey))
+        {
+            this.getMinecraft().player.closeScreen();
+            return true;
+        }
+        return super.keyPressed(keyCode, scanCode, p_keyPressed_3_);
     }
 
     @Override
-    public boolean keyReleased(int keyCode, int p_223281_2_, int p_223281_3_)
+    public boolean keyReleased(int keyCode, int scanCode, int p_223281_3_)
     {
         if (this.draggingWindow == null)
         {
             LaptopDesktop desktop = this.laptop.getDesktop();
             LaptopWindow focusedWindow = desktop.getFocusedWindow();
-            if (focusedWindow != null)
+            if (focusedWindow != null && focusedWindow.onKeyReleased(keyCode))
             {
-                focusedWindow.onKeyReleased(keyCode);
                 return true;
             }
         }
-        return super.keyReleased(keyCode, p_223281_2_, p_223281_3_);
+        return super.keyReleased(keyCode, scanCode, p_223281_3_);
     }
 
     @Override
@@ -151,9 +153,8 @@ public class LaptopScreen extends Screen
         else if (desktop.getFocusedWindow() != null)
         {
             WindowClient window = (WindowClient) desktop.getFocusedWindow();
-            if (window.isWithinContent(mouseX, mouseY))
+            if (window.isWithinContent(mouseX, mouseY) && window.onMouseDragged(mouseX - (this.posX + DeviceConstants.LAPTOP_BORDER + window.getX() + 1), mouseY - (this.posY + DeviceConstants.LAPTOP_BORDER + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + window.getY() + 1), mouseButton, deltaX, deltaY))
             {
-                window.onMouseDragged(mouseX - (this.posX + DeviceConstants.LAPTOP_BORDER + window.getX() + 1), mouseY - (this.posY + DeviceConstants.LAPTOP_BORDER + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + window.getY() + 1), mouseButton, deltaX, deltaY);
                 return true;
             }
         }
@@ -185,8 +186,14 @@ public class LaptopScreen extends Screen
                     }
                     if (window.isWithinContent(mouseX, mouseY))
                     {
-                        window.onMousePressed(mouseX - (this.posX + DeviceConstants.LAPTOP_BORDER + window.getX() + 1), mouseY - (this.posY + DeviceConstants.LAPTOP_BORDER + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + window.getY() + 1), mouseButton);
-                        return true;
+                        if (window.onMousePressed(mouseX - (this.posX + DeviceConstants.LAPTOP_BORDER + window.getX() + 1), mouseY - (this.posY + DeviceConstants.LAPTOP_BORDER + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + window.getY() + 1), mouseButton))
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            return super.mouseClicked(mouseX, mouseY, mouseButton);
+                        }
                     }
                     else if (window.isWithinWindowBar(mouseX, mouseY))
                     {
@@ -219,9 +226,8 @@ public class LaptopScreen extends Screen
         {
             this.clickable = false;
             WindowClient window = (WindowClient) desktop.getFocusedWindow();
-            if (window.isWithinContent(mouseX, mouseY))
+            if (window.isWithinContent(mouseX, mouseY) && window.onMouseReleased(mouseX - (this.posX + DeviceConstants.LAPTOP_BORDER + window.getX() + 1), mouseY - (this.posY + DeviceConstants.LAPTOP_BORDER + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + window.getY() + 1), mouseButton))
             {
-                window.onMouseReleased(mouseX - (this.posX + DeviceConstants.LAPTOP_BORDER + window.getX() + 1), mouseY - (this.posY + DeviceConstants.LAPTOP_BORDER + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + window.getY() + 1), mouseButton);
                 return true;
             }
         }
