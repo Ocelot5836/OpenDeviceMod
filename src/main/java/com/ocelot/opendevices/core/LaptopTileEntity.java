@@ -48,7 +48,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
     {
         if (!this.executionQueue.isEmpty())
         {
-            OpenDevices.LOGGER.debug("Executing {} tasks", this.executionQueue.size());
+            OpenDevices.LOGGER.debug("Executing {} task" + (this.executionQueue.size() != 1 ? "s" : ""), this.executionQueue.size());
         }
 
         Runnable runnable;
