@@ -83,6 +83,21 @@ public final class TaskManager
      */
     public static void sendTask(Task task)
     {
+        sendTask(task, false);
+    }
+
+    /**
+     * Sends a task from the client to the server and returns it to all nearby clients if specified.
+     *
+     * @param task The task to send
+     */
+    public static void sendTaskToNearby(Task task)
+    {
+        sendTask(task, true);
+    }
+
+    private static void sendTask(Task task, boolean returnToNearby)
+    {
         if (!REGISTRY.containsValue(task.getClass()))
         {
             throw new RuntimeException("Unregistered Task: " + task.getClass().getName() + ". Use TaskManager#Register annotation to register a task.");
@@ -90,7 +105,7 @@ public final class TaskManager
 
         int requestId = currentId++;
         requests.put(requestId, task);
-        DeviceMessages.INSTANCE.sendToServer(new MessageRequest(requestId, task));
+        DeviceMessages.INSTANCE.sendToServer(new MessageRequest(requestId, task, returnToNearby));
     }
 
     /**

@@ -2,38 +2,36 @@ package com.ocelot.opendevices.network;
 
 import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.api.task.TaskManager;
-import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
-
-import java.util.ResourceBundle;
 
 public class MessageRequest
 {
     int id;
     Task request;
     CompoundNBT nbt;
+    boolean returnToNearby;
 
-    private MessageRequest(int id, Task request, CompoundNBT nbt)
+    private MessageRequest(int id, Task request, CompoundNBT nbt, boolean returnToNearby)
     {
         this.id = id;
         this.request = request;
         this.nbt = nbt;
+        this.returnToNearby = returnToNearby;
     }
 
-    public MessageRequest(int id, Task request)
+    public MessageRequest(int id, Task request, boolean returnToNearby)
     {
-        this(id, request, new CompoundNBT());
+        this(id, request, new CompoundNBT(), returnToNearby);
     }
 
-	//	@Override
-	//	public IMessage onMessage(MessageRequest message, MessageContext ctx)
-	//	{
-	//		message.request.processRequest(message.nbt, ctx.getServerHandler().player.world, ctx.getServerHandler().player);
-	//		return new MessageResponse(message.id, message.request);
-	//	}
+    //	@Override
+    //	public IMessage onMessage(MessageRequest message, MessageContext ctx)
+    //	{
+    //		message.request.processRequest(message.nbt, ctx.getServerHandler().player.world, ctx.getServerHandler().player);
+    //		return new MessageResponse(message.id, message.request);
+    //	}
 
     public static void encode(MessageRequest msg, PacketBuffer buf)
     {
@@ -41,6 +39,7 @@ public class MessageRequest
         buf.writeResourceLocation(TaskManager.getRegistryName(msg.request.getClass()));
         msg.request.prepareRequest(msg.nbt);
         buf.writeCompoundTag(msg.nbt);
+        buf.writeBoolean(msg.returnToNearby);
     }
 
     public static MessageRequest decode(PacketBuffer buf)
@@ -50,6 +49,6 @@ public class MessageRequest
         Task task = TaskManager.createTask(registryName);
         if (task == null)
             throw new NullPointerException("Could not decode task: " + registryName + " as it was null!");
-        return new MessageRequest(id, task, buf.readCompoundTag());
+        return new MessageRequest(id, task, buf.readCompoundTag(), buf.readBoolean());
     }
 }

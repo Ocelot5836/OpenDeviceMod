@@ -6,7 +6,7 @@ import com.ocelot.opendevices.api.laptop.desktop.Desktop;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopBackground;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopManager;
 import com.ocelot.opendevices.api.task.TaskManager;
-import com.ocelot.opendevices.core.task.OpenApplicationTask;
+import com.ocelot.opendevices.core.task.OpenWindowTask;
 import com.ocelot.opendevices.core.window.Window;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.INBTSerializable;
@@ -48,7 +48,7 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
 
             Window window = new Window(200, 100);
             this.openWindow(window);
-            TaskManager.sendTask(new OpenApplicationTask());
+            TaskManager.sendTaskToNearby(new OpenWindowTask(this.laptop.getPos(), window));
         });
     }
 
