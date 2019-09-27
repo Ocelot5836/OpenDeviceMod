@@ -1,6 +1,6 @@
 package com.ocelot.opendevices.proxy;
 
-import com.ocelot.opendevices.core.client.LaptopScreen;
+import com.ocelot.opendevices.core.LaptopScreen;
 import com.ocelot.opendevices.core.LaptopTileEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;

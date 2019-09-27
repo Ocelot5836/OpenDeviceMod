@@ -1,16 +1,18 @@
 package com.ocelot.opendevices.api.laptop;
 
+import com.ocelot.opendevices.api.laptop.desktop.Desktop;
 import com.ocelot.opendevices.api.laptop.settings.LaptopSetting;
-import com.ocelot.opendevices.api.laptop.desktop.LaptopDesktop;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
+
+import java.util.concurrent.Executor;
 
 /**
  * <p>The most abstract form of a Laptop. This contains all the required functionality for the API.</p>
  *
  * @author Ocelot
  */
-public interface Laptop
+public interface Laptop extends Executor
 {
     /**
      * Writes the specified setting value to NBT.
@@ -43,5 +45,5 @@ public interface Laptop
     /**
      * @return The laptop's desktop
      */
-    LaptopDesktop getDesktop();
+    Desktop getDesktop();
 }

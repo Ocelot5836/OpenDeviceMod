@@ -8,7 +8,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants;
 
 import java.util.Objects;
 
@@ -32,23 +31,17 @@ public class SyncSettingsTask extends Task
     @Override
     public void prepareRequest(CompoundNBT nbt)
     {
-        if (this.pos != null)
-        {
-            nbt.putLong("pos", this.pos.toLong());
-        }
+        nbt.putLong("pos", this.pos.toLong());
         nbt.put("nbt", this.nbt);
     }
 
     @Override
     public void processRequest(CompoundNBT nbt, World world, PlayerEntity player)
     {
-        if (nbt.contains("pos", Constants.NBT.TAG_LONG))
-        {
-            this.pos = BlockPos.fromLong(nbt.getLong("pos"));
-        }
+        this.pos = BlockPos.fromLong(nbt.getLong("pos"));
         this.nbt = nbt.getCompound("nbt");
 
-        if (this.pos != null && world.getTileEntity(this.pos) instanceof LaptopTileEntity)
+        if (world.getTileEntity(this.pos) instanceof LaptopTileEntity)
         {
             ((LaptopTileEntity) Objects.requireNonNull(world.getTileEntity(this.pos))).syncSettings(this.nbt);
             this.setSuccessful();

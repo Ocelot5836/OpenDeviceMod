@@ -3,7 +3,6 @@ package com.ocelot.opendevices.core;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.device.DeviceTileEntity;
 import com.ocelot.opendevices.api.laptop.Laptop;
-import com.ocelot.opendevices.api.laptop.desktop.LaptopDesktop;
 import com.ocelot.opendevices.api.laptop.settings.LaptopSetting;
 import com.ocelot.opendevices.api.laptop.settings.SettingsManager;
 import com.ocelot.opendevices.api.task.TaskManager;
@@ -11,16 +10,21 @@ import com.ocelot.opendevices.core.task.SyncSettingsTask;
 import com.ocelot.opendevices.init.DeviceBlocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.ITickableTileEntity;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Queue;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class LaptopTileEntity extends DeviceTileEntity implements Laptop
+public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITickableTileEntity
 {
     public static final int OPENED_ANGLE = 102;
 
     private UUID user;
     private boolean open;
+    private Queue<Runnable> executionQueue;
 
     private CompoundNBT settings;
     private LaptopDesktop desktop;
@@ -33,33 +37,29 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop
         super(DeviceBlocks.TE_LAPTOP);
         this.user = null;
         this.open = false;
+        this.executionQueue = new ConcurrentLinkedQueue<>();
 
         this.settings = new CompoundNBT();
         this.desktop = new LaptopDesktop(this);
     }
 
-    //    @Override
-    //    public void tick()
-    //    {
-    //                if (this.world != null && this.world.isRemote)
-    //                {
-    //                    this.prevRotation = this.rotation;
-    //                    if (!open)
-    //                    {
-    //                        if (rotation > 0)
-    //                        {
-    //                            rotation -= 10F;
-    //                        }
-    //                    }
-    //                    else
-    //                    {
-    //                        if (rotation < OPENED_ANGLE)
-    //                        {
-    //                            rotation += 10F;
-    //                        }
-    //                    }
-    //                }
-    //    }
+    @Override
+    public void tick()
+    {
+        Runnable runnable;
+        while ((runnable = this.executionQueue.poll()) != null)
+        {
+            runnable.run();
+        }
+
+        this.desktop.update();
+    }
+
+    @Override
+    public void execute(@Nonnull Runnable command)
+    {
+        this.executionQueue.add(command);
+    }
 
     @Override
     public CompoundNBT write(CompoundNBT nbt)
@@ -188,6 +188,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop
         return user;
     }
 
+    @Override
     public LaptopDesktop getDesktop()
     {
         return desktop;

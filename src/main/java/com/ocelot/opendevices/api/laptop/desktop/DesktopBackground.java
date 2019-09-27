@@ -1,6 +1,7 @@
 package com.ocelot.opendevices.api.laptop.desktop;
 
 import com.ocelot.opendevices.api.Constants;
+import com.ocelot.opendevices.core.LaptopDesktop;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.INBTSerializable;
@@ -16,9 +17,9 @@ import javax.annotation.Nullable;
  * @author Ocelot
  * @see LaptopDesktop
  */
-public class LaptopDesktopBackground implements INBTSerializable<CompoundNBT>
+public class DesktopBackground implements INBTSerializable<CompoundNBT>
 {
-    public static final LaptopDesktopBackground DEFAULT = new LaptopDesktopBackground(Constants.DEFAULT_BACKGROUND_LOCATION, 0, 0, Constants.LAPTOP_GUI_WIDTH / 2f, Constants.LAPTOP_GUI_HEIGHT / 2f, Constants.LAPTOP_GUI_WIDTH / 2, Constants.LAPTOP_GUI_HEIGHT / 2);
+    public static final DesktopBackground DEFAULT = new DesktopBackground(Constants.DEFAULT_BACKGROUND_LOCATION, 0, 0, Constants.LAPTOP_GUI_WIDTH / 2f, Constants.LAPTOP_GUI_HEIGHT / 2f, Constants.LAPTOP_GUI_WIDTH / 2, Constants.LAPTOP_GUI_HEIGHT / 2);
 
     private ResourceLocation location;
     private String url;
@@ -30,7 +31,7 @@ public class LaptopDesktopBackground implements INBTSerializable<CompoundNBT>
     private int imageWidth;
     private int imageHeight;
 
-    public LaptopDesktopBackground(ResourceLocation location, float u, float v, float width, float height, int imageWidth, int imageHeight)
+    public DesktopBackground(ResourceLocation location, float u, float v, float width, float height, int imageWidth, int imageHeight)
     {
         this.location = location;
         this.url = null;
@@ -43,7 +44,7 @@ public class LaptopDesktopBackground implements INBTSerializable<CompoundNBT>
         this.imageHeight = imageHeight;
     }
 
-    public LaptopDesktopBackground(String url, float u, float v, float width, float height)
+    public DesktopBackground(String url, float u, float v, float width, float height)
     {
         this.location = null;
         this.url = url;
@@ -97,9 +98,9 @@ public class LaptopDesktopBackground implements INBTSerializable<CompoundNBT>
     /**
      * @return An exact copy of this background
      */
-    public LaptopDesktopBackground copy()
+    public DesktopBackground copy()
     {
-        return this.online ? new LaptopDesktopBackground(this.url, this.u, this.v, this.width, this.height) : new LaptopDesktopBackground(this.location, this.u, this.v, this.width, this.height, this.imageWidth, this.imageHeight);
+        return this.online ? new DesktopBackground(this.url, this.u, this.v, this.width, this.height) : new DesktopBackground(this.location, this.u, this.v, this.width, this.height, this.imageWidth, this.imageHeight);
     }
 
     /**
