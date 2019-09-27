@@ -91,24 +91,14 @@ public class WindowClient extends Window
         return RenderUtil.isMouseInside(mouseX, mouseY, this.screenX + this.getX(), this.screenY + this.getY(), this.screenX + this.getX() + this.getWidth() - DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE - 1, this.screenY + this.getY() + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT);
     }
 
-    public float getLastX()
-    {
-        return lastX;
-    }
-
-    public float getLastY()
-    {
-        return lastY;
-    }
-
     public float getInterpolatedX(float partialTicks)
     {
-        return this.getLastX() + (this.getX() - this.lastX) * partialTicks;
+        return this.lastX + (this.getX() - this.lastX) * partialTicks;
     }
 
     public float getInterpolatedY(float partialTicks)
     {
-        return this.getLastY() + (this.getY() - this.lastY) * partialTicks;
+        return this.lastY + (this.getY() - this.lastY) * partialTicks;
     }
 
     public boolean requiresContentUpdate()
