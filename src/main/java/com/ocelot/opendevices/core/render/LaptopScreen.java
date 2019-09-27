@@ -33,7 +33,7 @@ public class LaptopScreen extends Screen
         super(new TranslationTextComponent("screen." + OpenDevices.MOD_ID + ".laptop"));
         this.laptop = laptop;
         this.desktop = new ClientLaptopDesktop(this.laptop);
-        if (this.laptop.getDesktop().getWindowStack().size() < 2)
+        if (this.laptop.getDesktop().getWindowCount() < 2)
         {
             this.laptop.getDesktop().openApplicationTest();
         }
@@ -47,6 +47,16 @@ public class LaptopScreen extends Screen
         this.posY = (height - DeviceConstants.LAPTOP_GUI_HEIGHT) / 2;
         this.draggingWindow = null;
         this.clickable = false;
+
+        Window[] windows = this.laptop.getDesktop().getWindows();
+        for (int i = 0; i < windows.length; i++)
+        {
+            WindowClient window = (WindowClient) windows[windows.length - i - 1];
+            if (window != null && window.requiresContentUpdate())
+            {
+                window.setRequiresContentUpdate(true);
+            }
+        }
     }
 
     @Override
@@ -89,7 +99,7 @@ public class LaptopScreen extends Screen
         }
 
         /* Renders the Desktop */
-        this.desktop.render(minecraft, fontRenderer, this.posX + DeviceConstants.LAPTOP_BORDER, this.posY + DeviceConstants.LAPTOP_BORDER, partialTicks);
+        this.desktop.render(minecraft, fontRenderer, this.posX + DeviceConstants.LAPTOP_BORDER, this.posY + DeviceConstants.LAPTOP_BORDER, mouseX, mouseY, partialTicks);
 
         super.render(mouseX, mouseY, partialTicks);
     }
@@ -139,7 +149,7 @@ public class LaptopScreen extends Screen
         else if (desktop.getFocusedWindow() != null)
         {
             WindowClient window = (WindowClient) desktop.getFocusedWindow();
-            if (window.isWithinContent(this.posX + DeviceConstants.LAPTOP_BORDER, this.posY + DeviceConstants.LAPTOP_BORDER, mouseX, mouseY))
+            if (window.isWithinContent(mouseX, mouseY))
             {
                 window.onMouseDragged(mouseX - (this.posX + DeviceConstants.LAPTOP_BORDER + window.getX() + 1), mouseY - (this.posY + DeviceConstants.LAPTOP_BORDER + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + window.getY() + 1), mouseButton, deltaX, deltaY);
                 return true;
@@ -154,6 +164,7 @@ public class LaptopScreen extends Screen
     {
         Desktop desktop = this.laptop.getDesktop();
         Window[] windows = desktop.getWindows();
+        boolean loseFocus = true;
         if (this.draggingWindow == null)
         {
             for (int i = 0; i < windows.length; i++)
@@ -161,16 +172,21 @@ public class LaptopScreen extends Screen
                 WindowClient window = (WindowClient) windows[windows.length - i - 1];
                 if (window != null)
                 {
-                    if (window.isWithin(this.posX + DeviceConstants.LAPTOP_BORDER, this.posY + DeviceConstants.LAPTOP_BORDER, mouseX, mouseY))
+                    if (window.pressButtons(mouseX, mouseY))
+                    {
+                        return true;
+                    }
+                    if (window.isWithin(mouseX, mouseY))
                     {
                         desktop.focusWindow(window.getId());
+                        loseFocus = false;
                     }
-                    if (window.isWithinContent(this.posX + DeviceConstants.LAPTOP_BORDER, this.posY + DeviceConstants.LAPTOP_BORDER, mouseX, mouseY))
+                    if (window.isWithinContent(mouseX, mouseY))
                     {
                         window.onMousePressed(mouseX - (this.posX + DeviceConstants.LAPTOP_BORDER + window.getX() + 1), mouseY - (this.posY + DeviceConstants.LAPTOP_BORDER + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + window.getY() + 1), mouseButton);
                         return true;
                     }
-                    else if (window.isWithinWindowBar(this.posX + DeviceConstants.LAPTOP_BORDER, this.posY + DeviceConstants.LAPTOP_BORDER, mouseX, mouseY))
+                    else if (window.isWithinWindowBar(mouseX, mouseY))
                     {
                         this.draggingWindow = window;
                         return true;
@@ -179,7 +195,11 @@ public class LaptopScreen extends Screen
                 }
             }
         }
-        desktop.focusWindow(null);
+
+        if(loseFocus)
+        {
+            desktop.focusWindow(null);
+        }
 
         return super.mouseClicked(mouseX, mouseY, mouseButton);
     }
@@ -197,7 +217,7 @@ public class LaptopScreen extends Screen
         {
             this.clickable = false;
             WindowClient window = (WindowClient) desktop.getFocusedWindow();
-            if (window.isWithinContent(this.posX + DeviceConstants.LAPTOP_BORDER, this.posY + DeviceConstants.LAPTOP_BORDER, mouseX, mouseY))
+            if (window.isWithinContent(mouseX, mouseY))
             {
                 window.onMouseReleased(mouseX - (this.posX + DeviceConstants.LAPTOP_BORDER + window.getX() + 1), mouseY - (this.posY + DeviceConstants.LAPTOP_BORDER + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + window.getY() + 1), mouseButton);
                 return true;

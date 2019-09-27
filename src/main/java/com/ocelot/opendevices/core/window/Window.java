@@ -71,7 +71,6 @@ public class Window implements INBTSerializable<CompoundNBT>
 
     public void onMouseDragged(double mouseX, double mouseY, int mouseButton, double deltaX, double detaY)
     {
-        System.out.println("Mouse Dragged: " + (int) mouseX + ", " + (int) mouseY);
     }
 
     public void onKeyPressed(int keyCode)

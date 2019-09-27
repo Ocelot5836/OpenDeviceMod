@@ -4,26 +4,37 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.laptop.Laptop;
 import com.ocelot.opendevices.api.render.RenderUtil;
+import com.ocelot.opendevices.core.render.WindowButton;
 import net.minecraft.client.Minecraft;
 
 public class WindowClient extends Window
 {
+    private int screenX;
+    private int screenY;
     private float lastX;
     private float lastY;
+    private WindowButton closeButton;
+    private boolean requiresContentUpdate;
 
     public WindowClient(Laptop laptop, float x, float y, int width, int height)
     {
         super(laptop, x, y, width, height);
+        this.closeButton = new WindowButton(laptop, button -> laptop.getDesktop().closeWindow(this.getId()));
+        this.requiresContentUpdate = true;
     }
 
     public WindowClient(Laptop laptop, int width, int height)
     {
         super(laptop, width, height);
+        this.closeButton = new WindowButton(laptop, button -> laptop.getDesktop().closeWindow(this.getId()));
+        this.requiresContentUpdate = true;
     }
 
     public WindowClient(Laptop laptop)
     {
         super(laptop);
+        this.closeButton = new WindowButton(laptop, button -> laptop.getDesktop().closeWindow(this.getId()));
+        this.requiresContentUpdate = true;
     }
 
     @Override
@@ -34,13 +45,50 @@ public class WindowClient extends Window
         this.lastY = this.getY();
     }
 
-    public void render(int posX, int posY, int color, float partialTicks)
+    public void render(int mouseX, int mouseY, int color, float partialTicks)
     {
-        renderWindow(posX, posY, this, color, partialTicks, false);
+        renderWindow(this.screenX, this.screenY, this, color, partialTicks, false);
         if (this.getId().equals(this.getLaptop().getDesktop().getFocusedWindowId()))
         {
-            renderWindow(posX, posY, this, 0xff00ff, partialTicks, true);
+            renderWindow(this.screenX, this.screenY, this, 0xff00ff, partialTicks, true);
         }
+
+        GlStateManager.color4f(((color >> 16) & 0xff) / 255f, ((color >> 8) & 0xff) / 255f, (color & 0xff) / 255f, 1);
+        this.closeButton.setPosition(this, partialTicks);
+        this.closeButton.render(mouseX, mouseY, partialTicks);
+        GlStateManager.color4f(1, 1, 1, 1);
+    }
+
+    public void onContentUpdate(int screenX, int screenY)
+    {
+        this.screenX = screenX;
+        this.screenY = screenY;
+        this.closeButton.setScreenPosition(screenX, screenY);
+    }
+
+    public boolean pressButtons(double mouseX, double mouseY)
+    {
+        if (RenderUtil.isMouseInside(mouseX, mouseY, this.screenX + this.getX() + this.getWidth() - DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE - 1, this.screenY + this.getY(), this.screenX + this.getX() + this.getWidth(), this.screenY + this.getY() + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT))
+        {
+            this.closeButton.onClick(mouseX, mouseY);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isWithin(double mouseX, double mouseY)
+    {
+        return RenderUtil.isMouseInside(mouseX, mouseY, this.screenX + this.getX(), this.screenY + this.getY(), this.screenX + this.getX() + this.getWidth(), this.screenY + this.getY() + this.getHeight());
+    }
+
+    public boolean isWithinContent(double mouseX, double mouseY)
+    {
+        return RenderUtil.isMouseInside(mouseX, mouseY, this.screenX + this.getX() + 1, this.screenY + this.getY() + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + 1, this.screenX + this.getX() + this.getWidth() - 1, this.screenY + this.getY() + this.getHeight() - 1);
+    }
+
+    public boolean isWithinWindowBar(double mouseX, double mouseY)
+    {
+        return RenderUtil.isMouseInside(mouseX, mouseY, this.screenX + this.getX(), this.screenY + this.getY(), this.screenX + this.getX() + this.getWidth() - DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE - 1, this.screenY + this.getY() + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT);
     }
 
     public float getLastX()
@@ -63,19 +111,14 @@ public class WindowClient extends Window
         return this.getLastY() + (this.getY() - this.lastY) * partialTicks;
     }
 
-    public boolean isWithin(float posX, float posY, double mouseX, double mouseY)
+    public boolean requiresContentUpdate()
     {
-        return RenderUtil.isMouseInside(mouseX, mouseY, posX + this.getX(), posY + this.getY(), posX + this.getX() + this.getWidth(), posY + this.getY() + this.getHeight());
+        return requiresContentUpdate;
     }
 
-    public boolean isWithinContent(float posX, float posY, double mouseX, double mouseY)
+    public void setRequiresContentUpdate(boolean requiresContentUpdate)
     {
-        return RenderUtil.isMouseInside(mouseX, mouseY, posX + this.getX() + 1, posY + this.getY() + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + 1, posX + this.getX() + this.getWidth() - 1, posY + this.getY() + this.getHeight() - 1);
-    }
-
-    public boolean isWithinWindowBar(float posX, float posY, double mouseX, double mouseY)
-    {
-        return RenderUtil.isMouseInside(mouseX, mouseY, posX + this.getX(), posY + this.getY(), posX + this.getX() + this.getWidth() - DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE, posY + this.getY() + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT);
+        this.requiresContentUpdate = requiresContentUpdate;
     }
 
     // TODO improve

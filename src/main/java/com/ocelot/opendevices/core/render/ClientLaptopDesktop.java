@@ -50,7 +50,7 @@ public class ClientLaptopDesktop extends AbstractGui
         }
     }
 
-    public void render(Minecraft minecraft, FontRenderer fontRenderer, int posX, int posY, float partialTicks)
+    public void render(Minecraft minecraft, FontRenderer fontRenderer, int posX, int posY, int mouseX, int mouseY, float partialTicks)
     {
         /* Desktop Background */
         {
@@ -79,19 +79,26 @@ public class ClientLaptopDesktop extends AbstractGui
 
         /* Applications */
         Window[] windows = this.desktop.getWindows();
-        for (Window window : windows)
+        for (int i = 0; i < windows.length; i++)
         {
-            if (window instanceof WindowClient)
+            WindowClient window = (WindowClient) windows[i];
+            if (window != null)
             {
-                ((WindowClient) window).render(posX, posY, this.laptop.readSetting(DeviceConstants.WINDOW_COLOR), partialTicks);
+                if (window.requiresContentUpdate())
+                {
+                    window.onContentUpdate(posX, posY);
+                    window.setRequiresContentUpdate(false);
+                }
+                window.render(mouseX, mouseY, this.laptop.readSetting(DeviceConstants.WINDOW_COLOR), partialTicks);
             }
         }
 
+        // TODO make a task bar class
         /* Task bar */
         {
             minecraft.getTextureManager().bindTexture(DeviceConstants.WINDOW_LOCATION);
             int color = laptop.readSetting(DeviceConstants.TASKBAR_COLOR);
-            GlStateManager.color4f(((color >> 16) & 0xff) / 255f, ((color >> 8) & 0xff) / 255f, (color & 0xff) / 255f, ((color >> 24) & 0xff) / 255f);
+            GlStateManager.color4f(((color >> 16) & 0xff) / 255f, ((color >> 8) & 0xff) / 255f, (color & 0xff) / 255f, 1);
             RenderUtil.drawRectWithTexture(posX, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - DeviceConstants.LAPTOP_TASK_BAR_HEIGHT, 0, 15, 1, DeviceConstants.LAPTOP_TASK_BAR_HEIGHT, 1, DeviceConstants.LAPTOP_TASK_BAR_HEIGHT);
             RenderUtil.drawRectWithTexture(posX + 1, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - DeviceConstants.LAPTOP_TASK_BAR_HEIGHT, 1, 15, DeviceConstants.LAPTOP_SCREEN_WIDTH - 2, DeviceConstants.LAPTOP_TASK_BAR_HEIGHT, 1, DeviceConstants.LAPTOP_TASK_BAR_HEIGHT);
             RenderUtil.drawRectWithTexture(posX + DeviceConstants.LAPTOP_SCREEN_WIDTH - 1, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - DeviceConstants.LAPTOP_TASK_BAR_HEIGHT, 2, 15, 1, DeviceConstants.LAPTOP_TASK_BAR_HEIGHT, 1, DeviceConstants.LAPTOP_TASK_BAR_HEIGHT);

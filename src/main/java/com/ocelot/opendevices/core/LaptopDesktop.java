@@ -63,7 +63,9 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
         }
     }
 
-    @Deprecated
+    /**
+     * @deprecated For testing only, should be removed as soon as possible!
+     */
     public void openApplicationTest()
     {
         if (this.windows.size() >= DeviceConstants.MAX_OPEN_APPS)
@@ -109,6 +111,10 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
     {
         window.onClose();
         this.windows.remove(window);
+        if (this.focusedWindowId != null && this.focusedWindowId.equals(window.getId()))
+        {
+            this.focusWindow(null);
+        }
     }
 
     @Override
@@ -185,6 +191,12 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
         return this.windows.toArray(this.windowsArray);
     }
 
+    @Override
+    public int getWindowCount()
+    {
+        return this.windows.size();
+    }
+
     @Nullable
     @Override
     public UUID getFocusedWindowId()
@@ -196,11 +208,6 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
     public DesktopBackground getBackground()
     {
         return background;
-    }
-
-    public Stack<Window> getWindowStack()
-    {
-        return windows;
     }
 
     // TODO test

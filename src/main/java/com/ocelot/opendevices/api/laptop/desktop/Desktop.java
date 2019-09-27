@@ -41,7 +41,7 @@ public interface Desktop
     void closeAllWindows();
 
     /**
-     * Closes the specified window.
+     * Closes the window with the specified id.
      *
      * @param windowId The id of the window to close
      */
@@ -60,6 +60,11 @@ public interface Desktop
      * @return All currently opened windows
      */
     Window[] getWindows();
+
+    /**
+     * @return The number of currently opened windows
+     */
+    int getWindowCount();
 
     /**
      * @return The currently focused window or null if there is no window focused
