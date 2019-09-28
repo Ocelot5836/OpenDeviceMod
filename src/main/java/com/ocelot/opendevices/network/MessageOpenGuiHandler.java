@@ -1,7 +1,6 @@
 package com.ocelot.opendevices.network;
 
 import com.ocelot.opendevices.OpenDevices;
-import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -12,7 +11,7 @@ public class MessageOpenGuiHandler
     {
         ctx.get().enqueueWork(() ->
         {
-            OpenDevices.PROXY.openGui(Minecraft.getInstance().player, msg.type, msg.pos);
+            OpenDevices.PROXY.openGui(ctx.get().getSender(), msg.type, msg.pos);
         });
         ctx.get().setPacketHandled(true);
     }
