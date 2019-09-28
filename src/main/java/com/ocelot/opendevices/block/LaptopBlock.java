@@ -93,7 +93,7 @@ public class LaptopBlock extends DeviceBlock
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder)
     {
-        builder.add(TYPE);
+        builder.add(HORIZONTAL_FACING, TYPE);
     }
 
     public DyeColor getColor()
