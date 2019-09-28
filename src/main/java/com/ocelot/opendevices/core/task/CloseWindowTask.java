@@ -5,7 +5,6 @@ import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.core.LaptopDesktop;
 import com.ocelot.opendevices.core.LaptopTileEntity;
-import com.ocelot.opendevices.core.window.LaptopWindow;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
@@ -66,11 +65,7 @@ public class CloseWindowTask extends Task
             LaptopDesktop desktop = laptop.getDesktop();
             for (UUID windowId : this.windowIds)
             {
-                LaptopWindow window = desktop.getWindow(windowId);
-                if (window != null)
-                {
-                    desktop.syncCloseWindow(window);
-                }
+                desktop.syncCloseWindow(windowId);
             }
             this.setSuccessful();
         }

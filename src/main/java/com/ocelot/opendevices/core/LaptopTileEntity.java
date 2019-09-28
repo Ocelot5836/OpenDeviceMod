@@ -9,6 +9,7 @@ import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.core.task.SyncSettingsTask;
 import com.ocelot.opendevices.init.DeviceBlocks;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
 
@@ -46,18 +47,21 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
     @Override
     public void tick()
     {
-        if (!this.executionQueue.isEmpty())
+        if (this.hasWorld())
         {
-            OpenDevices.LOGGER.debug("Executing {} task" + (this.executionQueue.size() != 1 ? "s" : ""), this.executionQueue.size());
-        }
+            if (!this.executionQueue.isEmpty())
+            {
+                OpenDevices.LOGGER.debug("Executing {} task" + (this.executionQueue.size() != 1 ? "s" : ""), this.executionQueue.size());
+            }
 
-        Runnable runnable;
-        while ((runnable = this.executionQueue.poll()) != null)
-        {
-            runnable.run();
-        }
+            Runnable runnable;
+            while ((runnable = this.executionQueue.poll()) != null)
+            {
+                runnable.run();
+            }
 
-        this.desktop.update();
+            this.desktop.update();
+        }
     }
 
     @Override
@@ -97,14 +101,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
 
     public void syncSettings(CompoundNBT nbt)
     {
-        if (this.world != null)
-        {
-            this.settings.merge(nbt);
-            if (!this.world.isRemote())
-            {
-                TaskManager.sendTask(new SyncSettingsTask(this.pos, nbt));
-            }
-        }
+        this.settings.merge(nbt);
     }
 
     @Override
@@ -126,10 +123,15 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
         {
             CompoundNBT nbt = new CompoundNBT();
             setting.write(value, nbt);
-            this.syncSettings(nbt);
+
             if (this.world.isRemote())
             {
-                TaskManager.sendTask(new SyncSettingsTask(this.pos, nbt));
+                TaskManager.sendTask(new SyncSettingsTask(this.pos, nbt), TaskManager.TaskReceiver.NEARBY);
+                this.syncSettings(nbt);
+            }
+            else
+            {
+                TaskManager.sendTask(new SyncSettingsTask(this.pos, nbt), TaskManager.TaskReceiver.SENDER_AND_NEARBY, (ServerPlayerEntity) this.getUser());
             }
         }
     }
@@ -169,28 +171,24 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
         return player.getDistanceSq(this.pos.getX(), this.pos.getY(), this.pos.getZ()) <= 64D;
     }
 
+    @Override
     @Nullable
-    public PlayerEntity getUserPlayer()
+    public PlayerEntity getUser()
     {
         if (this.user == null || this.world == null)
             return null;
         return this.world.getPlayerByUuid(this.user);
     }
 
+    @Override
     public boolean hasUser()
     {
-        return this.canInteract(this.getUserPlayer());
+        return this.canInteract(this.getUser());
     }
 
     public boolean isOpen()
     {
         return open;
-    }
-
-    @Nullable
-    public UUID getUser()
-    {
-        return user;
     }
 
     @Override

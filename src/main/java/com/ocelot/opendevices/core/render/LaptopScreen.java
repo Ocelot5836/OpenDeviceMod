@@ -147,7 +147,7 @@ public class LaptopScreen extends Screen
         if (this.draggingWindow != null)
         {
             this.draggingWindow.move((float) deltaX, (float) deltaY);
-            TaskManager.sendTaskToNearbyExceptSender(new MoveWindowTask(this.laptop.getPos(), this.draggingWindow.getId(), (float) deltaX, (float) deltaY));
+            TaskManager.sendTask(new MoveWindowTask(this.laptop.getPos(), this.draggingWindow.getId(), (float) deltaX, (float) deltaY), TaskManager.TaskReceiver.NEARBY);
             return true;
         }
         else if (desktop.getFocusedWindow() != null)
@@ -246,7 +246,7 @@ public class LaptopScreen extends Screen
     {
         if (this.laptop != null)
         {
-            TaskManager.sendTask(new CloseLaptopTask(this.laptop.getPos()));
+            TaskManager.sendTask(new CloseLaptopTask(this.laptop.getPos()), TaskManager.TaskReceiver.SENDER);
         }
     }
 }

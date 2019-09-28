@@ -1,16 +1,16 @@
 package com.ocelot.opendevices.network;
 
-import com.ocelot.opendevices.proxy.ServerProxy;
+import com.ocelot.opendevices.network.handler.MessageHandler;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 
 // TODO remove this at some point
 public class MessageOpenGui
 {
-    ServerProxy.GuiType type;
-    BlockPos pos;
+    private MessageHandler.GuiType type;
+    private BlockPos pos;
 
-    public MessageOpenGui(ServerProxy.GuiType type, BlockPos pos)
+    public MessageOpenGui(MessageHandler.GuiType type, BlockPos pos)
     {
         this.type = type;
         this.pos = pos;
@@ -24,6 +24,16 @@ public class MessageOpenGui
 
     public static MessageOpenGui decode(PacketBuffer buf)
     {
-        return new MessageOpenGui(ServerProxy.GuiType.values()[buf.readInt() % ServerProxy.GuiType.values().length], buf.readBlockPos());
+        return new MessageOpenGui(MessageHandler.GuiType.values()[buf.readInt() % MessageHandler.GuiType.values().length], buf.readBlockPos());
+    }
+
+    public MessageHandler.GuiType getType()
+    {
+        return type;
+    }
+
+    public BlockPos getPos()
+    {
+        return pos;
     }
 }

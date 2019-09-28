@@ -6,39 +6,31 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 
-public class MessageRequest
+public class MessageClientResponse
 {
     private Task request;
     private CompoundNBT nbt;
-    private TaskManager.TaskReceiver receiver;
 
-    private MessageRequest(Task request, CompoundNBT nbt, TaskManager.TaskReceiver receiver)
+    public MessageClientResponse(Task request, CompoundNBT nbt)
     {
         this.request = request;
         this.nbt = nbt;
-        this.receiver = receiver;
     }
 
-    public MessageRequest(Task request, TaskManager.TaskReceiver receiver)
-    {
-        this(request, new CompoundNBT(), receiver);
-    }
-
-    public static void encode(MessageRequest msg, PacketBuffer buf)
+    public static void encode(MessageClientResponse msg, PacketBuffer buf)
     {
         buf.writeResourceLocation(TaskManager.getRegistryName(msg.request.getClass()));
-        msg.request.prepareRequest(msg.nbt);
+        msg.request.prepareResponse(msg.nbt);
         buf.writeCompoundTag(msg.nbt);
-        buf.writeVarInt(msg.receiver.ordinal());
     }
 
-    public static MessageRequest decode(PacketBuffer buf)
+    public static MessageClientResponse decode(PacketBuffer buf)
     {
         ResourceLocation registryName = buf.readResourceLocation();
         Task task = TaskManager.createTask(registryName);
         if (task == null)
             throw new NullPointerException("Could not decode task: " + registryName + " as it was null!");
-        return new MessageRequest(task, buf.readCompoundTag(), TaskManager.TaskReceiver.values()[buf.readVarInt() % TaskManager.TaskReceiver.values().length]);
+        return new MessageClientResponse(task, buf.readCompoundTag());
     }
 
     public Task getRequest()
@@ -49,10 +41,5 @@ public class MessageRequest
     public CompoundNBT getNbt()
     {
         return nbt;
-    }
-
-    public TaskManager.TaskReceiver getReceiver()
-    {
-        return receiver;
     }
 }

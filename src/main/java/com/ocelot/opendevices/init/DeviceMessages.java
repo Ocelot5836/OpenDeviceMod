@@ -2,6 +2,9 @@ package com.ocelot.opendevices.init;
 
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.network.*;
+import com.ocelot.opendevices.network.handler.ClientMessageHandler;
+import com.ocelot.opendevices.network.handler.MessageHandler;
+import com.ocelot.opendevices.network.handler.ServerMessageHandler;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -21,13 +24,18 @@ public class DeviceMessages
 
     public static void init()
     {
-        registerMessage(MessageOpenGui.class, MessageOpenGui::encode, MessageOpenGui::decode, MessageOpenGuiHandler::handle);
-        registerMessage(MessageRequest.class, MessageRequest::encode, MessageRequest::decode, MessageRequestHandler::handle);
-        registerMessage(MessageResponse.class, MessageResponse::encode, MessageResponse::decode, MessageResponseHandler::handle);
+        registerMessage(MessageOpenGui.class, MessageOpenGui::encode, MessageOpenGui::decode, (msg, ctx) -> getHandler(ctx).handleOpenGuiMessage(msg, ctx));
+        registerMessage(MessageRequest.class, MessageRequest::encode, MessageRequest::decode, (msg, ctx) -> getHandler(ctx).handleRequestMessage(msg, ctx));
+        registerMessage(MessageClientResponse.class, MessageClientResponse::encode, MessageClientResponse::decode, (msg, ctx) -> getHandler(ctx).handleResponseMessage(msg, ctx));
     }
 
     private static <MSG> void registerMessage(Class<MSG> messageType, BiConsumer<MSG, PacketBuffer> encoder, Function<PacketBuffer, MSG> decoder, BiConsumer<MSG, Supplier<NetworkEvent.Context>> messageConsumer)
     {
         INSTANCE.registerMessage(index++, messageType, encoder, decoder, messageConsumer);
+    }
+
+    private static MessageHandler getHandler(Supplier<NetworkEvent.Context> ctx)
+    {
+        return ctx.get().getDirection().getReceptionSide().isClient() ? ClientMessageHandler.INSTANCE : ServerMessageHandler.INSTANCE;
     }
 }

@@ -1,12 +1,12 @@
 package com.ocelot.opendevices.block;
 
 import com.ocelot.opendevices.OpenDevices;
+import com.ocelot.opendevices.core.LaptopTileEntity;
 import com.ocelot.opendevices.init.DeviceBlocks;
 import com.ocelot.opendevices.init.DeviceMessages;
 import com.ocelot.opendevices.item.DeviceBlockItem;
 import com.ocelot.opendevices.network.MessageOpenGui;
-import com.ocelot.opendevices.proxy.ServerProxy;
-import com.ocelot.opendevices.core.LaptopTileEntity;
+import com.ocelot.opendevices.network.handler.MessageHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
@@ -24,7 +24,7 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkDirection;
+import net.minecraftforge.fml.network.PacketDistributor;
 
 public class LaptopBlock extends DeviceBlock
 {
@@ -57,12 +57,12 @@ public class LaptopBlock extends DeviceBlock
                 {
                     if (player instanceof ServerPlayerEntity)
                     {
-                        DeviceMessages.INSTANCE.sendTo(new MessageOpenGui(ServerProxy.GuiType.LAPTOP, pos), ((ServerPlayerEntity) player).connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
+                        DeviceMessages.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new MessageOpenGui(MessageHandler.GuiType.LAPTOP, pos));
                     }
                 }
-                else if(te.isOpen())
+                else if (te.isOpen())
                 {
-                    PlayerEntity userPlayer = te.getUserPlayer();
+                    PlayerEntity userPlayer = te.getUser();
                     if (userPlayer != null)
                     {
                         player.sendStatusMessage(new TranslationTextComponent("block." + OpenDevices.MOD_ID + ".laptop.using.specific", userPlayer.getDisplayName().getFormattedText()), true);

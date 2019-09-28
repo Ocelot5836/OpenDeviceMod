@@ -2,9 +2,11 @@ package com.ocelot.opendevices.api.laptop;
 
 import com.ocelot.opendevices.api.laptop.desktop.*;
 import com.ocelot.opendevices.api.laptop.settings.LaptopSetting;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 
+import javax.annotation.Nullable;
 import java.util.concurrent.Executor;
 
 /**
@@ -31,6 +33,17 @@ public interface Laptop extends Executor
      * @return The value of the setting or default if it could not be found
      */
     <T> T readSetting(LaptopSetting<T> setting);
+
+    /**
+     * @return The user currently using the laptop or null if no player is using the laptop
+     */
+    @Nullable
+    PlayerEntity getUser();
+
+    /**
+     * @return Whether or not someone is using the laptop
+     */
+    boolean hasUser();
 
     /**
      * @return The world the laptop is in

@@ -11,8 +11,11 @@ import com.ocelot.opendevices.core.task.FocusWindowTask;
 import com.ocelot.opendevices.core.task.OpenWindowTask;
 import com.ocelot.opendevices.core.window.LaptopWindow;
 import com.ocelot.opendevices.core.window.WindowClient;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.fml.DistExecutor;
@@ -66,6 +69,7 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
     /**
      * @deprecated For testing only, should be removed as soon as possible!
      */
+    @OnlyIn(Dist.CLIENT)
     public void openApplicationTest()
     {
         if (this.windows.size() >= DeviceConstants.MAX_OPEN_APPS)
@@ -74,7 +78,7 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
             return;
         }
 
-        TaskManager.sendTaskToNearby(new OpenWindowTask(this.laptop.getPos(), this.createWindow(200, 100)));
+        TaskManager.sendTask(new OpenWindowTask(this.laptop.getPos(), this.createWindow(200, 100)), TaskManager.TaskReceiver.SENDER_AND_NEARBY);
     }
 
     public void syncOpenWindow(LaptopWindow window)
@@ -97,37 +101,52 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
         LaptopWindow lastFocusWindow = this.getWindow(this.focusedWindowId);
         LaptopWindow window = this.getWindow(windowId);
 
-        if (window != null)
-        {
-            this.windows.remove(window);
-            this.windows.push(window);
-            window.onGainFocus();
-        }
-
-        if (lastFocusWindow != null)
-        {
-            lastFocusWindow.onLostFocus();
-        }
-        this.focusedWindowId = windowId == null ? null : window != null ? windowId : null;
-    }
-
-    public void syncCloseWindow(LaptopWindow window)
-    {
         this.laptop.execute(() ->
         {
-            window.onClose();
-            this.windows.remove(window);
-            if (this.focusedWindowId != null && this.focusedWindowId.equals(window.getId()))
+            if (window != null)
             {
-                this.focusWindow(null);
+                this.windows.remove(window);
+                this.windows.push(window);
+                window.onGainFocus();
             }
+
+            if (lastFocusWindow != null)
+            {
+                lastFocusWindow.onLostFocus();
+            }
+            this.focusedWindowId = windowId == null ? null : window != null ? windowId : null;
         });
+    }
+
+    public void syncCloseWindow(UUID windowId)
+    {
+        LaptopWindow window = this.getWindow(windowId);
+        if (window != null)
+        {
+            this.laptop.execute(() ->
+            {
+                window.onClose();
+                this.windows.remove(window);
+                if (this.focusedWindowId != null && this.focusedWindowId.equals(window.getId()))
+                {
+                    this.focusWindow(null);
+                }
+            });
+        }
     }
 
     @Override
     public void focusWindow(@Nullable UUID windowId)
     {
-        TaskManager.sendTaskToNearby(new FocusWindowTask(this.laptop.getPos(), windowId));
+        if (this.laptop.getWorld().isRemote())
+        {
+            TaskManager.sendTask(new FocusWindowTask(this.laptop.getPos(), windowId), TaskManager.TaskReceiver.NEARBY);
+            this.syncFocusWindow(windowId);
+        }
+        else
+        {
+            TaskManager.sendTask(new FocusWindowTask(this.laptop.getPos(), windowId), TaskManager.TaskReceiver.SENDER_AND_NEARBY, (ServerPlayerEntity) this.laptop.getUser());
+        }
     }
 
     @Override
@@ -139,7 +158,15 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
     @Override
     public void closeWindow(UUID windowId)
     {
-        TaskManager.sendTaskToNearby(new CloseWindowTask(this.laptop.getPos(), windowId));
+        if (this.laptop.getWorld().isRemote())
+        {
+            TaskManager.sendTask(new CloseWindowTask(this.laptop.getPos(), windowId), TaskManager.TaskReceiver.NEARBY);
+            this.syncCloseWindow(windowId);
+        }
+        else
+        {
+            TaskManager.sendTask(new CloseWindowTask(this.laptop.getPos(), windowId), TaskManager.TaskReceiver.SENDER_AND_NEARBY, (ServerPlayerEntity) this.laptop.getUser());
+        }
     }
 
     @Override
@@ -179,7 +206,7 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
             LaptopWindow window = this.createWindow(0, 0);
             window.deserializeNBT(windowNbt.getCompound("data"));
             window.loadState(windowNbt.getCompound("state"));
-            this.syncOpenWindow(window);
+            this.windows.push(window);
         }
         this.focusedWindowId = nbt.hasUniqueId("focusedWindowId") ? nbt.getUniqueId("focusedWindowId") : null;
     }
