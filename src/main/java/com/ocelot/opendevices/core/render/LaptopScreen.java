@@ -25,7 +25,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public class LaptopScreen extends Screen
 {
     private LaptopTileEntity laptop;
-    private ClientLaptopDesktop desktop;
     private int posX;
     private int posY;
     private boolean clickable;
@@ -35,7 +34,6 @@ public class LaptopScreen extends Screen
     {
         super(new TranslationTextComponent("screen." + OpenDevices.MOD_ID + ".laptop"));
         this.laptop = laptop;
-        this.desktop = new ClientLaptopDesktop(this.laptop);
         this.laptop.getDesktop().openApplicationTest();
     }
 
@@ -47,16 +45,6 @@ public class LaptopScreen extends Screen
         this.posY = (height - DeviceConstants.LAPTOP_GUI_HEIGHT) / 2;
         this.draggingWindow = null;
         this.clickable = false;
-
-        Window[] windows = this.laptop.getDesktop().getWindows();
-        for (int i = 0; i < windows.length; i++)
-        {
-            WindowClient window = (WindowClient) windows[windows.length - i - 1];
-            if (window != null)
-            {
-                window.setRequiresContentUpdate(true);
-            }
-        }
     }
 
     @Override
@@ -83,23 +71,23 @@ public class LaptopScreen extends Screen
 
         {
             /* Screen Corners */
-            this.blit(this.posX, this.posY, 0, 0, DeviceConstants.LAPTOP_BORDER, DeviceConstants.LAPTOP_BORDER); // TOP-LEFT
-            this.blit(this.posX + DeviceConstants.LAPTOP_GUI_WIDTH - DeviceConstants.LAPTOP_BORDER, this.posY, DeviceConstants.LAPTOP_BORDER + 1, 0, DeviceConstants.LAPTOP_BORDER, DeviceConstants.LAPTOP_BORDER); // TOP-RIGHT
-            this.blit(this.posX + DeviceConstants.LAPTOP_GUI_WIDTH - DeviceConstants.LAPTOP_BORDER, this.posY + DeviceConstants.LAPTOP_GUI_HEIGHT - DeviceConstants.LAPTOP_BORDER, DeviceConstants.LAPTOP_BORDER + 1, DeviceConstants.LAPTOP_BORDER + 1, DeviceConstants.LAPTOP_BORDER, DeviceConstants.LAPTOP_BORDER); // BOTTOM-RIGHT
-            this.blit(this.posX, this.posY + DeviceConstants.LAPTOP_GUI_HEIGHT - DeviceConstants.LAPTOP_BORDER, 0, DeviceConstants.LAPTOP_BORDER + 1, DeviceConstants.LAPTOP_BORDER, DeviceConstants.LAPTOP_BORDER); // BOTTOM-LEFT
+            this.blit(this.posX, this.posY, 0, 0, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER); // TOP-LEFT
+            this.blit(this.posX + DeviceConstants.LAPTOP_GUI_WIDTH - DeviceConstants.LAPTOP_GUI_BORDER, this.posY, DeviceConstants.LAPTOP_GUI_BORDER + 1, 0, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER); // TOP-RIGHT
+            this.blit(this.posX + DeviceConstants.LAPTOP_GUI_WIDTH - DeviceConstants.LAPTOP_GUI_BORDER, this.posY + DeviceConstants.LAPTOP_GUI_HEIGHT - DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER + 1, DeviceConstants.LAPTOP_GUI_BORDER + 1, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER); // BOTTOM-RIGHT
+            this.blit(this.posX, this.posY + DeviceConstants.LAPTOP_GUI_HEIGHT - DeviceConstants.LAPTOP_GUI_BORDER, 0, DeviceConstants.LAPTOP_GUI_BORDER + 1, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER); // BOTTOM-LEFT
 
             /* Screen Edges */
-            RenderUtil.drawRectWithTexture(this.posX + DeviceConstants.LAPTOP_BORDER, this.posY, DeviceConstants.LAPTOP_BORDER, 0, DeviceConstants.LAPTOP_SCREEN_WIDTH, DeviceConstants.LAPTOP_BORDER, 1, DeviceConstants.LAPTOP_BORDER); // TOP
-            RenderUtil.drawRectWithTexture(this.posX + DeviceConstants.LAPTOP_GUI_WIDTH - DeviceConstants.LAPTOP_BORDER, this.posY + DeviceConstants.LAPTOP_BORDER, DeviceConstants.LAPTOP_BORDER + 1, DeviceConstants.LAPTOP_BORDER, DeviceConstants.LAPTOP_BORDER, DeviceConstants.LAPTOP_SCREEN_HEIGHT, DeviceConstants.LAPTOP_BORDER, 1); // RIGHT
-            RenderUtil.drawRectWithTexture(this.posX + DeviceConstants.LAPTOP_BORDER, this.posY + DeviceConstants.LAPTOP_GUI_HEIGHT - DeviceConstants.LAPTOP_BORDER, DeviceConstants.LAPTOP_BORDER, DeviceConstants.LAPTOP_BORDER + 1, DeviceConstants.LAPTOP_SCREEN_WIDTH, DeviceConstants.LAPTOP_BORDER, 1, DeviceConstants.LAPTOP_BORDER); // BOTTOM
-            RenderUtil.drawRectWithTexture(this.posX, this.posY + DeviceConstants.LAPTOP_BORDER, 0, DeviceConstants.LAPTOP_BORDER + 1, DeviceConstants.LAPTOP_BORDER, DeviceConstants.LAPTOP_SCREEN_HEIGHT, DeviceConstants.LAPTOP_BORDER, 1); // LEFT
+            RenderUtil.drawRectWithTexture(this.posX + DeviceConstants.LAPTOP_GUI_BORDER, this.posY, DeviceConstants.LAPTOP_GUI_BORDER, 0, DeviceConstants.LAPTOP_SCREEN_WIDTH, DeviceConstants.LAPTOP_GUI_BORDER, 1, DeviceConstants.LAPTOP_GUI_BORDER); // TOP
+            RenderUtil.drawRectWithTexture(this.posX + DeviceConstants.LAPTOP_GUI_WIDTH - DeviceConstants.LAPTOP_GUI_BORDER, this.posY + DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER + 1, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_SCREEN_HEIGHT, DeviceConstants.LAPTOP_GUI_BORDER, 1); // RIGHT
+            RenderUtil.drawRectWithTexture(this.posX + DeviceConstants.LAPTOP_GUI_BORDER, this.posY + DeviceConstants.LAPTOP_GUI_HEIGHT - DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER + 1, DeviceConstants.LAPTOP_SCREEN_WIDTH, DeviceConstants.LAPTOP_GUI_BORDER, 1, DeviceConstants.LAPTOP_GUI_BORDER); // BOTTOM
+            RenderUtil.drawRectWithTexture(this.posX, this.posY + DeviceConstants.LAPTOP_GUI_BORDER, 0, DeviceConstants.LAPTOP_GUI_BORDER + 1, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_SCREEN_HEIGHT, DeviceConstants.LAPTOP_GUI_BORDER, 1); // LEFT
 
             /* Screen Center */
-            RenderUtil.drawRectWithTexture(this.posX + DeviceConstants.LAPTOP_BORDER, posY + DeviceConstants.LAPTOP_BORDER, DeviceConstants.LAPTOP_BORDER, DeviceConstants.LAPTOP_BORDER, DeviceConstants.LAPTOP_SCREEN_WIDTH, DeviceConstants.LAPTOP_SCREEN_HEIGHT, 1, 1);
+            RenderUtil.drawRectWithTexture(this.posX + DeviceConstants.LAPTOP_GUI_BORDER, posY + DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_SCREEN_WIDTH, DeviceConstants.LAPTOP_SCREEN_HEIGHT, 1, 1);
         }
 
         /* Renders the Desktop */
-        this.desktop.render(minecraft, fontRenderer, this.posX + DeviceConstants.LAPTOP_BORDER, this.posY + DeviceConstants.LAPTOP_BORDER, mouseX, mouseY, partialTicks);
+        LaptopRenderer.render(this.laptop, minecraft, fontRenderer, this.posX + DeviceConstants.LAPTOP_GUI_BORDER, this.posY + DeviceConstants.LAPTOP_GUI_BORDER, mouseX, mouseY, partialTicks);
 
         super.render(mouseX, mouseY, partialTicks);
     }
@@ -153,7 +141,7 @@ public class LaptopScreen extends Screen
         else if (desktop.getFocusedWindow() != null)
         {
             WindowClient window = (WindowClient) desktop.getFocusedWindow();
-            if (window.isWithinContent(mouseX, mouseY) && window.onMouseDragged(mouseX - (this.posX + DeviceConstants.LAPTOP_BORDER + window.getX() + 1), mouseY - (this.posY + DeviceConstants.LAPTOP_BORDER + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + window.getY() + 1), mouseButton, deltaX, deltaY))
+            if (window.isWithinContent(mouseX, mouseY) && window.onMouseDragged(mouseX - (this.posX + DeviceConstants.LAPTOP_GUI_BORDER + window.getX() + 1), mouseY - (this.posY + DeviceConstants.LAPTOP_GUI_BORDER + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + window.getY() + 1), mouseButton, deltaX, deltaY))
             {
                 return true;
             }
@@ -186,7 +174,7 @@ public class LaptopScreen extends Screen
                     }
                     if (window.isWithinContent(mouseX, mouseY))
                     {
-                        if (window.onMousePressed(mouseX - (this.posX + DeviceConstants.LAPTOP_BORDER + window.getX() + 1), mouseY - (this.posY + DeviceConstants.LAPTOP_BORDER + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + window.getY() + 1), mouseButton))
+                        if (window.onMousePressed(mouseX - (this.posX + DeviceConstants.LAPTOP_GUI_BORDER + window.getX() + 1), mouseY - (this.posY + DeviceConstants.LAPTOP_GUI_BORDER + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + window.getY() + 1), mouseButton))
                         {
                             return true;
                         }
@@ -226,7 +214,7 @@ public class LaptopScreen extends Screen
         {
             this.clickable = false;
             WindowClient window = (WindowClient) desktop.getFocusedWindow();
-            if (window.isWithinContent(mouseX, mouseY) && window.onMouseReleased(mouseX - (this.posX + DeviceConstants.LAPTOP_BORDER + window.getX() + 1), mouseY - (this.posY + DeviceConstants.LAPTOP_BORDER + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + window.getY() + 1), mouseButton))
+            if (window.isWithinContent(mouseX, mouseY) && window.onMouseReleased(mouseX - (this.posX + DeviceConstants.LAPTOP_GUI_BORDER + window.getX() + 1), mouseY - (this.posY + DeviceConstants.LAPTOP_GUI_BORDER + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + window.getY() + 1), mouseButton))
             {
                 return true;
             }

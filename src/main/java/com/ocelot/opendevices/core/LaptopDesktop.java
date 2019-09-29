@@ -187,7 +187,7 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
             windowsNbt.add(windowNbt);
         }
         nbt.put("windows", windowsNbt);
-        if (focusedWindowId != null)
+        if (this.focusedWindowId != null)
         {
             nbt.putUniqueId("focusedWindowId", this.focusedWindowId);
         }

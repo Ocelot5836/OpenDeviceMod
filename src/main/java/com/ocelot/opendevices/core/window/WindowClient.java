@@ -6,6 +6,7 @@ import com.ocelot.opendevices.api.laptop.Laptop;
 import com.ocelot.opendevices.api.render.RenderUtil;
 import com.ocelot.opendevices.core.render.WindowButton;
 import net.minecraft.client.Minecraft;
+import net.minecraft.nbt.CompoundNBT;
 
 public class WindowClient extends LaptopWindow
 {
@@ -14,27 +15,23 @@ public class WindowClient extends LaptopWindow
     private float lastX;
     private float lastY;
     private WindowButton closeButton;
-    private boolean requiresContentUpdate;
 
     public WindowClient(Laptop laptop, float x, float y, int width, int height)
     {
         super(laptop, x, y, width, height);
         this.closeButton = new WindowButton(laptop, button -> this.close());
-        this.requiresContentUpdate = true;
     }
 
     public WindowClient(Laptop laptop, int width, int height)
     {
         super(laptop, width, height);
         this.closeButton = new WindowButton(laptop, button -> this.close());
-        this.requiresContentUpdate = true;
     }
 
     public WindowClient(Laptop laptop)
     {
         super(laptop);
         this.closeButton = new WindowButton(laptop, button -> this.close());
-        this.requiresContentUpdate = true;
     }
 
     @Override
@@ -57,13 +54,6 @@ public class WindowClient extends LaptopWindow
         this.closeButton.setPosition(this, partialTicks);
         this.closeButton.render(mouseX, mouseY, partialTicks);
         GlStateManager.color4f(1, 1, 1, 1);
-    }
-
-    public void onContentUpdate(int screenX, int screenY)
-    {
-        this.screenX = screenX;
-        this.screenY = screenY;
-        this.closeButton.setScreenPosition(screenX, screenY);
     }
 
     public boolean pressButtons(double mouseX, double mouseY)
@@ -101,14 +91,19 @@ public class WindowClient extends LaptopWindow
         return this.lastY + (this.getY() - this.lastY) * partialTicks;
     }
 
-    public boolean requiresContentUpdate()
+    public void setScreenPosition(int screenX, int screenY)
     {
-        return requiresContentUpdate;
+        this.screenX = screenX;
+        this.screenY = screenY;
+        this.closeButton.setScreenPosition(screenX, screenY);
     }
 
-    public void setRequiresContentUpdate(boolean requiresContentUpdate)
+    @Override
+    public void deserializeNBT(CompoundNBT nbt)
     {
-        this.requiresContentUpdate = requiresContentUpdate;
+        super.deserializeNBT(nbt);
+        this.lastX = this.getX();
+        this.lastY = this.getY();
     }
 
     // TODO improve

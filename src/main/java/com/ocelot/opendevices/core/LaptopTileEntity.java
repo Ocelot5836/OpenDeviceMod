@@ -1,6 +1,7 @@
 package com.ocelot.opendevices.core;
 
 import com.ocelot.opendevices.OpenDevices;
+import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.device.DeviceTileEntity;
 import com.ocelot.opendevices.api.laptop.Laptop;
 import com.ocelot.opendevices.api.laptop.settings.LaptopSetting;
@@ -23,8 +24,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITickableTileEntity
 {
-    public static final int OPENED_ANGLE = 102;
-
     private UUID user;
     private boolean open;
     private Queue<Runnable> executionQueue;
@@ -60,14 +59,22 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
                 {
                     if (this.rotation > 0)
                     {
-                        this.rotation -= 10F;
+                        this.rotation -= 0.1f;
+                    }
+                    if (this.rotation < 0)
+                    {
+                        this.rotation = 0;
                     }
                 }
                 else
                 {
-                    if (this.rotation < OPENED_ANGLE)
+                    if (this.rotation < 1)
                     {
-                        this.rotation += 10F;
+                        this.rotation += 0.1f;
+                    }
+                    if (this.rotation > 1)
+                    {
+                        this.rotation = 1;
                     }
                 }
             }
@@ -223,6 +230,6 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
     @OnlyIn(Dist.CLIENT)
     public float getScreenAngle(float partialTicks)
     {
-        return -OPENED_ANGLE * ((this.lastRotation + (this.rotation - this.lastRotation) * partialTicks) / OPENED_ANGLE); //TODO optimize
+        return DeviceConstants.LAPTOP_OPENED_ANGLE * (this.lastRotation + (this.rotation - this.lastRotation) * partialTicks); //TODO optimize
     }
 }

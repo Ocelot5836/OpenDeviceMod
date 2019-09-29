@@ -3,11 +3,11 @@ package com.ocelot.opendevices.core.render;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceConstants;
+import com.ocelot.opendevices.api.laptop.Laptop;
+import com.ocelot.opendevices.api.laptop.desktop.Desktop;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopBackground;
+import com.ocelot.opendevices.api.laptop.window.Window;
 import com.ocelot.opendevices.api.render.RenderUtil;
-import com.ocelot.opendevices.core.LaptopDesktop;
-import com.ocelot.opendevices.core.LaptopTileEntity;
-import com.ocelot.opendevices.core.window.LaptopWindow;
 import com.ocelot.opendevices.core.window.WindowClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
@@ -23,26 +23,19 @@ import org.apache.maven.artifact.versioning.ArtifactVersion;
 import java.util.Optional;
 
 @OnlyIn(Dist.CLIENT)
-public class ClientLaptopDesktop extends AbstractGui
+public class LaptopRenderer extends AbstractGui
 {
-    private LaptopTileEntity laptop;
-    private LaptopDesktop desktop;
-    private String modVersion;
+    private static final LaptopRenderer INSTANCE = new LaptopRenderer();
 
-    public ClientLaptopDesktop(LaptopTileEntity laptop)
+    private final String modVersion;
+
+    private LaptopRenderer()
     {
-        this.laptop = laptop;
-        this.desktop = laptop.getDesktop();
-
         Optional<? extends ModContainer> modContainer = ModList.get().getModContainerById(OpenDevices.MOD_ID);
         if (modContainer.isPresent())
         {
             ArtifactVersion version = modContainer.get().getModInfo().getVersion();
-            this.modVersion = String.format("%s.%s.%s", version.getMajorVersion(), version.getMinorVersion(), version.getIncrementalVersion());
-            if (!StringUtils.isNullOrEmpty(version.getQualifier()))
-            {
-                this.modVersion += " " + version.getQualifier();
-            }
+            this.modVersion = String.format("%s.%s.%s", version.getMajorVersion(), version.getMinorVersion(), version.getIncrementalVersion()) + (!StringUtils.isNullOrEmpty(version.getQualifier()) ? (" " + version.getQualifier()) : "");
         }
         else
         {
@@ -50,50 +43,47 @@ public class ClientLaptopDesktop extends AbstractGui
         }
     }
 
-    public void render(Minecraft minecraft, FontRenderer fontRenderer, int posX, int posY, int mouseX, int mouseY, float partialTicks)
+    public static void render(Laptop laptop, Minecraft minecraft, FontRenderer fontRenderer, int posX, int posY, int mouseX, int mouseY, float partialTicks)
     {
+        Desktop desktop = laptop.getDesktop();
+
         /* Desktop Background */
         {
             DesktopBackground desktopBackground = desktop.getBackground();
-            if (!desktopBackground.isOnline())
+            if (!desktopBackground.isOnline() && desktopBackground.getLocation() != null)
             {
-                assert desktopBackground.getLocation() != null;
                 minecraft.getTextureManager().bindTexture(desktopBackground.getLocation());
                 RenderUtil.drawRectWithTexture(posX, posY, desktopBackground.getU(), desktopBackground.getV(), DeviceConstants.LAPTOP_SCREEN_WIDTH, DeviceConstants.LAPTOP_SCREEN_HEIGHT, desktopBackground.getWidth(), desktopBackground.getHeight(), desktopBackground.getImageWidth(), desktopBackground.getImageHeight());
             }
-            else
+            else if (desktopBackground.getUrl() != null)
             {
-                assert desktopBackground.getUrl() != null;
                 // TODO download and render online image
             }
         }
 
+        /* Version Text */
         if (!DeviceConstants.DEVELOPER_MODE)
         {
-            drawString(fontRenderer, I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.version", this.modVersion), posX + 5, posY + 5, this.laptop.readSetting(DeviceConstants.DESKTOP_TEXT_COLOR));
+            fontRenderer.drawStringWithShadow(I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.version", INSTANCE.modVersion), posX + 5, posY + 5, laptop.readSetting(DeviceConstants.DESKTOP_TEXT_COLOR));
         }
         else
         {
-            drawString(fontRenderer, I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.dev_version", this.modVersion), posX + 5, posY + 5, this.laptop.readSetting(DeviceConstants.DESKTOP_TEXT_COLOR));
+            fontRenderer.drawStringWithShadow(I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.dev_version", INSTANCE.modVersion), posX + 5, posY + 5, laptop.readSetting(DeviceConstants.DESKTOP_TEXT_COLOR));
+            fontRenderer.drawStringWithShadow(Minecraft.getDebugFPS() + " FPS", posX + 5, posY + 18, 0xffffffff);
         }
 
         /* Applications */
-        LaptopWindow[] windows = this.desktop.getWindows();
+        Window[] windows = desktop.getWindows();
         for (int i = 0; i < windows.length; i++)
         {
-            WindowClient window = (WindowClient) windows[i];
-            if (window != null)
+            if (windows[i] instanceof WindowClient)
             {
-                if (window.requiresContentUpdate())
-                {
-                    window.onContentUpdate(posX, posY);
-                    window.setRequiresContentUpdate(false);
-                }
-                window.render(mouseX, mouseY, this.laptop.readSetting(DeviceConstants.WINDOW_COLOR), partialTicks);
+                WindowClient window = (WindowClient) windows[i];
+                window.setScreenPosition(posX, posY);
+                window.render(mouseX, mouseY, laptop.readSetting(DeviceConstants.WINDOW_COLOR), partialTicks);
             }
         }
 
-        // TODO make a task bar class
         /* Task bar */
         {
             minecraft.getTextureManager().bindTexture(DeviceConstants.WINDOW_LOCATION);

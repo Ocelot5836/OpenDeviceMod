@@ -4,6 +4,7 @@ import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopManager;
 import com.ocelot.opendevices.api.laptop.settings.SettingsManager;
 import com.ocelot.opendevices.api.task.TaskManager;
+import com.ocelot.opendevices.core.render.LaptopTileEntityRenderer;
 import com.ocelot.opendevices.init.DeviceBlocks;
 import com.ocelot.opendevices.init.DeviceItems;
 import com.ocelot.opendevices.init.DeviceMessages;
@@ -14,6 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -59,8 +61,16 @@ public class OpenDevices
     private void initClient(FMLClientSetupEvent event)
     {
         DeviceBlocks.initClient();
+        MinecraftForge.EVENT_BUS.register(LaptopTileEntityRenderer.INSTANCE);
     }
 
+    @SubscribeEvent
+    public void onWorldClose(WorldEvent.Unload event)
+    {
+        if (event.getWorld().isRemote())
+        {
+            LaptopTileEntityRenderer.INSTANCE.delete();
+        }
     }
 
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
