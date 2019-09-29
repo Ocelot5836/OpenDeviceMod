@@ -61,6 +61,9 @@ public class LaptopScreen extends Screen
     @Override
     public void render(int mouseX, int mouseY, float partialTicks)
     {
+        /* Partial Ticks are still broken :/ */
+        partialTicks = Minecraft.getInstance().getRenderPartialTicks();
+
         Minecraft minecraft = this.getMinecraft();
         FontRenderer fontRenderer = minecraft.fontRenderer;
 
