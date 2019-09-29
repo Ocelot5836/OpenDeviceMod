@@ -28,7 +28,7 @@ public class WindowButton extends Button
         if (this.visible)
         {
             Minecraft minecraft = Minecraft.getInstance();
-            Minecraft.getInstance().getTextureManager().bindTexture(DeviceConstants.WINDOW_LOCATION);
+            minecraft.getTextureManager().bindTexture(DeviceConstants.WINDOW_LOCATION);
             int color = this.laptop.readSetting(DeviceConstants.WINDOW_BUTTON_COLOR);
             GlStateManager.color4f(((color >> 16) & 0xff) / 255f, ((color >> 8) & 0xff) / 255f, (color & 0xff) / 255f, 1);
 

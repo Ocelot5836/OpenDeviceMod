@@ -12,6 +12,7 @@ import net.minecraft.world.World;
 
 import java.util.Objects;
 
+@Deprecated
 @TaskManager.Register(OpenDevices.MOD_ID + ":open_window")
 public class OpenWindowTask extends Task
 {
