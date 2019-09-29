@@ -3,6 +3,7 @@ package com.ocelot.opendevices.init;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.block.LaptopBlock;
 import com.ocelot.opendevices.core.LaptopTileEntity;
+import com.ocelot.opendevices.core.render.LaptopTileEntityRenderer;
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.DyeColor;
@@ -10,6 +11,9 @@ import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import org.apache.commons.lang3.Validate;
 
 import java.util.HashSet;
@@ -25,6 +29,12 @@ public class DeviceBlocks
     public static final Block WHITE_LAPTOP = new LaptopBlock(DyeColor.WHITE);
 
     public static final TileEntityType<LaptopTileEntity> TE_LAPTOP = registerTileEntity("laptop", LaptopTileEntity::new, WHITE_LAPTOP);
+
+    @OnlyIn(Dist.CLIENT)
+    public static void initClient()
+    {
+        ClientRegistry.bindTileEntitySpecialRenderer(LaptopTileEntity.class, LaptopTileEntityRenderer.INSTANCE);
+    }
 
     public static Block register(Block block, Item.Properties itemProperties)
     {

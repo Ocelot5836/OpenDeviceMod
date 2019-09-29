@@ -12,6 +12,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -30,8 +32,10 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
     private CompoundNBT settings;
     private LaptopDesktop desktop;
 
-    //    private int rotation;
-    //    private int prevRotation;
+    @OnlyIn(Dist.CLIENT)
+    private float rotation;
+    @OnlyIn(Dist.CLIENT)
+    private float lastRotation;
 
     public LaptopTileEntity()
     {
@@ -49,6 +53,25 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
     {
         if (this.hasWorld())
         {
+            if (this.world.isRemote())
+            {
+                this.lastRotation = this.rotation;
+                if (!this.open)
+                {
+                    if (this.rotation > 0)
+                    {
+                        this.rotation -= 10F;
+                    }
+                }
+                else
+                {
+                    if (this.rotation < OPENED_ANGLE)
+                    {
+                        this.rotation += 10F;
+                    }
+                }
+            }
+
             if (!this.executionQueue.isEmpty())
             {
                 OpenDevices.LOGGER.debug("Executing {} task" + (this.executionQueue.size() != 1 ? "s" : ""), this.executionQueue.size());
@@ -197,9 +220,9 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
         return desktop;
     }
 
-    //    @OnlyIn(Dist.CLIENT)
-    //    public float getScreenAngle(float partialTicks)
-    //    {
-    //        return -OPENED_ANGLE * ((this.prevRotation + (this.rotation - this.prevRotation) * partialTicks) / OPENED_ANGLE); //TODO optimize
-    //    }
+    @OnlyIn(Dist.CLIENT)
+    public float getScreenAngle(float partialTicks)
+    {
+        return -OPENED_ANGLE * ((this.lastRotation + (this.rotation - this.lastRotation) * partialTicks) / OPENED_ANGLE); //TODO optimize
+    }
 }

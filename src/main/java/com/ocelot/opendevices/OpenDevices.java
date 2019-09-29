@@ -58,6 +58,9 @@ public class OpenDevices
 
     private void initClient(FMLClientSetupEvent event)
     {
+        DeviceBlocks.initClient();
+    }
+
     }
 
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
