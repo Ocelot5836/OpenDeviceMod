@@ -18,7 +18,6 @@ import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.IStringSerializable;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -28,7 +27,6 @@ import net.minecraftforge.fml.network.PacketDistributor;
 
 public class LaptopBlock extends DeviceBlock
 {
-    public static final ResourceLocation LOOT_TABLE = new ResourceLocation(OpenDevices.MOD_ID, "laptop");
     public static final EnumProperty<Type> TYPE = EnumProperty.create("type", Type.class);
 
     private DyeColor color;
