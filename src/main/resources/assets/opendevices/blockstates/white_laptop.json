@@ -1,13 +1,8 @@
 {
 	"forge_marker": 1,
-	"defaults": {
-		"textures": {
-			"color": "block/white_wool"
-		}
-	},
 	"variants": {
 		"type": {
-			"base": { "model": "opendevices:block/laptop_base" },
+			"base": { "model": "opendevices:block/white_laptop_base" },
 			"screen": { "model": "opendevices:block/laptop_screen" }
 		},
 		"facing": {

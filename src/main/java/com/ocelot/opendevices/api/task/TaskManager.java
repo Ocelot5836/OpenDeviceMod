@@ -71,7 +71,7 @@ public final class TaskManager
                     throw new RuntimeException("Task: " + registryName + " attempted to override existing task. Skipping!");
 
                 REGISTRY.put(registryName, (Class<? extends Task>) clazz);
-                OpenDevices.LOGGER.warn("Registered task: " + registryName);
+                OpenDevices.LOGGER.info("Registered task: " + registryName);
             }
             catch (Exception e)
             {
