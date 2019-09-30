@@ -164,6 +164,11 @@ public class LaptopTileEntityRenderer extends TileEntityRenderer<LaptopTileEntit
                     GlStateManager.rotated(90 - te.getScreenAngle(partialTicks), 1, 0, 0);
                     GlStateManager.translated(2 * 0.0625, 2.75 * 0.0625, 0.125 * 0.0625);
 
+                    if (this.screenList == -1)
+                    {
+                        this.createScreenList();
+                    }
+
                     GlStateManager.callList(this.screenList);
                 }
                 GlStateManager.popMatrix();
