@@ -1,6 +1,7 @@
 package com.ocelot.opendevices.block;
 
 import com.ocelot.opendevices.OpenDevices;
+import com.ocelot.opendevices.api.util.ShapeHelper;
 import com.ocelot.opendevices.core.LaptopTileEntity;
 import com.ocelot.opendevices.init.DeviceBlocks;
 import com.ocelot.opendevices.init.DeviceMessages;
@@ -16,17 +17,25 @@ import net.minecraft.item.DyeColor;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.shapes.IBooleanFunction;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.PacketDistributor;
 
+import java.util.Objects;
+
 public class LaptopBlock extends DeviceBlock
 {
+    public static final VoxelShape[] SHAPES = createShapes();
     public static final EnumProperty<Type> TYPE = EnumProperty.create("type", Type.class);
 
     private DyeColor color;
@@ -36,6 +45,35 @@ public class LaptopBlock extends DeviceBlock
         super(color.getTranslationKey() + "_laptop", Block.Properties.create(Material.MISCELLANEOUS, color).doesNotBlockMovement());
         this.setDefaultState(this.getStateContainer().getBaseState().with(TYPE, Type.BASE));
         DeviceBlocks.register(this, new DeviceBlockItem(this));
+    }
+
+    @Override
+    public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context)
+    {
+        VoxelShape[] SHAPES = new VoxelShape[8];
+        for (int i = 0; i < SHAPES.length; i++)
+        {
+            int index = i % 4;
+            boolean open = i >= 4;
+            Direction direction = Direction.byHorizontalIndex(index);
+
+            if (open)
+            {
+                SHAPES[i] = VoxelShapes.combineAndSimplify(ShapeHelper.makeCuboidShape(1, 0, 1, 15, 2, 15, direction), ShapeHelper.makeCuboidShape(1, 2, 1, 15, 13, 4, direction), IBooleanFunction.OR);
+            }
+            else
+            {
+                SHAPES[i] = ShapeHelper.makeCuboidShape(1, 0, 3, 15, 2, 15, direction);
+            }
+        }
+
+        boolean open = false;
+        if (world.getTileEntity(pos) instanceof LaptopTileEntity)
+        {
+            open = ((LaptopTileEntity) Objects.requireNonNull(world.getTileEntity(pos))).isOpen();
+        }
+
+        return SHAPES[state.get(HORIZONTAL_FACING).getHorizontalIndex() + (open ? 4 : 0)];
     }
 
     @Override
@@ -109,5 +147,28 @@ public class LaptopBlock extends DeviceBlock
             return name().toLowerCase();
         }
 
+    }
+
+    private static VoxelShape[] createShapes()
+    {
+        VoxelShape[] shapes = new VoxelShape[8];
+
+        VoxelShape base = Block.makeCuboidShape(0, 0, 0, 1, 2, 1);
+        for (int i = 0; i < shapes.length; i++)
+        {
+            int index = i % 4;
+            boolean open = i >= 4;
+            Direction direction = Direction.byHorizontalIndex(index);
+
+            if (open)
+            {
+                shapes[i] = VoxelShapes.combineAndSimplify(ShapeHelper.makeCuboidShape(0, 2, 0, 1, 1, 2, direction), base, IBooleanFunction.OR);
+            }
+            else
+            {
+                shapes[i] = base;
+            }
+        }
+        return shapes;
     }
 }
