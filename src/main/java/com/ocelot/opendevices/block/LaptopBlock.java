@@ -10,6 +10,7 @@ import com.ocelot.opendevices.network.MessageOpenGui;
 import com.ocelot.opendevices.network.handler.MessageHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.IWaterLoggable;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -33,7 +34,7 @@ import net.minecraftforge.fml.network.PacketDistributor;
 
 import java.util.Objects;
 
-public class LaptopBlock extends DeviceBlock
+public class LaptopBlock extends DeviceBlock implements IWaterLoggable
 {
     public static final VoxelShape[] SHAPES = createShapes();
     public static final EnumProperty<Type> TYPE = EnumProperty.create("type", Type.class);
@@ -42,31 +43,15 @@ public class LaptopBlock extends DeviceBlock
 
     public LaptopBlock(DyeColor color)
     {
-        super(color.getTranslationKey() + "_laptop", Block.Properties.create(Material.MISCELLANEOUS, color).doesNotBlockMovement());
-        this.setDefaultState(this.getStateContainer().getBaseState().with(TYPE, Type.BASE));
+        super(color.getTranslationKey() + "_laptop", Block.Properties.create(Material.MISCELLANEOUS, color));
+        this.setDefaultState(this.getStateContainer().getBaseState().with(HORIZONTAL_FACING, Direction.NORTH).with(TYPE, Type.BASE).with(WATERLOGGED, false));
         DeviceBlocks.register(this, new DeviceBlockItem(this));
+        this.color = color;
     }
 
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context)
     {
-        VoxelShape[] SHAPES = new VoxelShape[8];
-        for (int i = 0; i < SHAPES.length; i++)
-        {
-            int index = i % 4;
-            boolean open = i >= 4;
-            Direction direction = Direction.byHorizontalIndex(index);
-
-            if (open)
-            {
-                SHAPES[i] = VoxelShapes.combineAndSimplify(ShapeHelper.makeCuboidShape(1, 0, 1, 15, 2, 15, direction), ShapeHelper.makeCuboidShape(1, 2, 1, 15, 13, 4, direction), IBooleanFunction.OR);
-            }
-            else
-            {
-                SHAPES[i] = ShapeHelper.makeCuboidShape(1, 0, 3, 15, 2, 15, direction);
-            }
-        }
-
         boolean open = false;
         if (world.getTileEntity(pos) instanceof LaptopTileEntity)
         {
@@ -129,7 +114,7 @@ public class LaptopBlock extends DeviceBlock
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder)
     {
-        builder.add(HORIZONTAL_FACING, TYPE);
+        builder.add(HORIZONTAL_FACING, TYPE, WATERLOGGED);
     }
 
     public DyeColor getColor()
@@ -153,7 +138,6 @@ public class LaptopBlock extends DeviceBlock
     {
         VoxelShape[] shapes = new VoxelShape[8];
 
-        VoxelShape base = Block.makeCuboidShape(0, 0, 0, 1, 2, 1);
         for (int i = 0; i < shapes.length; i++)
         {
             int index = i % 4;
@@ -162,11 +146,11 @@ public class LaptopBlock extends DeviceBlock
 
             if (open)
             {
-                shapes[i] = VoxelShapes.combineAndSimplify(ShapeHelper.makeCuboidShape(0, 2, 0, 1, 1, 2, direction), base, IBooleanFunction.OR);
+                shapes[i] = VoxelShapes.combineAndSimplify(ShapeHelper.makeCuboidShape(1, 0, 1, 15, 2, 15, direction), ShapeHelper.makeCuboidShape(1, 2, 1, 15, 13, 4, direction), IBooleanFunction.OR);
             }
             else
             {
-                shapes[i] = base;
+                shapes[i] = ShapeHelper.makeCuboidShape(1, 0, 3, 15, 2, 15, direction);
             }
         }
         return shapes;
