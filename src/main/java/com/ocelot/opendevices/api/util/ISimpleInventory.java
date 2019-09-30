@@ -1,10 +1,11 @@
 package com.ocelot.opendevices.api.util;
 
 import net.minecraft.inventory.IClearable;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 
 /**
- * <p>A simple, clearable Inventory. More bare bones than {@link net.minecraft.inventory.IInventory}</p>
+ * <p>A simple, clearable Inventory. More bare bones than {@link IInventory}</p>
  *
  * @author Ocelot
  */
