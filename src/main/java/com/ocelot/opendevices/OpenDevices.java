@@ -2,7 +2,7 @@ package com.ocelot.opendevices;
 
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopManager;
-import com.ocelot.opendevices.api.laptop.settings.SettingsManager;
+import com.ocelot.opendevices.core.laptop.SettingsManager;
 import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.core.render.LaptopTileEntityRenderer;
 import com.ocelot.opendevices.init.DeviceBlocks;

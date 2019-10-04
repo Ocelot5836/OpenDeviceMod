@@ -4,7 +4,7 @@ import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.core.LaptopTileEntity;
-import com.ocelot.opendevices.core.window.LaptopWindow;
+import com.ocelot.opendevices.core.laptop.window.LaptopWindow;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;

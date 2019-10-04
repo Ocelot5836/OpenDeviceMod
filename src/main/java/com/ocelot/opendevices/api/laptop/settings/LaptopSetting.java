@@ -1,5 +1,6 @@
 package com.ocelot.opendevices.api.laptop.settings;
 
+import com.ocelot.opendevices.core.laptop.SettingsManager;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 
@@ -48,4 +49,9 @@ public interface LaptopSetting<T>
      * @return The default value for the setting
      */
     T getDefaultValue();
+
+    /**
+     * Registers a new type of setting for the Laptop.
+     */
+    @interface Register {}
 }

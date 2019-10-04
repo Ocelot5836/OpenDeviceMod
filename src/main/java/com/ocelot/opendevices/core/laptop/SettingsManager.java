@@ -1,7 +1,7 @@
-package com.ocelot.opendevices.api.laptop.settings;
+package com.ocelot.opendevices.core.laptop;
 
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.api.laptop.Laptop;
+import com.ocelot.opendevices.api.laptop.settings.LaptopSetting;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.forgespi.language.ModFileScanData;
@@ -14,23 +14,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- * <p>Manages all the setting handling for the {@link Laptop}.<p/>
- * <p>To read to settings use {@link Laptop#readSetting(LaptopSetting)}. To write to settings use {@link Laptop#writeSetting(LaptopSetting, Object)}.</p>
- *
- * @author Ocelot
- * @see Laptop
- * @see LaptopSetting
- */
 public class SettingsManager
 {
-    private static final Type AUTO_REGISTRY = Type.getType(SettingsManager.Register.class);
+    private static final Type AUTO_REGISTRY = Type.getType(LaptopSetting.Register.class);
     private static final Map<ResourceLocation, LaptopSetting<?>> REGISTRY = new HashMap<>();
     private static boolean initialized = false;
 
-    /**
-     * This should never be used by the consumer. Core use only!
-     */
     public static void init()
     {
         if (initialized)
@@ -67,19 +56,8 @@ public class SettingsManager
         initialized = true;
     }
 
-    /**
-     * Checks the registry for the specified setting under the specified name.
-     *
-     * @param setting The setting to look for
-     * @return Whether or not that registry exists
-     */
     public static boolean isRegistered(LaptopSetting<?> setting)
     {
         return REGISTRY.containsKey(setting.getRegistryName()) && setting.getClass().isInstance(REGISTRY.get(setting.getRegistryName()));
     }
-
-    /**
-     * Registers a new type of setting for the Laptop.
-     */
-    public @interface Register {}
 }

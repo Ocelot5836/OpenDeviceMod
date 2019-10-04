@@ -1,4 +1,4 @@
-package com.ocelot.opendevices.api.render;
+package com.ocelot.opendevices.api.util;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;

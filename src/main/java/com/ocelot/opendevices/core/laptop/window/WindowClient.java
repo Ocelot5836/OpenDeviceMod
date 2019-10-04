@@ -1,9 +1,9 @@
-package com.ocelot.opendevices.core.window;
+package com.ocelot.opendevices.core.laptop.window;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.laptop.Laptop;
-import com.ocelot.opendevices.api.render.RenderUtil;
+import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.core.render.WindowButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundNBT;

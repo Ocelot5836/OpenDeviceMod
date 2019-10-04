@@ -5,7 +5,7 @@ import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.device.DeviceTileEntity;
 import com.ocelot.opendevices.api.laptop.Laptop;
 import com.ocelot.opendevices.api.laptop.settings.LaptopSetting;
-import com.ocelot.opendevices.api.laptop.settings.SettingsManager;
+import com.ocelot.opendevices.core.laptop.SettingsManager;
 import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.core.task.SyncSettingsTask;
 import com.ocelot.opendevices.init.DeviceBlocks;

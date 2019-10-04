@@ -1,4 +1,4 @@
-package com.ocelot.opendevices.core.window;
+package com.ocelot.opendevices.core.laptop.window;
 
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.laptop.Laptop;
