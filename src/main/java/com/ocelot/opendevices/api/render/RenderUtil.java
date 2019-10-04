@@ -9,7 +9,6 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.opengl.GL11;
@@ -111,5 +110,15 @@ public class RenderUtil
         int hours = (int) ((Math.floor(time / 1000.0) + 7) % 24);
         int minutes = (int) Math.floor((time % 1000) / 1000.0 * 60);
         return String.format("%02d:%02d", hours, minutes);
+    }
+
+    public static void glColor(int color)
+    {
+        glColorAlpha(0xff000000 | color);
+    }
+
+    public static void glColorAlpha(int color)
+    {
+        GlStateManager.color4f(((color >> 16) & 0xff) / 255f, ((color >> 8) & 0xff) / 255f, (color & 0xff) / 255f, ((color >> 24) & 0xff) / 255f);
     }
 }

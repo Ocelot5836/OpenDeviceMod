@@ -44,10 +44,10 @@ public class WindowClient extends LaptopWindow
 
     public void render(int mouseX, int mouseY, int color, float partialTicks)
     {
-        renderWindow(this.screenX, this.screenY, this, color, partialTicks, false);
+        renderWindow(this.screenX, this.screenY, this, color, color, partialTicks);
         if (this.getId().equals(this.getLaptop().getDesktop().getFocusedWindowId()))
         {
-            renderWindow(this.screenX, this.screenY, this, this.getLaptop().readSetting(DeviceConstants.FOCUSED_WINDOW_COLOR), partialTicks, true);
+            renderWindow(this.screenX, this.screenY, this, color, this.getLaptop().readSetting(DeviceConstants.FOCUSED_WINDOW_COLOR), partialTicks);
         }
 
         GlStateManager.color4f(((color >> 16) & 0xff) / 255f, ((color >> 8) & 0xff) / 255f, (color & 0xff) / 255f, 1);
@@ -107,28 +107,31 @@ public class WindowClient extends LaptopWindow
     }
 
     // TODO improve
-    public static void renderWindow(int posX, int posY, WindowClient window, int color, float partialTicks, boolean cutout)
+    public static void renderWindow(int posX, int posY, WindowClient window, int color, int borderColor, float partialTicks)
     {
         Minecraft.getInstance().getTextureManager().bindTexture(DeviceConstants.WINDOW_LOCATION);
-        GlStateManager.color4f(((color >> 16) & 0xff) / 255f, ((color >> 8) & 0xff) / 255f, (color & 0xff) / 255f, 1);
+        RenderUtil.glColor(borderColor);
+
+        float windowX = window.getInterpolatedX(partialTicks);
+        float windowY = window.getInterpolatedY(partialTicks);
+        int windowWidth = window.getWidth();
+        int windowHeight = window.getHeight();
 
         /* Corners */
-        RenderUtil.drawRectWithTexture(posX + window.getInterpolatedX(partialTicks), posY + window.getInterpolatedY(partialTicks), 0, 0, 1, 13, 1, 13);
-        RenderUtil.drawRectWithTexture(posX + window.getInterpolatedX(partialTicks) + window.getWidth() - 13, posY + window.getInterpolatedY(partialTicks), 2, 0, 13, 13, 13, 13);
-        RenderUtil.drawRectWithTexture(posX + window.getInterpolatedX(partialTicks) + window.getWidth() - 1, posY + window.getInterpolatedY(partialTicks) + window.getHeight() - 1, 14, 14, 1, 1, 1, 1);
-        RenderUtil.drawRectWithTexture(posX + window.getInterpolatedX(partialTicks), posY + window.getInterpolatedY(partialTicks) + window.getHeight() - 1, 0, 14, 1, 1, 1, 1);
+        RenderUtil.drawRectWithTexture(posX + windowX, posY + windowY, 0, 0, 1, 13, 1, 13);
+        RenderUtil.drawRectWithTexture(posX + windowX + windowWidth - 13, posY + windowY, 2, 0, 13, 13, 13, 13);
+        RenderUtil.drawRectWithTexture(posX + windowX + windowWidth - 1, posY + windowY + windowHeight - 1, 14, 14, 1, 1, 1, 1);
+        RenderUtil.drawRectWithTexture(posX + windowX, posY + windowY + windowHeight - 1, 0, 14, 1, 1, 1, 1);
 
         /* Edges */
-        RenderUtil.drawRectWithTexture(posX + window.getInterpolatedX(partialTicks) + 1, posY + window.getInterpolatedY(partialTicks), 1, 0, window.getWidth() - 14, 13, 1, 13);
-        RenderUtil.drawRectWithTexture(posX + window.getInterpolatedX(partialTicks) + window.getWidth() - 1, posY + window.getInterpolatedY(partialTicks) + 13, 14, 13, 1, window.getHeight() - 14, 1, 1);
-        RenderUtil.drawRectWithTexture(posX + window.getInterpolatedX(partialTicks) + 1, posY + window.getInterpolatedY(partialTicks) + window.getHeight() - 1, 1, 14, window.getWidth() - 2, 1, 13, 1);
-        RenderUtil.drawRectWithTexture(posX + window.getInterpolatedX(partialTicks), posY + window.getInterpolatedY(partialTicks) + 13, 0, 13, 1, window.getHeight() - 14, 1, 1);
+        RenderUtil.drawRectWithTexture(posX + windowX + 1, posY + windowY, 1, 0, windowWidth - 14, 13, 1, 13);
+        RenderUtil.drawRectWithTexture(posX + windowX + windowWidth - 1, posY + windowY + 13, 14, 13, 1, windowHeight - 14, 1, 1);
+        RenderUtil.drawRectWithTexture(posX + windowX + 1, posY + windowY + windowHeight - 1, 1, 14, windowWidth - 2, 1, 13, 1);
+        RenderUtil.drawRectWithTexture(posX + windowX, posY + windowY + 13, 0, 13, 1, windowHeight - 14, 1, 1);
 
         /* Center */
-        if (!cutout)
-        {
-            RenderUtil.drawRectWithTexture(posX + window.getInterpolatedX(partialTicks) + 1, posY + window.getInterpolatedY(partialTicks) + 13, 1, 13, window.getWidth() - 2, window.getHeight() - 14, 13, 1);
-        }
+        RenderUtil.glColor(color);
+        RenderUtil.drawRectWithTexture(posX + windowX + 1, posY + windowY + 13, 1, 13, windowWidth - 2, windowHeight - 14, 13, 1);
 
         GlStateManager.color4f(1, 1, 1, 1);
     }
