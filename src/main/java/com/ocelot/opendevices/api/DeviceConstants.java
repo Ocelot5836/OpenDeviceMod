@@ -26,6 +26,9 @@ public class DeviceConstants
     public static final int LAPTOP_WINDOW_BUTTON_SIZE = 11;
     public static final int LAPTOP_WINDOW_BAR_HEIGHT = 12;
 
+    public static final int LAPTOP_DEFAULT_APPLICATION_WIDTH = 200;
+    public static final int LAPTOP_DEFAULT_APPLICATION_HEIGHT = 100;
+
     public static final float LAPTOP_OPENED_ANGLE = 102;
     public static final float LAPTOP_TE_SCREEN_WIDTH = 12 * 0.0625f;
     public static final float LAPTOP_TE_SCREEN_HEIGHT = ((float) LAPTOP_SCREEN_HEIGHT / (float) LAPTOP_SCREEN_WIDTH) * LAPTOP_TE_SCREEN_WIDTH;
