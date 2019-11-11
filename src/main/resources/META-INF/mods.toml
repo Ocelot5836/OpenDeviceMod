@@ -50,3 +50,9 @@ Adds working electronic devices into Minecraft!
     versionRange="[1.14.4]"
     ordering="NONE"
     side="BOTH"
+[[dependencies.opendevices]]
+    modId="filters"
+    mandatory=false
+    versionRange="[1.0.0,1.1.1]"
+    ordering="AFTER"
+    side="CLIENT"
