@@ -72,7 +72,7 @@ public interface Desktop
     @Nullable
     default Window getFocusedWindow()
     {
-        return this.getWindow(this.getFocusedWindowId());
+        return this.getFocusedWindowId() == null ? null : this.getWindow(this.getFocusedWindowId());
     }
 
     /**
