@@ -3,7 +3,9 @@ package com.ocelot.opendevices.core.laptop.window;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.laptop.Laptop;
 import com.ocelot.opendevices.api.laptop.window.Window;
+import com.ocelot.opendevices.api.laptop.window.WindowContentType;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import java.util.Objects;
@@ -17,20 +19,24 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
     private float y;
     private int width;
     private int height;
+    private WindowContentType contentType;
+    private ResourceLocation contentId;
 
     public LaptopWindow(Laptop laptop)
     {
         this.laptop = laptop;
     }
 
-    public LaptopWindow(Laptop laptop, int width, int height)
+    public LaptopWindow(Laptop laptop, WindowContentType contentType, ResourceLocation contentId, int width, int height)
     {
-        this(laptop, (DeviceConstants.LAPTOP_SCREEN_WIDTH - width) / 2f, (DeviceConstants.LAPTOP_SCREEN_HEIGHT - DeviceConstants.LAPTOP_TASK_BAR_HEIGHT - height) / 2f, width, height);
+        this(laptop, contentType, contentId, (DeviceConstants.LAPTOP_SCREEN_WIDTH - width) / 2f, (DeviceConstants.LAPTOP_SCREEN_HEIGHT - DeviceConstants.LAPTOP_TASK_BAR_HEIGHT - height) / 2f, width, height);
     }
 
-    public LaptopWindow(Laptop laptop, float x, float y, int width, int height)
+    public LaptopWindow(Laptop laptop, WindowContentType contentType, ResourceLocation contentId, float x, float y, int width, int height)
     {
         this.laptop = laptop;
+        this.contentType = contentType;
+        this.contentId = contentId;
         this.id = UUID.randomUUID();
         this.x = x;
         this.y = y;
@@ -71,7 +77,6 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
         this.x += xDirection;
         this.y += yDirection;
         this.checkPosition();
-        // TODO send to server and back to clients
     }
 
     public void update()
@@ -159,6 +164,18 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
     }
 
     @Override
+    public WindowContentType getContentType()
+    {
+        return contentType;
+    }
+
+    @Override
+    public ResourceLocation getContentId()
+    {
+        return contentId;
+    }
+
+    @Override
     public CompoundNBT serializeNBT()
     {
         CompoundNBT nbt = new CompoundNBT();
@@ -167,6 +184,8 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
         nbt.putFloat("y", this.y);
         nbt.putInt("width", this.width);
         nbt.putInt("height", this.height);
+        nbt.putByte("contentType", (byte) this.contentType.ordinal());
+        nbt.putString("contentId", this.contentId.toString());
         return nbt;
     }
 
@@ -178,6 +197,8 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
         this.y = nbt.getFloat("y");
         this.width = nbt.getInt("width");
         this.height = nbt.getInt("height");
+        this.contentType = WindowContentType.values()[nbt.getByte("contentType") % WindowContentType.values().length];
+        this.contentId = new ResourceLocation(nbt.getString("contentId"));
         this.checkPosition();
     }
 

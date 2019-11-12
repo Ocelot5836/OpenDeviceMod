@@ -58,7 +58,7 @@ public class LaptopBlock extends DeviceBlock implements IWaterLoggable
             open = ((LaptopTileEntity) Objects.requireNonNull(world.getTileEntity(pos))).isOpen();
         }
 
-        return SHAPES[state.get(HORIZONTAL_FACING).getHorizontalIndex() + (open ? 4 : 0)];
+        return getShape(state.get(HORIZONTAL_FACING), open);
     }
 
     @Override
@@ -132,6 +132,11 @@ public class LaptopBlock extends DeviceBlock implements IWaterLoggable
             return name().toLowerCase();
         }
 
+    }
+
+    public static VoxelShape getShape(Direction direction, boolean open)
+    {
+        return SHAPES[direction.getHorizontalIndex() + (open ? 4 : 0)];
     }
 
     private static VoxelShape[] createShapes()

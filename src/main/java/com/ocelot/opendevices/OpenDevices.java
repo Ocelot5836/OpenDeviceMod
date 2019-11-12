@@ -4,6 +4,7 @@ import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopManager;
 import com.ocelot.opendevices.core.laptop.SettingsManager;
 import com.ocelot.opendevices.api.task.TaskManager;
+import com.ocelot.opendevices.core.laptop.ApplicationManager;
 import com.ocelot.opendevices.core.render.LaptopTileEntityRenderer;
 import com.ocelot.opendevices.init.DeviceBlocks;
 import com.ocelot.opendevices.init.DeviceItems;
@@ -54,6 +55,7 @@ public class OpenDevices
         DeviceMessages.init();
         SettingsManager.init();
         TaskManager.init();
+        ApplicationManager.init();
 
         DesktopManager.registerBackgroundLocation(DeviceConstants.DEFAULT_BACKGROUND_LOCATION);
     }

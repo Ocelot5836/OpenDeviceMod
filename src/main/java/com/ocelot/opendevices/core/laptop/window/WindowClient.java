@@ -3,10 +3,14 @@ package com.ocelot.opendevices.core.laptop.window;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.laptop.Laptop;
+import com.ocelot.opendevices.api.laptop.window.WindowContent;
+import com.ocelot.opendevices.api.laptop.window.WindowContentType;
 import com.ocelot.opendevices.api.util.RenderUtil;
+import com.ocelot.opendevices.core.laptop.ApplicationManager;
 import com.ocelot.opendevices.core.render.WindowButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.ResourceLocation;
 
 public class WindowClient extends LaptopWindow
 {
@@ -14,23 +18,26 @@ public class WindowClient extends LaptopWindow
     private int screenY;
     private float lastX;
     private float lastY;
+    private WindowContent content;
     private WindowButton closeButton;
-
-    public WindowClient(Laptop laptop, float x, float y, int width, int height)
-    {
-        super(laptop, x, y, width, height);
-        this.closeButton = new WindowButton(laptop, button -> this.close());
-    }
-
-    public WindowClient(Laptop laptop, int width, int height)
-    {
-        super(laptop, width, height);
-        this.closeButton = new WindowButton(laptop, button -> this.close());
-    }
 
     public WindowClient(Laptop laptop)
     {
         super(laptop);
+        this.closeButton = new WindowButton(laptop, button -> this.close());
+    }
+
+    public WindowClient(Laptop laptop, WindowContentType contentType, ResourceLocation contentId, int width, int height)
+    {
+        super(laptop, contentType, contentId, width, height);
+        this.content = ApplicationManager.createApplication(contentId);
+        this.closeButton = new WindowButton(laptop, button -> this.close());
+    }
+
+    public WindowClient(Laptop laptop, WindowContentType contentType, ResourceLocation contentId, float x, float y, int width, int height)
+    {
+        super(laptop, contentType, contentId, x, y, width, height);
+        this.content = ApplicationManager.createApplication(contentId);
         this.closeButton = new WindowButton(laptop, button -> this.close());
     }
 
@@ -40,20 +47,79 @@ public class WindowClient extends LaptopWindow
         super.update();
         this.lastX = this.getX();
         this.lastY = this.getY();
+        this.content.update();
     }
 
     public void render(int mouseX, int mouseY, int color, float partialTicks)
     {
-        renderWindow(this.screenX, this.screenY, this, color, color, partialTicks);
-        if (this.getId().equals(this.getLaptop().getDesktop().getFocusedWindowId()))
-        {
-            renderWindow(this.screenX, this.screenY, this, color, this.getLaptop().readSetting(DeviceConstants.FOCUSED_WINDOW_COLOR), partialTicks);
-        }
+        renderWindow(this.screenX, this.screenY, this, color, this.getId().equals(this.getLaptop().getDesktop().getFocusedWindowId()) ? this.getLaptop().readSetting(DeviceConstants.FOCUSED_WINDOW_COLOR) : color, partialTicks);
+
+        this.content.render(this.screenX + this.getInterpolatedX(partialTicks) + 1, this.screenY + this.getInterpolatedY(partialTicks) + 1 + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT, mouseX, mouseY, partialTicks);
 
         GlStateManager.color4f(((color >> 16) & 0xff) / 255f, ((color >> 8) & 0xff) / 255f, (color & 0xff) / 255f, 1);
         this.closeButton.setPosition(this, partialTicks);
         this.closeButton.render(mouseX, mouseY, partialTicks);
         GlStateManager.color4f(1, 1, 1, 1);
+    }
+
+    @Override
+    public void onGainFocus()
+    {
+        this.content.onGainFocus();
+    }
+
+    @Override
+    public void onLostFocus()
+    {
+        this.content.onLostFocus();
+    }
+
+    @Override
+    public boolean onMousePressed(double mouseX, double mouseY, int mouseButton)
+    {
+        return this.content.onMousePressed(mouseX, mouseY, mouseButton);
+    }
+
+    @Override
+    public boolean onMouseReleased(double mouseX, double mouseY, int mouseButton)
+    {
+        return this.content.onMouseReleased(mouseX, mouseY, mouseButton);
+    }
+
+    @Override
+    public boolean onMouseDragged(double mouseX, double mouseY, int mouseButton, double deltaX, double detaY)
+    {
+        return this.content.onMouseDragged(mouseX, mouseY, mouseButton, deltaX, detaY);
+    }
+
+    @Override
+    public boolean onKeyPressed(int keyCode)
+    {
+        return this.content.onKeyPressed(keyCode);
+    }
+
+    @Override
+    public boolean onKeyReleased(int keyCode)
+    {
+        return this.content.onKeyReleased(keyCode);
+    }
+
+    @Override
+    public void saveState(CompoundNBT nbt)
+    {
+        this.content.saveState(nbt);
+    }
+
+    @Override
+    public void loadState(CompoundNBT nbt)
+    {
+        this.content.loadState(nbt);
+    }
+
+    @Override
+    public void onClose()
+    {
+        this.content.onClose();
     }
 
     public boolean pressButtons(double mouseX, double mouseY)
@@ -102,12 +168,15 @@ public class WindowClient extends LaptopWindow
     public void deserializeNBT(CompoundNBT nbt)
     {
         super.deserializeNBT(nbt);
+        // TODO maybe save data and fully close if server decides to change app
+        if (this.content == null || (this.getContentType() == WindowContentType.APPLICATION && !ApplicationManager.getRegistryName(this.content.getClass()).equals(this.getContentId())))
+            this.content = ApplicationManager.createApplication(this.getContentId());
         this.lastX = this.getX();
         this.lastY = this.getY();
     }
 
     // TODO improve
-    public static void renderWindow(int posX, int posY, WindowClient window, int color, int borderColor, float partialTicks)
+    private static void renderWindow(int posX, int posY, WindowClient window, int color, int borderColor, float partialTicks)
     {
         Minecraft.getInstance().getTextureManager().bindTexture(DeviceConstants.WINDOW_LOCATION);
         RenderUtil.glColor(borderColor);

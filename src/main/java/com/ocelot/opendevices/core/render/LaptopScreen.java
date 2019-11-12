@@ -9,6 +9,7 @@ import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.core.LaptopDesktop;
 import com.ocelot.opendevices.core.LaptopTileEntity;
+import com.ocelot.opendevices.core.laptop.application.TestApplication;
 import com.ocelot.opendevices.core.task.CloseLaptopTask;
 import com.ocelot.opendevices.core.task.MoveWindowTask;
 import com.ocelot.opendevices.core.laptop.window.LaptopWindow;
@@ -34,7 +35,7 @@ public class LaptopScreen extends Screen
     {
         super(new TranslationTextComponent("screen." + OpenDevices.MOD_ID + ".laptop"));
         this.laptop = laptop;
-        this.laptop.getDesktop().openApplicationTest();
+        this.laptop.getDesktop().openApplication(TestApplication.class);
     }
 
     @Override

@@ -5,14 +5,16 @@ import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.device.DeviceTileEntity;
 import com.ocelot.opendevices.api.laptop.Laptop;
 import com.ocelot.opendevices.api.laptop.settings.LaptopSetting;
-import com.ocelot.opendevices.core.laptop.SettingsManager;
 import com.ocelot.opendevices.api.task.TaskManager;
+import com.ocelot.opendevices.core.laptop.SettingsManager;
 import com.ocelot.opendevices.core.task.SyncSettingsTask;
 import com.ocelot.opendevices.init.DeviceBlocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -24,6 +26,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITickableTileEntity
 {
+    private static final AxisAlignedBB RENDER_AABB = VoxelShapes.fullCube().getBoundingBox();
+
     private UUID user;
     private boolean open;
     private Queue<Runnable> executionQueue;
@@ -227,9 +231,15 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
         return desktop;
     }
 
+    @Override
+    public AxisAlignedBB getRenderBoundingBox()
+    {
+        return RENDER_AABB.offset(this.pos);
+    }
+
     @OnlyIn(Dist.CLIENT)
     public float getScreenAngle(float partialTicks)
     {
-        return DeviceConstants.LAPTOP_OPENED_ANGLE * (this.lastRotation + (this.rotation - this.lastRotation) * partialTicks); //TODO optimize
+        return DeviceConstants.LAPTOP_OPENED_ANGLE * (this.lastRotation + (this.rotation - this.lastRotation) * partialTicks);
     }
 }

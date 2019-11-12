@@ -1,7 +1,9 @@
 package com.ocelot.opendevices.api.laptop.desktop;
 
 import com.ocelot.opendevices.api.laptop.Laptop;
+import com.ocelot.opendevices.api.laptop.window.Application;
 import com.ocelot.opendevices.api.laptop.window.Window;
+import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
@@ -14,19 +16,33 @@ import java.util.UUID;
  */
 public interface Desktop
 {
-    //    /**
-    //     * Opens the application with the specified information.
-    //     *
-    //     * @param info The information to open the app of
-    //     */
-    //    void openApplication(AppInfo info);
-    //
-    //    /**
-    //     * Closes the application with the specified information.
-    //     *
-    //     * @param info The information to close the app of
-    //     */
-    //    void closeApplication(AppInfo info);
+    /**
+     * Opens the application with the specified information.
+     *
+     * @param registryName The registry name of the app
+     */
+    void openApplication(ResourceLocation registryName);
+
+    /**
+     * Closes the application with the specified information.
+     *
+     * @param registryName the registry name of the app
+     */
+    void closeApplication(ResourceLocation registryName);
+
+    /**
+     * Opens the application with the specified information.
+     *
+     * @param clazz The class of the app
+     */
+    void openApplication(Class<? extends Application> clazz);
+
+    /**
+     * Closes the application with the specified information.
+     *
+     * @param clazz The class of the app
+     */
+    void closeApplication(Class<? extends Application> clazz);
 
     /**
      * Focuses the window with the specified ID and moves it to the front.

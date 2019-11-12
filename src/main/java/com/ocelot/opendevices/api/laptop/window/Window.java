@@ -2,6 +2,7 @@ package com.ocelot.opendevices.api.laptop.window;
 
 import com.ocelot.opendevices.api.laptop.Laptop;
 import com.ocelot.opendevices.api.laptop.desktop.Desktop;
+import net.minecraft.util.ResourceLocation;
 
 import java.util.UUID;
 
@@ -37,6 +38,16 @@ public interface Window
      * @return The id of this window. Used for Client/Server synchronization
      */
     UUID getId();
+
+    /**
+     * @return The type of content inside this window
+     */
+    WindowContentType getContentType();
+
+    /**
+     * @return The registry name of the content inside this window
+     */
+    ResourceLocation getContentId();
 
     /**
      * @return The x position of this window
