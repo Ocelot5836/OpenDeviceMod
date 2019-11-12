@@ -138,7 +138,7 @@ public class LaptopTileEntityRenderer extends TileEntityRenderer<LaptopTileEntit
 
                     {
                         GlStateManager.color4f(1, 1, 1, 1);
-                        LaptopRenderer.render(te, minecraft, minecraft.fontRenderer, 0, 0, -1, -1, partialTicks);
+                        LaptopRenderer.render(te, minecraft, minecraft.fontRenderer, 0, 0, -Integer.MAX_VALUE, -Integer.MAX_VALUE, partialTicks);
                     }
 
                     GlStateManager.matrixMode(GL11.GL_PROJECTION);

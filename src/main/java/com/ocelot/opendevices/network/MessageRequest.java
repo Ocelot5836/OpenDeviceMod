@@ -28,6 +28,7 @@ public class MessageRequest
     {
         buf.writeResourceLocation(TaskManager.getRegistryName(msg.request.getClass()));
         msg.request.prepareRequest(msg.nbt);
+        buf.writeBoolean(msg.request.isSucessful());
         buf.writeCompoundTag(msg.nbt);
         buf.writeVarInt(msg.receiver.ordinal());
     }
@@ -38,6 +39,8 @@ public class MessageRequest
         Task task = TaskManager.createTask(registryName);
         if (task == null)
             throw new NullPointerException("Could not decode task: " + registryName + " as it was null!");
+        if(buf.readBoolean())
+            task.setSuccessful();
         return new MessageRequest(task, buf.readCompoundTag(), TaskManager.TaskReceiver.values()[buf.readVarInt() % TaskManager.TaskReceiver.values().length]);
     }
 
