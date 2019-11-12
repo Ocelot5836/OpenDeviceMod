@@ -1,7 +1,6 @@
 package com.ocelot.opendevices.api.laptop.window;
 
 import com.ocelot.opendevices.api.laptop.desktop.Desktop;
-import com.ocelot.opendevices.core.laptop.ApplicationManager;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.util.ResourceLocation;
 

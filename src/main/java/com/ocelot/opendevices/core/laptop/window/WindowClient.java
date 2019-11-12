@@ -6,7 +6,7 @@ import com.ocelot.opendevices.api.laptop.Laptop;
 import com.ocelot.opendevices.api.laptop.window.WindowContent;
 import com.ocelot.opendevices.api.laptop.window.WindowContentType;
 import com.ocelot.opendevices.api.util.RenderUtil;
-import com.ocelot.opendevices.core.laptop.ApplicationManager;
+import com.ocelot.opendevices.api.laptop.window.ApplicationManager;
 import com.ocelot.opendevices.core.render.WindowButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundNBT;

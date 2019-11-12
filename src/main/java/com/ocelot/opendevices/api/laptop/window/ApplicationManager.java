@@ -1,10 +1,10 @@
-package com.ocelot.opendevices.core.laptop;
+package com.ocelot.opendevices.api.laptop.window;
 
 import com.google.common.collect.HashBiMap;
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.api.laptop.window.Application;
-import com.ocelot.opendevices.api.laptop.window.WindowContent;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.forgespi.language.ModFileScanData;
 import org.objectweb.asm.Type;
@@ -24,6 +24,9 @@ public class ApplicationManager
 
     private ApplicationManager() {}
 
+    /**
+     * This should never be used by the consumer. Core use only!
+     */
     @SuppressWarnings("unchecked")
     public static void init()
     {
@@ -54,6 +57,7 @@ public class ApplicationManager
                     throw new RuntimeException("Application: " + registryName + " attempted to override existing application. Skipping!");
 
                 REGISTRY.put(registryName, (Class<? extends Application>) clazz);
+                LaptopClientInfo.APP_INFO.put(registryName, new AppInfo(registryName));
                 OpenDevices.LOGGER.info("Registered application: " + registryName);
             }
             catch (Exception e)
@@ -62,9 +66,17 @@ public class ApplicationManager
             }
         }
 
+        DistExecutor.runWhenOn(Dist.CLIENT, () -> LaptopClientInfo::reloadApps);
+
         initialized = true;
     }
 
+    /**
+     * Creates a new application based on registry name.
+     *
+     * @param registryName The registry name of the app to make
+     * @return The app created or null if there was an error
+     */
     @Nullable
     public static Application createApplication(ResourceLocation registryName)
     {
@@ -85,6 +97,12 @@ public class ApplicationManager
         return null;
     }
 
+    /**
+     * Checks the registry for a registry name under the specified application class.
+     *
+     * @param clazz The class to get the registry name of
+     * @return The registry name of that app
+     */
     public static ResourceLocation getRegistryName(Class<? extends WindowContent> clazz)
     {
         if (!REGISTRY.containsValue(clazz))
@@ -95,11 +113,23 @@ public class ApplicationManager
         return REGISTRY.inverse().get(clazz);
     }
 
+    /**
+     * Checks to see if the specified application is registered.
+     *
+     * @param clazz The class of the app to check
+     * @return Whether or not there is an entry for that app
+     */
     public static boolean isValidApplication(Class<? extends WindowContent> clazz)
     {
         return REGISTRY.inverse().containsKey(clazz);
     }
 
+    /**
+     * Checks to see if the specified application is registered.
+     *
+     * @param registryName The registry name of the app to check
+     * @return Whether or not there is an entry for that app
+     */
     public static boolean isValidApplication(ResourceLocation registryName)
     {
         return REGISTRY.containsKey(registryName);

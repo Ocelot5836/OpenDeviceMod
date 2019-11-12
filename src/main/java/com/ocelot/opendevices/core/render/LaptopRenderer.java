@@ -6,6 +6,7 @@ import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.laptop.Laptop;
 import com.ocelot.opendevices.api.laptop.desktop.Desktop;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopBackground;
+import com.ocelot.opendevices.api.laptop.window.AppInfo;
 import com.ocelot.opendevices.api.laptop.window.Window;
 import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.core.laptop.window.WindowClient;
@@ -13,6 +14,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StringUtils;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -20,26 +22,27 @@ import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModList;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @OnlyIn(Dist.CLIENT)
 public class LaptopRenderer extends AbstractGui
 {
-    private static final LaptopRenderer INSTANCE = new LaptopRenderer();
+    public static final String MOD_VERSION;
 
-    private final String modVersion;
-
-    private LaptopRenderer()
+    static
     {
         Optional<? extends ModContainer> modContainer = ModList.get().getModContainerById(OpenDevices.MOD_ID);
         if (modContainer.isPresent())
         {
             ArtifactVersion version = modContainer.get().getModInfo().getVersion();
-            this.modVersion = String.format("%s.%s.%s", version.getMajorVersion(), version.getMinorVersion(), version.getIncrementalVersion()) + (!StringUtils.isNullOrEmpty(version.getQualifier()) ? (" " + version.getQualifier()) : "");
+            MOD_VERSION = String.format("%s.%s.%s", version.getMajorVersion(), version.getMinorVersion(), version.getIncrementalVersion()) + (!StringUtils.isNullOrEmpty(version.getQualifier()) ? (" " + version.getQualifier()) : "");
         }
         else
         {
-            this.modVersion = I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.version.unknown");
+            MOD_VERSION = I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.version.unknown");
         }
     }
 
@@ -64,11 +67,11 @@ public class LaptopRenderer extends AbstractGui
         /* Version Text */
         if (!DeviceConstants.DEVELOPER_MODE)
         {
-            fontRenderer.drawStringWithShadow(I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.version", INSTANCE.modVersion), posX + 5, posY + 5, laptop.readSetting(DeviceConstants.DESKTOP_TEXT_COLOR));
+            fontRenderer.drawStringWithShadow(I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.version", MOD_VERSION), posX + 5, posY + 5, laptop.readSetting(DeviceConstants.DESKTOP_TEXT_COLOR));
         }
         else
         {
-            fontRenderer.drawStringWithShadow(I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.dev_version", INSTANCE.modVersion), posX + 5, posY + 5, laptop.readSetting(DeviceConstants.DESKTOP_TEXT_COLOR));
+            fontRenderer.drawStringWithShadow(I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.dev_version", MOD_VERSION), posX + 5, posY + 5, laptop.readSetting(DeviceConstants.DESKTOP_TEXT_COLOR));
             fontRenderer.drawStringWithShadow(Minecraft.getDebugFPS() + " FPS", posX + 5, posY + 18, laptop.readSetting(DeviceConstants.DESKTOP_TEXT_COLOR));
         }
 

@@ -2,9 +2,10 @@ package com.ocelot.opendevices;
 
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopManager;
-import com.ocelot.opendevices.core.laptop.SettingsManager;
+import com.ocelot.opendevices.api.laptop.window.ApplicationManager;
+import com.ocelot.opendevices.api.laptop.window.LaptopClientInfo;
 import com.ocelot.opendevices.api.task.TaskManager;
-import com.ocelot.opendevices.core.laptop.ApplicationManager;
+import com.ocelot.opendevices.core.laptop.SettingsManager;
 import com.ocelot.opendevices.core.render.LaptopTileEntityRenderer;
 import com.ocelot.opendevices.init.DeviceBlocks;
 import com.ocelot.opendevices.init.DeviceItems;
@@ -63,6 +64,7 @@ public class OpenDevices
     private void initClient(FMLClientSetupEvent event)
     {
         DeviceBlocks.initClient();
+        LaptopClientInfo.init();
         MinecraftForge.EVENT_BUS.register(LaptopTileEntityRenderer.INSTANCE);
     }
 
