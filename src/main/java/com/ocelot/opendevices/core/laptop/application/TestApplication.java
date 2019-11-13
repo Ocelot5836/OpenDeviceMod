@@ -14,16 +14,4 @@ public class TestApplication extends Application
     {
         Minecraft.getInstance().fontRenderer.drawStringWithShadow("Actual Application Content", x, y, 0xffffffff);
     }
-
-    @Override
-    public String getTitle()
-    {
-        return super.getTitle();
-    }
-
-    @Override
-    public TextureAtlasSprite getIconSprite()
-    {
-        return null;
-    }
 }

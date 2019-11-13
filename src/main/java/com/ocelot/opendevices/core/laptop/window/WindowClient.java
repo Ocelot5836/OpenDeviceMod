@@ -77,16 +77,18 @@ public class WindowClient extends LaptopWindow
         this.content.render(this.screenX + this.getInterpolatedX(partialTicks) + 1, this.screenY + this.getInterpolatedY(partialTicks) + 1 + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT, mouseX, mouseY, partialTicks);
 
         TextureAtlasSprite icon = this.content.getIconSprite();
+        int titleOffset = 0;
         if (icon != null)
         {
             Minecraft.getInstance().getTextureManager().bindTexture(this.content.getIconMapLocation());
             RenderUtil.drawRectWithTexture(this.screenX + this.getInterpolatedX(partialTicks) + 2.5, this.screenY + this.getInterpolatedY(partialTicks) + 2.5, icon.getMinU(), icon.getMinV(), 8, 8, icon.getMaxU() - icon.getMinU(), icon.getMaxV() - icon.getMinV(), 1, 1);
+            titleOffset = 10;
         }
 
         String title = this.content.getTitle();
         if (title != null)
         {
-            Minecraft.getInstance().fontRenderer.drawStringWithShadow(title, this.screenX + this.getInterpolatedX(partialTicks) + 12, this.screenY + this.getInterpolatedY(partialTicks) + 2.5f, this.getLaptop().readSetting(LaptopSettings.DESKTOP_TEXT_COLOR));
+            Minecraft.getInstance().fontRenderer.drawStringWithShadow(title, this.screenX + this.getInterpolatedX(partialTicks) + 2f + titleOffset, this.screenY + this.getInterpolatedY(partialTicks) + 2.5f, this.getLaptop().readSetting(LaptopSettings.DESKTOP_TEXT_COLOR));
         }
 
         GlStateManager.color4f(((color >> 16) & 0xff) / 255f, ((color >> 8) & 0xff) / 255f, (color & 0xff) / 255f, 1);

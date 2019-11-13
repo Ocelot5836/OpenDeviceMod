@@ -85,6 +85,7 @@ public class LaptopRenderer extends AbstractGui
 
         /* Task bar */
         {
+            //TODO fix task bar texture when height changes
             minecraft.getTextureManager().bindTexture(DeviceConstants.WINDOW_LOCATION);
             int color = laptop.readSetting(LaptopSettings.TASKBAR_COLOR);
             int height = desktop.getTaskbarHeight();
