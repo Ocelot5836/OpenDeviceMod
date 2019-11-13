@@ -45,11 +45,6 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
         this.focusedWindowId = null;
     }
 
-    public LaptopWindow createWindow(WindowContentType contentType, ResourceLocation contentId, float x, float y, int width, int height)
-    {
-        return DistExecutor.runForDist(() -> () -> new WindowClient(this.laptop, contentType, contentId, x, y, width, height), () -> () -> new LaptopWindow(this.laptop, contentType, contentId, x, y, width, height));
-    }
-
     public LaptopWindow createWindow(WindowContentType contentType, ResourceLocation contentId, int width, int height)
     {
         return DistExecutor.runForDist(() -> () -> new WindowClient(this.laptop, contentType, contentId, width, height), () -> () -> new LaptopWindow(this.laptop, contentType, contentId, width, height));
