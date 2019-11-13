@@ -15,8 +15,8 @@ public class WindowClient extends LaptopWindow
 {
     private int screenX;
     private int screenY;
-    private int lastX;
-    private int lastY;
+    private float lastX;
+    private float lastY;
     private WindowContent content;
     private WindowButton closeButton;
 
@@ -156,12 +156,12 @@ public class WindowClient extends LaptopWindow
 
     public float getInterpolatedX(float partialTicks)
     {
-        return this.lastX + (this.getX() - this.lastX) * partialTicks;
+        return (int) this.lastX + ((int) this.getX() - (int) this.lastX) * partialTicks;
     }
 
     public float getInterpolatedY(float partialTicks)
     {
-        return this.lastY + (this.getY() - this.lastY) * partialTicks;
+        return (int) this.lastY + ((int) this.getY() - (int) this.lastY) * partialTicks;
     }
 
     public void setScreenPosition(int screenX, int screenY)

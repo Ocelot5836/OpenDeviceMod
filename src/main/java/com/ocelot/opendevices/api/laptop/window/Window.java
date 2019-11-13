@@ -52,12 +52,12 @@ public interface Window
     /**
      * @return The x position of this window
      */
-    int getX();
+    float getX();
 
     /**
      * @return The y position of this window
      */
-    int getY();
+    float getY();
 
     /**
      * @return The x size of this window
