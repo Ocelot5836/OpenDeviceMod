@@ -237,7 +237,7 @@ public class AppInfo
         info.setRegistryName(registryName);
         info.name = "missingno";
         info.author = "missingno";
-        info.description = "Missing App Info JSON!";
+        info.description = "Malformed App Info JSON!";
         info.version = "missingno";
         return info;
     }
