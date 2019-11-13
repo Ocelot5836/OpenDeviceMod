@@ -3,7 +3,7 @@ package com.ocelot.opendevices;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopManager;
 import com.ocelot.opendevices.api.laptop.window.ApplicationManager;
-import com.ocelot.opendevices.api.laptop.window.LaptopClientInfo;
+import com.ocelot.opendevices.api.laptop.window.ClientApplicationManager;
 import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.core.laptop.SettingsManager;
 import com.ocelot.opendevices.core.render.LaptopTileEntityRenderer;
@@ -15,10 +15,12 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -49,22 +51,23 @@ public class OpenDevices
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::init);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::initClient);
         MinecraftForge.EVENT_BUS.register(this);
+
+        LOGGER.debug("Registering Content");
+        SettingsManager.init();
+        TaskManager.init();
+        ApplicationManager.init();
+        DistExecutor.runWhenOn(Dist.CLIENT, () -> ClientApplicationManager::addListeners);
     }
 
     private void init(FMLCommonSetupEvent event)
     {
         DeviceMessages.init();
-        SettingsManager.init();
-        TaskManager.init();
-        ApplicationManager.init();
-
         DesktopManager.registerBackgroundLocation(DeviceConstants.DEFAULT_BACKGROUND_LOCATION);
     }
 
     private void initClient(FMLClientSetupEvent event)
     {
         DeviceBlocks.initClient();
-        LaptopClientInfo.init();
         MinecraftForge.EVENT_BUS.register(LaptopTileEntityRenderer.INSTANCE);
     }
 

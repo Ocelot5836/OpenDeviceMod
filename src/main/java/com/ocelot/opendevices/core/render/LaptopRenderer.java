@@ -6,7 +6,6 @@ import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.laptop.Laptop;
 import com.ocelot.opendevices.api.laptop.desktop.Desktop;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopBackground;
-import com.ocelot.opendevices.api.laptop.window.AppInfo;
 import com.ocelot.opendevices.api.laptop.window.Window;
 import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.core.laptop.window.WindowClient;
@@ -14,7 +13,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StringUtils;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -22,9 +20,6 @@ import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModList;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 @OnlyIn(Dist.CLIENT)

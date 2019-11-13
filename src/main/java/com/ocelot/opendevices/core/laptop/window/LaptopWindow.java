@@ -15,8 +15,8 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
 {
     private Laptop laptop;
     private UUID id;
-    private float x;
-    private float y;
+    private int x;
+    private int y;
     private int width;
     private int height;
     private WindowContentType contentType;
@@ -29,10 +29,10 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
 
     public LaptopWindow(Laptop laptop, WindowContentType contentType, ResourceLocation contentId, int width, int height)
     {
-        this(laptop, contentType, contentId, (DeviceConstants.LAPTOP_SCREEN_WIDTH - width) / 2f, (DeviceConstants.LAPTOP_SCREEN_HEIGHT - DeviceConstants.LAPTOP_TASK_BAR_HEIGHT - height) / 2f, width, height);
+        this(laptop, contentType, contentId, (DeviceConstants.LAPTOP_SCREEN_WIDTH - width) / 2, (DeviceConstants.LAPTOP_SCREEN_HEIGHT - DeviceConstants.LAPTOP_TASK_BAR_HEIGHT - height) / 2, width, height);
     }
 
-    public LaptopWindow(Laptop laptop, WindowContentType contentType, ResourceLocation contentId, float x, float y, int width, int height)
+    public LaptopWindow(Laptop laptop, WindowContentType contentType, ResourceLocation contentId, int x, int y, int width, int height)
     {
         this.laptop = laptop;
         this.contentType = contentType;
@@ -140,13 +140,13 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
     }
 
     @Override
-    public float getX()
+    public int getX()
     {
         return x;
     }
 
     @Override
-    public float getY()
+    public int getY()
     {
         return y;
     }
@@ -180,8 +180,8 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
     {
         CompoundNBT nbt = new CompoundNBT();
         nbt.putUniqueId("id", this.id);
-        nbt.putFloat("x", this.x);
-        nbt.putFloat("y", this.y);
+        nbt.putInt("x", this.x);
+        nbt.putInt("y", this.y);
         nbt.putInt("width", this.width);
         nbt.putInt("height", this.height);
         nbt.putByte("contentType", (byte) this.contentType.ordinal());
@@ -193,8 +193,8 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
     public void deserializeNBT(CompoundNBT nbt)
     {
         this.id = nbt.getUniqueId("id");
-        this.x = nbt.getFloat("x");
-        this.y = nbt.getFloat("y");
+        this.x = nbt.getInt("x");
+        this.y = nbt.getInt("y");
         this.width = nbt.getInt("width");
         this.height = nbt.getInt("height");
         this.contentType = WindowContentType.values()[nbt.getByte("contentType") % WindowContentType.values().length];

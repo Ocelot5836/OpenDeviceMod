@@ -3,12 +3,11 @@ package com.ocelot.opendevices.core.laptop.window;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.laptop.Laptop;
-import com.ocelot.opendevices.api.laptop.window.WindowContent;
-import com.ocelot.opendevices.api.laptop.window.WindowContentType;
+import com.ocelot.opendevices.api.laptop.window.*;
 import com.ocelot.opendevices.api.util.RenderUtil;
-import com.ocelot.opendevices.api.laptop.window.ApplicationManager;
 import com.ocelot.opendevices.core.render.WindowButton;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 
@@ -16,8 +15,8 @@ public class WindowClient extends LaptopWindow
 {
     private int screenX;
     private int screenY;
-    private float lastX;
-    private float lastY;
+    private int lastX;
+    private int lastY;
     private WindowContent content;
     private WindowButton closeButton;
 
@@ -34,7 +33,7 @@ public class WindowClient extends LaptopWindow
         this.closeButton = new WindowButton(laptop, button -> this.close());
     }
 
-    public WindowClient(Laptop laptop, WindowContentType contentType, ResourceLocation contentId, float x, float y, int width, int height)
+    public WindowClient(Laptop laptop, WindowContentType contentType, ResourceLocation contentId, int x, int y, int width, int height)
     {
         super(laptop, contentType, contentId, x, y, width, height);
         this.content = ApplicationManager.createApplication(contentId);
@@ -55,6 +54,14 @@ public class WindowClient extends LaptopWindow
         renderWindow(this.screenX, this.screenY, this, color, this.getId().equals(this.getLaptop().getDesktop().getFocusedWindowId()) ? this.getLaptop().readSetting(DeviceConstants.FOCUSED_WINDOW_COLOR) : color, partialTicks);
 
         this.content.render(this.screenX + this.getInterpolatedX(partialTicks) + 1, this.screenY + this.getInterpolatedY(partialTicks) + 1 + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT, mouseX, mouseY, partialTicks);
+
+        TextureAtlasSprite icon = ClientApplicationManager.getAppIcon(this.getContentId());
+        Minecraft.getInstance().getTextureManager().bindTexture(ClientApplicationManager.LOCATION_APP_ICON_TEXTURE);
+        RenderUtil.drawRectWithTexture(this.screenX + this.getInterpolatedX(partialTicks) + 2.5, this.screenY + this.getInterpolatedY(partialTicks) + 2.5, icon.getMinU(), icon.getMinV(), 8, 8, icon.getMaxU() - icon.getMinU(), icon.getMaxV() - icon.getMinV(), 1, 1);
+//        RenderUtil.drawRectWithTexture(0, 0, 32, 32, 0, 0, 1, 1, 1, 1);
+
+        AppInfo info = ClientApplicationManager.getAppInfo(this.getContentId());
+        Minecraft.getInstance().fontRenderer.drawStringWithShadow(info.getName(), this.screenX + this.getInterpolatedX(partialTicks) + 12, this.screenY + this.getInterpolatedY(partialTicks) + 2.5f, this.getLaptop().readSetting(DeviceConstants.DESKTOP_TEXT_COLOR));
 
         GlStateManager.color4f(((color >> 16) & 0xff) / 255f, ((color >> 8) & 0xff) / 255f, (color & 0xff) / 255f, 1);
         this.closeButton.setPosition(this, partialTicks);
