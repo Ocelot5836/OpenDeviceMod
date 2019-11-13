@@ -1,6 +1,11 @@
 package com.ocelot.opendevices.api.laptop.window;
 
+import com.ocelot.opendevices.api.laptop.window.application.Application;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.ResourceLocation;
+
+import javax.annotation.Nullable;
 
 /**
  * <p>The most abstract form of any content that can be found within a window.</p>
@@ -26,16 +31,6 @@ public interface WindowContent
      * @param partialTicks The percentage from last update and this update
      */
     void render(float x, float y, int mouseX, int mouseY, float partialTicks);
-
-    /**
-     * Called when the window displaying this content is now focused.
-     */
-    void onGainFocus();
-
-    /**
-     * Called when the window displaying this content is no longer focused.
-     */
-    void onLostFocus();
 
     /**
      * Called when the mouse is pressed.
@@ -100,7 +95,39 @@ public interface WindowContent
     void loadState(CompoundNBT nbt);
 
     /**
+     * Called when the window displaying this content is now focused.
+     */
+    void onGainFocus();
+
+    /**
+     * Called when the window displaying this content is no longer focused.
+     */
+    void onLostFocus();
+
+    /**
      * Called when the window displaying this content is closed.
      */
     void onClose();
+
+    /**
+     * @return The title of the window displaying this content or null for no title
+     */
+    @Nullable
+    String getTitle();
+
+    /**
+     * @return The icon of the window displaying this content or null for no icon
+     */
+    @Nullable
+    TextureAtlasSprite getIconSprite();
+
+    /**
+     * @return The location of the map containing the icon of the window displaying this content. Only used if {@link #getIconSprite()} is not null
+     */
+    ResourceLocation getIconMapLocation();
+
+    /**
+     * @return The window this content is displayed in
+     */
+    Window getWindow();
 }

@@ -5,10 +5,10 @@ import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.laptop.desktop.Desktop;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopBackground;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopManager;
-import com.ocelot.opendevices.api.laptop.window.Application;
 import com.ocelot.opendevices.api.laptop.window.WindowContentType;
+import com.ocelot.opendevices.api.laptop.window.application.Application;
+import com.ocelot.opendevices.api.laptop.window.application.ApplicationManager;
 import com.ocelot.opendevices.api.task.TaskManager;
-import com.ocelot.opendevices.api.laptop.window.ApplicationManager;
 import com.ocelot.opendevices.core.laptop.window.LaptopWindow;
 import com.ocelot.opendevices.core.laptop.window.WindowClient;
 import com.ocelot.opendevices.core.task.CloseWindowTask;
@@ -239,16 +239,13 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
         return this.windows.toArray(this.windowsArray);
     }
 
-    @Override
-    public int getWindowCount()
-    {
-        return this.windows.size();
-    }
-
+    /**
+     * @return The currently focused window or null if there is no window focused
+     */
     @Nullable
     public LaptopWindow getFocusedWindow()
     {
-        return this.getWindow(this.getFocusedWindowId());
+        return this.getFocusedWindowId() == null ? null : this.getWindow(this.getFocusedWindowId());
     }
 
     @Nullable

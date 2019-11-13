@@ -1,8 +1,8 @@
 package com.ocelot.opendevices.api.laptop.desktop;
 
 import com.ocelot.opendevices.api.laptop.Laptop;
-import com.ocelot.opendevices.api.laptop.window.Application;
 import com.ocelot.opendevices.api.laptop.window.Window;
+import com.ocelot.opendevices.api.laptop.window.application.Application;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nullable;
@@ -76,11 +76,6 @@ public interface Desktop
      * @return All currently opened windows
      */
     Window[] getWindows();
-
-    /**
-     * @return The number of currently opened windows
-     */
-    int getWindowCount();
 
     /**
      * @return The currently focused window or null if there is no window focused

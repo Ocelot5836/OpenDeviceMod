@@ -1,7 +1,8 @@
-package com.ocelot.opendevices.api.laptop.window;
+package com.ocelot.opendevices.api.laptop.window.application;
 
 import com.google.common.collect.HashBiMap;
 import com.ocelot.opendevices.OpenDevices;
+import com.ocelot.opendevices.api.laptop.window.WindowContent;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.forgespi.language.ModFileScanData;
@@ -115,17 +116,6 @@ public class ApplicationManager
         }
 
         return REGISTRY.inverse().get(clazz);
-    }
-
-    /**
-     * Checks to see if the specified application is registered.
-     *
-     * @param clazz The class of the app to check
-     * @return Whether or not there is an entry for that app
-     */
-    public static boolean isValidApplication(Class<? extends WindowContent> clazz)
-    {
-        return REGISTRY.inverse().containsKey(clazz);
     }
 
     /**

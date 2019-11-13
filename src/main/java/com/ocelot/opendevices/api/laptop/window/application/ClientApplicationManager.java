@@ -1,4 +1,4 @@
-package com.ocelot.opendevices.api.laptop.window;
+package com.ocelot.opendevices.api.laptop.window.application;
 
 import com.google.common.base.Charsets;
 import com.ocelot.opendevices.OpenDevices;

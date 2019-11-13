@@ -1,8 +1,6 @@
 package com.ocelot.opendevices.api;
 
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.api.laptop.settings.IntegerLaptopSetting;
-import com.ocelot.opendevices.api.laptop.settings.LaptopSetting;
 import net.minecraft.util.ResourceLocation;
 
 /**
@@ -35,19 +33,5 @@ public class DeviceConstants
 
     public static final ResourceLocation DEFAULT_BACKGROUND_LOCATION = new ResourceLocation(OpenDevices.MOD_ID, "textures/laptop/default_background.png");
     public static final ResourceLocation WINDOW_LOCATION = new ResourceLocation(OpenDevices.MOD_ID, "textures/laptop/window.png");
-
-    @LaptopSetting.Register
-    public static final LaptopSetting<Integer> DESKTOP_TEXT_COLOR = new IntegerLaptopSetting(new ResourceLocation(OpenDevices.MOD_ID, "desktop_text_color"), 0xFFFFFFFF);
-    @LaptopSetting.Register
-    public static final LaptopSetting<Integer> TASKBAR_COLOR = new IntegerLaptopSetting(new ResourceLocation(OpenDevices.MOD_ID, "taskbar_color"), 0x45494D);
-    @LaptopSetting.Register
-    public static final LaptopSetting<Integer> TASKBAR_HIGHLIGHT_COLOR = new IntegerLaptopSetting(new ResourceLocation(OpenDevices.MOD_ID, "taskbar_highlight_color"), 0xBDC6FF);
-
-    @LaptopSetting.Register
-    public static final LaptopSetting<Integer> WINDOW_COLOR = new IntegerLaptopSetting(new ResourceLocation(OpenDevices.MOD_ID, "window_color"), 0x45494D);
-    @LaptopSetting.Register
-    public static final LaptopSetting<Integer> FOCUSED_WINDOW_COLOR = new IntegerLaptopSetting(new ResourceLocation(OpenDevices.MOD_ID, "focused_window_color"), 0xFF00FF);
-    @LaptopSetting.Register
-    public static final LaptopSetting<Integer> WINDOW_BUTTON_COLOR = new IntegerLaptopSetting(new ResourceLocation(OpenDevices.MOD_ID, "window_button_color"), 0xCCCCCC);
 
 }
