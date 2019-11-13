@@ -29,7 +29,7 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
 
     public LaptopWindow(Laptop laptop, WindowContentType contentType, ResourceLocation contentId, int width, int height)
     {
-        this(laptop, contentType, contentId, (DeviceConstants.LAPTOP_SCREEN_WIDTH - width) / 2f, (DeviceConstants.LAPTOP_SCREEN_HEIGHT - DeviceConstants.LAPTOP_TASK_BAR_HEIGHT - height) / 2f, width, height);
+        this(laptop, contentType, contentId, (DeviceConstants.LAPTOP_SCREEN_WIDTH - width) / 2f, (DeviceConstants.LAPTOP_SCREEN_HEIGHT - laptop.getDesktop().getTaskbarHeight() - height) / 2f, width, height);
     }
 
     public LaptopWindow(Laptop laptop, WindowContentType contentType, ResourceLocation contentId, float x, float y, int width, int height)
@@ -52,8 +52,8 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
             this.y = 0;
         if (this.x >= DeviceConstants.LAPTOP_SCREEN_WIDTH - this.width)
             this.x = DeviceConstants.LAPTOP_SCREEN_WIDTH - this.width;
-        if (this.y >= DeviceConstants.LAPTOP_SCREEN_HEIGHT - DeviceConstants.LAPTOP_TASK_BAR_HEIGHT - this.height)
-            this.y = DeviceConstants.LAPTOP_SCREEN_HEIGHT - DeviceConstants.LAPTOP_TASK_BAR_HEIGHT - this.height;
+        if (this.y >= DeviceConstants.LAPTOP_SCREEN_HEIGHT - laptop.getDesktop().getTaskbarHeight() - this.height)
+            this.y = DeviceConstants.LAPTOP_SCREEN_HEIGHT - laptop.getDesktop().getTaskbarHeight() - this.height;
     }
 
     @Override

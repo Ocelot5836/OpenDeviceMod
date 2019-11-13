@@ -93,6 +93,16 @@ public interface Desktop
     UUID getFocusedWindowId();
 
     /**
+     * @return The height of the task bar
+     */
+    int getTaskbarHeight();
+
+    /**
+     * @return Whether or not the task bar is enlarged
+     */
+    boolean isEnlarged();
+
+    /**
      * @return The current desktop background
      */
     DesktopBackground getBackground();

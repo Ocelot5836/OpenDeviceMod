@@ -87,10 +87,11 @@ public class LaptopRenderer extends AbstractGui
         {
             minecraft.getTextureManager().bindTexture(DeviceConstants.WINDOW_LOCATION);
             int color = laptop.readSetting(LaptopSettings.TASKBAR_COLOR);
+            int height = desktop.getTaskbarHeight();
             GlStateManager.color4f(((color >> 16) & 0xff) / 255f, ((color >> 8) & 0xff) / 255f, (color & 0xff) / 255f, 1);
-            RenderUtil.drawRectWithTexture(posX, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - DeviceConstants.LAPTOP_TASK_BAR_HEIGHT, 0, 15, 1, DeviceConstants.LAPTOP_TASK_BAR_HEIGHT, 1, DeviceConstants.LAPTOP_TASK_BAR_HEIGHT);
-            RenderUtil.drawRectWithTexture(posX + 1, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - DeviceConstants.LAPTOP_TASK_BAR_HEIGHT, 1, 15, DeviceConstants.LAPTOP_SCREEN_WIDTH - 2, DeviceConstants.LAPTOP_TASK_BAR_HEIGHT, 1, DeviceConstants.LAPTOP_TASK_BAR_HEIGHT);
-            RenderUtil.drawRectWithTexture(posX + DeviceConstants.LAPTOP_SCREEN_WIDTH - 1, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - DeviceConstants.LAPTOP_TASK_BAR_HEIGHT, 2, 15, 1, DeviceConstants.LAPTOP_TASK_BAR_HEIGHT, 1, DeviceConstants.LAPTOP_TASK_BAR_HEIGHT);
+            RenderUtil.drawRectWithTexture(posX, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - height, 0, 15, 1, height, 1, height);
+            RenderUtil.drawRectWithTexture(posX + 1, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - height, 1, 15, DeviceConstants.LAPTOP_SCREEN_WIDTH - 2, height, 1, height);
+            RenderUtil.drawRectWithTexture(posX + DeviceConstants.LAPTOP_SCREEN_WIDTH - 1, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - height, 2, 15, 1, height, 1, height);
             GlStateManager.color4f(1, 1, 1, 1);
         }
     }

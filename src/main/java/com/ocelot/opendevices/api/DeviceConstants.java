@@ -20,7 +20,6 @@ public class DeviceConstants
 
     public static final int LAPTOP_SCREEN_WIDTH = LAPTOP_GUI_WIDTH - LAPTOP_GUI_BORDER * 2;
     public static final int LAPTOP_SCREEN_HEIGHT = LAPTOP_GUI_HEIGHT - LAPTOP_GUI_BORDER * 2;
-    public static final int LAPTOP_TASK_BAR_HEIGHT = 18;
     public static final int LAPTOP_WINDOW_BUTTON_SIZE = 11;
     public static final int LAPTOP_WINDOW_BAR_HEIGHT = 12;
 
