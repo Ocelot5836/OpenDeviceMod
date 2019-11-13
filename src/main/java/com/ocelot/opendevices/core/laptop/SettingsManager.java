@@ -45,7 +45,7 @@ public class SettingsManager
                     throw new RuntimeException("Setting: " + registryName + " attempted to override existing setting. Skipping!");
 
                 REGISTRY.put(registryName, setting);
-                OpenDevices.LOGGER.warn("Registered setting: " + registryName);
+                OpenDevices.LOGGER.debug("Registered setting: " + registryName);
             }
             catch (Exception e)
             {

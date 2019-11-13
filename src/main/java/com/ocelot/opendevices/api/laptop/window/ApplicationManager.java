@@ -3,8 +3,6 @@ package com.ocelot.opendevices.api.laptop.window;
 import com.google.common.collect.HashBiMap;
 import com.ocelot.opendevices.OpenDevices;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.forgespi.language.ModFileScanData;
 import org.objectweb.asm.Type;
@@ -14,6 +12,7 @@ import java.lang.annotation.ElementType;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ApplicationManager
@@ -57,16 +56,13 @@ public class ApplicationManager
                     throw new RuntimeException("Application: " + registryName + " attempted to override existing application. Skipping!");
 
                 REGISTRY.put(registryName, (Class<? extends Application>) clazz);
-                LaptopClientInfo.APP_INFO.put(registryName, new AppInfo(registryName));
-                OpenDevices.LOGGER.info("Registered application: " + registryName);
+                OpenDevices.LOGGER.debug("Registered application: " + registryName);
             }
             catch (Exception e)
             {
                 OpenDevices.LOGGER.error("Could not register application class " + className + ". Skipping!", e);
             }
         }
-
-        DistExecutor.runWhenOn(Dist.CLIENT, () -> LaptopClientInfo::reloadApps);
 
         initialized = true;
     }
@@ -95,6 +91,14 @@ public class ApplicationManager
         }
 
         return null;
+    }
+
+    /**
+     * @return A set containing all registered application classes. <b>Should never be modified!</b>
+     */
+    public static Set<Class<? extends Application>> getAllRegisteredApplications()
+    {
+        return REGISTRY.values();
     }
 
     /**

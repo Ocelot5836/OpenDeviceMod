@@ -18,7 +18,7 @@ public class TestApplication extends Application
     @Override
     public void render(float x, float y, int mouseX, int mouseY, float partialTicks)
     {
-        Minecraft.getInstance().fontRenderer.drawStringWithShadow("Test", x, y, 0xffffffff);
+        Minecraft.getInstance().fontRenderer.drawStringWithShadow("Actual Application Content", x, y, 0xffffffff);
     }
 
     @Override
