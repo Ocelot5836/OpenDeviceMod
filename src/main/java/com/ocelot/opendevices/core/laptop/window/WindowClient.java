@@ -81,7 +81,7 @@ public class WindowClient extends LaptopWindow
         if (icon != null)
         {
             Minecraft.getInstance().getTextureManager().bindTexture(this.content.getIconMapLocation());
-            RenderUtil.drawRectWithTexture(this.screenX + this.getInterpolatedX(partialTicks) + 2.5, this.screenY + this.getInterpolatedY(partialTicks) + 2.5, icon.getMinU(), icon.getMinV(), 8, 8, icon.getMaxU() - icon.getMinU(), icon.getMaxV() - icon.getMinV(), 1, 1);
+            RenderUtil.drawRectWithTexture(this.screenX + this.getInterpolatedX(partialTicks) + 2.5, this.screenY + this.getInterpolatedY(partialTicks) + 2.5, 8, 8, icon);
             titleOffset = 10;
         }
 

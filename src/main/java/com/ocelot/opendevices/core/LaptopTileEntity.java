@@ -34,6 +34,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
 
     private CompoundNBT settings;
     private LaptopDesktop desktop;
+    private LaptopTaskBar taskBar;
 
     @OnlyIn(Dist.CLIENT)
     private float rotation;
@@ -49,6 +50,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
 
         this.settings = new CompoundNBT();
         this.desktop = new LaptopDesktop(this);
+        this.taskBar = new LaptopTaskBar(this);
     }
 
     @Override
@@ -95,6 +97,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
             }
 
             this.desktop.update();
+            this.taskBar.update();
         }
     }
 
@@ -124,6 +127,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
     {
         nbt.put("settings", this.settings);
         nbt.put("desktop", this.desktop.serializeNBT());
+        nbt.put("taskBar", this.taskBar.serializeNBT());
     }
 
     @Override
@@ -131,6 +135,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
     {
         this.settings = nbt.getCompound("settings");
         this.desktop.deserializeNBT(nbt.getCompound("desktop"));
+        this.taskBar.deserializeNBT(nbt.getCompound("taskBar"));
     }
 
     public void syncSettings(CompoundNBT nbt)
@@ -229,6 +234,12 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
     public LaptopDesktop getDesktop()
     {
         return desktop;
+    }
+
+    @Override
+    public LaptopTaskBar getTaskBar()
+    {
+        return taskBar;
     }
 
     @Override

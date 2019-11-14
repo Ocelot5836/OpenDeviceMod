@@ -7,13 +7,20 @@ import com.ocelot.opendevices.api.LaptopSettings;
 import com.ocelot.opendevices.api.laptop.Laptop;
 import com.ocelot.opendevices.api.laptop.desktop.Desktop;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopBackground;
+import com.ocelot.opendevices.api.laptop.taskbar.TaskBar;
 import com.ocelot.opendevices.api.laptop.window.Window;
+import com.ocelot.opendevices.api.laptop.window.application.Application;
+import com.ocelot.opendevices.api.laptop.window.application.ApplicationManager;
+import com.ocelot.opendevices.api.laptop.window.application.ClientApplicationManager;
 import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.core.laptop.window.WindowClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StringUtils;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -44,7 +51,9 @@ public class LaptopRenderer extends AbstractGui
 
     public static void render(Laptop laptop, Minecraft minecraft, FontRenderer fontRenderer, int posX, int posY, int mouseX, int mouseY, float partialTicks)
     {
+        TextureManager textureManager = minecraft.getTextureManager();
         Desktop desktop = laptop.getDesktop();
+        TaskBar taskBar = laptop.getTaskBar();
 
         /* Desktop Background */
         {
@@ -73,11 +82,11 @@ public class LaptopRenderer extends AbstractGui
 
         /* Applications */
         Window[] windows = desktop.getWindows();
-        for (int i = 0; i < windows.length; i++)
+        for (Window value : windows)
         {
-            if (windows[i] instanceof WindowClient)
+            if (value instanceof WindowClient)
             {
-                WindowClient window = (WindowClient) windows[i];
+                WindowClient window = (WindowClient) value;
                 window.setScreenPosition(posX, posY);
                 window.render(mouseX, mouseY, laptop.readSetting(LaptopSettings.WINDOW_COLOR), partialTicks);
             }
@@ -85,15 +94,42 @@ public class LaptopRenderer extends AbstractGui
 
         /* Task bar */
         {
-            //TODO fix task bar texture when height changes
-            minecraft.getTextureManager().bindTexture(DeviceConstants.WINDOW_LOCATION);
+            textureManager.bindTexture(DeviceConstants.WINDOW_LOCATION);
             int color = laptop.readSetting(LaptopSettings.TASKBAR_COLOR);
-            int height = desktop.getTaskbarHeight();
+            int height = taskBar.getHeight();
+
             GlStateManager.color4f(((color >> 16) & 0xff) / 255f, ((color >> 8) & 0xff) / 255f, (color & 0xff) / 255f, 1);
-            RenderUtil.drawRectWithTexture(posX, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - height, 0, 15, 1, height, 1, height);
-            RenderUtil.drawRectWithTexture(posX + 1, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - height, 1, 15, DeviceConstants.LAPTOP_SCREEN_WIDTH - 2, height, 1, height);
-            RenderUtil.drawRectWithTexture(posX + DeviceConstants.LAPTOP_SCREEN_WIDTH - 1, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - height, 2, 15, 1, height, 1, height);
+            {
+                /* Corners */
+                RenderUtil.drawRectWithTexture(posX, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - height, 0, 15, 1, 1, 1, 1);
+                RenderUtil.drawRectWithTexture(posX, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - 1, 0, 17, 1, 1, 1, 1);
+                RenderUtil.drawRectWithTexture(posX + DeviceConstants.LAPTOP_SCREEN_WIDTH - 1, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - height, 2, 15, 1, 1, 1, 1);
+                RenderUtil.drawRectWithTexture(posX + DeviceConstants.LAPTOP_SCREEN_WIDTH - 1, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - 1, 2, 17, 1, 1, 1, 1);
+
+                /* Edges */
+                RenderUtil.drawRectWithTexture(posX, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - height + 1, 0, 16, 1, height - 2, 1, 1);
+                RenderUtil.drawRectWithTexture(posX + 1, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - height, 1, 15, DeviceConstants.LAPTOP_SCREEN_WIDTH - 2, 1, 1, 1);
+                RenderUtil.drawRectWithTexture(posX + DeviceConstants.LAPTOP_SCREEN_WIDTH - 1, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - height + 1, 2, 16, 1, height - 2, 1, 1);
+                RenderUtil.drawRectWithTexture(posX + 1, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - 1, 1, 17, DeviceConstants.LAPTOP_SCREEN_WIDTH - 2, 1, 1, 1);
+
+                /* Center */
+                RenderUtil.drawRectWithTexture(posX + 1, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - height + 1, 1, 16, DeviceConstants.LAPTOP_SCREEN_WIDTH - 2, height - 2, 1, 1);
+            }
             GlStateManager.color4f(1, 1, 1, 1);
+
+            {
+                int size = taskBar.isEnlarged() ? 16 : 8;
+                int i = 0;
+
+                for (Class<? extends Application> app : ApplicationManager.getAllRegisteredApplications())
+                {
+                    ResourceLocation registryName = ApplicationManager.getRegistryName(app);
+                    TextureAtlasSprite icon = ClientApplicationManager.getAppIcon(registryName);
+                    textureManager.bindTexture(ClientApplicationManager.LOCATION_APP_ICON_TEXTURE);
+                    RenderUtil.drawRectWithTexture(posX + 4 + (size + 4) * i, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4, size, size, icon);
+                    i++;
+                }
+            }
         }
     }
 }
