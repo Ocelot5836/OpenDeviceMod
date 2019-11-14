@@ -24,25 +24,11 @@ public interface Desktop
     void openApplication(ResourceLocation registryName);
 
     /**
-     * Closes the application with the specified information.
-     *
-     * @param registryName the registry name of the app
-     */
-    void closeApplication(ResourceLocation registryName);
-
-    /**
      * Opens the application with the specified information.
      *
      * @param clazz The class of the app
      */
     void openApplication(Class<? extends Application> clazz);
-
-    /**
-     * Closes the application with the specified information.
-     *
-     * @param clazz The class of the app
-     */
-    void closeApplication(Class<? extends Application> clazz);
 
     /**
      * Focuses the window with the specified ID and moves it to the front.
@@ -91,16 +77,6 @@ public interface Desktop
      */
     @Nullable
     UUID getFocusedWindowId();
-
-    /**
-     * @return The height of the task bar
-     */
-    int getTaskbarHeight();
-
-    /**
-     * @return Whether or not the task bar is enlarged
-     */
-    boolean isEnlarged();
 
     /**
      * @return The current desktop background

@@ -2,7 +2,6 @@ package com.ocelot.opendevices.core;
 
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceConstants;
-import com.ocelot.opendevices.api.LaptopSettings;
 import com.ocelot.opendevices.api.laptop.desktop.Desktop;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopBackground;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopManager;
@@ -37,7 +36,7 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
     private LaptopWindow[] windowsArray;
     private UUID focusedWindowId;
 
-    public LaptopDesktop(LaptopTileEntity laptop)
+    LaptopDesktop(LaptopTileEntity laptop)
     {
         this.laptop = laptop;
         this.background = DesktopBackground.DEFAULT.copy();
@@ -134,21 +133,9 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
     }
 
     @Override
-    public void closeApplication(ResourceLocation registryName)
-    {
-
-    }
-
-    @Override
     public void openApplication(Class<? extends Application> clazz)
     {
         openApplication(ApplicationManager.getRegistryName(clazz));
-    }
-
-    @Override
-    public void closeApplication(Class<? extends Application> clazz)
-    {
-        closeApplication(ApplicationManager.getRegistryName(clazz));
     }
 
     @Override
@@ -254,18 +241,6 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
     public UUID getFocusedWindowId()
     {
         return focusedWindowId;
-    }
-
-    @Override
-    public int getTaskbarHeight()
-    {
-        return this.isEnlarged() ? 24 : 16;
-    }
-
-    @Override
-    public boolean isEnlarged()
-    {
-        return this.laptop.readSetting(LaptopSettings.TASKBAR_ENLARGED);
     }
 
     @Override

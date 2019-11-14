@@ -7,6 +7,7 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
@@ -48,6 +49,16 @@ public class RenderUtil
     public static void drawRectWithTexture(double x, double y, double z, float u, float v, float width, float height, float textureWidth, float textureHeight)
     {
         drawRectWithTexture(x, y, z, u, v, width, height, textureWidth, textureHeight, 256, 256);
+    }
+
+    public static void drawRectWithTexture(double x, double y, double z, float width, float height, TextureAtlasSprite sprite)
+    {
+        drawRectWithTexture(x, y, z, sprite.getMinU(), sprite.getMinV(), width, height, sprite.getMaxU() - sprite.getMinU(), sprite.getMaxV() - sprite.getMinV(), 1, 1);
+    }
+
+    public static void drawRectWithTexture(double x, double y, float width, float height, TextureAtlasSprite sprite)
+    {
+        drawRectWithTexture(x, y, 0, sprite.getMinU(), sprite.getMinV(), width, height, sprite.getMaxU() - sprite.getMinU(), sprite.getMaxV() - sprite.getMinV(), 1, 1);
     }
 
     public static void drawRectWithTexture(double x, double y, double z, float u, float v, float width, float height, float textureWidth, float textureHeight, int sourceWidth, int sourceHeight)
