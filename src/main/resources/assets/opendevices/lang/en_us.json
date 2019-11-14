@@ -9,5 +9,7 @@
 	"screen.opendevices.laptop": "Laptop",
 	"screen.opendevices.laptop.version.unknown": "Unknown",
 	"screen.opendevices.laptop.version": "Alpha v%s",
-	"screen.opendevices.laptop.dev_version": "Developer Version - %s"
+	"screen.opendevices.laptop.dev_version": "Developer Version - %s",
+
+	"gui.tag_filter.opendevices.devices.laptops": "Laptops"
 }

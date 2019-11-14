@@ -1,5 +1,6 @@
 package com.ocelot.opendevices;
 
+import com.mrcrayfish.filters.Filters;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopManager;
 import com.ocelot.opendevices.api.laptop.window.application.ApplicationManager;
@@ -15,12 +16,14 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -69,6 +72,11 @@ public class OpenDevices
     {
         DeviceBlocks.initClient();
         MinecraftForge.EVENT_BUS.register(LaptopTileEntityRenderer.INSTANCE);
+
+        if (ModList.get().isLoaded("filters"))
+        {
+            Filters.get().register(TAB, new ResourceLocation(MOD_ID, "devices/laptops"), new ItemStack(DeviceBlocks.WHITE_LAPTOP));
+        }
     }
 
     @SubscribeEvent
