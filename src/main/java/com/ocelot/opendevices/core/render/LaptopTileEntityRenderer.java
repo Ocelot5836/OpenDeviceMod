@@ -62,8 +62,11 @@ public class LaptopTileEntityRenderer extends TileEntityRenderer<LaptopTileEntit
     {
         OpenDevices.LOGGER.debug("Deleting Laptop Render Cache");
 
-        this.framebuffer.deleteFramebuffer();
-        this.framebuffer = null;
+        if (this.framebuffer != null)
+        {
+            this.framebuffer.deleteFramebuffer();
+            this.framebuffer = null;
+        }
         if (this.screenList != -1)
         {
             GlStateManager.deleteLists(this.screenList, 1);
