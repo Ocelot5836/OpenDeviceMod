@@ -9,9 +9,8 @@ import com.ocelot.opendevices.api.laptop.desktop.Desktop;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopBackground;
 import com.ocelot.opendevices.api.laptop.taskbar.TaskBar;
 import com.ocelot.opendevices.api.laptop.window.Window;
-import com.ocelot.opendevices.api.laptop.window.application.Application;
+import com.ocelot.opendevices.api.laptop.window.application.ApplicationLoader;
 import com.ocelot.opendevices.api.laptop.window.application.ApplicationManager;
-import com.ocelot.opendevices.api.laptop.window.application.ClientApplicationManager;
 import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.core.laptop.window.WindowClient;
 import net.minecraft.client.Minecraft;
@@ -121,11 +120,10 @@ public class LaptopRenderer extends AbstractGui
                 int size = taskBar.isEnlarged() ? 16 : 8;
                 int i = 0;
 
-                for (Class<? extends Application> app : ApplicationManager.getAllRegisteredApplications())
+                for (ResourceLocation registryName : ApplicationLoader.REGISTRY.getKeys())
                 {
-                    ResourceLocation registryName = ApplicationManager.getRegistryName(app);
-                    TextureAtlasSprite icon = ClientApplicationManager.getAppIcon(registryName);
-                    textureManager.bindTexture(ClientApplicationManager.LOCATION_APP_ICON_TEXTURE);
+                    TextureAtlasSprite icon = ApplicationManager.getAppIcon(registryName);
+                    textureManager.bindTexture(ApplicationManager.LOCATION_APP_ICON_TEXTURE);
                     RenderUtil.drawRectWithTexture(posX + 4 + (size + 4) * i, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4, size, size, icon);
                     i++;
                 }

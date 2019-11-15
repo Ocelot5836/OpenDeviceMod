@@ -3,8 +3,8 @@ package com.ocelot.opendevices;
 import com.mrcrayfish.filters.Filters;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopManager;
+import com.ocelot.opendevices.api.laptop.window.application.ApplicationLoader;
 import com.ocelot.opendevices.api.laptop.window.application.ApplicationManager;
-import com.ocelot.opendevices.api.laptop.window.application.ClientApplicationManager;
 import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.core.laptop.SettingsManager;
 import com.ocelot.opendevices.core.render.LaptopTileEntityRenderer;
@@ -58,8 +58,8 @@ public class OpenDevices
         LOGGER.debug("Registering Content");
         SettingsManager.init();
         TaskManager.init();
-        ApplicationManager.init();
-        DistExecutor.runWhenOn(Dist.CLIENT, () -> ClientApplicationManager::addListeners);
+        ApplicationLoader.init();
+        DistExecutor.runWhenOn(Dist.CLIENT, () -> ApplicationManager::init);
     }
 
     private void init(FMLCommonSetupEvent event)
@@ -91,6 +91,12 @@ public class OpenDevices
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
     public static class RegistryEvents
     {
+        @SubscribeEvent
+        public static void registerRegistries(RegistryEvent.NewRegistry event)
+        {
+            ApplicationLoader.registerRegistry();
+        }
+
         @SubscribeEvent
         public static void registerItems(RegistryEvent.Register<Item> event)
         {

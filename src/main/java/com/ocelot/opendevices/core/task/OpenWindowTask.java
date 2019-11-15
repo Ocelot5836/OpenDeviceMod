@@ -5,7 +5,6 @@ import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.core.LaptopDesktop;
 import com.ocelot.opendevices.core.LaptopTileEntity;
-import com.ocelot.opendevices.api.laptop.window.application.ApplicationManager;
 import com.ocelot.opendevices.core.laptop.window.LaptopWindow;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
@@ -53,14 +52,15 @@ public class OpenWindowTask extends Task
             LaptopDesktop desktop = laptop.getDesktop();
 
             this.window = desktop.createWindow(nbt.getCompound("data"), nbt.getCompound("state"));
-            if (ApplicationManager.isValidApplication(this.window.getContentId()))
+
+            if (this.window.getContentType().isValid(this.window.getContentId()))
             {
                 desktop.syncOpenWindow(this.window);
                 this.setSuccessful();
             }
             else
             {
-                OpenDevices.LOGGER.error("Attempted to open unregistered window: " + this.window.getContentId() + ". Applications must be registered using the WindowContent#Register annotation.");
+                OpenDevices.LOGGER.error("Attempted to open unregistered window content: " + this.window.getContentId() + ". Applications must be registered using the WindowContent#Register annotation.");
             }
         }
     }

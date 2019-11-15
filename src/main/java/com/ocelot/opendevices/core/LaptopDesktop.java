@@ -6,8 +6,7 @@ import com.ocelot.opendevices.api.laptop.desktop.Desktop;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopBackground;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopManager;
 import com.ocelot.opendevices.api.laptop.window.WindowContentType;
-import com.ocelot.opendevices.api.laptop.window.application.Application;
-import com.ocelot.opendevices.api.laptop.window.application.ApplicationManager;
+import com.ocelot.opendevices.api.laptop.window.application.ApplicationLoader;
 import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.core.laptop.window.LaptopWindow;
 import com.ocelot.opendevices.core.laptop.window.WindowClient;
@@ -129,13 +128,13 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
             return;
         }
 
-        TaskManager.sendTask(new OpenWindowTask(this.laptop.getPos(), createWindow(WindowContentType.APPLICATION, registryName, DeviceConstants.LAPTOP_DEFAULT_APPLICATION_WIDTH, DeviceConstants.LAPTOP_DEFAULT_APPLICATION_HEIGHT)), TaskManager.TaskReceiver.SENDER_AND_NEARBY);
-    }
+        if (!ApplicationLoader.REGISTRY.containsKey(registryName))
+        {
+            OpenDevices.LOGGER.warn("Attempted to open invalid application '" + registryName + "' on the server! Applications MUST be registered on both the client AND server to function!");
+            return;
+        }
 
-    @Override
-    public void openApplication(Class<? extends Application> clazz)
-    {
-        openApplication(ApplicationManager.getRegistryName(clazz));
+        TaskManager.sendTask(new OpenWindowTask(this.laptop.getPos(), createWindow(WindowContentType.APPLICATION, registryName, DeviceConstants.LAPTOP_DEFAULT_APPLICATION_WIDTH, DeviceConstants.LAPTOP_DEFAULT_APPLICATION_HEIGHT)), TaskManager.TaskReceiver.SENDER_AND_NEARBY);
     }
 
     @Override

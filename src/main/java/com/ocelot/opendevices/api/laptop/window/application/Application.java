@@ -100,13 +100,13 @@ public abstract class Application extends AbstractGui implements WindowContent
     @Override
     public TextureAtlasSprite getIconSprite()
     {
-        return ClientApplicationManager.getAppIcon(this.getRegistryName());
+        return ApplicationManager.getAppIcon(this.getRegistryName());
     }
 
     @Override
     public ResourceLocation getIconMapLocation()
     {
-        return ClientApplicationManager.LOCATION_APP_ICON_TEXTURE;
+        return ApplicationManager.LOCATION_APP_ICON_TEXTURE;
     }
 
     @Override
@@ -127,7 +127,7 @@ public abstract class Application extends AbstractGui implements WindowContent
      * @return The additional information associated with this application
      */
     public final AppInfo getInfo(){
-        return ClientApplicationManager.getAppInfo(this.getRegistryName());
+        return ApplicationManager.getAppInfo(this.getRegistryName());
     }
 
     public final void setWindow(Window window)

@@ -1,28 +1,52 @@
 package com.ocelot.opendevices.api.laptop.window.application;
 
+import com.google.common.base.Charsets;
 import com.google.common.collect.HashBiMap;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.laptop.window.WindowContent;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.AtlasTexture;
+import net.minecraft.client.renderer.texture.MissingTextureSprite;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.profiler.IProfiler;
+import net.minecraft.resources.IFutureReloadListener;
+import net.minecraft.resources.IReloadableResourceManager;
+import net.minecraft.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.forgespi.language.ModFileScanData;
-import org.objectweb.asm.Type;
+import org.apache.commons.io.IOUtils;
 
 import javax.annotation.Nullable;
-import java.lang.annotation.ElementType;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
+/**
+ * <p>Manages all client information about applications such as the physical application classes.</p>
+ * <p>Any additional information can be fetched using {@link #getAppInfo(ResourceLocation)}</p>
+ * <p>Application icon sprites can be fetched using {@link #getAppIcon(ResourceLocation)}</p>
+ *
+ * @author Ocelot
+ * @see AppInfo
+ */
 public class ApplicationManager
 {
-    private static final Type AUTO_REGISTRY = Type.getType(Application.Register.class);
+    public static final ResourceLocation LOCATION_APP_ICON_TEXTURE = new ResourceLocation(OpenDevices.MOD_ID, "textures/atlas/application_icons.png");
+
+    private static final Map<ResourceLocation, AppInfo> APP_INFO = new HashMap<>();
     private static final HashBiMap<ResourceLocation, Class<? extends Application>> REGISTRY = HashBiMap.create();
+    private static AtlasTexture iconAtlas;
     private static boolean initialized = false;
 
     private ApplicationManager() {}
+
+    private static void createAtlas()
+    {
+        iconAtlas = new AtlasTexture("textures/app/icon");
+        Minecraft.getInstance().getTextureManager().loadTickableTexture(LOCATION_APP_ICON_TEXTURE, iconAtlas);
+    }
 
     /**
      * This should never be used by the consumer. Core use only!
@@ -32,38 +56,28 @@ public class ApplicationManager
     {
         if (initialized)
         {
-            OpenDevices.LOGGER.warn("Attempted to initialize Application Manager even though it has already been initialized. This should NOT happen!");
+            OpenDevices.LOGGER.warn("Attempted to initialize Client Application Manager even though it has already been initialized. This should NOT happen!");
             return;
         }
 
-        List<ModFileScanData.AnnotationData> annotations = ModList.get().getAllScanData().stream().map(ModFileScanData::getAnnotations).flatMap(Collection::stream).filter(it -> it.getTargetType() == ElementType.TYPE && it.getAnnotationType().equals(AUTO_REGISTRY)).collect(Collectors.toList());
-
-        for (ModFileScanData.AnnotationData data : annotations)
+        ApplicationLoader.FOUND.forEach((registryName, className) ->
         {
-            ResourceLocation registryName = new ResourceLocation((String) data.getAnnotationData().get("value"));
-
-            String className = data.getClassType().getClassName();
             try
             {
-                Class<?> clazz = Class.forName(className);
-
-                if ("minecraft".equals(registryName.getNamespace()) || registryName.getPath().isEmpty())
-                    throw new IllegalArgumentException("Application: " + clazz + " does not have a valid registry name. Skipping!");
+                Class clazz = Class.forName(className);
 
                 if (!Application.class.isAssignableFrom(clazz))
                     throw new IllegalArgumentException("Application: " + clazz + " does not extend Application. Skipping!");
 
-                if (REGISTRY.containsKey(registryName))
-                    throw new RuntimeException("Application: " + registryName + " attempted to override existing application. Skipping!");
-
-                REGISTRY.put(registryName, (Class<? extends Application>) clazz);
-                OpenDevices.LOGGER.debug("Registered application: " + registryName);
+                REGISTRY.put(registryName, (Class<Application>) clazz);
             }
             catch (Exception e)
             {
-                OpenDevices.LOGGER.error("Could not register application class " + className + ". Skipping!", e);
+                OpenDevices.LOGGER.error("Could not bind application class " + className + " for client. Skipping!", e);
             }
-        }
+        });
+
+        ((IReloadableResourceManager) Minecraft.getInstance().getResourceManager()).addReloadListener(new ReloadListener());
 
         initialized = true;
     }
@@ -95,11 +109,32 @@ public class ApplicationManager
     }
 
     /**
-     * @return A set containing all registered application classes. <b>Should never be modified!</b>
+     * Checks the registry for app info under the specified registry name.
+     *
+     * @param registryName The name of the application to get the info of
+     * @return The application info of that app
      */
-    public static Set<Class<? extends Application>> getAllRegisteredApplications()
+    public static AppInfo getAppInfo(ResourceLocation registryName)
     {
-        return REGISTRY.values();
+        if (!APP_INFO.containsKey(registryName))
+        {
+            throw new RuntimeException("Unregistered Application: " + registryName + ". Use WindowContent#Register annotations to register an application.");
+        }
+
+        return APP_INFO.get(registryName);
+    }
+
+    /**
+     * Checks the registry for app info under the specified registry name and fetches it's icon sprite.
+     *
+     * @param registryName The name of the application to get the info of
+     * @return The icon sprite of that app or the missing sprite if it could not be found
+     */
+    public static TextureAtlasSprite getAppIcon(ResourceLocation registryName)
+    {
+        AppInfo info = getAppInfo(registryName);
+        ResourceLocation iconLocation = info.getIconLocation() == null ? MissingTextureSprite.getLocation() : info.getIconLocation();
+        return iconAtlas.getAtlasSprite(iconLocation.toString());
     }
 
     /**
@@ -119,13 +154,87 @@ public class ApplicationManager
     }
 
     /**
-     * Checks to see if the specified application is registered.
+     * Checks the registry for a class under the specified registry name.
      *
-     * @param registryName The registry name of the app to check
-     * @return Whether or not there is an entry for that app
+     * @param registryName The registry name of the application to get
+     * @return The physical class of that app
      */
-    public static boolean isValidApplication(ResourceLocation registryName)
+    public static Class<? extends Application> getApplicationClass(ResourceLocation registryName)
     {
-        return REGISTRY.containsKey(registryName);
+        if (!REGISTRY.containsKey(registryName))
+        {
+            throw new RuntimeException("Unregistered Application: " + registryName + ". Use WindowContent#Register annotations to register an application.");
+        }
+
+        return REGISTRY.get(registryName);
+    }
+
+    private static class ReloadListener implements IFutureReloadListener
+    {
+        @Override
+        public CompletableFuture<Void> reload(IStage stage, IResourceManager resourceManager, IProfiler preparationsProfiler, IProfiler reloadProfiler, Executor backgroundExecutor, Executor gameExecutor)
+        {
+            Set<ResourceLocation> iconLocations = new HashSet<>();
+            CompletableFuture<?>[] completablefuture = (ApplicationLoader.REGISTRY == null ? ApplicationLoader.FOUND.keySet() : ApplicationLoader.REGISTRY.getKeys()).stream().map(registryName -> CompletableFuture.runAsync(() ->
+            {
+                reloadApplication(registryName);
+                if (APP_INFO.containsKey(registryName))
+                {
+                    ResourceLocation iconLocation = APP_INFO.get(registryName).getIconLocation();
+                    if (iconLocation != null)
+                    {
+                        iconLocations.add(iconLocation);
+                    }
+                }
+            }, backgroundExecutor)).toArray(CompletableFuture[]::new);
+            return CompletableFuture.allOf(completablefuture).thenApplyAsync(v ->
+            {
+                preparationsProfiler.startTick();
+                preparationsProfiler.startSection("stitching");
+
+                if (iconAtlas == null)
+                {
+                    createAtlas();
+                }
+
+                AtlasTexture.SheetData sheetData = iconAtlas.stitch(resourceManager, iconLocations, preparationsProfiler);
+
+                preparationsProfiler.endSection();
+                preparationsProfiler.endTick();
+                return sheetData;
+            }, backgroundExecutor).thenCompose(stage::markCompleteAwaitingOthers).thenAcceptAsync(sheetData ->
+            {
+                reloadProfiler.startTick();
+                reloadProfiler.startSection("upload");
+
+                iconAtlas.upload(sheetData);
+
+                reloadProfiler.endSection();
+                reloadProfiler.endTick();
+            }, gameExecutor);
+        }
+
+        private static void reloadApplication(ResourceLocation registryName)
+        {
+            if (!ApplicationLoader.REGISTRY.containsKey(registryName))
+            {
+                OpenDevices.LOGGER.warn("Attempted to reload unregistered application info for application '" + registryName + "'!");
+                return;
+            }
+
+            try
+            {
+                InputStream stream = OpenDevices.class.getResourceAsStream("/assets/" + registryName.getNamespace() + "/apps/" + registryName.getPath() + ".json");
+                if (stream == null)
+                    throw new FileNotFoundException("Missing app info json. Should be located at 'assets/modid/apps/appId.json'");
+                AppInfo info = AppInfo.deserialize(registryName, IOUtils.toString(stream, Charsets.UTF_8));
+                info.setRegistryName(registryName);
+                APP_INFO.put(registryName, info);
+            }
+            catch (IOException e)
+            {
+                throw new RuntimeException("Could not create app info for '" + registryName + "'!", e);
+            }
+        }
     }
 }

@@ -35,7 +35,7 @@ public class LaptopScreen extends Screen
     {
         super(new TranslationTextComponent("screen." + OpenDevices.MOD_ID + ".laptop"));
         this.laptop = laptop;
-        this.laptop.getDesktop().openApplication(TestApplication.class);
+        this.laptop.getDesktop().openApplication(TestApplication.REGISTRY_NAME);
     }
 
     @Override

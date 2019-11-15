@@ -2,7 +2,6 @@ package com.ocelot.opendevices.api.laptop.desktop;
 
 import com.ocelot.opendevices.api.laptop.Laptop;
 import com.ocelot.opendevices.api.laptop.window.Window;
-import com.ocelot.opendevices.api.laptop.window.application.Application;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nullable;
@@ -22,13 +21,6 @@ public interface Desktop
      * @param registryName The registry name of the app
      */
     void openApplication(ResourceLocation registryName);
-
-    /**
-     * Opens the application with the specified information.
-     *
-     * @param clazz The class of the app
-     */
-    void openApplication(Class<? extends Application> clazz);
 
     /**
      * Focuses the window with the specified ID and moves it to the front.
