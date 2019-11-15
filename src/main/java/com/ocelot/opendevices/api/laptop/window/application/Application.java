@@ -126,13 +126,14 @@ public abstract class Application extends AbstractGui implements WindowContent
     /**
      * @return The additional information associated with this application
      */
-    public final AppInfo getInfo(){
+    public final AppInfo getInfo()
+    {
         return ApplicationManager.getAppInfo(this.getRegistryName());
     }
 
     public final void setWindow(Window window)
     {
-        if(this.window != null)
+        if (this.window != null)
             throw new RuntimeException("This method should never be called by the consumer!");
         this.window = window;
     }
