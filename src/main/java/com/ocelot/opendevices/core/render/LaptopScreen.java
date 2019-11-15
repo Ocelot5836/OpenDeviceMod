@@ -8,6 +8,7 @@ import com.ocelot.opendevices.api.laptop.window.Window;
 import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.core.LaptopDesktop;
+import com.ocelot.opendevices.core.LaptopTaskBar;
 import com.ocelot.opendevices.core.LaptopTileEntity;
 import com.ocelot.opendevices.core.laptop.application.TestApplication;
 import com.ocelot.opendevices.core.laptop.window.LaptopWindow;
@@ -161,8 +162,10 @@ public class LaptopScreen extends Screen
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton)
     {
         Desktop desktop = this.laptop.getDesktop();
+        LaptopTaskBar taskBar = this.laptop.getTaskBar();
         Window[] windows = desktop.getWindows();
         boolean loseFocus = true;
+
         if (this.draggingWindow == null)
         {
             for (int i = 0; i < windows.length; i++)
@@ -202,7 +205,15 @@ public class LaptopScreen extends Screen
 
         if (loseFocus)
         {
-            desktop.focusWindow(null);
+            Window window = taskBar.getWindow(mouseX - this.posX - DeviceConstants.LAPTOP_GUI_BORDER, mouseY - this.posY - DeviceConstants.LAPTOP_GUI_BORDER);
+            if (window != null)
+            {
+                desktop.focusWindow(window.getId());
+            }
+            else
+            {
+                desktop.focusWindow(null);
+            }
         }
 
         return super.mouseClicked(mouseX, mouseY, mouseButton);

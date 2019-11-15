@@ -5,6 +5,7 @@ import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.laptop.desktop.Desktop;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopBackground;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopManager;
+import com.ocelot.opendevices.api.laptop.window.Window;
 import com.ocelot.opendevices.api.laptop.window.WindowContentType;
 import com.ocelot.opendevices.api.laptop.window.application.ApplicationLoader;
 import com.ocelot.opendevices.api.task.TaskManager;
@@ -22,9 +23,7 @@ import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.fml.DistExecutor;
 
 import javax.annotation.Nullable;
-import java.util.List;
-import java.util.Stack;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
@@ -79,7 +78,7 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
 
     public void syncFocusWindow(@Nullable UUID windowId)
     {
-        if (this.focusedWindowId == windowId)
+        if (this.focusedWindowId != null && this.focusedWindowId.equals(windowId))
             return;
 
         LaptopWindow lastFocusWindow = this.getWindow(this.focusedWindowId);
@@ -87,6 +86,11 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
 
         this.laptop.execute(() ->
         {
+            if (lastFocusWindow != null)
+            {
+                lastFocusWindow.onLostFocus();
+            }
+
             if (window != null)
             {
                 this.windows.remove(window);
@@ -94,10 +98,6 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
                 window.onGainFocus();
             }
 
-            if (lastFocusWindow != null)
-            {
-                lastFocusWindow.onLostFocus();
-            }
             this.focusedWindowId = windowId == null ? null : window != null ? windowId : null;
         });
     }
@@ -218,6 +218,11 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
             return null;
         List<LaptopWindow> windows = this.windows.stream().filter(window -> window.getId().equals(windowId)).collect(Collectors.toList());
         return !windows.isEmpty() ? windows.get(0) : null;
+    }
+
+    Collection<? extends Window> getWindowsStack()
+    {
+        return this.windows;
     }
 
     @Override

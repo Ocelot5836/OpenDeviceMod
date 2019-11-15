@@ -43,7 +43,7 @@ public interface Laptop extends Executor
     /**
      * @return Whether or not someone is using the laptop
      */
-    boolean hasUser();
+    boolean inUse();
 
     /**
      * @return The world the laptop is in

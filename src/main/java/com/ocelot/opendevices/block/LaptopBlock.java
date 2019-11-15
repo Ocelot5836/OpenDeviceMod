@@ -43,7 +43,7 @@ public class LaptopBlock extends DeviceBlock implements IWaterLoggable
 
     public LaptopBlock(DyeColor color)
     {
-        super(color.getTranslationKey() + "_laptop", Block.Properties.create(Material.MISCELLANEOUS, color).lightValue(9));
+        super(color.getTranslationKey() + "_laptop", Block.Properties.create(Material.MISCELLANEOUS, color));
         this.setDefaultState(this.getStateContainer().getBaseState().with(HORIZONTAL_FACING, Direction.NORTH).with(TYPE, Type.BASE).with(WATERLOGGED, false));
         DeviceBlocks.register(this, new DeviceBlockItem(this));
         this.color = color;

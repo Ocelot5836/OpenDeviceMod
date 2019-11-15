@@ -177,7 +177,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
 
     public void toggleOpen(PlayerEntity player)
     {
-        if (this.hasUser() || !this.canInteract(player))
+        if (this.inUse() || !this.canInteract(player))
             return;
         this.open = !this.open;
         this.notifyUpdate();
@@ -185,7 +185,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
 
     public boolean view(PlayerEntity player)
     {
-        if (this.hasUser() || !this.open)
+        if (this.inUse() || !this.open)
             return false;
         if (this.canInteract(player))
         {
@@ -220,7 +220,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
     }
 
     @Override
-    public boolean hasUser()
+    public boolean inUse()
     {
         return this.canInteract(this.getUser());
     }
