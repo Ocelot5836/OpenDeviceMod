@@ -1,0 +1,6 @@
+{
+    "parent": "opendevices:item/laptop",
+    "textures": {
+        "color": "block/black_wool"
+    }
+}

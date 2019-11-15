@@ -27,8 +27,23 @@ public class DeviceBlocks
     private static final Set<TileEntityType<?>> TILE_ENTITIES = new HashSet<>();
 
     public static final Block WHITE_LAPTOP = new LaptopBlock(DyeColor.WHITE);
+    public static final Block ORANGE_LAPTOP = new LaptopBlock(DyeColor.ORANGE);
+    public static final Block MAGENTA_LAPTOP = new LaptopBlock(DyeColor.MAGENTA);
+    public static final Block LIGHT_BLUE_LAPTOP = new LaptopBlock(DyeColor.LIGHT_BLUE);
+    public static final Block YELLOW_LAPTOP = new LaptopBlock(DyeColor.YELLOW);
+    public static final Block LIME_LAPTOP = new LaptopBlock(DyeColor.LIME);
+    public static final Block PINK_LAPTOP = new LaptopBlock(DyeColor.PINK);
+    public static final Block GRAY_LAPTOP = new LaptopBlock(DyeColor.GRAY);
+    public static final Block LIGHT_GRAY_LAPTOP = new LaptopBlock(DyeColor.LIGHT_GRAY);
+    public static final Block CYAN_LAPTOP = new LaptopBlock(DyeColor.CYAN);
+    public static final Block PURPLE_LAPTOP = new LaptopBlock(DyeColor.PURPLE);
+    public static final Block BLUE_LAPTOP = new LaptopBlock(DyeColor.BLUE);
+    public static final Block BROWN_LAPTOP = new LaptopBlock(DyeColor.BROWN);
+    public static final Block GREEN_LAPTOP = new LaptopBlock(DyeColor.GREEN);
+    public static final Block RED_LAPTOP = new LaptopBlock(DyeColor.RED);
+    public static final Block BLACK_LAPTOP = new LaptopBlock(DyeColor.BLACK);
 
-    public static final TileEntityType<LaptopTileEntity> TE_LAPTOP = registerTileEntity("laptop", LaptopTileEntity::new, WHITE_LAPTOP);
+    public static final TileEntityType<LaptopTileEntity> TE_LAPTOP = registerTileEntity("laptop", LaptopTileEntity::new, WHITE_LAPTOP, ORANGE_LAPTOP, MAGENTA_LAPTOP, LIGHT_BLUE_LAPTOP, YELLOW_LAPTOP, LIME_LAPTOP, PINK_LAPTOP, GRAY_LAPTOP, LIGHT_GRAY_LAPTOP, CYAN_LAPTOP, PURPLE_LAPTOP, BLUE_LAPTOP, BROWN_LAPTOP, GREEN_LAPTOP, RED_LAPTOP, BLACK_LAPTOP);
 
     @OnlyIn(Dist.CLIENT)
     public static void initClient()

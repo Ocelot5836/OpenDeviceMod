@@ -2,6 +2,7 @@ package com.ocelot.opendevices.core;
 
 import com.ocelot.opendevices.api.LaptopSettings;
 import com.ocelot.opendevices.api.laptop.taskbar.TaskBar;
+import com.ocelot.opendevices.api.laptop.window.Window;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.INBTSerializable;
 
@@ -35,5 +36,11 @@ public class LaptopTaskBar implements TaskBar, INBTSerializable<CompoundNBT>
     public boolean isEnlarged()
     {
         return this.laptop.readSetting(LaptopSettings.TASKBAR_ENLARGED);
+    }
+
+    @Override
+    public Window[] getOpenedWindows()
+    {
+        return this.laptop.getDesktop().getWindows();
     }
 }

@@ -1,6 +1,21 @@
 {
     "replace": false,
     "values": [
-        "opendevices:white_laptop"
+        "opendevices:white_laptop",
+        "opendevices:orange_laptop",
+        "opendevices:magenta_laptop",
+        "opendevices:light_blue_laptop",
+        "opendevices:yellow_laptop",
+        "opendevices:lime_laptop",
+        "opendevices:pink_laptop",
+        "opendevices:gray_laptop",
+        "opendevices:light_gray_laptop",
+        "opendevices:cyan_laptop",
+        "opendevices:purple_laptop",
+        "opendevices:blue_laptop",
+        "opendevices:brown_laptop",
+        "opendevices:green_laptop",
+        "opendevices:red_laptop",
+        "opendevices:black_laptop"
     ]
 }

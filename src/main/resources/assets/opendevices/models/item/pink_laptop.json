@@ -1,0 +1,6 @@
+{
+    "parent": "opendevices:item/laptop",
+    "textures": {
+        "color": "block/pink_wool"
+    }
+}

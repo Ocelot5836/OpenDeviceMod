@@ -5,15 +5,15 @@ import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.laptop.desktop.Desktop;
 import com.ocelot.opendevices.api.laptop.window.Window;
-import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.api.task.TaskManager;
+import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.core.LaptopDesktop;
 import com.ocelot.opendevices.core.LaptopTileEntity;
 import com.ocelot.opendevices.core.laptop.application.TestApplication;
-import com.ocelot.opendevices.core.task.CloseLaptopTask;
-import com.ocelot.opendevices.core.task.MoveWindowTask;
 import com.ocelot.opendevices.core.laptop.window.LaptopWindow;
 import com.ocelot.opendevices.core.laptop.window.WindowClient;
+import com.ocelot.opendevices.core.task.CloseLaptopTask;
+import com.ocelot.opendevices.core.task.MoveWindowTask;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
@@ -94,6 +94,9 @@ public class LaptopScreen extends Screen
         LaptopRenderer.render(this.laptop, minecraft, fontRenderer, this.posX + DeviceConstants.LAPTOP_GUI_BORDER, this.posY + DeviceConstants.LAPTOP_GUI_BORDER, mouseX, mouseY, partialTicks);
 
         super.render(mouseX, mouseY, partialTicks);
+
+        /* Render the Tooltips */
+        LaptopRenderer.renderOverlay(this, this.laptop, minecraft, fontRenderer, this.posX + DeviceConstants.LAPTOP_GUI_BORDER, this.posY + DeviceConstants.LAPTOP_GUI_BORDER, mouseX, mouseY, partialTicks);
     }
 
     @Override

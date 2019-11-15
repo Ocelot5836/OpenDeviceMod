@@ -3,8 +3,8 @@ package com.ocelot.opendevices.api.laptop.window.application;
 import com.ocelot.opendevices.api.laptop.desktop.Desktop;
 import com.ocelot.opendevices.api.laptop.window.Window;
 import com.ocelot.opendevices.api.laptop.window.WindowContent;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
@@ -22,13 +22,16 @@ public abstract class Application extends AbstractGui implements WindowContent
     @Override
     public void update()
     {
-
     }
 
     @Override
     public void render(float x, float y, int mouseX, int mouseY, float partialTicks)
     {
-        Minecraft.getInstance().fontRenderer.drawStringWithShadow("Actual Application Content", x, y, 0xffffffff);
+    }
+
+    @Override
+    public void renderOverlay(Screen screen, float x, float y, int mouseX, int mouseY, float partialTicks)
+    {
     }
 
     @Override
@@ -64,31 +67,26 @@ public abstract class Application extends AbstractGui implements WindowContent
     @Override
     public void saveState(CompoundNBT nbt)
     {
-
     }
 
     @Override
     public void loadState(CompoundNBT nbt)
     {
-
     }
 
     @Override
     public void onGainFocus()
     {
-
     }
 
     @Override
     public void onLostFocus()
     {
-
     }
 
     @Override
     public void onClose()
     {
-
     }
 
     @Override

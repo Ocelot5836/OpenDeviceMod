@@ -9,23 +9,22 @@ import com.ocelot.opendevices.api.laptop.desktop.Desktop;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopBackground;
 import com.ocelot.opendevices.api.laptop.taskbar.TaskBar;
 import com.ocelot.opendevices.api.laptop.window.Window;
-import com.ocelot.opendevices.api.laptop.window.application.ApplicationLoader;
 import com.ocelot.opendevices.api.laptop.window.application.ApplicationManager;
 import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.core.laptop.window.WindowClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.StringUtils;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModList;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
+import org.codehaus.plexus.util.StringUtils;
 
 import java.util.Optional;
 
@@ -40,7 +39,7 @@ public class LaptopRenderer extends AbstractGui
         if (modContainer.isPresent())
         {
             ArtifactVersion version = modContainer.get().getModInfo().getVersion();
-            MOD_VERSION = String.format("%s.%s.%s", version.getMajorVersion(), version.getMinorVersion(), version.getIncrementalVersion()) + (!StringUtils.isNullOrEmpty(version.getQualifier()) ? (" " + version.getQualifier()) : "");
+            MOD_VERSION = String.format("%s.%s.%s", version.getMajorVersion(), version.getMinorVersion(), version.getIncrementalVersion()) + (!StringUtils.isEmpty(version.getQualifier()) ? (" " + version.getQualifier()) : "");
         }
         else
         {
@@ -120,11 +119,53 @@ public class LaptopRenderer extends AbstractGui
                 int size = taskBar.isEnlarged() ? 16 : 8;
                 int i = 0;
 
-                for (ResourceLocation registryName : ApplicationLoader.REGISTRY.getKeys())
+                for (Window value : taskBar.getOpenedWindows())
                 {
-                    TextureAtlasSprite icon = ApplicationManager.getAppIcon(registryName);
-                    textureManager.bindTexture(ApplicationManager.LOCATION_APP_ICON_TEXTURE);
-                    RenderUtil.drawRectWithTexture(posX + 4 + (size + 4) * i, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4, size, size, icon);
+                    if (value instanceof WindowClient)
+                    {
+                        WindowClient window = (WindowClient) value;
+                        TextureAtlasSprite icon = ApplicationManager.getAppIcon(window.getContentId());
+                        textureManager.bindTexture(ApplicationManager.LOCATION_APP_ICON_TEXTURE);
+                        RenderUtil.drawRectWithTexture(posX + 4 + (size + 4) * i, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4, size, size, icon);
+                        i++;
+                    }
+                }
+            }
+        }
+    }
+
+    public static void renderOverlay(Screen screen, Laptop laptop, Minecraft minecraft, FontRenderer fontRenderer, int posX, int posY, int mouseX, int mouseY, float partialTicks)
+    {
+        Desktop desktop = laptop.getDesktop();
+        TaskBar taskBar = laptop.getTaskBar();
+
+        /* Applications */
+        Window[] windows = desktop.getWindows();
+        for (Window value : windows)
+        {
+            if (value instanceof WindowClient)
+            {
+                WindowClient window = (WindowClient) value;
+                window.setScreenPosition(posX, posY);
+                window.renderOverlay(screen, mouseX, mouseY, partialTicks);
+            }
+        }
+
+        /* Task bar */
+        {
+            int size = taskBar.isEnlarged() ? 16 : 8;
+            int i = 0;
+
+            for (Window value : taskBar.getOpenedWindows())
+            {
+                if (value instanceof WindowClient)
+                {
+                    WindowClient window = (WindowClient) value;
+                    if (!StringUtils.isEmpty(window.getContent().getTitle()) && RenderUtil.isMouseInside(mouseX, mouseY, posX + 4 + (size + 4) * i, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4, posX + 4 + (size + 4) * i + size, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4 + size))
+                    {
+                        screen.renderTooltip(window.getContent().getTitle(), mouseX, mouseY);
+                        break;
+                    }
                     i++;
                 }
             }

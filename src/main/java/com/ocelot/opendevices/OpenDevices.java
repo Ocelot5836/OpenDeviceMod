@@ -45,7 +45,7 @@ public class OpenDevices
         @Override
         public ItemStack createIcon()
         {
-            return new ItemStack(DeviceBlocks.WHITE_LAPTOP);
+            return new ItemStack(DeviceBlocks.RED_LAPTOP);
         }
     };
 
@@ -75,7 +75,7 @@ public class OpenDevices
 
         if (ModList.get().isLoaded("filters"))
         {
-            Filters.get().register(TAB, new ResourceLocation(MOD_ID, "devices/laptops"), new ItemStack(DeviceBlocks.WHITE_LAPTOP));
+            Filters.get().register(TAB, new ResourceLocation(MOD_ID, "devices/laptops"), new ItemStack(DeviceBlocks.RED_LAPTOP));
         }
     }
 

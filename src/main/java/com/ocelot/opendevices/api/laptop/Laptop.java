@@ -1,10 +1,9 @@
 package com.ocelot.opendevices.api.laptop;
 
-import com.ocelot.opendevices.api.laptop.desktop.*;
+import com.ocelot.opendevices.api.laptop.desktop.Desktop;
 import com.ocelot.opendevices.api.laptop.settings.LaptopSetting;
 import com.ocelot.opendevices.api.laptop.taskbar.TaskBar;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 
 import javax.annotation.Nullable;
@@ -50,11 +49,6 @@ public interface Laptop extends Executor
      * @return The world the laptop is in
      */
     IWorld getWorld();
-
-    /**
-     * @return The position of the laptop
-     */
-    BlockPos getPos();
 
     /**
      * @return The laptop's desktop

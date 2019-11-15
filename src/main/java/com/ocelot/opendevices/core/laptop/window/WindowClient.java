@@ -11,6 +11,7 @@ import com.ocelot.opendevices.api.laptop.window.application.ApplicationManager;
 import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.core.render.WindowButton;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
@@ -97,6 +98,11 @@ public class WindowClient extends LaptopWindow
         GlStateManager.color4f(1, 1, 1, 1);
     }
 
+    public void renderOverlay(Screen screen, int mouseX, int mouseY, float partialTicks)
+    {
+        this.content.renderOverlay(screen, this.screenX + this.getInterpolatedX(partialTicks) + 1, this.screenY + this.getInterpolatedY(partialTicks) + 1 + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT, mouseX, mouseY, partialTicks);
+    }
+
     @Override
     public void onGainFocus()
     {
@@ -167,6 +173,14 @@ public class WindowClient extends LaptopWindow
         return false;
     }
 
+    /**
+     * @return The physical content that is being displayed by this window
+     */
+    public WindowContent getContent()
+    {
+        return content;
+    }
+
     public boolean isWithin(double mouseX, double mouseY)
     {
         return RenderUtil.isMouseInside(mouseX, mouseY, this.screenX + this.getX(), this.screenY + this.getY(), this.screenX + this.getX() + this.getWidth(), this.screenY + this.getY() + this.getHeight());
@@ -203,9 +217,10 @@ public class WindowClient extends LaptopWindow
     public void deserializeNBT(CompoundNBT nbt)
     {
         super.deserializeNBT(nbt);
+
         // TODO maybe save data and fully close if server decides to change app
         if (this.content == null || (this.getContentType() == WindowContentType.APPLICATION && !ApplicationManager.getRegistryName(this.content.getClass()).equals(this.getContentId())))
-            this.content = ApplicationManager.createApplication(this.getContentId());
+            this.content = createContent(this.getContentType(), this.getContentId());
         this.lastX = this.getX();
         this.lastY = this.getY();
     }

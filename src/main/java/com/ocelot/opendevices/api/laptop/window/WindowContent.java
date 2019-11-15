@@ -1,6 +1,7 @@
 package com.ocelot.opendevices.api.laptop.window;
 
 import com.ocelot.opendevices.api.laptop.window.application.Application;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
@@ -31,6 +32,18 @@ public interface WindowContent
      * @param partialTicks The percentage from last update and this update
      */
     void render(float x, float y, int mouseX, int mouseY, float partialTicks);
+
+    /**
+     * Renders overlaying content to the screen.
+     *
+     * @param screen       The screen the tooltips are being rendered into
+     * @param x            The x position of the window
+     * @param y            The y position of the window
+     * @param mouseX       The x position of the mouse
+     * @param mouseY       The y position of the mouse
+     * @param partialTicks The percentage from last update and this update
+     */
+    void renderOverlay(Screen screen, float x, float y, int mouseX, int mouseY, float partialTicks);
 
     /**
      * Called when the mouse is pressed.
@@ -79,6 +92,20 @@ public interface WindowContent
      * @return Whether or not the action was handled
      */
     boolean onKeyReleased(int keyCode);
+
+    /**
+     * Saves any persistent data to NBT.
+     *
+     * @param nbt The tag to fill with data
+     */
+    void save(CompoundNBT nbt);
+
+    /**
+     * Loads any persistent data from NBT.
+     *
+     * @param nbt The tag containing data
+     */
+    void load(CompoundNBT nbt);
 
     /**
      * Saves the current state to NBT.

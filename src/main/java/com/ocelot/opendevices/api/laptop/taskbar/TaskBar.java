@@ -1,6 +1,7 @@
 package com.ocelot.opendevices.api.laptop.taskbar;
 
 import com.ocelot.opendevices.api.laptop.Laptop;
+import com.ocelot.opendevices.api.laptop.window.Window;
 
 /**
  * <p>Represents the most abstract form of a task bar for the {@link Laptop}. Displays information such as tray items, pinned apps, etc.</p>
@@ -14,6 +15,11 @@ public interface TaskBar
      * @return Whether or not the task bar is enlarged
      */
     boolean isEnlarged();
+
+    /**
+     * @return The windows that are currently opened and displayed on the task bar
+     */
+    Window[] getOpenedWindows();
 
     /**
      * @return The height of the task bar

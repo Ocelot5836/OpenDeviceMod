@@ -1,0 +1,6 @@
+{
+    "parent": "opendevices:block/laptop_base",
+    "textures": {
+        "color": "block/blue_wool"
+    }
+}
