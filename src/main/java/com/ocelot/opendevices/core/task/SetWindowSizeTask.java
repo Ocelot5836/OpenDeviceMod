@@ -68,12 +68,18 @@ public class SetWindowSizeTask extends Task
     @Override
     public void prepareResponse(CompoundNBT nbt)
     {
-        this.prepareRequest(nbt);
+        if (this.isSucessful())
+        {
+            this.prepareRequest(nbt);
+        }
     }
 
     @Override
     public void processResponse(CompoundNBT nbt, World world, PlayerEntity player)
     {
-        this.processRequest(nbt, world, player);
+        if (this.isSucessful())
+        {
+            this.processRequest(nbt, world, player);
+        }
     }
 }
