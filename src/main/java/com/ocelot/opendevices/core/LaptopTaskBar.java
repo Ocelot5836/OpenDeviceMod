@@ -4,65 +4,75 @@ import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.LaptopSettings;
 import com.ocelot.opendevices.api.laptop.taskbar.TaskBar;
 import com.ocelot.opendevices.api.laptop.window.Window;
-import com.ocelot.opendevices.api.util.RenderUtil;
-import com.ocelot.opendevices.core.laptop.window.WindowClient;
+import com.ocelot.opendevices.core.laptop.window.LaptopWindow;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
-import org.codehaus.plexus.util.StringUtils;
 
-import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class LaptopTaskBar implements TaskBar, INBTSerializable<CompoundNBT>
 {
     private LaptopTileEntity laptop;
-    private Set<Window> openedWindows;
+    private List<Window> openedWindows;
+    private Window[] windowsArray;
 
     LaptopTaskBar(LaptopTileEntity laptop)
     {
         this.laptop = laptop;
-        this.openedWindows = new HashSet<>();
+        this.openedWindows = new ArrayList<>();
+        this.windowsArray = new LaptopWindow[DeviceConstants.MAX_OPEN_APPS];
     }
 
-    public void update()
+    void addWindow(Window window)
     {
+        this.openedWindows.add(window);
+    }
+
+    void removeWindow(Window window)
+    {
+        this.openedWindows.remove(window);
     }
 
     @Override
     public CompoundNBT serializeNBT()
     {
         CompoundNBT nbt = new CompoundNBT();
+        ListNBT windowOrderNBT = new ListNBT();
+        this.openedWindows.forEach(window ->
+        {
+            if (window == null)
+                return;
+            CompoundNBT windowNBT = new CompoundNBT();
+            windowNBT.putUniqueId("id", window.getId());
+            windowOrderNBT.add(windowNBT);
+        });
+        nbt.put("windowOrder", windowOrderNBT);
         return nbt;
     }
 
     @Override
     public void deserializeNBT(CompoundNBT nbt)
     {
+        this.openedWindows.clear();
 
-    }
-
-    @Nullable
-    public Window getWindow(double mouseX, double mouseY)
-    {
-        int size = this.isEnlarged() ? 16 : 8;
-        int i = 0;
-
-        for (Window value : this.openedWindows)
+        ListNBT windowOrderNBT = nbt.getList("windowOrder", Constants.NBT.TAG_COMPOUND);
+        for (int i = 0; i < windowOrderNBT.size(); i++)
         {
-            if (value instanceof WindowClient)
+            UUID id = windowOrderNBT.getCompound(i).getUniqueId("id");
+            Window window = this.laptop.getDesktop().getWindow(id);
+            if (window != null)
             {
-                WindowClient window = (WindowClient) value;
-                if (!StringUtils.isEmpty(window.getContent().getTitle()) && RenderUtil.isMouseInside(mouseX, mouseY, 4 + (size + 4) * i, DeviceConstants.LAPTOP_SCREEN_HEIGHT - this.getHeight() + 4, 4 + (size + 4) * i + size, DeviceConstants.LAPTOP_SCREEN_HEIGHT - this.getHeight() + 4 + size))
-                {
-                    return window;
-                }
-                i++;
+                this.openedWindows.add(window);
             }
         }
 
-        return null;
+        this.openedWindows.addAll(Arrays.stream(this.laptop.getDesktop().getWindows()).filter(window -> !this.openedWindows.contains(window)).collect(Collectors.toList()));
     }
 
     @Override
@@ -72,11 +82,8 @@ public class LaptopTaskBar implements TaskBar, INBTSerializable<CompoundNBT>
     }
 
     @Override
-    public Window[] getOpenedWindows()
+    public Window[] getDisplayedWindows()
     {
-        //TODO make the opened windows some list of windows opened in order instead of the stack
-        this.openedWindows.clear();
-        this.openedWindows.addAll(Arrays.asList(this.laptop.getDesktop().getWindows()));
-        return this.openedWindows.toArray(new Window[0]);
+        return this.openedWindows.toArray(this.windowsArray);
     }
 }

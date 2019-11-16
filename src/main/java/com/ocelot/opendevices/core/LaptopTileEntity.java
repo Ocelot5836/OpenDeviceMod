@@ -97,7 +97,6 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
             }
 
             this.desktop.update();
-            this.taskBar.update();
         }
     }
 

@@ -5,7 +5,6 @@ import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.laptop.desktop.Desktop;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopBackground;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopManager;
-import com.ocelot.opendevices.api.laptop.window.Window;
 import com.ocelot.opendevices.api.laptop.window.WindowContentType;
 import com.ocelot.opendevices.api.laptop.window.application.ApplicationLoader;
 import com.ocelot.opendevices.api.task.TaskManager;
@@ -23,8 +22,8 @@ import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.fml.DistExecutor;
 
 import javax.annotation.Nullable;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Stack;
+import java.util.UUID;
 
 public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
 {
@@ -71,6 +70,7 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
             this.laptop.execute(() ->
             {
                 this.windows.push(window);
+                this.laptop.getTaskBar().addWindow(window);
                 window.focus();
             });
         }
@@ -111,6 +111,7 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
             {
                 window.onClose();
                 this.windows.remove(window);
+                this.laptop.getTaskBar().removeWindow(window);
                 if (this.focusedWindowId != null && this.focusedWindowId.equals(window.getId()))
                 {
                     this.focusWindow(null);
@@ -216,13 +217,7 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
     {
         if (windowId == null)
             return null;
-        List<LaptopWindow> windows = this.windows.stream().filter(window -> window.getId().equals(windowId)).collect(Collectors.toList());
-        return !windows.isEmpty() ? windows.get(0) : null;
-    }
-
-    Collection<? extends Window> getWindowsStack()
-    {
-        return this.windows;
+        return this.windows.stream().filter(window -> window.getId().equals(windowId)).findFirst().orElse(null);
     }
 
     @Override

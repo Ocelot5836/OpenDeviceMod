@@ -17,9 +17,9 @@ public interface TaskBar
     boolean isEnlarged();
 
     /**
-     * @return The windows that are currently opened and displayed on the task bar
+     * @return The windows that are currently displayed on the task bar
      */
-    Window[] getOpenedWindows();
+    Window[] getDisplayedWindows();
 
     /**
      * @return The height of the task bar

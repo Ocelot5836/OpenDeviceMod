@@ -119,7 +119,7 @@ public class LaptopRenderer extends AbstractGui
                 int size = taskBar.isEnlarged() ? 16 : 8;
                 int i = 0;
 
-                for (Window value : taskBar.getOpenedWindows())
+                for (Window value : taskBar.getDisplayedWindows())
                 {
                     if (value instanceof WindowClient)
                     {
@@ -156,7 +156,7 @@ public class LaptopRenderer extends AbstractGui
             int size = taskBar.isEnlarged() ? 16 : 8;
             int i = 0;
 
-            for (Window value : taskBar.getOpenedWindows())
+            for (Window value : taskBar.getDisplayedWindows())
             {
                 if (value instanceof WindowClient)
                 {

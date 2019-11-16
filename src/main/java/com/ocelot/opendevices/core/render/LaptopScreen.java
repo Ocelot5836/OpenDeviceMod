@@ -205,10 +205,27 @@ public class LaptopScreen extends Screen
 
         if (loseFocus)
         {
-            Window window = taskBar.getWindow(mouseX - this.posX - DeviceConstants.LAPTOP_GUI_BORDER, mouseY - this.posY - DeviceConstants.LAPTOP_GUI_BORDER);
-            if (window != null)
+            int size = taskBar.isEnlarged() ? 16 : 8;
+            int i = 0;
+
+            Window hoveredWindow = null;
+            for (Window value : taskBar.getDisplayedWindows())
             {
-                desktop.focusWindow(window.getId());
+                if (value instanceof WindowClient)
+                {
+                    WindowClient window = (WindowClient) value;
+                    if (RenderUtil.isMouseInside(mouseX, mouseY, this.posX + DeviceConstants.LAPTOP_GUI_BORDER + 4 + (size + 4) * i, this.posY + DeviceConstants.LAPTOP_GUI_BORDER + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4, this.posX + DeviceConstants.LAPTOP_GUI_BORDER + 4 + (size + 4) * i + size, this.posY + DeviceConstants.LAPTOP_GUI_BORDER + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4 + size))
+                    {
+                        hoveredWindow = window;
+                        break;
+                    }
+                    i++;
+                }
+            }
+
+            if (hoveredWindow != null)
+            {
+                desktop.focusWindow(hoveredWindow.getId());
             }
             else
             {

@@ -21,6 +21,12 @@ public enum WindowContentType
         this.valid = valid;
     }
 
+    /**
+     * Validates if the provided content id is valid.
+     *
+     * @param contentId The id of the content to check
+     * @return Whether or not that id is actually valid content
+     */
     public boolean isValid(ResourceLocation contentId)
     {
         return valid.apply(contentId);
