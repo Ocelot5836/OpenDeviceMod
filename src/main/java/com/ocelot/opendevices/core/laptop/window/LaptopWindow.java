@@ -4,6 +4,11 @@ import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.laptop.Laptop;
 import com.ocelot.opendevices.api.laptop.window.Window;
 import com.ocelot.opendevices.api.laptop.window.WindowContentType;
+import com.ocelot.opendevices.api.task.TaskManager;
+import com.ocelot.opendevices.core.task.MoveWindowTask;
+import com.ocelot.opendevices.core.task.SetWindowPositionTask;
+import com.ocelot.opendevices.core.task.SetWindowSizeTask;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.INBTSerializable;
@@ -38,10 +43,8 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
         this.contentType = contentType;
         this.contentId = contentId;
         this.id = UUID.randomUUID();
-        this.x = x;
-        this.y = y;
-        this.width = width + 2;
-        this.height = height + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + 2;
+        this.setPosition(x, y);
+        this.setSize(width + 2, height + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + 2);
     }
 
     private void checkPosition()
@@ -52,17 +55,43 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
             this.y = 0;
         if (this.x >= DeviceConstants.LAPTOP_SCREEN_WIDTH - this.width)
             this.x = DeviceConstants.LAPTOP_SCREEN_WIDTH - this.width;
-        if (this.y >= DeviceConstants.LAPTOP_SCREEN_HEIGHT - laptop.getTaskBar().getHeight() - this.height)
-            this.y = DeviceConstants.LAPTOP_SCREEN_HEIGHT - laptop.getTaskBar().getHeight() - this.height;
+        if (this.y >= DeviceConstants.LAPTOP_SCREEN_HEIGHT - this.height)
+            this.y = DeviceConstants.LAPTOP_SCREEN_HEIGHT - this.height;
+    }
+
+    private void checkSize()
+    {
+        if (this.width < DeviceConstants.LAPTOP_MIN_APPLICATION_WIDTH || this.width > DeviceConstants.LAPTOP_MAX_APPLICATION_WIDTH || this.height > DeviceConstants.LAPTOP_MAX_APPLICATION_HEIGHT || this.height < DeviceConstants.LAPTOP_MIN_APPLICATION_HEIGHT)
+        {
+            throw new RuntimeException("Windows must be between " + DeviceConstants.LAPTOP_MIN_APPLICATION_WIDTH + "x" + DeviceConstants.LAPTOP_MIN_APPLICATION_HEIGHT + " and " + DeviceConstants.LAPTOP_MAX_APPLICATION_WIDTH + "x" + DeviceConstants.LAPTOP_MAX_APPLICATION_HEIGHT);
+        }
+    }
+
+    public void syncMove(float xDirection, float yDirection)
+    {
+        this.x += xDirection;
+        this.y += yDirection;
+        this.checkPosition();
+    }
+
+    public void syncSetPosition(float x, float y)
+    {
+        this.x = x;
+        this.y = y;
+        this.checkPosition();
+    }
+
+    public void syncSetSize(int width, int height)
+    {
+        this.width = width;
+        this.height = height;
+        this.checkSize();
     }
 
     @Override
     public void focus()
     {
-        if (!this.id.equals(this.laptop.getDesktop().getFocusedWindowId()))
-        {
-            this.laptop.getDesktop().focusWindow(this.id);
-        }
+        this.laptop.getDesktop().focusWindow(this.id);
     }
 
     @Override
@@ -74,9 +103,15 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
     @Override
     public void move(float xDirection, float yDirection)
     {
-        this.x += xDirection;
-        this.y += yDirection;
-        this.checkPosition();
+        if (this.laptop.getWorld().isRemote())
+        {
+            TaskManager.sendTask(new MoveWindowTask(this.laptop.getPos(), this.getId(), xDirection, yDirection), TaskManager.TaskReceiver.NEARBY);
+            this.syncMove(xDirection, yDirection);
+        }
+        else
+        {
+            TaskManager.sendTask(new MoveWindowTask(this.laptop.getPos(), this.getId(), xDirection, yDirection), TaskManager.TaskReceiver.SENDER_AND_NEARBY, (ServerPlayerEntity) this.laptop.getUser());
+        }
     }
 
     public void update()
@@ -128,6 +163,7 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
     {
     }
 
+    @Override
     public Laptop getLaptop()
     {
         return laptop;
@@ -161,6 +197,40 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
     public int getHeight()
     {
         return height;
+    }
+
+    @Override
+    public void center()
+    {
+        this.setPosition(DeviceConstants.LAPTOP_SCREEN_WIDTH - this.width / 2f, (DeviceConstants.LAPTOP_SCREEN_HEIGHT - this.laptop.getTaskBar().getHeight() - (this.height + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + 2)) / 2f);
+    }
+
+    @Override
+    public void setPosition(float x, float y)
+    {
+        if (this.laptop.getWorld().isRemote())
+        {
+            TaskManager.sendTask(new SetWindowPositionTask(this.laptop.getPos(), this.getId(), x, y), TaskManager.TaskReceiver.NEARBY);
+            this.syncSetPosition(x, y);
+        }
+        else
+        {
+            TaskManager.sendTask(new SetWindowPositionTask(this.laptop.getPos(), this.getId(), x, y), TaskManager.TaskReceiver.SENDER_AND_NEARBY, (ServerPlayerEntity) this.laptop.getUser());
+        }
+    }
+
+    @Override
+    public void setSize(int width, int height)
+    {
+        if (this.laptop.getWorld().isRemote())
+        {
+            TaskManager.sendTask(new SetWindowSizeTask(this.laptop.getPos(), this.getId(), width, height), TaskManager.TaskReceiver.NEARBY);
+            this.syncSetSize(width, height);
+        }
+        else
+        {
+            TaskManager.sendTask(new SetWindowSizeTask(this.laptop.getPos(), this.getId(), width, height), TaskManager.TaskReceiver.SENDER_AND_NEARBY, (ServerPlayerEntity) this.laptop.getUser());
+        }
     }
 
     @Override

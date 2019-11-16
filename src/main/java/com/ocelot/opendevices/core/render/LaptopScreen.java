@@ -7,6 +7,7 @@ import com.ocelot.opendevices.api.laptop.desktop.Desktop;
 import com.ocelot.opendevices.api.laptop.window.Window;
 import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.api.util.RenderUtil;
+import com.ocelot.opendevices.api.util.TooltipRenderer;
 import com.ocelot.opendevices.core.LaptopDesktop;
 import com.ocelot.opendevices.core.LaptopTaskBar;
 import com.ocelot.opendevices.core.LaptopTileEntity;
@@ -14,17 +15,19 @@ import com.ocelot.opendevices.core.laptop.application.TestApplication;
 import com.ocelot.opendevices.core.laptop.window.LaptopWindow;
 import com.ocelot.opendevices.core.laptop.window.WindowClient;
 import com.ocelot.opendevices.core.task.CloseLaptopTask;
-import com.ocelot.opendevices.core.task.MoveWindowTask;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.InputMappings;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import java.util.Collections;
+
 @OnlyIn(Dist.CLIENT)
-public class LaptopScreen extends Screen
+public class LaptopScreen extends Screen implements TooltipRenderer
 {
     private LaptopTileEntity laptop;
     private int posX;
@@ -101,6 +104,18 @@ public class LaptopScreen extends Screen
     }
 
     @Override
+    public void renderTooltip(ItemStack stack, int posX, int posY)
+    {
+        super.renderTooltip(stack, posX, posY);
+    }
+
+    @Override
+    public void renderTooltip(String tooltip, int posX, int posY, FontRenderer fontRenderer)
+    {
+        this.renderTooltip(Collections.singletonList(tooltip), posX, posY, fontRenderer);
+    }
+
+    @Override
     public boolean keyPressed(int keyCode, int scanCode, int p_keyPressed_3_)
     {
         if (this.draggingWindow == null)
@@ -143,7 +158,6 @@ public class LaptopScreen extends Screen
         if (this.draggingWindow != null)
         {
             this.draggingWindow.move((float) deltaX, (float) deltaY);
-            TaskManager.sendTask(new MoveWindowTask(this.laptop.getPos(), this.draggingWindow.getId(), (float) deltaX, (float) deltaY), TaskManager.TaskReceiver.NEARBY);
             return true;
         }
         else if (desktop.getFocusedWindow() != null)
@@ -166,44 +180,51 @@ public class LaptopScreen extends Screen
         Window[] windows = desktop.getWindows();
         boolean loseFocus = true;
 
-        if (this.draggingWindow == null)
+        if (!RenderUtil.isMouseInside(mouseX, mouseY, this.posX + DeviceConstants.LAPTOP_GUI_BORDER, this.posY + DeviceConstants.LAPTOP_GUI_BORDER + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight(), this.posX + DeviceConstants.LAPTOP_GUI_BORDER + DeviceConstants.LAPTOP_SCREEN_WIDTH, this.posY + DeviceConstants.LAPTOP_GUI_BORDER + DeviceConstants.LAPTOP_SCREEN_HEIGHT))
         {
-            for (int i = 0; i < windows.length; i++)
+            if (this.draggingWindow == null)
             {
-                WindowClient window = (WindowClient) windows[windows.length - i - 1];
-                if (window != null)
+                for (int i = 0; i < windows.length; i++)
                 {
-                    if (window.pressButtons(mouseX, mouseY))
+                    WindowClient window = (WindowClient) windows[windows.length - i - 1];
+                    if (window != null)
                     {
-                        return true;
-                    }
-                    if (window.isWithin(mouseX, mouseY))
-                    {
-                        window.focus();
-                        loseFocus = false;
-                    }
-                    if (window.isWithinContent(mouseX, mouseY))
-                    {
-                        if (window.onMousePressed(mouseX - (this.posX + DeviceConstants.LAPTOP_GUI_BORDER + window.getX() + 1), mouseY - (this.posY + DeviceConstants.LAPTOP_GUI_BORDER + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + window.getY() + 1), mouseButton))
+                        if (window.pressButtons(mouseX, mouseY))
                         {
                             return true;
                         }
-                        else
+                        if (window.isWithin(mouseX, mouseY))
                         {
-                            return super.mouseClicked(mouseX, mouseY, mouseButton);
+                            window.focus();
+                            loseFocus = false;
                         }
+                        if (window.isWithinContent(mouseX, mouseY))
+                        {
+                            if (window.onMousePressed(mouseX - (this.posX + DeviceConstants.LAPTOP_GUI_BORDER + window.getX() + 1), mouseY - (this.posY + DeviceConstants.LAPTOP_GUI_BORDER + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + window.getY() + 1), mouseButton))
+                            {
+                                return true;
+                            }
+                            else
+                            {
+                                return super.mouseClicked(mouseX, mouseY, mouseButton);
+                            }
+                        }
+                        else if (window.isWithinWindowBar(mouseX, mouseY))
+                        {
+                            this.draggingWindow = window;
+                            return true;
+                        }
+                        this.clickable = true;
                     }
-                    else if (window.isWithinWindowBar(mouseX, mouseY))
-                    {
-                        this.draggingWindow = window;
-                        return true;
-                    }
-                    this.clickable = true;
                 }
             }
-        }
 
-        if (loseFocus)
+            if (loseFocus)
+            {
+                desktop.focusWindow(null);
+            }
+        }
+        else
         {
             int size = taskBar.isEnlarged() ? 16 : 8;
             int i = 0;
@@ -225,7 +246,7 @@ public class LaptopScreen extends Screen
 
             if (hoveredWindow != null)
             {
-                desktop.focusWindow(hoveredWindow.getId());
+                hoveredWindow.focus();
             }
             else
             {

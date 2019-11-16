@@ -4,6 +4,7 @@ import com.ocelot.opendevices.api.laptop.desktop.Desktop;
 import com.ocelot.opendevices.api.laptop.settings.LaptopSetting;
 import com.ocelot.opendevices.api.laptop.taskbar.TaskBar;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 
 import javax.annotation.Nullable;
@@ -59,4 +60,9 @@ public interface Laptop extends Executor
      * @return The laptop's task bar
      */
     TaskBar getTaskBar();
+
+    /**
+     * @return The position of the laptop
+     */
+    BlockPos getPos();
 }

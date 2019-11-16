@@ -1,9 +1,11 @@
-package com.ocelot.opendevices.api.laptop.window.application;
+package com.ocelot.opendevices.api.laptop.application;
 
 import com.google.gson.*;
 import com.ocelot.opendevices.OpenDevices;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Type;
@@ -14,8 +16,9 @@ import java.util.regex.Pattern;
 /**
  * <p>Contains any additional information about an {@link Application} above the registry name.</p>
  *
- * @author MrCrayfish
+ * @author MrCrayfish, Ocelot
  */
+@OnlyIn(Dist.CLIENT)
 public class AppInfo
 {
     private static final Gson GSON = new GsonBuilder().registerTypeAdapter(AppInfo.class, new AppInfo.Deserializer()).create();

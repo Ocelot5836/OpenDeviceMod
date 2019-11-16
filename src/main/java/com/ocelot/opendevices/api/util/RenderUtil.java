@@ -1,18 +1,22 @@
 package com.ocelot.opendevices.api.util;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
+
+import java.nio.FloatBuffer;
+import java.util.Stack;
+
+import static org.lwjgl.opengl.GL11C.*;
 
 /**
  * TODO documentation
@@ -22,18 +26,85 @@ import org.lwjgl.opengl.GL11;
 @OnlyIn(Dist.CLIENT)
 public class RenderUtil
 {
-    public static void renderItem(int x, int y, ItemStack stack, boolean overlay)
-    {
-        Minecraft mc = Minecraft.getInstance();
-        ItemRenderer itemRenderer = mc.getItemRenderer();
+    private static final Stack<Scissor> SCISSOR_STACK = new Stack<>();
+    private static final FloatBuffer COLOR_GET_BUFFER = BufferUtils.createFloatBuffer(4);
 
-        GlStateManager.disableDepthTest();
-        GlStateManager.enableLighting();
-        RenderHelper.enableGUIStandardItemLighting();
-        itemRenderer.renderItemAndEffectIntoGUI(stack, x, y);
-        if (overlay) itemRenderer.renderItemOverlays(mc.fontRenderer, stack, x, y);
-        GlStateManager.enableAlphaTest();
-        GlStateManager.disableLighting();
+    private static void restoreScissor()
+    {
+        if (!SCISSOR_STACK.isEmpty())
+        {
+            Scissor scissor = SCISSOR_STACK.peek();
+            MainWindow window = Minecraft.getInstance().mainWindow;
+            int scale = (int) window.getGuiScaleFactor();
+            glScissor(scissor.x * scale, window.getFramebufferHeight() - scissor.y * scale - scissor.height * scale, Math.max(0, scissor.width * scale), Math.max(0, scissor.height * scale));
+        }
+    }
+
+    /**
+     * This should never be used by the consumer. Core use only!
+     */
+    public static void clearScissorStack()
+    {
+        SCISSOR_STACK.clear();
+    }
+
+    /**
+     * Makes it so all rendering calls will only be displayed in the specified rectangle.
+     *
+     * @param x      The x position of the rectangle
+     * @param y      The y position of the rectangle
+     * @param width  The x size of the rectangle
+     * @param height The y size of the rectangle
+     */
+    public static void pushScissor(float x, float y, float width, float height)
+    {
+        if (SCISSOR_STACK.size() > 0)
+        {
+            Scissor scissor = SCISSOR_STACK.peek();
+            x = Math.max(scissor.x, x);
+            y = Math.max(scissor.y, y);
+            width = x + width > scissor.x + scissor.width ? scissor.x + scissor.width - x : width;
+            height = y + height > scissor.y + scissor.height ? scissor.y + scissor.height - y : height;
+        }
+
+        SCISSOR_STACK.push(new Scissor(x, y, width, height));
+        restoreScissor();
+    }
+
+    /**
+     * Clears the current scissor and restores the previous value.
+     */
+    public static void popScissor()
+    {
+        if (!SCISSOR_STACK.isEmpty())
+        {
+            SCISSOR_STACK.pop();
+        }
+        restoreScissor();
+    }
+
+    /**
+     * @return Whether or not the scissor stack is currently empty
+     */
+    public static boolean isScissorStackEmpty()
+    {
+        return SCISSOR_STACK.isEmpty();
+    }
+
+    /**
+     * Fetches the color of the pixel at the specified position of the currently bound frame buffer.
+     *
+     * @param x The x position to fetch from
+     * @param y The y position to fetch from
+     * @return The color value at that position in the frame buffer
+     */
+    public static int getPixel(int x, int y)
+    {
+        MainWindow window = Minecraft.getInstance().mainWindow;
+        int scale = (int) window.getGuiScaleFactor();
+        COLOR_GET_BUFFER.clear();
+        glReadPixels(x * scale, (window.getHeight() - y - 1) * scale, 1, 1, GL_RGBA, GL_FLOAT, COLOR_GET_BUFFER);
+        return ((int) (COLOR_GET_BUFFER.get(3) * 0xff) << 24) & 0xff | ((int) (COLOR_GET_BUFFER.get(0) * 0xff) << 16) & 0xff | ((int) (COLOR_GET_BUFFER.get(1) * 0xff) << 8) & 0xff | (int) (COLOR_GET_BUFFER.get(2) * 0xff) & 0xff;
     }
 
     public static void drawRectWithTexture(double x, double y, float u, float v, float width, float height, float textureWidth, float textureHeight)
@@ -75,20 +146,6 @@ public class RenderUtil
         tessellator.draw();
     }
 
-    //    public static void drawApplicationIcon(@Nullable AppInfo info, double x, double y)
-    //    {
-    //        //TODO: Reset color GlStateManager.color(1.0F, 1.0F, 1.0F);
-    //        Minecraft.getMinecraft().getTextureManager().bindTexture(Laptop.ICON_TEXTURES);
-    //        if (info != null)
-    //        {
-    //            drawRectWithTexture(x, y, info.getIconU(), info.getIconV(), 14, 14, 14, 14, 224, 224);
-    //        }
-    //        else
-    //        {
-    //            drawRectWithTexture(x, y, 0, 0, 14, 14, 14, 14, 224, 224);
-    //        }
-    //    }
-
     public static void drawStringClipped(FontRenderer fontRenderer, String text, float x, float y, int width, int color, boolean shadow)
     {
         if (shadow)
@@ -106,7 +163,7 @@ public class RenderUtil
         String clipped = text;
         if (fontRenderer.getStringWidth(clipped) > width)
         {
-            clipped = fontRenderer.trimStringToWidth(clipped, width - 8) + "...";
+            clipped = fontRenderer.trimStringToWidth(clipped, width - fontRenderer.getStringWidth("...")) + "...";
         }
         return clipped;
     }
@@ -131,5 +188,21 @@ public class RenderUtil
     public static void glColorAlpha(int color)
     {
         GlStateManager.color4f(((color >> 16) & 0xff) / 255f, ((color >> 8) & 0xff) / 255f, (color & 0xff) / 255f, ((color >> 24) & 0xff) / 255f);
+    }
+
+    private static class Scissor
+    {
+        private int x;
+        private int y;
+        private int width;
+        private int height;
+
+        Scissor(float x, float y, float width, float height)
+        {
+            this.x = Math.round(x);
+            this.y = Math.round(y);
+            this.width = Math.round(width);
+            this.height = Math.round(height);
+        }
     }
 }

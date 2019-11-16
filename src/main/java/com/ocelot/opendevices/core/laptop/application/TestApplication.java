@@ -1,9 +1,8 @@
 package com.ocelot.opendevices.core.laptop.application;
 
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.api.laptop.window.application.Application;
+import com.ocelot.opendevices.api.laptop.application.Application;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 
@@ -13,15 +12,14 @@ public class TestApplication extends Application
 {
     public static final ResourceLocation REGISTRY_NAME = new ResourceLocation(OpenDevices.MOD_ID, "test");
 
+    public TestApplication(){
+
+    }
+
     @Override
     public void render(float x, float y, int mouseX, int mouseY, float partialTicks)
     {
         Minecraft.getInstance().fontRenderer.drawStringWithShadow("Actual Application Content", x, y, 0xffffffff);
-    }
-
-    @Override
-    public void renderOverlay(Screen screen, float x, float y, int mouseX, int mouseY, float partialTicks)
-    {
     }
 
     @Override

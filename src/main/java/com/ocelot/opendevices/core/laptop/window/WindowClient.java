@@ -4,14 +4,14 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.LaptopSettings;
 import com.ocelot.opendevices.api.laptop.Laptop;
+import com.ocelot.opendevices.api.laptop.application.Application;
+import com.ocelot.opendevices.api.laptop.application.ApplicationManager;
 import com.ocelot.opendevices.api.laptop.window.WindowContent;
 import com.ocelot.opendevices.api.laptop.window.WindowContentType;
-import com.ocelot.opendevices.api.laptop.window.application.Application;
-import com.ocelot.opendevices.api.laptop.window.application.ApplicationManager;
 import com.ocelot.opendevices.api.util.RenderUtil;
+import com.ocelot.opendevices.api.util.TooltipRenderer;
 import com.ocelot.opendevices.core.render.WindowButton;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
@@ -98,9 +98,9 @@ public class WindowClient extends LaptopWindow
         GlStateManager.color4f(1, 1, 1, 1);
     }
 
-    public void renderOverlay(Screen screen, int mouseX, int mouseY, float partialTicks)
+    public void renderOverlay(TooltipRenderer renderer, int mouseX, int mouseY, float partialTicks)
     {
-        this.content.renderOverlay(screen, this.screenX + this.getInterpolatedX(partialTicks) + 1, this.screenY + this.getInterpolatedY(partialTicks) + 1 + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT, mouseX, mouseY, partialTicks);
+        this.content.renderOverlay(renderer, this.screenX + this.getInterpolatedX(partialTicks) + 1, this.screenY + this.getInterpolatedY(partialTicks) + 1 + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT, mouseX, mouseY, partialTicks);
     }
 
     @Override

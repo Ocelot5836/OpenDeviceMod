@@ -14,25 +14,25 @@ import net.minecraft.world.World;
 import java.util.Objects;
 import java.util.UUID;
 
-@TaskManager.Register(OpenDevices.MOD_ID + ":move_window")
-public class MoveWindowTask extends Task
+@TaskManager.Register(OpenDevices.MOD_ID + ":set_window_pos")
+public class SetWindowPositionTask extends Task
 {
     private BlockPos pos;
     private UUID windowId;
-    private float xDirection;
-    private float yDirection;
+    private float x;
+    private float y;
 
-    public MoveWindowTask()
+    public SetWindowPositionTask()
     {
         this(null, null, 0, 0);
     }
 
-    public MoveWindowTask(BlockPos pos, UUID windowId, float xDirection, float yDirection)
+    public SetWindowPositionTask(BlockPos pos, UUID windowId, float x, float y)
     {
         this.pos = pos;
         this.windowId = windowId;
-        this.xDirection = xDirection;
-        this.yDirection = yDirection;
+        this.x = x;
+        this.y = y;
     }
 
     @Override
@@ -40,8 +40,8 @@ public class MoveWindowTask extends Task
     {
         nbt.putLong("pos", this.pos.toLong());
         nbt.putUniqueId("windowId", this.windowId);
-        nbt.putDouble("xDirection", this.xDirection);
-        nbt.putDouble("yDirection", this.yDirection);
+        nbt.putDouble("x", this.x);
+        nbt.putDouble("y", this.y);
     }
 
     @Override
@@ -49,8 +49,8 @@ public class MoveWindowTask extends Task
     {
         this.pos = BlockPos.fromLong(nbt.getLong("pos"));
         this.windowId = nbt.getUniqueId("windowId");
-        this.xDirection = nbt.getFloat("xDirection");
-        this.yDirection = nbt.getFloat("yDirection");
+        this.x = nbt.getFloat("x");
+        this.y = nbt.getFloat("y");
 
         if (world.getTileEntity(this.pos) instanceof LaptopTileEntity)
         {
@@ -59,7 +59,7 @@ public class MoveWindowTask extends Task
             LaptopWindow window = desktop.getWindow(this.windowId);
             if (window != null)
             {
-                window.syncMove(this.xDirection, this.yDirection);
+                window.syncSetPosition(this.x, this.y);
             }
             this.setSuccessful();
         }

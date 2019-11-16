@@ -26,25 +26,21 @@ public class WindowButton extends Button
     @Override
     public void renderButton(int mouseX, int mouseY, float partialTicks)
     {
-        if (this.visible)
+        Minecraft minecraft = Minecraft.getInstance();
+        minecraft.getTextureManager().bindTexture(DeviceConstants.WINDOW_LOCATION);
+        int color = this.laptop.readSetting(LaptopSettings.WINDOW_BUTTON_COLOR);
+        GlStateManager.color4f(((color >> 16) & 0xff) / 255f, ((color >> 8) & 0xff) / 255f, (color & 0xff) / 255f, 1);
+
+        GlStateManager.enableBlend();
+        GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+
+        GlStateManager.pushMatrix();
         {
-            Minecraft minecraft = Minecraft.getInstance();
-            minecraft.getTextureManager().bindTexture(DeviceConstants.WINDOW_LOCATION);
-            int color = this.laptop.readSetting(LaptopSettings.WINDOW_BUTTON_COLOR);
-            GlStateManager.color4f(((color >> 16) & 0xff) / 255f, ((color >> 8) & 0xff) / 255f, (color & 0xff) / 255f, 1);
-
-            GlStateManager.enableBlend();
-            GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-            GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-
-            //			this.drawTexturedModalRect(this.x, this.y, state * this.width + 15, 0, this.width, this.height);
-            GlStateManager.pushMatrix();
-            {
-                GlStateManager.translatef(this.posX, this.posY, 0);
-                this.blit(this.screenX, this.screenY, 26 + this.getYImage(RenderUtil.isMouseInside(mouseX, mouseY, this.screenX + this.posX, this.screenY + this.posY, this.screenX + this.posX + this.width, this.screenY + this.posY + this.height)) * DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE, 0, this.width, this.height);
-            }
-            GlStateManager.popMatrix();
+            GlStateManager.translatef(this.posX, this.posY, 0);
+            this.blit(this.screenX, this.screenY, 26 + this.getYImage(RenderUtil.isMouseInside(mouseX, mouseY, this.screenX + this.posX, this.screenY + this.posY, this.screenX + this.posX + this.width, this.screenY + this.posY + this.height)) * DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE, 0, this.width, this.height);
         }
+        GlStateManager.popMatrix();
     }
 
     public void setScreenPosition(int screenX, int screenY)

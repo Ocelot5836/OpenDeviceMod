@@ -1,4 +1,4 @@
-package com.ocelot.opendevices.api.laptop.window.application;
+package com.ocelot.opendevices.api.laptop.application;
 
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.core.laptop.application.ApplicationForgeRegistry;

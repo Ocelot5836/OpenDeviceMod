@@ -1,4 +1,4 @@
-package com.ocelot.opendevices.api.laptop.window.application;
+package com.ocelot.opendevices.api.laptop.application;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.HashBiMap;

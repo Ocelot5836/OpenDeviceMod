@@ -1,7 +1,7 @@
 package com.ocelot.opendevices.api.laptop.window;
 
-import com.ocelot.opendevices.api.laptop.window.application.Application;
-import net.minecraft.client.gui.screen.Screen;
+import com.ocelot.opendevices.api.laptop.application.Application;
+import com.ocelot.opendevices.api.util.TooltipRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
@@ -36,14 +36,14 @@ public interface WindowContent
     /**
      * Renders overlaying content to the screen.
      *
-     * @param screen       The screen the tooltips are being rendered into
+     * @param renderer     The renderer the tooltips are being drawn into
      * @param x            The x position of the window
      * @param y            The y position of the window
      * @param mouseX       The x position of the mouse
      * @param mouseY       The y position of the mouse
      * @param partialTicks The percentage from last update and this update
      */
-    void renderOverlay(Screen screen, float x, float y, int mouseX, int mouseY, float partialTicks);
+    void renderOverlay(TooltipRenderer renderer, float x, float y, int mouseX, int mouseY, float partialTicks);
 
     /**
      * Called when the mouse is pressed.

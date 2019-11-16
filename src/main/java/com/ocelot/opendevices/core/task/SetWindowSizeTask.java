@@ -14,25 +14,25 @@ import net.minecraft.world.World;
 import java.util.Objects;
 import java.util.UUID;
 
-@TaskManager.Register(OpenDevices.MOD_ID + ":move_window")
-public class MoveWindowTask extends Task
+@TaskManager.Register(OpenDevices.MOD_ID + ":set_window_size")
+public class SetWindowSizeTask extends Task
 {
     private BlockPos pos;
     private UUID windowId;
-    private float xDirection;
-    private float yDirection;
+    private int width;
+    private int height;
 
-    public MoveWindowTask()
+    public SetWindowSizeTask()
     {
         this(null, null, 0, 0);
     }
 
-    public MoveWindowTask(BlockPos pos, UUID windowId, float xDirection, float yDirection)
+    public SetWindowSizeTask(BlockPos pos, UUID windowId, int width, int height)
     {
         this.pos = pos;
         this.windowId = windowId;
-        this.xDirection = xDirection;
-        this.yDirection = yDirection;
+        this.width = width;
+        this.height = height;
     }
 
     @Override
@@ -40,8 +40,8 @@ public class MoveWindowTask extends Task
     {
         nbt.putLong("pos", this.pos.toLong());
         nbt.putUniqueId("windowId", this.windowId);
-        nbt.putDouble("xDirection", this.xDirection);
-        nbt.putDouble("yDirection", this.yDirection);
+        nbt.putInt("width", this.width);
+        nbt.putInt("height", this.height);
     }
 
     @Override
@@ -49,8 +49,8 @@ public class MoveWindowTask extends Task
     {
         this.pos = BlockPos.fromLong(nbt.getLong("pos"));
         this.windowId = nbt.getUniqueId("windowId");
-        this.xDirection = nbt.getFloat("xDirection");
-        this.yDirection = nbt.getFloat("yDirection");
+        this.width = nbt.getInt("width");
+        this.height = nbt.getInt("height");
 
         if (world.getTileEntity(this.pos) instanceof LaptopTileEntity)
         {
@@ -59,7 +59,7 @@ public class MoveWindowTask extends Task
             LaptopWindow window = desktop.getWindow(this.windowId);
             if (window != null)
             {
-                window.syncMove(this.xDirection, this.yDirection);
+                window.syncSetSize(this.width, this.height);
             }
             this.setSuccessful();
         }

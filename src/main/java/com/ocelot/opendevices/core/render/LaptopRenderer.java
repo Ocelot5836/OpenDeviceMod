@@ -5,17 +5,17 @@ import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.LaptopSettings;
 import com.ocelot.opendevices.api.laptop.Laptop;
+import com.ocelot.opendevices.api.laptop.application.ApplicationManager;
 import com.ocelot.opendevices.api.laptop.desktop.Desktop;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopBackground;
 import com.ocelot.opendevices.api.laptop.taskbar.TaskBar;
 import com.ocelot.opendevices.api.laptop.window.Window;
-import com.ocelot.opendevices.api.laptop.window.application.ApplicationManager;
 import com.ocelot.opendevices.api.util.RenderUtil;
+import com.ocelot.opendevices.api.util.TooltipRenderer;
 import com.ocelot.opendevices.core.laptop.window.WindowClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.I18n;
@@ -134,7 +134,7 @@ public class LaptopRenderer extends AbstractGui
         }
     }
 
-    public static void renderOverlay(Screen screen, Laptop laptop, Minecraft minecraft, FontRenderer fontRenderer, int posX, int posY, int mouseX, int mouseY, float partialTicks)
+    public static void renderOverlay(TooltipRenderer renderer, Laptop laptop, Minecraft minecraft, FontRenderer fontRenderer, int posX, int posY, int mouseX, int mouseY, float partialTicks)
     {
         Desktop desktop = laptop.getDesktop();
         TaskBar taskBar = laptop.getTaskBar();
@@ -147,7 +147,7 @@ public class LaptopRenderer extends AbstractGui
             {
                 WindowClient window = (WindowClient) value;
                 window.setScreenPosition(posX, posY);
-                window.renderOverlay(screen, mouseX, mouseY, partialTicks);
+                window.renderOverlay(renderer, mouseX, mouseY, partialTicks);
             }
         }
 
@@ -163,7 +163,7 @@ public class LaptopRenderer extends AbstractGui
                     WindowClient window = (WindowClient) value;
                     if (!StringUtils.isEmpty(window.getContent().getTitle()) && RenderUtil.isMouseInside(mouseX, mouseY, posX + 4 + (size + 4) * i, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4, posX + 4 + (size + 4) * i + size, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4 + size))
                     {
-                        screen.renderTooltip(window.getContent().getTitle(), mouseX, mouseY);
+                        renderer.renderTooltip(window.getContent().getTitle(), mouseX, mouseY);
                         break;
                     }
                     i++;

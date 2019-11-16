@@ -50,6 +50,11 @@ public interface Window
     ResourceLocation getContentId();
 
     /**
+     * @return The laptop this window is opened inside of
+     */
+    Laptop getLaptop();
+
+    /**
      * @return The x position of this window
      */
     float getX();
@@ -68,4 +73,25 @@ public interface Window
      * @return The y size of this window
      */
     int getHeight();
+
+    /**
+     * Centers this window on the desktop of the laptop.
+     */
+    void center();
+
+    /**
+     * Moves this window to the specified position.
+     *
+     * @param x The new x position of the window
+     * @param y The new y position of the window
+     */
+    void setPosition(float x, float y);
+
+    /**
+     * Sets the size of this window to the specified values.
+     *
+     * @param width  The new x size of the window
+     * @param height The new y size of the window
+     */
+    void setSize(int width, int height);
 }
