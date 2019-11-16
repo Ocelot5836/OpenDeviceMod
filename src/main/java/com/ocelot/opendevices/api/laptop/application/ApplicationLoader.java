@@ -1,10 +1,10 @@
 package com.ocelot.opendevices.api.laptop.application;
 
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.core.laptop.application.ApplicationForgeRegistry;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.forgespi.language.ModFileScanData;
+import net.minecraftforge.registries.ForgeRegistryEntry;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryBuilder;
 import org.objectweb.asm.Type;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
  */
 public class ApplicationLoader
 {
-    public static IForgeRegistry<ApplicationForgeRegistry> REGISTRY = null;
+    public static IForgeRegistry<ApplicationRegistryEntry> REGISTRY = null;
     static final Map<ResourceLocation, String> FOUND = new HashMap<>();
 
     private static final Type AUTO_REGISTRY = Type.getType(Application.Register.class);
@@ -73,8 +73,31 @@ public class ApplicationLoader
      */
     public static void registerRegistry()
     {
-        REGISTRY = new RegistryBuilder<ApplicationForgeRegistry>().setName(new ResourceLocation(OpenDevices.MOD_ID, "applications")).setType(ApplicationForgeRegistry.class).create();
-        FOUND.forEach((registryName, className) -> REGISTRY.register(new ApplicationForgeRegistry(className).setRegistryName(registryName)));
+        REGISTRY = new RegistryBuilder<ApplicationRegistryEntry>().setName(new ResourceLocation(OpenDevices.MOD_ID, "applications")).setType(ApplicationRegistryEntry.class).create();
+        FOUND.forEach((registryName, className) -> REGISTRY.register(new ApplicationRegistryEntry(className).setRegistryName(registryName)));
         FOUND.clear();
+    }
+
+    /**
+     * <p>Used as a wrapper for {@link Application}s.</p>
+     *
+     * @author Ocelot
+     */
+    public static class ApplicationRegistryEntry extends ForgeRegistryEntry<ApplicationRegistryEntry>
+    {
+        private String className;
+
+        private ApplicationRegistryEntry(String className)
+        {
+            this.className = className;
+        }
+
+        /**
+         * @return The name of the application class
+         */
+        public String getClassName()
+        {
+            return className;
+        }
     }
 }
