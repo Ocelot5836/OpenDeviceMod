@@ -1,4 +1,4 @@
-package com.ocelot.opendevices.api.laptop.component;
+package com.ocelot.opendevices.api.component;
 
 /**
  * <p>A simple implementation of {@link Component} that defines some common data shared across all components.</p>

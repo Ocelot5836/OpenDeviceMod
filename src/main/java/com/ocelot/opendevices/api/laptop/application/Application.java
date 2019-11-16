@@ -1,6 +1,6 @@
 package com.ocelot.opendevices.api.laptop.application;
 
-import com.ocelot.opendevices.api.laptop.component.Layout;
+import com.ocelot.opendevices.api.component.Layout;
 import com.ocelot.opendevices.api.laptop.desktop.Desktop;
 import com.ocelot.opendevices.api.laptop.window.Window;
 import com.ocelot.opendevices.api.laptop.window.WindowContent;

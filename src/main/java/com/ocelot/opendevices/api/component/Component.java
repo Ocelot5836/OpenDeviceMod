@@ -1,4 +1,4 @@
-package com.ocelot.opendevices.api.laptop.component;
+package com.ocelot.opendevices.api.component;
 
 import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.api.util.TooltipRenderer;
