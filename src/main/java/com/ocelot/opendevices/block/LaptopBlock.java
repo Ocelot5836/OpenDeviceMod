@@ -1,8 +1,10 @@
 package com.ocelot.opendevices.block;
 
 import com.ocelot.opendevices.OpenDevices;
+import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.api.util.ShapeHelper;
 import com.ocelot.opendevices.core.LaptopTileEntity;
+import com.ocelot.opendevices.core.task.UpdateLaptopUserTask;
 import com.ocelot.opendevices.init.DeviceBlocks;
 import com.ocelot.opendevices.init.DeviceMessages;
 import com.ocelot.opendevices.item.DeviceBlockItem;
@@ -78,6 +80,7 @@ public class LaptopBlock extends DeviceBlock implements IWaterLoggable
                 {
                     if (player instanceof ServerPlayerEntity)
                     {
+                        TaskManager.sendTaskTo(new UpdateLaptopUserTask(pos, player.getUniqueID()), TaskManager.TaskReceiver.SENDER_AND_NEARBY, (ServerPlayerEntity) player);
                         DeviceMessages.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new MessageOpenGui(MessageHandler.GuiType.LAPTOP, pos));
                     }
                 }

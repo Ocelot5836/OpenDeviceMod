@@ -34,15 +34,11 @@ public class ClientMessageHandler implements MessageHandler
         {
             BlockPos pos = msg.getPos();
 
-            switch (msg.getType())
+            if (msg.getType() == GuiType.LAPTOP)
             {
-                case LAPTOP:
+                if (pos != null && world.getTileEntity(pos) instanceof LaptopTileEntity)
                 {
-                    if (pos != null && world.getTileEntity(pos) instanceof LaptopTileEntity)
-                    {
-                        minecraft.displayGuiScreen(new LaptopScreen((LaptopTileEntity) world.getTileEntity(pos)));
-                    }
-                    break;
+                    minecraft.displayGuiScreen(new LaptopScreen((LaptopTileEntity) world.getTileEntity(pos)));
                 }
             }
         });
@@ -64,7 +60,10 @@ public class ClientMessageHandler implements MessageHandler
                 throw new RuntimeException("Unregistered Task: " + request.getClass().getName() + ". Use Task annotation to register a task.");
 
             request.processRequest(nbt, player.world, player);
-            DeviceMessages.INSTANCE.send(PacketDistributor.SERVER.noArg(), new MessageClientResponse(request, nbt));
+            if (msg.getReceiver() != TaskManager.TaskReceiver.NONE)
+            {
+                DeviceMessages.INSTANCE.send(PacketDistributor.SERVER.noArg(), new MessageClientResponse(request, nbt));
+            }
         });
         ctx.get().setPacketHandled(true);
     }

@@ -1,6 +1,7 @@
 package com.ocelot.opendevices.core.laptop.application;
 
 import com.ocelot.opendevices.OpenDevices;
+import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.component.Layout;
 import com.ocelot.opendevices.api.laptop.application.Application;
 import com.ocelot.opendevices.api.laptop.application.LayoutProtocol;
@@ -31,7 +32,7 @@ public class TestApplication extends Application
     public void render(float x, float y, int mouseX, int mouseY, float partialTicks)
     {
         RenderUtil.enableScissor();
-        RenderUtil.pushScissor(x, y, this.getWindow().getWidth() - 2, this.getWindow().getHeight() - 2);
+        RenderUtil.pushScissor(x, y, this.getWindow().getWidth() - 2, this.getWindow().getHeight() - 2 - DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT);
         Minecraft.getInstance().fontRenderer.drawStringWithShadow("Actual Application Content", x, y, 0xffffffff);
         RenderUtil.popScissor();
         RenderUtil.disableScissor();

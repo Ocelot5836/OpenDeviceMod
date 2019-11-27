@@ -61,10 +61,10 @@ public class LaptopRenderer extends AbstractGui
                 minecraft.getTextureManager().bindTexture(desktopBackground.getLocation());
                 RenderUtil.drawRectWithTexture(posX, posY, desktopBackground.getU(), desktopBackground.getV(), DeviceConstants.LAPTOP_SCREEN_WIDTH, DeviceConstants.LAPTOP_SCREEN_HEIGHT, desktopBackground.getWidth(), desktopBackground.getHeight(), desktopBackground.getImageWidth(), desktopBackground.getImageHeight());
             }
-            else if (desktopBackground.getUrl() != null)
-            {
-                // TODO download and render online image
-            }
+            //            else if (desktopBackground.getUrl() != null)
+            //            {
+            //                 TODO download and render online image
+            //            }
         }
 
         /* Version Text */

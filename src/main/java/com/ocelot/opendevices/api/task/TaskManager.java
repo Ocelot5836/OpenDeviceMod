@@ -17,8 +17,8 @@ import java.util.Map;
 /**
  * <p>The Task Manager handles all {@link Task} related information.<p>
  * <p>To register a task, use the {@link Task.Register} annotation on the task class and extend {@link Task}.<p>
- * <p>To send a client task, see {@link TaskManager#sendTask(Task, TaskReceiver)}.<p>
- * <p>To send a server task, see {@link TaskManager#sendTask(Task, TaskReceiver, ServerPlayerEntity)}.<p>
+ * <p>To send a client task, see {@link TaskManager#sendTaskToServer(Task, TaskReceiver)}.<p>
+ * <p>To send a server task, see {@link TaskManager#sendTaskTo(Task, TaskReceiver, ServerPlayerEntity)}.<p>
  *
  * @author Ocelot
  * @see Task
@@ -36,7 +36,7 @@ public final class TaskManager
      * @param receiver The way the task will be handled when it is being returned from the server
      */
     @OnlyIn(Dist.CLIENT)
-    public static void sendTask(Task task, TaskReceiver receiver)
+    public static void sendTaskToServer(Task task, TaskReceiver receiver)
     {
         if (getRegistryName(task.getClass()) == null)
             throw new RuntimeException("Unregistered Task: " + task.getClass().getName() + ". Use Task annotation to register a task.");
@@ -51,13 +51,15 @@ public final class TaskManager
      * @param receiver The way the task will be handled when it is being sent to the client
      * @param player   The player to base the receiver around as the receiver
      */
-    public static void sendTask(Task task, TaskReceiver receiver, ServerPlayerEntity player)
+    public static void sendTaskTo(Task task, TaskReceiver receiver, ServerPlayerEntity player)
     {
         if (getRegistryName(task.getClass()) == null)
             throw new RuntimeException("Unregistered Task: " + task.getClass().getName() + ". Use Task annotation to register a task.");
 
         switch (receiver)
         {
+            case NONE:
+                break;
             case SENDER:
                 DeviceMessages.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new MessageRequest(task, receiver));
                 break;
@@ -115,6 +117,6 @@ public final class TaskManager
      */
     public enum TaskReceiver
     {
-        SENDER, NEARBY, SENDER_AND_NEARBY
+        NONE, SENDER, NEARBY, SENDER_AND_NEARBY
     }
 }

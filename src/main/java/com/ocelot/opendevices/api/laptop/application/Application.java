@@ -1,5 +1,6 @@
 package com.ocelot.opendevices.api.laptop.application;
 
+import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.component.Layout;
 import com.ocelot.opendevices.api.laptop.desktop.Desktop;
 import com.ocelot.opendevices.api.laptop.window.Window;
@@ -63,7 +64,7 @@ public abstract class Application extends AbstractGui implements WindowContent
         if (this.currentLayout != null)
         {
             RenderUtil.enableScissor();
-            RenderUtil.pushScissor(x, y, this.getWindow().getWidth() - 2, this.getWindow().getHeight() - 2);
+            RenderUtil.pushScissor(x, y, this.getWindow().getWidth() - 2, this.getWindow().getHeight() - 2 - DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT);
             this.currentLayout.setWindowPosition(x, y);
             this.currentLayout.render(mouseX, mouseY, partialTicks);
             RenderUtil.popScissor();

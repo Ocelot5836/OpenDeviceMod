@@ -2,11 +2,11 @@ package com.ocelot.opendevices.core;
 
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceConstants;
+import com.ocelot.opendevices.api.laptop.DeviceRegistries;
 import com.ocelot.opendevices.api.laptop.desktop.Desktop;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopBackground;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopManager;
 import com.ocelot.opendevices.api.laptop.window.WindowContentType;
-import com.ocelot.opendevices.api.laptop.DeviceRegistries;
 import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.core.laptop.window.LaptopWindow;
 import com.ocelot.opendevices.core.laptop.window.WindowClient;
@@ -124,6 +124,9 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
     @Override
     public void openApplication(ResourceLocation registryName, @Nullable CompoundNBT initData)
     {
+        if (this.laptop.getUser() == null)
+            return;
+
         if (this.windows.size() >= DeviceConstants.MAX_OPEN_APPS)
         {
             this.windows.setSize(DeviceConstants.MAX_OPEN_APPS);
@@ -136,20 +139,23 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
             return;
         }
 
-        TaskManager.sendTask(new OpenWindowTask(this.laptop.getPos(), createWindow(initData, WindowContentType.APPLICATION, registryName, DeviceConstants.LAPTOP_DEFAULT_APPLICATION_WIDTH, DeviceConstants.LAPTOP_DEFAULT_APPLICATION_HEIGHT)), TaskManager.TaskReceiver.SENDER_AND_NEARBY);
+        TaskManager.sendTaskToServer(new OpenWindowTask(this.laptop.getPos(), createWindow(initData, WindowContentType.APPLICATION, registryName, DeviceConstants.LAPTOP_DEFAULT_APPLICATION_WIDTH, DeviceConstants.LAPTOP_DEFAULT_APPLICATION_HEIGHT)), TaskManager.TaskReceiver.SENDER_AND_NEARBY);
     }
 
     @Override
     public void focusWindow(@Nullable UUID windowId)
     {
+        if (this.laptop.getUser() == null)
+            return;
+
         if (this.laptop.getWorld().isRemote())
         {
-            TaskManager.sendTask(new FocusWindowTask(this.laptop.getPos(), windowId), TaskManager.TaskReceiver.NEARBY);
+            TaskManager.sendTaskToServer(new FocusWindowTask(this.laptop.getPos(), windowId), TaskManager.TaskReceiver.NEARBY);
             this.syncFocusWindow(windowId);
         }
         else
         {
-            TaskManager.sendTask(new FocusWindowTask(this.laptop.getPos(), windowId), TaskManager.TaskReceiver.SENDER_AND_NEARBY, (ServerPlayerEntity) this.laptop.getUser());
+            TaskManager.sendTaskTo(new FocusWindowTask(this.laptop.getPos(), windowId), TaskManager.TaskReceiver.SENDER_AND_NEARBY, (ServerPlayerEntity) this.laptop.getUser());
         }
     }
 
@@ -162,14 +168,17 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
     @Override
     public void closeWindow(UUID windowId)
     {
+        if (this.laptop.getUser() == null)
+            return;
+
         if (this.laptop.getWorld().isRemote())
         {
-            TaskManager.sendTask(new CloseWindowTask(this.laptop.getPos(), windowId), TaskManager.TaskReceiver.NEARBY);
+            TaskManager.sendTaskToServer(new CloseWindowTask(this.laptop.getPos(), windowId), TaskManager.TaskReceiver.NEARBY);
             this.syncCloseWindow(windowId);
         }
         else
         {
-            TaskManager.sendTask(new CloseWindowTask(this.laptop.getPos(), windowId), TaskManager.TaskReceiver.SENDER_AND_NEARBY, (ServerPlayerEntity) this.laptop.getUser());
+            TaskManager.sendTaskTo(new CloseWindowTask(this.laptop.getPos(), windowId), TaskManager.TaskReceiver.SENDER_AND_NEARBY, (ServerPlayerEntity) this.laptop.getUser());
         }
     }
 

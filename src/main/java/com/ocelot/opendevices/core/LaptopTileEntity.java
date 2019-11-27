@@ -166,12 +166,12 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
 
             if (this.world.isRemote())
             {
-                TaskManager.sendTask(new SyncSettingsTask(this.pos, nbt), TaskManager.TaskReceiver.NEARBY);
+                TaskManager.sendTaskToServer(new SyncSettingsTask(this.pos, nbt), TaskManager.TaskReceiver.NEARBY);
                 this.syncSettings(nbt);
             }
             else
             {
-                TaskManager.sendTask(new SyncSettingsTask(this.pos, nbt), TaskManager.TaskReceiver.SENDER_AND_NEARBY, (ServerPlayerEntity) this.getUser());
+                TaskManager.sendTaskTo(new SyncSettingsTask(this.pos, nbt), TaskManager.TaskReceiver.SENDER_AND_NEARBY, (ServerPlayerEntity) this.getUser());
             }
         }
     }
@@ -220,7 +220,6 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
         return this.world.getPlayerByUuid(this.user);
     }
 
-    @Override
     public boolean inUse()
     {
         return this.canInteract(this.getUser());
