@@ -2,11 +2,11 @@ package com.ocelot.opendevices.core;
 
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceConstants;
+import com.ocelot.opendevices.api.laptop.application.ApplicationLoader;
 import com.ocelot.opendevices.api.laptop.desktop.Desktop;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopBackground;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopManager;
 import com.ocelot.opendevices.api.laptop.window.WindowContentType;
-import com.ocelot.opendevices.api.laptop.application.ApplicationLoader;
 import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.core.laptop.window.LaptopWindow;
 import com.ocelot.opendevices.core.laptop.window.WindowClient;
@@ -42,9 +42,9 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
         this.focusedWindowId = null;
     }
 
-    public LaptopWindow createWindow(WindowContentType contentType, ResourceLocation contentId, int width, int height)
+    public LaptopWindow createWindow(@Nullable CompoundNBT initData, WindowContentType contentType, ResourceLocation contentId, int width, int height)
     {
-        return DistExecutor.runForDist(() -> () -> new WindowClient(this.laptop, contentType, contentId, width, height), () -> () -> new LaptopWindow(this.laptop, contentType, contentId, width, height));
+        return DistExecutor.runForDist(() -> () -> new WindowClient(this.laptop, initData, contentType, contentId, width, height), () -> () -> new LaptopWindow(this.laptop, initData, contentType, contentId, width, height));
     }
 
     public LaptopWindow createWindow(CompoundNBT dataNBT, CompoundNBT stateNBT)
@@ -72,6 +72,7 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
                 this.windows.push(window);
                 this.laptop.getTaskBar().addWindow(window);
                 window.focus();
+                window.init();
             });
         }
     }
@@ -121,7 +122,7 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
     }
 
     @Override
-    public void openApplication(ResourceLocation registryName)
+    public void openApplication(ResourceLocation registryName, @Nullable CompoundNBT initData)
     {
         if (this.windows.size() >= DeviceConstants.MAX_OPEN_APPS)
         {
@@ -135,7 +136,7 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
             return;
         }
 
-        TaskManager.sendTask(new OpenWindowTask(this.laptop.getPos(), createWindow(WindowContentType.APPLICATION, registryName, DeviceConstants.LAPTOP_DEFAULT_APPLICATION_WIDTH, DeviceConstants.LAPTOP_DEFAULT_APPLICATION_HEIGHT)), TaskManager.TaskReceiver.SENDER_AND_NEARBY);
+        TaskManager.sendTask(new OpenWindowTask(this.laptop.getPos(), createWindow(initData, WindowContentType.APPLICATION, registryName, DeviceConstants.LAPTOP_DEFAULT_APPLICATION_WIDTH, DeviceConstants.LAPTOP_DEFAULT_APPLICATION_HEIGHT)), TaskManager.TaskReceiver.SENDER_AND_NEARBY);
     }
 
     @Override

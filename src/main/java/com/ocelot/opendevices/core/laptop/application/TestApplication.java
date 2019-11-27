@@ -1,10 +1,14 @@
 package com.ocelot.opendevices.core.laptop.application;
 
 import com.ocelot.opendevices.OpenDevices;
+import com.ocelot.opendevices.api.component.Layout;
 import com.ocelot.opendevices.api.laptop.application.Application;
+import com.ocelot.opendevices.api.laptop.application.LayoutProtocol;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
+
+import javax.annotation.Nullable;
 
 // TODO move to an example mod
 @Application.Register(OpenDevices.MOD_ID + ":test")
@@ -12,8 +16,14 @@ public class TestApplication extends Application
 {
     public static final ResourceLocation REGISTRY_NAME = new ResourceLocation(OpenDevices.MOD_ID, "test");
 
-    public TestApplication(){
+    public TestApplication()
+    {
+    }
 
+    @Override
+    public void init(@Nullable CompoundNBT data)
+    {
+        this.setCurrentLayout(new Layout(40, 20), LayoutProtocol.NOTHING);
     }
 
     @Override

@@ -10,10 +10,7 @@ import net.minecraftforge.registries.RegistryBuilder;
 import org.objectweb.asm.Type;
 
 import java.lang.annotation.ElementType;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**

@@ -18,6 +18,13 @@ import javax.annotation.Nullable;
 public interface WindowContent
 {
     /**
+     * Initializes the content with the specified data.
+     *
+     * @param data The additional data to be used during initialization
+     */
+    void init(@Nullable CompoundNBT data);
+
+    /**
      * Called 20 times per second to update any logic.
      */
     void update();

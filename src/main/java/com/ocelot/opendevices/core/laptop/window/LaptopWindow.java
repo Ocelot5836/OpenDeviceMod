@@ -11,8 +11,10 @@ import com.ocelot.opendevices.core.task.SetWindowSizeTask;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
 
+import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -24,6 +26,7 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
     private float y;
     private int width;
     private int height;
+    private CompoundNBT initData;
     private WindowContentType contentType;
     private ResourceLocation contentId;
 
@@ -32,14 +35,15 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
         this.laptop = laptop;
     }
 
-    public LaptopWindow(Laptop laptop, WindowContentType contentType, ResourceLocation contentId, int width, int height)
+    public LaptopWindow(Laptop laptop, @Nullable CompoundNBT initData, WindowContentType contentType, ResourceLocation contentId, int width, int height)
     {
-        this(laptop, contentType, contentId, (DeviceConstants.LAPTOP_SCREEN_WIDTH - width) / 2f, (DeviceConstants.LAPTOP_SCREEN_HEIGHT - laptop.getTaskBar().getHeight() - (height + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + 2)) / 2f, width, height);
+        this(laptop, initData, contentType, contentId, (DeviceConstants.LAPTOP_SCREEN_WIDTH - width) / 2f, (DeviceConstants.LAPTOP_SCREEN_HEIGHT - laptop.getTaskBar().getHeight() - (height + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + 2)) / 2f, width, height);
     }
 
-    public LaptopWindow(Laptop laptop, WindowContentType contentType, ResourceLocation contentId, float x, float y, int width, int height)
+    public LaptopWindow(Laptop laptop, @Nullable CompoundNBT initData, WindowContentType contentType, ResourceLocation contentId, float x, float y, int width, int height)
     {
         this.laptop = laptop;
+        this.initData = initData;
         this.contentType = contentType;
         this.contentId = contentId;
         this.id = UUID.randomUUID();
@@ -112,6 +116,10 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
         {
             TaskManager.sendTask(new MoveWindowTask(this.laptop.getPos(), this.getId(), xDirection, yDirection), TaskManager.TaskReceiver.SENDER_AND_NEARBY, (ServerPlayerEntity) this.laptop.getUser());
         }
+    }
+
+    public void init()
+    {
     }
 
     public void update()
@@ -233,6 +241,11 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
         }
     }
 
+    public CompoundNBT getInitData()
+    {
+        return initData;
+    }
+
     @Override
     public WindowContentType getContentType()
     {
@@ -254,6 +267,8 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
         nbt.putFloat("y", this.y);
         nbt.putInt("width", this.width);
         nbt.putInt("height", this.height);
+        if (this.initData != null)
+            nbt.put("initData", this.initData);
         nbt.putByte("contentType", (byte) this.contentType.ordinal());
         nbt.putString("contentId", this.contentId.toString());
         return nbt;
@@ -267,6 +282,8 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
         this.y = nbt.getFloat("y");
         this.width = nbt.getInt("width");
         this.height = nbt.getInt("height");
+        if (nbt.contains("initData", Constants.NBT.TAG_COMPOUND))
+            this.initData = nbt.getCompound("initData");
         this.contentType = WindowContentType.values()[nbt.getByte("contentType") % WindowContentType.values().length];
         this.contentId = new ResourceLocation(nbt.getString("contentId"));
         this.checkPosition();

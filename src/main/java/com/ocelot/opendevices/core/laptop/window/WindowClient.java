@@ -16,6 +16,8 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 
+import javax.annotation.Nullable;
+
 public class WindowClient extends LaptopWindow
 {
     private int screenX;
@@ -31,16 +33,16 @@ public class WindowClient extends LaptopWindow
         this.closeButton = new WindowButton(laptop, button -> this.close());
     }
 
-    public WindowClient(Laptop laptop, WindowContentType contentType, ResourceLocation contentId, int width, int height)
+    public WindowClient(Laptop laptop, @Nullable CompoundNBT initData, WindowContentType contentType, ResourceLocation contentId, int width, int height)
     {
-        super(laptop, contentType, contentId, width, height);
+        super(laptop, initData,contentType, contentId, width, height);
         this.content = createContent(contentType, contentId);
         this.closeButton = new WindowButton(laptop, button -> this.close());
     }
 
-    public WindowClient(Laptop laptop, WindowContentType contentType, ResourceLocation contentId, int x, int y, int width, int height)
+    public WindowClient(Laptop laptop, @Nullable CompoundNBT initData, WindowContentType contentType, ResourceLocation contentId, int x, int y, int width, int height)
     {
-        super(laptop, contentType, contentId, x, y, width, height);
+        super(laptop,initData, contentType, contentId, x, y, width, height);
         this.content = createContent(contentType, contentId);
         this.closeButton = new WindowButton(laptop, button -> this.close());
     }
@@ -60,6 +62,12 @@ public class WindowClient extends LaptopWindow
                 break;
         }
         return null;
+    }
+
+    @Override
+    public void init()
+    {
+        this.content.init(this.getInitData());
     }
 
     @Override
