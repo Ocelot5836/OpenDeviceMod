@@ -5,7 +5,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
 
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 /**
  * <p>Represents a {@link LaptopSetting} for the type {@link INBTSerializable<CompoundNBT>}. Can be used to read/write any serializable NBT to/from the system settings.</p>
@@ -16,10 +16,10 @@ import java.util.function.Supplier;
 public class SerializableLaptopSetting<T extends INBTSerializable<CompoundNBT>> implements LaptopSetting<T>
 {
     private ResourceLocation registryName;
-    private Supplier<T> factory;
+    private Function<CompoundNBT, T> factory;
     private T defaultValue;
 
-    public SerializableLaptopSetting(ResourceLocation registryName, Supplier<T> factory, T defaultValue)
+    public SerializableLaptopSetting(ResourceLocation registryName, Function<CompoundNBT, T> factory, T defaultValue)
     {
         this.registryName = registryName;
         this.factory = factory;
@@ -29,9 +29,7 @@ public class SerializableLaptopSetting<T extends INBTSerializable<CompoundNBT>> 
     @Override
     public T read(CompoundNBT nbt)
     {
-        T value = this.factory.get();
-        value.deserializeNBT(nbt.getCompound(this.registryName.toString()));
-        return value;
+        return this.factory.apply(nbt.getCompound(this.registryName.toString()));
     }
 
     @Override

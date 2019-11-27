@@ -5,32 +5,32 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.Constants;
 
 /**
- * <p>Represents a {@link LaptopSetting} for the type {@link Boolean}. Can be used to read/write any boolean to/from the system settings.</p>
+ * <p>Represents a {@link LaptopSetting} for the type {@link Byte}. Can be used to read/write any byte to/from the system settings.</p>
  *
  * @author Ocelot
  * @see LaptopSetting
  */
-public class BooleanLaptopSetting implements LaptopSetting<Boolean>
+public class ByteLaptopSetting implements LaptopSetting<Byte>
 {
     private ResourceLocation registryName;
-    private boolean defaultValue;
+    private byte defaultValue;
 
-    public BooleanLaptopSetting(ResourceLocation registryName, boolean defaultValue)
+    public ByteLaptopSetting(ResourceLocation registryName, byte defaultValue)
     {
         this.registryName = registryName;
         this.defaultValue = defaultValue;
     }
 
     @Override
-    public Boolean read(CompoundNBT nbt)
+    public Byte read(CompoundNBT nbt)
     {
-        return nbt.getBoolean(this.registryName.toString());
+        return nbt.getByte(this.registryName.toString());
     }
 
     @Override
-    public void write(Boolean value, CompoundNBT nbt)
+    public void write(Byte value, CompoundNBT nbt)
     {
-        nbt.putBoolean(this.registryName.toString(), value);
+        nbt.putByte(this.registryName.toString(), value);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class BooleanLaptopSetting implements LaptopSetting<Boolean>
     }
 
     @Override
-    public Boolean getDefaultValue()
+    public Byte getDefaultValue()
     {
         return defaultValue;
     }
