@@ -9,7 +9,7 @@ import java.util.UUID;
 /**
  * <p>The most abstract form of a Window. This contains all the required functionality for the API.</p>
  * <p>A window is a box that can display onto a {@link Laptop}. The window has the ability to be moved and render it's content.</p>
- * <p>Some methods, such as {@link Window#focus()}, can be called from {@link Laptop}, but are here for ease of access.</p>
+ * <p>Some methods, such as {@link Window#focus()} or {@link Window#close()}, can be called from {@link Laptop}, but are here for ease of access.</p>
  *
  * @author Ocelot
  * @see Desktop

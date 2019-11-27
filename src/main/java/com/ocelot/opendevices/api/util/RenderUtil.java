@@ -29,6 +29,8 @@ public class RenderUtil
     private static final Stack<Scissor> SCISSOR_STACK = new Stack<>();
     private static final FloatBuffer COLOR_GET_BUFFER = BufferUtils.createFloatBuffer(4);
 
+    private static boolean scissor = glGetBoolean(GL_SCISSOR_TEST);
+
     private RenderUtil() {}
 
     private static void restoreScissor()
@@ -38,6 +40,7 @@ public class RenderUtil
             Scissor scissor = SCISSOR_STACK.peek();
             MainWindow window = Minecraft.getInstance().mainWindow;
             int scale = (int) window.getGuiScaleFactor();
+            enableScissor();
             glScissor(scissor.x * scale, window.getFramebufferHeight() - scissor.y * scale - scissor.height * scale, Math.max(0, scissor.width * scale), Math.max(0, scissor.height * scale));
         }
     }
@@ -82,6 +85,8 @@ public class RenderUtil
         {
             SCISSOR_STACK.pop();
         }
+        if (SCISSOR_STACK.isEmpty())
+            disableScissor();
         restoreScissor();
     }
 
@@ -194,12 +199,20 @@ public class RenderUtil
 
     public static void enableScissor()
     {
-        glEnable(GL_SCISSOR_TEST);
+        if (!scissor)
+        {
+            glEnable(GL_SCISSOR_TEST);
+            scissor = true;
+        }
     }
 
     public static void disableScissor()
     {
-        glDisable(GL_SCISSOR_TEST);
+        if (scissor)
+        {
+            glDisable(GL_SCISSOR_TEST);
+            scissor = false;
+        }
     }
 
     private static class Scissor

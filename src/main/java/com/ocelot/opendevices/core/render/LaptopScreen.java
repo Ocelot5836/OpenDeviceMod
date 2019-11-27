@@ -290,7 +290,7 @@ public class LaptopScreen extends Screen implements TooltipRenderer
     {
         if (this.laptop != null)
         {
-            TaskManager.sendTaskToServer(new CloseLaptopTask(this.laptop.getPos()), TaskManager.TaskReceiver.SENDER);
+            TaskManager.sendToServer(new CloseLaptopTask(this.laptop.getPos()), TaskManager.TaskReceiver.SENDER);
         }
     }
 }

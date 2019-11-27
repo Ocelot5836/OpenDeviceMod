@@ -166,12 +166,12 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
 
             if (this.world.isRemote())
             {
-                TaskManager.sendTaskToServer(new SyncSettingsTask(this.pos, nbt), TaskManager.TaskReceiver.NEARBY);
+                TaskManager.sendToServer(new SyncSettingsTask(this.pos, nbt), TaskManager.TaskReceiver.NEARBY);
                 this.syncSettings(nbt);
             }
             else
             {
-                TaskManager.sendTaskTo(new SyncSettingsTask(this.pos, nbt), TaskManager.TaskReceiver.SENDER_AND_NEARBY, (ServerPlayerEntity) this.getUser());
+                TaskManager.sendTo(new SyncSettingsTask(this.pos, nbt), TaskManager.TaskReceiver.SENDER_AND_NEARBY, (ServerPlayerEntity) this.getUser());
             }
         }
     }
@@ -204,11 +204,21 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
             this.user = null;
     }
 
-    public boolean canInteract(@Nullable PlayerEntity player)
+    private boolean canInteract(@Nullable PlayerEntity player)
     {
         if (player == null)
             return false;
         return player.getDistanceSq(this.pos.getX(), this.pos.getY(), this.pos.getZ()) <= 64D;
+    }
+
+    private boolean inUse()
+    {
+        return this.canInteract(this.getUser());
+    }
+
+    public boolean isOpen()
+    {
+        return open;
     }
 
     @Override
@@ -218,16 +228,6 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
         if (this.user == null || this.world == null)
             return null;
         return this.world.getPlayerByUuid(this.user);
-    }
-
-    public boolean inUse()
-    {
-        return this.canInteract(this.getUser());
-    }
-
-    public boolean isOpen()
-    {
-        return open;
     }
 
     @Override

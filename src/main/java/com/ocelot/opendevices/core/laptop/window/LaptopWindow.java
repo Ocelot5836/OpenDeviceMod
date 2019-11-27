@@ -109,12 +109,12 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
     {
         if (this.laptop.getWorld().isRemote())
         {
-            TaskManager.sendTaskToServer(new MoveWindowTask(this.laptop.getPos(), this.getId(), xDirection, yDirection), TaskManager.TaskReceiver.NEARBY);
+            TaskManager.sendToServer(new MoveWindowTask(this.laptop.getPos(), this.getId(), xDirection, yDirection), TaskManager.TaskReceiver.NEARBY);
             this.syncMove(xDirection, yDirection);
         }
         else
         {
-            TaskManager.sendTaskTo(new MoveWindowTask(this.laptop.getPos(), this.getId(), xDirection, yDirection), TaskManager.TaskReceiver.SENDER_AND_NEARBY, (ServerPlayerEntity) this.laptop.getUser());
+            TaskManager.sendTo(new MoveWindowTask(this.laptop.getPos(), this.getId(), xDirection, yDirection), TaskManager.TaskReceiver.SENDER_AND_NEARBY, (ServerPlayerEntity) this.laptop.getUser());
         }
     }
 
@@ -218,12 +218,12 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
     {
         if (this.laptop.getWorld().isRemote())
         {
-            TaskManager.sendTaskToServer(new SetWindowPositionTask(this.laptop.getPos(), this.getId(), x, y), TaskManager.TaskReceiver.NEARBY);
+            TaskManager.sendToServer(new SetWindowPositionTask(this.laptop.getPos(), this.getId(), x, y), TaskManager.TaskReceiver.NEARBY);
             this.syncSetPosition(x, y);
         }
         else
         {
-            TaskManager.sendTaskTo(new SetWindowPositionTask(this.laptop.getPos(), this.getId(), x, y), TaskManager.TaskReceiver.SENDER_AND_NEARBY, (ServerPlayerEntity) this.laptop.getUser());
+            TaskManager.sendTo(new SetWindowPositionTask(this.laptop.getPos(), this.getId(), x, y), TaskManager.TaskReceiver.SENDER_AND_NEARBY, (ServerPlayerEntity) this.laptop.getUser());
         }
     }
 
@@ -232,12 +232,12 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
     {
         if (this.laptop.getWorld().isRemote())
         {
-            TaskManager.sendTaskToServer(new SetWindowSizeTask(this.laptop.getPos(), this.getId(), width, height), TaskManager.TaskReceiver.NEARBY);
+            TaskManager.sendToServer(new SetWindowSizeTask(this.laptop.getPos(), this.getId(), width, height), TaskManager.TaskReceiver.NEARBY);
             this.syncSetSize(width, height);
         }
         else
         {
-            TaskManager.sendTaskTo(new SetWindowSizeTask(this.laptop.getPos(), this.getId(), width, height), TaskManager.TaskReceiver.SENDER_AND_NEARBY, (ServerPlayerEntity) this.laptop.getUser());
+            TaskManager.sendTo(new SetWindowSizeTask(this.laptop.getPos(), this.getId(), width, height), TaskManager.TaskReceiver.SENDER_AND_NEARBY, (ServerPlayerEntity) this.laptop.getUser());
         }
     }
 

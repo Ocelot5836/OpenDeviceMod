@@ -9,7 +9,7 @@ import javax.annotation.Nullable;
 import java.util.UUID;
 
 /**
- * <p>Represents the most abstract form of a desktop for the {@link Laptop}. Manages the {@link DesktopBackground}, desktop icons, and applications.</p>
+ * <p>Represents the most abstract form of a desktop for the {@link Laptop}. Manages the {@link DesktopBackground}, desktop icons, and {@link Window}s.</p>
  *
  * @author Ocelot
  * @see Laptop

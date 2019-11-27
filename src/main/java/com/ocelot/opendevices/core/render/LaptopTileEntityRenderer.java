@@ -1,5 +1,6 @@
 package com.ocelot.opendevices.core.render;
 
+import com.mojang.blaze3d.platform.GLX;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceConstants;
@@ -18,9 +19,10 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.client.model.data.EmptyModelData;
-import org.lwjgl.opengl.GL11;
 
 import java.util.Random;
+
+import static org.lwjgl.opengl.GL30.*;
 
 public class LaptopTileEntityRenderer extends TileEntityRenderer<LaptopTileEntity>
 {
@@ -40,14 +42,14 @@ public class LaptopTileEntityRenderer extends TileEntityRenderer<LaptopTileEntit
     private void createScreenList()
     {
         this.screenList = GlStateManager.genLists(1);
-        GlStateManager.newList(this.screenList, GL11.GL_COMPILE);
+        GlStateManager.newList(this.screenList, GL_COMPILE);
         {
             this.framebuffer.bindFramebufferTexture();
 
             this.setLightmapDisabled(true);
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder buffer = tessellator.getBuffer();
-            buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_NORMAL);
+            buffer.begin(GL_QUADS, DefaultVertexFormats.POSITION_TEX_NORMAL);
             buffer.pos(0, 0, 0).tex(0, 0).normal(0, 0, 1).endVertex();
             buffer.pos(DeviceConstants.LAPTOP_TE_SCREEN_WIDTH, 0, 0).tex(1, 0).normal(0, 0, 1).endVertex();
             buffer.pos(DeviceConstants.LAPTOP_TE_SCREEN_WIDTH, DeviceConstants.LAPTOP_TE_SCREEN_HEIGHT, 0).tex(1, 1).normal(0, 0, 1).endVertex();
@@ -101,7 +103,7 @@ public class LaptopTileEntityRenderer extends TileEntityRenderer<LaptopTileEntit
                 GlStateManager.disableLighting();
                 Tessellator tessellator = Tessellator.getInstance();
                 BufferBuilder buffer = tessellator.getBuffer();
-                buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+                buffer.begin(GL_QUADS, DefaultVertexFormats.BLOCK);
                 buffer.setTranslation(-pos.getX(), -pos.getY(), -pos.getZ());
 
                 BlockRendererDispatcher blockrendererdispatcher = minecraft.getBlockRendererDispatcher();
@@ -114,7 +116,7 @@ public class LaptopTileEntityRenderer extends TileEntityRenderer<LaptopTileEntit
             }
             GlStateManager.popMatrix();
 
-            if (te.getScreenAngle(partialTicks) != 0)
+            if (GLX.isUsingFBOs() && te.getScreenAngle(partialTicks) != 0)
             {
                 GlStateManager.pushMatrix();
                 {
@@ -127,14 +129,14 @@ public class LaptopTileEntityRenderer extends TileEntityRenderer<LaptopTileEntit
                     GlStateManager.disableLighting();
                     GlStateManager.disableFog();
                     this.framebuffer.bindFramebuffer(true);
-                    GlStateManager.clear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT, true);
+                    GlStateManager.clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, true);
 
                     GlStateManager.viewport(0, 0, this.framebuffer.framebufferWidth, this.framebuffer.framebufferHeight);
-                    GlStateManager.matrixMode(GL11.GL_PROJECTION);
+                    GlStateManager.matrixMode(GL_PROJECTION);
                     GlStateManager.pushMatrix();
                     GlStateManager.loadIdentity();
                     GlStateManager.ortho(0.0D, this.framebuffer.framebufferWidth, this.framebuffer.framebufferHeight, 0.0D, 1000.0D, 3000.0D);
-                    GlStateManager.matrixMode(GL11.GL_MODELVIEW);
+                    GlStateManager.matrixMode(GL_MODELVIEW);
                     GlStateManager.pushMatrix();
                     GlStateManager.loadIdentity();
                     GlStateManager.translatef(0.0F, 0.0F, -2000.0F);
@@ -144,20 +146,14 @@ public class LaptopTileEntityRenderer extends TileEntityRenderer<LaptopTileEntit
                         LaptopRenderer.render(te, minecraft, minecraft.fontRenderer, 0, 0, -Integer.MAX_VALUE, -Integer.MAX_VALUE, partialTicks);
                     }
 
-                    GlStateManager.matrixMode(GL11.GL_PROJECTION);
+                    GlStateManager.matrixMode(GL_PROJECTION);
                     GlStateManager.popMatrix();
-                    GlStateManager.matrixMode(GL11.GL_MODELVIEW);
+                    GlStateManager.matrixMode(GL_MODELVIEW);
                     GlStateManager.popMatrix();
 
                     minecraft.getFramebuffer().bindFramebuffer(true);
                     GlStateManager.enableLighting();
                     GlStateManager.enableFog();
-
-                    //                if (this.screenList == -1)
-                    //                {
-                    //                    this.createScreenList();
-                    //                }
-                    //                GlStateManager.callList(this.screenList);
 
                     GlStateManager.translated(0.5, 0, 0.5);
                     GlStateManager.rotated(-state.get(DeviceBlock.HORIZONTAL_FACING).getHorizontalAngle(), 0, 1, 0);

@@ -17,8 +17,8 @@ import java.util.Map;
 /**
  * <p>The Task Manager handles all {@link Task} related information.<p>
  * <p>To register a task, use the {@link Task.Register} annotation on the task class and extend {@link Task}.<p>
- * <p>To send a client task, see {@link TaskManager#sendTaskToServer(Task, TaskReceiver)}.<p>
- * <p>To send a server task, see {@link TaskManager#sendTaskTo(Task, TaskReceiver, ServerPlayerEntity)}.<p>
+ * <p>To send a task from the client to the server, see {@link TaskManager#sendToServer(Task, TaskReceiver)}.<p>
+ * <p>To send a task from the server to a client, see {@link TaskManager#sendTo(Task, TaskReceiver, ServerPlayerEntity)}.<p>
  *
  * @author Ocelot
  * @see Task
@@ -36,7 +36,7 @@ public final class TaskManager
      * @param receiver The way the task will be handled when it is being returned from the server
      */
     @OnlyIn(Dist.CLIENT)
-    public static void sendTaskToServer(Task task, TaskReceiver receiver)
+    public static void sendToServer(Task task, TaskReceiver receiver)
     {
         if (getRegistryName(task.getClass()) == null)
             throw new RuntimeException("Unregistered Task: " + task.getClass().getName() + ". Use Task annotation to register a task.");
@@ -45,21 +45,21 @@ public final class TaskManager
     }
 
     /**
-     * Sends a task from the server to the client.
+     * Sends a task from the server to the client. In order to send a task to <b>ALL</b> clients, {@link TaskManager#sendToAll(Task)} should be used instead.
      *
      * @param task     The task to send to the server
      * @param receiver The way the task will be handled when it is being sent to the client
      * @param player   The player to base the receiver around as the receiver
      */
-    public static void sendTaskTo(Task task, TaskReceiver receiver, ServerPlayerEntity player)
+    public static void sendTo(Task task, TaskReceiver receiver, ServerPlayerEntity player)
     {
         if (getRegistryName(task.getClass()) == null)
             throw new RuntimeException("Unregistered Task: " + task.getClass().getName() + ". Use Task annotation to register a task.");
 
         switch (receiver)
         {
-            case NONE:
-                break;
+            case ALL:
+                throw new IllegalArgumentException("Task \'" + getRegistryName(task.getClass()) + "\' should use \'TaskManager#sendToAll\' instead of \'TaskManager#sendTo\' for receiver type \'" + TaskReceiver.ALL + "\'");
             case SENDER:
                 DeviceMessages.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new MessageRequest(task, receiver));
                 break;
@@ -70,6 +70,19 @@ public final class TaskManager
                 DeviceMessages.INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player), new MessageRequest(task, receiver));
                 break;
         }
+    }
+
+    /**
+     * Sends a task from the server to all clients.
+     *
+     * @param task The task to send to all clients
+     */
+    public static void sendToAll(Task task)
+    {
+        if (getRegistryName(task.getClass()) == null)
+            throw new RuntimeException("Unregistered Task: " + task.getClass().getName() + ". Use Task annotation to register a task.");
+
+        DeviceMessages.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageRequest(task, TaskReceiver.ALL));
     }
 
     /**
@@ -117,6 +130,6 @@ public final class TaskManager
      */
     public enum TaskReceiver
     {
-        NONE, SENDER, NEARBY, SENDER_AND_NEARBY
+        SENDER, NEARBY, SENDER_AND_NEARBY, ALL
     }
 }

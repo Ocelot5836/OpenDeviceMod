@@ -42,7 +42,8 @@ public class ServerMessageHandler implements MessageHandler
                 request.processRequest(nbt, player.world, player);
                 switch (msg.getReceiver())
                 {
-                    case NONE:
+                    case ALL:
+                        DeviceMessages.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageClientResponse(request, nbt));
                         break;
                     case SENDER:
                         DeviceMessages.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new MessageClientResponse(request, nbt));

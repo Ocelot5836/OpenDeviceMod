@@ -10,14 +10,12 @@ import net.minecraftforge.registries.IForgeRegistry;
 import javax.annotation.Nullable;
 
 /**
- * TODO potentially limit the valid backgrounds to some registry
- *
  * <p>An image that can be rendered onto the back of the {@link LaptopDesktop}.</p>
  * <p>Supports {@link ResourceLocation} and a URL string to get the image source.</p>
  *
  * @author Ocelot
  * @see LaptopDesktop
- * @deprecated TODO update to use {@link IForgeRegistry} so it syncs with the server
+ * @deprecated TODO update to use {@link IForgeRegistry} so it syncs with the server. Limit the valid backgrounds to some registry
  */
 public class DesktopBackground implements INBTSerializable<CompoundNBT>
 {
