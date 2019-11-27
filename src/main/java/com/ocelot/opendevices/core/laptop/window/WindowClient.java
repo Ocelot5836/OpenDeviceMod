@@ -35,14 +35,14 @@ public class WindowClient extends LaptopWindow
 
     public WindowClient(Laptop laptop, @Nullable CompoundNBT initData, WindowContentType contentType, ResourceLocation contentId, int width, int height)
     {
-        super(laptop, initData,contentType, contentId, width, height);
+        super(laptop, initData, contentType, contentId, width, height);
         this.content = createContent(contentType, contentId);
         this.closeButton = new WindowButton(laptop, button -> this.close());
     }
 
     public WindowClient(Laptop laptop, @Nullable CompoundNBT initData, WindowContentType contentType, ResourceLocation contentId, int x, int y, int width, int height)
     {
-        super(laptop,initData, contentType, contentId, x, y, width, height);
+        super(laptop, initData, contentType, contentId, x, y, width, height);
         this.content = createContent(contentType, contentId);
         this.closeButton = new WindowButton(laptop, button -> this.close());
     }
@@ -97,7 +97,7 @@ public class WindowClient extends LaptopWindow
         String title = this.content.getTitle();
         if (title != null)
         {
-            Minecraft.getInstance().fontRenderer.drawStringWithShadow(title, this.screenX + this.getInterpolatedX(partialTicks) + 2f + titleOffset, this.screenY + this.getInterpolatedY(partialTicks) + 2.5f, this.getLaptop().readSetting(LaptopSettings.DESKTOP_TEXT_COLOR));
+            RenderUtil.drawStringClipped(Minecraft.getInstance().fontRenderer, title, this.screenX + this.getInterpolatedX(partialTicks) + 2f + titleOffset, this.screenY + this.getInterpolatedY(partialTicks) + 2.5f, this.getWidth() - 4 - titleOffset - this.closeButton.getWidth(), this.getLaptop().readSetting(LaptopSettings.DESKTOP_TEXT_COLOR), true);
         }
 
         GlStateManager.color4f(((color >> 16) & 0xff) / 255f, ((color >> 8) & 0xff) / 255f, (color & 0xff) / 255f, 1);

@@ -42,11 +42,6 @@ public interface Laptop extends Executor
     PlayerEntity getUser();
 
     /**
-     * @return Whether or not someone is using the laptop
-     */
-    boolean inUse();
-
-    /**
      * @return The world the laptop is in
      */
     IWorld getWorld();
