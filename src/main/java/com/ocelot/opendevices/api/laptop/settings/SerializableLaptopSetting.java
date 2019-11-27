@@ -1,9 +1,9 @@
 package com.ocelot.opendevices.api.laptop.settings;
 
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import java.util.function.Function;
 
@@ -13,15 +13,13 @@ import java.util.function.Function;
  * @author Ocelot
  * @see LaptopSetting
  */
-public class SerializableLaptopSetting<T extends INBTSerializable<CompoundNBT>> implements LaptopSetting<T>
+public class SerializableLaptopSetting<T extends INBTSerializable<CompoundNBT>> extends ForgeRegistryEntry<LaptopSetting<?>> implements LaptopSetting<T>
 {
-    private ResourceLocation registryName;
     private Function<CompoundNBT, T> factory;
     private T defaultValue;
 
-    public SerializableLaptopSetting(ResourceLocation registryName, Function<CompoundNBT, T> factory, T defaultValue)
+    public SerializableLaptopSetting(Function<CompoundNBT, T> factory, T defaultValue)
     {
-        this.registryName = registryName;
         this.factory = factory;
         this.defaultValue = defaultValue;
     }
@@ -29,25 +27,19 @@ public class SerializableLaptopSetting<T extends INBTSerializable<CompoundNBT>> 
     @Override
     public T read(CompoundNBT nbt)
     {
-        return this.factory.apply(nbt.getCompound(this.registryName.toString()));
+        return this.factory.apply(nbt.getCompound(String.valueOf(this.getRegistryName())));
     }
 
     @Override
     public void write(T value, CompoundNBT nbt)
     {
-        nbt.put(this.registryName.toString(), value.serializeNBT());
+        nbt.put(String.valueOf(this.getRegistryName()), value.serializeNBT());
     }
 
     @Override
     public boolean contains(CompoundNBT nbt)
     {
-        return nbt.contains(this.registryName.toString(), Constants.NBT.TAG_COMPOUND);
-    }
-
-    @Override
-    public ResourceLocation getRegistryName()
-    {
-        return registryName;
+        return nbt.contains(String.valueOf(this.getRegistryName()), Constants.NBT.TAG_COMPOUND);
     }
 
     @Override

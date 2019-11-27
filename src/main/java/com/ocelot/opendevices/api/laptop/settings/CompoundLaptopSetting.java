@@ -1,8 +1,8 @@
 package com.ocelot.opendevices.api.laptop.settings;
 
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.registries.ForgeRegistryEntry;
 
 /**
  * <p>Represents a {@link LaptopSetting} for the type {@link CompoundNBT}. Can be used to read/write any NBT compound to/from the system settings.</p>
@@ -10,39 +10,31 @@ import net.minecraftforge.common.util.Constants;
  * @author Ocelot
  * @see LaptopSetting
  */
-public class CompoundLaptopSetting implements LaptopSetting<CompoundNBT>
+public class CompoundLaptopSetting extends ForgeRegistryEntry<LaptopSetting<?>> implements LaptopSetting<CompoundNBT>
 {
-    private ResourceLocation registryName;
     private CompoundNBT defaultValue;
 
-    public CompoundLaptopSetting(ResourceLocation registryName, CompoundNBT defaultValue)
+    public CompoundLaptopSetting(CompoundNBT defaultValue)
     {
-        this.registryName = registryName;
         this.defaultValue = defaultValue;
     }
 
     @Override
     public CompoundNBT read(CompoundNBT nbt)
     {
-        return nbt.getCompound(this.registryName.toString());
+        return nbt.getCompound(String.valueOf(this.getRegistryName()));
     }
 
     @Override
     public void write(CompoundNBT value, CompoundNBT nbt)
     {
-        nbt.put(this.registryName.toString(), value);
+        nbt.put(String.valueOf(this.getRegistryName()), value);
     }
 
     @Override
     public boolean contains(CompoundNBT nbt)
     {
-        return nbt.contains(this.registryName.toString(), Constants.NBT.TAG_COMPOUND);
-    }
-
-    @Override
-    public ResourceLocation getRegistryName()
-    {
-        return registryName;
+        return nbt.contains(String.valueOf(this.getRegistryName()), Constants.NBT.TAG_COMPOUND);
     }
 
     @Override

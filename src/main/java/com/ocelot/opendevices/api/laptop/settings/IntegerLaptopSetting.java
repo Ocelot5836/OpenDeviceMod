@@ -1,8 +1,8 @@
 package com.ocelot.opendevices.api.laptop.settings;
 
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.registries.ForgeRegistryEntry;
 
 /**
  * <p>Represents a {@link LaptopSetting} for the type {@link Integer}. Can be used to read/write any integer to/from the system settings.</p>
@@ -10,39 +10,31 @@ import net.minecraftforge.common.util.Constants;
  * @author Ocelot
  * @see LaptopSetting
  */
-public class IntegerLaptopSetting implements LaptopSetting<Integer>
+public class IntegerLaptopSetting extends ForgeRegistryEntry<LaptopSetting<?>> implements LaptopSetting<Integer>
 {
-    private ResourceLocation registryName;
     private int defaultValue;
 
-    public IntegerLaptopSetting(ResourceLocation registryName, int defaultValue)
+    public IntegerLaptopSetting(int defaultValue)
     {
-        this.registryName = registryName;
         this.defaultValue = defaultValue;
     }
 
     @Override
     public Integer read(CompoundNBT nbt)
     {
-        return nbt.getInt(this.registryName.toString());
+        return nbt.getInt(String.valueOf(this.getRegistryName()));
     }
 
     @Override
     public void write(Integer value, CompoundNBT nbt)
     {
-        nbt.putInt(this.registryName.toString(), value);
+        nbt.putInt(String.valueOf(this.getRegistryName()), value);
     }
 
     @Override
     public boolean contains(CompoundNBT nbt)
     {
-        return nbt.contains(this.registryName.toString(), Constants.NBT.TAG_INT);
-    }
-
-    @Override
-    public ResourceLocation getRegistryName()
-    {
-        return registryName;
+        return nbt.contains(String.valueOf(this.getRegistryName()), Constants.NBT.TAG_INT);
     }
 
     @Override

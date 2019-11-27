@@ -1,7 +1,7 @@
 package com.ocelot.opendevices.api.laptop.settings;
 
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import java.util.UUID;
 
@@ -11,39 +11,31 @@ import java.util.UUID;
  * @author Ocelot
  * @see LaptopSetting
  */
-public class UUIDLaptopSetting implements LaptopSetting<UUID>
+public class UUIDLaptopSetting extends ForgeRegistryEntry<LaptopSetting<?>> implements LaptopSetting<UUID>
 {
-    private ResourceLocation registryName;
     private UUID defaultValue;
 
-    public UUIDLaptopSetting(ResourceLocation registryName, UUID defaultValue)
+    public UUIDLaptopSetting(UUID defaultValue)
     {
-        this.registryName = registryName;
         this.defaultValue = defaultValue;
     }
 
     @Override
     public UUID read(CompoundNBT nbt)
     {
-        return nbt.getUniqueId(this.registryName.toString());
+        return nbt.getUniqueId(String.valueOf(this.getRegistryName()));
     }
 
     @Override
     public void write(UUID value, CompoundNBT nbt)
     {
-        nbt.putUniqueId(this.registryName.toString(), value);
+        nbt.putUniqueId(String.valueOf(this.getRegistryName()), value);
     }
 
     @Override
     public boolean contains(CompoundNBT nbt)
     {
-        return nbt.hasUniqueId(this.registryName.toString());
-    }
-
-    @Override
-    public ResourceLocation getRegistryName()
-    {
-        return registryName;
+        return nbt.hasUniqueId(String.valueOf(this.getRegistryName()));
     }
 
     @Override

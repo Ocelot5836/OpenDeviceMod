@@ -9,7 +9,6 @@ import com.ocelot.opendevices.api.laptop.desktop.DesktopManager;
 import com.ocelot.opendevices.api.laptop.settings.LaptopSetting;
 import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.core.registry.ApplicationRegistryEntry;
-import com.ocelot.opendevices.core.registry.SettingRegistryEntry;
 import com.ocelot.opendevices.core.registry.TaskRegistryEntry;
 import com.ocelot.opendevices.core.render.LaptopTileEntityRenderer;
 import com.ocelot.opendevices.init.DeviceBlocks;
@@ -79,7 +78,6 @@ public class OpenDevices
 
     private void initClient(FMLClientSetupEvent event)
     {
-        DeviceBlocks.initClient();
         MinecraftForge.EVENT_BUS.register(LaptopTileEntityRenderer.INSTANCE);
 
         if (ModList.get().isLoaded("filters"))
@@ -117,6 +115,7 @@ public class OpenDevices
         public static void registerBlocks(RegistryEvent.Register<Block> event)
         {
             event.getRegistry().registerAll(DeviceBlocks.getBlocks());
+            DistExecutor.runWhenOn(Dist.CLIENT, () -> DeviceBlocks::initClient);
         }
 
         @SubscribeEvent
@@ -151,12 +150,14 @@ public class OpenDevices
         }
 
         @SubscribeEvent
-        public static void registerSettings(RegistryEvent.Register<SettingRegistryEntry> event)
+        public static void registerSettings(RegistryEvent.Register<LaptopSetting<?>> event)
         {
             Set<ModFileScanData.AnnotationData> annotations = OpenDevices.annotationScanData.stream().filter(it -> it.getTargetType() == ElementType.FIELD && it.getAnnotationType().equals(Type.getType(LaptopSetting.Register.class))).collect(Collectors.toSet());
 
             for (ModFileScanData.AnnotationData data : annotations)
             {
+                ResourceLocation registryName = new ResourceLocation((String) data.getAnnotationData().get("value"));
+
                 String className = data.getClassType().getClassName();
                 String fieldName = data.getMemberName();
                 try
@@ -164,9 +165,8 @@ public class OpenDevices
                     Class clazz = Class.forName(className);
                     Field field = clazz.getField(fieldName);
                     LaptopSetting<?> setting = (LaptopSetting<?>) field.get(null);
-                    ResourceLocation registryName = setting.getRegistryName();
 
-                    event.getRegistry().register(new SettingRegistryEntry().setRegistryName(registryName));
+                    event.getRegistry().register(setting.setRegistryName(registryName));
                 }
                 catch (Exception e)
                 {

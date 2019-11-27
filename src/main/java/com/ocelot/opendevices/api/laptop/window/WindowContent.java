@@ -172,7 +172,6 @@ public interface WindowContent
      * Registers a new type of window content that can be opened by the {@link Desktop} as a window.
      *
      * @author Ocelot
-     * @see WindowContent
      */
     @Target(ElementType.TYPE)
     @interface Register

@@ -3,6 +3,7 @@ package com.ocelot.opendevices.api.laptop.settings;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.registries.ForgeRegistryEntry;
 
 /**
  * <p>Represents a {@link LaptopSetting} for an array of the type {@link Integer}. Can be used to read/write any int array to/from the system settings.</p>
@@ -10,7 +11,7 @@ import net.minecraftforge.common.util.Constants;
  * @author Ocelot
  * @see LaptopSetting
  */
-public class IntArrayLaptopSetting implements LaptopSetting<int[]>
+public class IntArrayLaptopSetting extends ForgeRegistryEntry<LaptopSetting<?>> implements LaptopSetting<int[]>
 {
     private ResourceLocation registryName;
     private int[] defaultValue;
@@ -37,12 +38,6 @@ public class IntArrayLaptopSetting implements LaptopSetting<int[]>
     public boolean contains(CompoundNBT nbt)
     {
         return nbt.contains(this.registryName.toString(), Constants.NBT.TAG_INT_ARRAY);
-    }
-
-    @Override
-    public ResourceLocation getRegistryName()
-    {
-        return registryName;
     }
 
     @Override

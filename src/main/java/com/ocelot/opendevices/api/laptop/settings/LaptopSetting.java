@@ -1,20 +1,20 @@
 package com.ocelot.opendevices.api.laptop.settings;
 
+import com.ocelot.opendevices.api.laptop.Laptop;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import javax.annotation.Nullable;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 
 /**
- * <p>An abstract setting that can be set on the {@link com.ocelot.opendevices.api.laptop.Laptop}.</>
+ * <p>An abstract setting that can be set on the {@link Laptop}.</>
  *
  * @param <T> The type of data the setting handles
  * @author Ocelot
- * @see SettingsManager
  */
-public interface LaptopSetting<T>
+public interface LaptopSetting<T> extends IForgeRegistryEntry<LaptopSetting<?>>
 {
     /**
      * Reads this setting from NBT.
@@ -42,18 +42,20 @@ public interface LaptopSetting<T>
     boolean contains(CompoundNBT nbt);
 
     /**
-     * @return The registry name of the setting
-     */
-    ResourceLocation getRegistryName();
-
-    /**
      * @return The default value for the setting
      */
     T getDefaultValue();
 
     /**
      * Registers a new type of setting for the Laptop.
+     *
+     * @author Ocelot
      */
     @Target(ElementType.FIELD)
-    @interface Register {}
+    @interface Register {
+        /**
+         * @return The name of this content. Should be in the format of <code>modid:contentName</code>.
+         */
+        String value();
+    }
 }

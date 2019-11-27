@@ -1,8 +1,8 @@
 package com.ocelot.opendevices.api.laptop.settings;
 
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.registries.ForgeRegistryEntry;
 
 /**
  * <p>Represents a {@link LaptopSetting} for an array of the type {@link Long}. Can be used to read/write any long array to/from the system settings.</p>
@@ -10,39 +10,31 @@ import net.minecraftforge.common.util.Constants;
  * @author Ocelot
  * @see LaptopSetting
  */
-public class LongArrayLaptopSetting implements LaptopSetting<long[]>
+public class LongArrayLaptopSetting extends ForgeRegistryEntry<LaptopSetting<?>> implements LaptopSetting<long[]>
 {
-    private ResourceLocation registryName;
     private long[] defaultValue;
 
-    public LongArrayLaptopSetting(ResourceLocation registryName, long... defaultValue)
+    public LongArrayLaptopSetting(long... defaultValue)
     {
-        this.registryName = registryName;
         this.defaultValue = defaultValue;
     }
 
     @Override
     public long[] read(CompoundNBT nbt)
     {
-        return nbt.getLongArray(this.registryName.toString());
+        return nbt.getLongArray(String.valueOf(this.getRegistryName()));
     }
 
     @Override
     public void write(long[] value, CompoundNBT nbt)
     {
-        nbt.putLongArray(this.registryName.toString(), value);
+        nbt.putLongArray(String.valueOf(this.getRegistryName()), value);
     }
 
     @Override
     public boolean contains(CompoundNBT nbt)
     {
-        return nbt.contains(this.registryName.toString(), Constants.NBT.TAG_LONG_ARRAY);
-    }
-
-    @Override
-    public ResourceLocation getRegistryName()
-    {
-        return registryName;
+        return nbt.contains(String.valueOf(this.getRegistryName()), Constants.NBT.TAG_LONG_ARRAY);
     }
 
     @Override

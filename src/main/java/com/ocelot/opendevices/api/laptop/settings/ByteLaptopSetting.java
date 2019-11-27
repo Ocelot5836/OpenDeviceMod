@@ -1,8 +1,8 @@
 package com.ocelot.opendevices.api.laptop.settings;
 
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.registries.ForgeRegistryEntry;
 
 /**
  * <p>Represents a {@link LaptopSetting} for the type {@link Byte}. Can be used to read/write any byte to/from the system settings.</p>
@@ -10,39 +10,31 @@ import net.minecraftforge.common.util.Constants;
  * @author Ocelot
  * @see LaptopSetting
  */
-public class ByteLaptopSetting implements LaptopSetting<Byte>
+public class ByteLaptopSetting extends ForgeRegistryEntry<LaptopSetting<?>> implements LaptopSetting<Byte>
 {
-    private ResourceLocation registryName;
     private byte defaultValue;
 
-    public ByteLaptopSetting(ResourceLocation registryName, byte defaultValue)
+    public ByteLaptopSetting(byte defaultValue)
     {
-        this.registryName = registryName;
         this.defaultValue = defaultValue;
     }
 
     @Override
     public Byte read(CompoundNBT nbt)
     {
-        return nbt.getByte(this.registryName.toString());
+        return nbt.getByte(String.valueOf(this.getRegistryName()));
     }
 
     @Override
     public void write(Byte value, CompoundNBT nbt)
     {
-        nbt.putByte(this.registryName.toString(), value);
+        nbt.putByte(String.valueOf(this.getRegistryName()), value);
     }
 
     @Override
     public boolean contains(CompoundNBT nbt)
     {
-        return nbt.contains(this.registryName.toString(), Constants.NBT.TAG_BYTE);
-    }
-
-    @Override
-    public ResourceLocation getRegistryName()
-    {
-        return registryName;
+        return nbt.contains(String.valueOf(this.getRegistryName()), Constants.NBT.TAG_BYTE);
     }
 
     @Override
