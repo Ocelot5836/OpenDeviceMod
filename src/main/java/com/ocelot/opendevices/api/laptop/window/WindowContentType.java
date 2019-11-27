@@ -1,6 +1,6 @@
 package com.ocelot.opendevices.api.laptop.window;
 
-import com.ocelot.opendevices.api.laptop.application.ApplicationLoader;
+import com.ocelot.opendevices.api.laptop.DeviceRegistries;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.function.Function;
@@ -12,7 +12,7 @@ import java.util.function.Function;
  */
 public enum WindowContentType
 {
-    APPLICATION(applicationId -> ApplicationLoader.REGISTRY.containsKey(applicationId)), DIALOG(dialogId -> false);
+    APPLICATION(applicationId -> DeviceRegistries.APPLICATIONS.containsKey(applicationId)), DIALOG(dialogId -> false);
 
     private Function<ResourceLocation, Boolean> valid;
 

@@ -1,10 +1,11 @@
 package com.ocelot.opendevices.api.laptop.settings;
 
-import com.ocelot.opendevices.core.laptop.SettingsManager;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nullable;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Target;
 
 /**
  * <p>An abstract setting that can be set on the {@link com.ocelot.opendevices.api.laptop.Laptop}.</>
@@ -53,5 +54,6 @@ public interface LaptopSetting<T>
     /**
      * Registers a new type of setting for the Laptop.
      */
+    @Target(ElementType.FIELD)
     @interface Register {}
 }

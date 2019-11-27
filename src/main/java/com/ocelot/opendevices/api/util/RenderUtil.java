@@ -29,6 +29,8 @@ public class RenderUtil
     private static final Stack<Scissor> SCISSOR_STACK = new Stack<>();
     private static final FloatBuffer COLOR_GET_BUFFER = BufferUtils.createFloatBuffer(4);
 
+    private RenderUtil() {}
+
     private static void restoreScissor()
     {
         if (!SCISSOR_STACK.isEmpty())
@@ -188,6 +190,16 @@ public class RenderUtil
     public static void glColorAlpha(int color)
     {
         GlStateManager.color4f(((color >> 16) & 0xff) / 255f, ((color >> 8) & 0xff) / 255f, (color & 0xff) / 255f, ((color >> 24) & 0xff) / 255f);
+    }
+
+    public static void enableScissor()
+    {
+        glEnable(GL_SCISSOR_TEST);
+    }
+
+    public static void disableScissor()
+    {
+        glDisable(GL_SCISSOR_TEST);
     }
 
     private static class Scissor

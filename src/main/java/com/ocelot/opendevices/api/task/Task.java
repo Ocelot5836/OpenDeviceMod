@@ -4,6 +4,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.world.World;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Target;
+
 /**
  * <p>A Task is simple implementation that allows you to make calls to the
  * server to process actions, store or retrieve data, etc. Useful for any
@@ -27,7 +30,7 @@ public abstract class Task
     /**
      * Sets that this Task was successful. Should be called
      * if your Task produced the correct results, preferably in
-     * {@link #processRequest(CompoundNBT, World, net.minecraft.entity.player.PlayerEntity)}
+     * {@link #processRequest(CompoundNBT, World, PlayerEntity)}
      */
     public final void setSuccessful()
     {
@@ -77,4 +80,19 @@ public abstract class Task
      * @param nbt The NBT Tag received from the server
      */
     public abstract void processResponse(CompoundNBT nbt, World world, PlayerEntity player);
+
+    /**
+     * Registers a new type of task that can be used in the {@link TaskManager}.
+     *
+     * @author Ocelot
+     * @see Task
+     */
+    @Target(ElementType.TYPE)
+    public @interface Register
+    {
+        /**
+         * @return The name of this task. Should be in the format of <code>modid:taskName</code>
+         */
+        String value();
+    }
 }

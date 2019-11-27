@@ -1,5 +1,6 @@
 package com.ocelot.opendevices.api.util;
 
+import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.handler.Callback;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -12,7 +13,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * <p>An async way to make requests to the internet. Uses {@link Callback} for handling the data returned.</p>
+ * <p>An asynchronous way to make requests to the internet. Uses {@link Callback} for handling the data returned.</p>
  *
  * @author Ocelot
  * @see Callback
@@ -21,6 +22,8 @@ import java.util.concurrent.Executors;
 public class OnlineRequest
 {
     private static final ExecutorService POOL = Executors.newSingleThreadExecutor(r -> new Thread(r, "Online Request Thread"));
+
+    private OnlineRequest() {}
 
     /**
      * Adds a request to the queue. Use the handler to process the response you get from the URL connection.
@@ -42,7 +45,7 @@ public class OnlineRequest
             }
             catch (Exception e)
             {
-                e.printStackTrace();
+                OpenDevices.LOGGER.warn("Could not retrieve data from \'" + url + "\'", e);
                 handler.handle(false, null);
             }
         });

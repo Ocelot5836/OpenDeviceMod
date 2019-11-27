@@ -1,6 +1,7 @@
 package com.ocelot.opendevices.network.handler;
 
 import com.ocelot.opendevices.api.task.Task;
+import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.core.LaptopTileEntity;
 import com.ocelot.opendevices.core.render.LaptopScreen;
 import com.ocelot.opendevices.init.DeviceMessages;
@@ -59,6 +60,9 @@ public class ClientMessageHandler implements MessageHandler
             Task request = msg.getRequest();
             CompoundNBT nbt = msg.getNbt();
 
+            if (TaskManager.getRegistryName(request.getClass()) == null)
+                throw new RuntimeException("Unregistered Task: " + request.getClass().getName() + ". Use Task annotation to register a task.");
+
             request.processRequest(nbt, player.world, player);
             DeviceMessages.INSTANCE.send(PacketDistributor.SERVER.noArg(), new MessageClientResponse(request, nbt));
         });
@@ -70,7 +74,15 @@ public class ClientMessageHandler implements MessageHandler
     {
         Minecraft minecraft = Minecraft.getInstance();
 
-        ctx.get().enqueueWork(() -> msg.getRequest().processResponse(msg.getNbt(), minecraft.world, minecraft.player));
+        ctx.get().enqueueWork(() ->
+        {
+            Task request = msg.getRequest();
+
+            if (TaskManager.getRegistryName(request.getClass()) == null)
+                throw new RuntimeException("Unregistered Task: " + request.getClass().getName() + ". Use Task annotation to register a task.");
+
+            request.processResponse(msg.getNbt(), minecraft.world, minecraft.player);
+        });
         ctx.get().setPacketHandled(true);
     }
 }

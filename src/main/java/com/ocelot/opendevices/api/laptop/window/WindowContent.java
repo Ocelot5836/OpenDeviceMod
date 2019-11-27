@@ -1,12 +1,15 @@
 package com.ocelot.opendevices.api.laptop.window;
 
 import com.ocelot.opendevices.api.laptop.application.Application;
+import com.ocelot.opendevices.api.laptop.desktop.Desktop;
 import com.ocelot.opendevices.api.util.TooltipRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nullable;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Target;
 
 /**
  * <p>The most abstract form of any content that can be found within a window.</p>
@@ -164,4 +167,19 @@ public interface WindowContent
      * @return The window this content is displayed in
      */
     Window getWindow();
+
+    /**
+     * Registers a new type of window content that can be opened by the {@link Desktop} as a window.
+     *
+     * @author Ocelot
+     * @see WindowContent
+     */
+    @Target(ElementType.TYPE)
+    @interface Register
+    {
+        /**
+         * @return The name of this content. Should be in the format of <code>modid:contentName</code>.
+         */
+        String value();
+    }
 }

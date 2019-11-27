@@ -2,7 +2,6 @@ package com.ocelot.opendevices.core.task;
 
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.task.Task;
-import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.core.LaptopDesktop;
 import com.ocelot.opendevices.core.LaptopTileEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -15,7 +14,7 @@ import net.minecraftforge.common.util.Constants;
 import java.util.Objects;
 import java.util.UUID;
 
-@TaskManager.Register(OpenDevices.MOD_ID + ":close_window")
+@Task.Register(OpenDevices.MOD_ID + ":close_window")
 public class CloseWindowTask extends Task
 {
     private BlockPos pos;

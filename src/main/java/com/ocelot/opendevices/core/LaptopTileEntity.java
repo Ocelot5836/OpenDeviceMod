@@ -5,8 +5,8 @@ import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.device.DeviceTileEntity;
 import com.ocelot.opendevices.api.laptop.Laptop;
 import com.ocelot.opendevices.api.laptop.settings.LaptopSetting;
+import com.ocelot.opendevices.api.laptop.DeviceRegistries;
 import com.ocelot.opendevices.api.task.TaskManager;
-import com.ocelot.opendevices.core.laptop.SettingsManager;
 import com.ocelot.opendevices.core.task.SyncSettingsTask;
 import com.ocelot.opendevices.init.DeviceBlocks;
 import net.minecraft.entity.player.PlayerEntity;
@@ -145,13 +145,15 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
     @Override
     public <T> T readSetting(LaptopSetting<T> setting)
     {
+        if (!DeviceRegistries.SETTINGS.containsKey(setting.getRegistryName()))
+            throw new RuntimeException("Setting " + setting.getRegistryName() + " is not registered! In order to write to a setting it needs to be registered!");
         return setting.contains(this.settings) ? setting.read(this.settings) : setting.getDefaultValue();
     }
 
     @Override
     public <T> void writeSetting(LaptopSetting<T> setting, T value)
     {
-        if (!SettingsManager.isRegistered(setting))
+        if (!DeviceRegistries.SETTINGS.containsKey(setting.getRegistryName()))
         {
             OpenDevices.LOGGER.warn("Setting " + setting.getRegistryName() + " is not registered! In order to write to a setting it needs to be registered!");
             return;

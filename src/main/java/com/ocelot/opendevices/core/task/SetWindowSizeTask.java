@@ -14,7 +14,7 @@ import net.minecraft.world.World;
 import java.util.Objects;
 import java.util.UUID;
 
-@TaskManager.Register(OpenDevices.MOD_ID + ":set_window_size")
+@Task.Register(OpenDevices.MOD_ID + ":set_window_size")
 public class SetWindowSizeTask extends Task
 {
     private BlockPos pos;

@@ -5,6 +5,7 @@ import com.ocelot.opendevices.core.LaptopDesktop;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraftforge.registries.IForgeRegistry;
 
 import javax.annotation.Nullable;
 
@@ -16,6 +17,7 @@ import javax.annotation.Nullable;
  *
  * @author Ocelot
  * @see LaptopDesktop
+ * @deprecated TODO update to use {@link IForgeRegistry} so it syncs with the server
  */
 public class DesktopBackground implements INBTSerializable<CompoundNBT>
 {

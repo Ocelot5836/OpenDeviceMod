@@ -2,8 +2,10 @@ package com.ocelot.opendevices.api.laptop.desktop;
 
 import com.ocelot.opendevices.OpenDevices;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.registries.IForgeRegistry;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -12,6 +14,7 @@ import java.util.Set;
  * @author Ocelot
  * @see Desktop
  * @see DesktopBackground
+ * @deprecated TODO update to use {@link IForgeRegistry} so it syncs with the server
  */
 public class DesktopManager
 {
@@ -24,10 +27,8 @@ public class DesktopManager
      */
     public static void registerBackgroundLocation(ResourceLocation location)
     {
-        if (location == null)
-            throw new NullPointerException("Desktop Background locations can not be null.");
+        VALID_BACKGROUND_LOCATIONS.add(Objects.requireNonNull(location, "Desktop Background locations can not be null."));
         OpenDevices.LOGGER.info("Registered Desktop Background location: " + location);
-        VALID_BACKGROUND_LOCATIONS.add(location);
     }
 
     /**

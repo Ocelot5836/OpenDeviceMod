@@ -1,28 +1,22 @@
 package com.ocelot.opendevices.api.task;
 
-import com.google.common.collect.HashBiMap;
-import com.ocelot.opendevices.OpenDevices;
+import com.ocelot.opendevices.api.laptop.DeviceRegistries;
+import com.ocelot.opendevices.core.registry.TaskRegistryEntry;
 import com.ocelot.opendevices.init.DeviceMessages;
 import com.ocelot.opendevices.network.MessageRequest;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.network.PacketDistributor;
-import net.minecraftforge.forgespi.language.ModFileScanData;
-import org.objectweb.asm.Type;
 
 import javax.annotation.Nullable;
-import java.lang.annotation.ElementType;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>The Task Manager handles all {@link Task} related information.<p>
- * <p>To register a task, use the {@link Register} annotation on the task class and extend {@link Task}.<p>
+ * <p>To register a task, use the {@link Task.Register} annotation on the task class and extend {@link Task}.<p>
  * <p>To send a client task, see {@link TaskManager#sendTask(Task, TaskReceiver)}.<p>
  * <p>To send a server task, see {@link TaskManager#sendTask(Task, TaskReceiver, ServerPlayerEntity)}.<p>
  *
@@ -31,56 +25,9 @@ import java.util.stream.Collectors;
  */
 public final class TaskManager
 {
-    private static final Type AUTO_REGISTRY = Type.getType(TaskManager.Register.class);
-    private static final HashBiMap<ResourceLocation, Class<? extends Task>> REGISTRY = HashBiMap.create();
-    private static int currentId = 0;
-    private static boolean initialized = false;
+    private static final Map<Class<? extends Task>, ResourceLocation> REGISTRY_CACHE = new HashMap<>();
 
     private TaskManager() {}
-
-    /**
-     * This should never be used by the consumer. Core use only!
-     */
-    @SuppressWarnings("unchecked")
-    public static void init()
-    {
-        if (initialized)
-        {
-            OpenDevices.LOGGER.warn("Attempted to initialize Task Manager even though it has already been initialized. This should NOT happen!");
-            return;
-        }
-
-        List<ModFileScanData.AnnotationData> annotations = ModList.get().getAllScanData().stream().map(ModFileScanData::getAnnotations).flatMap(Collection::stream).filter(it -> it.getTargetType() == ElementType.TYPE && it.getAnnotationType().equals(AUTO_REGISTRY)).collect(Collectors.toList());
-
-        for (ModFileScanData.AnnotationData data : annotations)
-        {
-            ResourceLocation registryName = new ResourceLocation((String) data.getAnnotationData().get("value"));
-
-            String className = data.getClassType().getClassName();
-            try
-            {
-                Class<?> clazz = Class.forName(className);
-
-                if ("minecraft".equals(registryName.getNamespace()) || registryName.getPath().isEmpty())
-                    throw new IllegalArgumentException("Task: " + clazz + " does not have a valid registry name. Skipping!");
-
-                if (!Task.class.isAssignableFrom(clazz))
-                    throw new IllegalArgumentException("Task: " + clazz + " does not extend Task. Skipping!");
-
-                if (REGISTRY.containsKey(registryName))
-                    throw new RuntimeException("Task: " + registryName + " attempted to override existing task. Skipping!");
-
-                REGISTRY.put(registryName, (Class<? extends Task>) clazz);
-                OpenDevices.LOGGER.debug("Registered task: " + registryName);
-            }
-            catch (Exception e)
-            {
-                OpenDevices.LOGGER.error("Could not register task class " + className + ". Skipping!", e);
-            }
-        }
-
-        initialized = true;
-    }
 
     /**
      * Sends a task from the client to the server.
@@ -91,10 +38,8 @@ public final class TaskManager
     @OnlyIn(Dist.CLIENT)
     public static void sendTask(Task task, TaskReceiver receiver)
     {
-        if (!REGISTRY.containsValue(task.getClass()))
-        {
-            throw new RuntimeException("Unregistered Task: " + task.getClass().getName() + ". Use TaskManager#Register annotation to register a task.");
-        }
+        if (getRegistryName(task.getClass()) == null)
+            throw new RuntimeException("Unregistered Task: " + task.getClass().getName() + ". Use Task annotation to register a task.");
 
         DeviceMessages.INSTANCE.send(PacketDistributor.SERVER.noArg(), new MessageRequest(task, receiver));
     }
@@ -108,10 +53,8 @@ public final class TaskManager
      */
     public static void sendTask(Task task, TaskReceiver receiver, ServerPlayerEntity player)
     {
-        if (!REGISTRY.containsValue(task.getClass()))
-        {
-            throw new RuntimeException("Unregistered Task: " + task.getClass().getName() + ". Use TaskManager#Register annotation to register a task.");
-        }
+        if (getRegistryName(task.getClass()) == null)
+            throw new RuntimeException("Unregistered Task: " + task.getClass().getName() + ". Use Task annotation to register a task.");
 
         switch (receiver)
         {
@@ -136,51 +79,33 @@ public final class TaskManager
     @Nullable
     public static Task createTask(ResourceLocation registryName)
     {
-        if (!REGISTRY.containsKey(registryName))
-        {
-            throw new RuntimeException("Unregistered Task: " + registryName + ". Use TaskManager#Register annotation to register a task.");
-        }
+        TaskRegistryEntry entry = DeviceRegistries.TASKS.getValue(registryName);
+        if (entry == null)
+            throw new RuntimeException("Unregistered Task: " + registryName + ". Use Task annotation to register a task.");
 
-        try
-        {
-            return Objects.requireNonNull(REGISTRY.get(registryName)).newInstance();
-        }
-        catch (Exception e)
-        {
-            OpenDevices.LOGGER.error("Could not create task: " + registryName + ". Verify there is a public empty constructor.", e);
-        }
-
-        return null;
+        return entry.createTask();
     }
 
     /**
      * Checks the registry for a registry name under the specified task class.
      *
      * @param clazz The class to get the registry name of
-     * @return The registry name of that task
+     * @return The registry name of that task or null if the task is not registered
      */
+    @Nullable
     public static ResourceLocation getRegistryName(Class<? extends Task> clazz)
     {
-        if (!REGISTRY.containsValue(clazz))
+        if (DeviceRegistries.TASKS.isEmpty())
+            return null;
+
+        if (REGISTRY_CACHE.isEmpty())
         {
-            throw new RuntimeException("Unregistered Task: " + clazz.getName() + ". Use TaskManager#Register annotation to register a task.");
+            for (Map.Entry<ResourceLocation, TaskRegistryEntry> entry : DeviceRegistries.TASKS.getEntries())
+            {
+                REGISTRY_CACHE.put(entry.getValue().getTaskClass(), entry.getKey());
+            }
         }
-
-        return REGISTRY.inverse().get(clazz);
-    }
-
-    /**
-     * Registers a new type of task that can be used in the {@link TaskManager}.
-     *
-     * @author Ocelot
-     * @see Task
-     */
-    public @interface Register
-    {
-        /**
-         * @return The name of this task. Should be in the format of <code>modid:taskName</code>. <b><i>Will not register unless mod id is provided!</i></b>
-         */
-        String value();
+        return REGISTRY_CACHE.get(clazz);
     }
 
     /**

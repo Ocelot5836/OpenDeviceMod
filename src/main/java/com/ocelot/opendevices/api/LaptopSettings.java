@@ -13,6 +13,8 @@ import net.minecraft.util.ResourceLocation;
  */
 public class LaptopSettings
 {
+    private LaptopSettings() {}
+
     @LaptopSetting.Register
     public static final LaptopSetting<Integer> DESKTOP_TEXT_COLOR = new IntegerLaptopSetting(new ResourceLocation(OpenDevices.MOD_ID, "desktop_text_color"), 0xFFFFFFFF);
     @LaptopSetting.Register

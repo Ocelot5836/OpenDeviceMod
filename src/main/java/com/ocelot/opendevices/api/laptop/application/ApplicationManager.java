@@ -3,7 +3,9 @@ package com.ocelot.opendevices.api.laptop.application;
 import com.google.common.base.Charsets;
 import com.google.common.collect.HashBiMap;
 import com.ocelot.opendevices.OpenDevices;
+import com.ocelot.opendevices.api.laptop.DeviceRegistries;
 import com.ocelot.opendevices.api.laptop.window.WindowContent;
+import com.ocelot.opendevices.core.registry.ApplicationRegistryEntry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.MissingTextureSprite;
@@ -19,7 +21,10 @@ import javax.annotation.Nullable;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
@@ -35,8 +40,8 @@ public class ApplicationManager
 {
     public static final ResourceLocation LOCATION_APP_ICON_TEXTURE = new ResourceLocation(OpenDevices.MOD_ID, "textures/atlas/application_icons.png");
 
+    private static final HashBiMap<Class<? extends Application>, ResourceLocation> REGISTRY_CACHE = HashBiMap.create();
     private static final Map<ResourceLocation, AppInfo> APP_INFO = new HashMap<>();
-    private static final HashBiMap<ResourceLocation, Class<? extends Application>> REGISTRY = HashBiMap.create();
     private static AtlasTexture iconAtlas;
     private static boolean initialized = false;
 
@@ -48,10 +53,31 @@ public class ApplicationManager
         Minecraft.getInstance().getTextureManager().loadTickableTexture(LOCATION_APP_ICON_TEXTURE, iconAtlas);
     }
 
+    @SuppressWarnings("unchecked")
+    private static void fillCache()
+    {
+        for (Map.Entry<ResourceLocation, ApplicationRegistryEntry> entry : DeviceRegistries.APPLICATIONS.getEntries())
+        {
+            String className = entry.getValue().getApplicationClassName();
+            try
+            {
+                Class applicationClass = Class.forName(className);
+
+                if (!Application.class.isAssignableFrom(applicationClass))
+                    throw new IllegalArgumentException("Application: " + applicationClass + " does not extend Application. Skipping!");
+
+                REGISTRY_CACHE.put((Class<? extends Application>) applicationClass, entry.getKey());
+            }
+            catch (Exception e)
+            {
+                OpenDevices.LOGGER.error("Could not bind application class " + className + " for client. Skipping!", e);
+            }
+        }
+    }
+
     /**
      * This should never be used by the consumer. Core use only!
      */
-    @SuppressWarnings("unchecked")
     public static void init()
     {
         if (initialized)
@@ -59,23 +85,6 @@ public class ApplicationManager
             OpenDevices.LOGGER.warn("Attempted to initialize Client Application Manager even though it has already been initialized. This should NOT happen!");
             return;
         }
-
-        ApplicationLoader.FOUND.forEach((registryName, className) ->
-        {
-            try
-            {
-                Class clazz = Class.forName(className);
-
-                if (!Application.class.isAssignableFrom(clazz))
-                    throw new IllegalArgumentException("Application: " + clazz + " does not extend Application. Skipping!");
-
-                REGISTRY.put(registryName, (Class<Application>) clazz);
-            }
-            catch (Exception e)
-            {
-                OpenDevices.LOGGER.error("Could not bind application class " + className + " for client. Skipping!", e);
-            }
-        });
 
         ((IReloadableResourceManager) Minecraft.getInstance().getResourceManager()).addReloadListener(new ReloadListener());
 
@@ -91,14 +100,14 @@ public class ApplicationManager
     @Nullable
     public static Application createApplication(ResourceLocation registryName)
     {
-        if (!REGISTRY.containsKey(registryName))
+        if (!DeviceRegistries.APPLICATIONS.containsKey(registryName))
         {
             throw new RuntimeException("Unregistered Application: " + registryName + ". Use WindowContent#Register annotations to register an application.");
         }
 
         try
         {
-            return Objects.requireNonNull(REGISTRY.get(registryName)).newInstance();
+            return getApplicationClass(registryName).newInstance();
         }
         catch (Exception e)
         {
@@ -116,11 +125,6 @@ public class ApplicationManager
      */
     public static AppInfo getAppInfo(ResourceLocation registryName)
     {
-        if (!APP_INFO.containsKey(registryName))
-        {
-            throw new RuntimeException("Unregistered Application: " + registryName + ". Use WindowContent#Register annotations to register an application.");
-        }
-
         return APP_INFO.get(registryName);
     }
 
@@ -138,22 +142,6 @@ public class ApplicationManager
     }
 
     /**
-     * Checks the registry for a registry name under the specified application class.
-     *
-     * @param clazz The class to get the registry name of
-     * @return The registry name of that app
-     */
-    public static ResourceLocation getRegistryName(Class<? extends WindowContent> clazz)
-    {
-        if (!REGISTRY.containsValue(clazz))
-        {
-            throw new RuntimeException("Unregistered Application: " + clazz.getName() + ". Use WindowContent#Register annotations to register an application.");
-        }
-
-        return REGISTRY.inverse().get(clazz);
-    }
-
-    /**
      * Checks the registry for a class under the specified registry name.
      *
      * @param registryName The registry name of the application to get
@@ -161,12 +149,32 @@ public class ApplicationManager
      */
     public static Class<? extends Application> getApplicationClass(ResourceLocation registryName)
     {
-        if (!REGISTRY.containsKey(registryName))
+        if (!DeviceRegistries.APPLICATIONS.containsKey(registryName))
         {
             throw new RuntimeException("Unregistered Application: " + registryName + ". Use WindowContent#Register annotations to register an application.");
         }
 
-        return REGISTRY.get(registryName);
+        if (REGISTRY_CACHE.isEmpty())
+            fillCache();
+
+        return REGISTRY_CACHE.inverse().get(registryName);
+    }
+
+    /**
+     * Checks the registry for a registry name under the specified application class.
+     *
+     * @param clazz The class to get the registry name of
+     * @return The registry name of that app
+     */
+    public static ResourceLocation getRegistryName(Class<? extends WindowContent> clazz)
+    {
+        if (DeviceRegistries.APPLICATIONS.isEmpty())
+            return null;
+
+        if (REGISTRY_CACHE.isEmpty())
+            fillCache();
+
+        return REGISTRY_CACHE.get(clazz);
     }
 
     private static class ReloadListener implements IFutureReloadListener
@@ -175,16 +183,13 @@ public class ApplicationManager
         public CompletableFuture<Void> reload(IStage stage, IResourceManager resourceManager, IProfiler preparationsProfiler, IProfiler reloadProfiler, Executor backgroundExecutor, Executor gameExecutor)
         {
             Set<ResourceLocation> iconLocations = new HashSet<>();
-            CompletableFuture<?>[] completablefuture = (ApplicationLoader.REGISTRY == null ? ApplicationLoader.FOUND.keySet() : ApplicationLoader.REGISTRY.getKeys()).stream().map(registryName -> CompletableFuture.runAsync(() ->
+            CompletableFuture<?>[] completablefuture = DeviceRegistries.APPLICATIONS.getKeys().stream().map(registryName -> CompletableFuture.runAsync(() ->
             {
                 reloadApplication(registryName);
-                if (APP_INFO.containsKey(registryName))
+                ResourceLocation iconLocation = getAppInfo(registryName).getIconLocation();
+                if (iconLocation != null)
                 {
-                    ResourceLocation iconLocation = APP_INFO.get(registryName).getIconLocation();
-                    if (iconLocation != null)
-                    {
-                        iconLocations.add(iconLocation);
-                    }
+                    iconLocations.add(iconLocation);
                 }
             }, backgroundExecutor)).toArray(CompletableFuture[]::new);
             return CompletableFuture.allOf(completablefuture).thenApplyAsync(v ->
@@ -216,7 +221,7 @@ public class ApplicationManager
 
         private static void reloadApplication(ResourceLocation registryName)
         {
-            if (!ApplicationLoader.REGISTRY.containsKey(registryName))
+            if (!DeviceRegistries.APPLICATIONS.containsKey(registryName))
             {
                 OpenDevices.LOGGER.warn("Attempted to reload unregistered application info for application '" + registryName + "'!");
                 return;

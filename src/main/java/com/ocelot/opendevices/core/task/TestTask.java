@@ -1,12 +1,12 @@
 package com.ocelot.opendevices.core.task;
 
-import com.ocelot.opendevices.api.task.*;
+import com.ocelot.opendevices.api.task.Task;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.world.World;
 
 // TODO move to an example mod
-//@TaskManager.Register(OpenDevices.MOD_ID + ":test")
+//@Task.Register(OpenDevices.MOD_ID + ":test")
 public class TestTask extends Task
 {
     @Override

@@ -2,11 +2,11 @@ package com.ocelot.opendevices.core;
 
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceConstants;
-import com.ocelot.opendevices.api.laptop.application.ApplicationLoader;
 import com.ocelot.opendevices.api.laptop.desktop.Desktop;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopBackground;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopManager;
 import com.ocelot.opendevices.api.laptop.window.WindowContentType;
+import com.ocelot.opendevices.api.laptop.DeviceRegistries;
 import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.core.laptop.window.LaptopWindow;
 import com.ocelot.opendevices.core.laptop.window.WindowClient;
@@ -42,7 +42,7 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
         this.focusedWindowId = null;
     }
 
-    public LaptopWindow createWindow(@Nullable CompoundNBT initData, WindowContentType contentType, ResourceLocation contentId, int width, int height)
+    private LaptopWindow createWindow(@Nullable CompoundNBT initData, WindowContentType contentType, ResourceLocation contentId, int width, int height)
     {
         return DistExecutor.runForDist(() -> () -> new WindowClient(this.laptop, initData, contentType, contentId, width, height), () -> () -> new LaptopWindow(this.laptop, initData, contentType, contentId, width, height));
     }
@@ -130,7 +130,7 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
             return;
         }
 
-        if (!ApplicationLoader.REGISTRY.containsKey(registryName))
+        if (!DeviceRegistries.APPLICATIONS.containsKey(registryName))
         {
             OpenDevices.LOGGER.warn("Attempted to open invalid application '" + registryName + "' on the server! Applications MUST be registered on both the client AND server to function!");
             return;

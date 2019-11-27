@@ -2,7 +2,6 @@ package com.ocelot.opendevices.core.task;
 
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.task.Task;
-import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.core.LaptopDesktop;
 import com.ocelot.opendevices.core.LaptopTileEntity;
 import com.ocelot.opendevices.core.laptop.window.LaptopWindow;
@@ -14,7 +13,7 @@ import net.minecraft.world.World;
 import java.util.Objects;
 import java.util.UUID;
 
-@TaskManager.Register(OpenDevices.MOD_ID + ":move_window")
+@Task.Register(OpenDevices.MOD_ID + ":move_window")
 public class MoveWindowTask extends Task
 {
     private BlockPos pos;

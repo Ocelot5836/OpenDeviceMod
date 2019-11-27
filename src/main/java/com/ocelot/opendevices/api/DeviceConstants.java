@@ -10,6 +10,8 @@ import net.minecraft.util.ResourceLocation;
  */
 public class DeviceConstants
 {
+    private DeviceConstants() {}
+
     public static final boolean DEVELOPER_MODE = true;
     public static final int MAX_OPEN_APPS = 5;
 

@@ -12,6 +12,8 @@ import net.minecraft.util.math.shapes.VoxelShape;
  */
 public class ShapeHelper
 {
+    private ShapeHelper() {}
+
     /**
      * Creates a rotated shape from an {@link Direction.Axis}. Everything is based on the negative axes facing positive.
      *

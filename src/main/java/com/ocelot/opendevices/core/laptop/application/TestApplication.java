@@ -4,6 +4,7 @@ import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.component.Layout;
 import com.ocelot.opendevices.api.laptop.application.Application;
 import com.ocelot.opendevices.api.laptop.application.LayoutProtocol;
+import com.ocelot.opendevices.api.util.RenderUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
@@ -29,7 +30,11 @@ public class TestApplication extends Application
     @Override
     public void render(float x, float y, int mouseX, int mouseY, float partialTicks)
     {
+        RenderUtil.enableScissor();
+        RenderUtil.pushScissor(x, y, this.getWindow().getWidth() - 2, this.getWindow().getHeight() - 2);
         Minecraft.getInstance().fontRenderer.drawStringWithShadow("Actual Application Content", x, y, 0xffffffff);
+        RenderUtil.popScissor();
+        RenderUtil.disableScissor();
     }
 
     @Override

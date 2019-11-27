@@ -2,7 +2,6 @@ package com.ocelot.opendevices.core.task;
 
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.task.Task;
-import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.core.LaptopTileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
@@ -11,7 +10,7 @@ import net.minecraft.world.World;
 
 import java.util.Objects;
 
-@TaskManager.Register(OpenDevices.MOD_ID + ":sync_settings")
+@Task.Register(OpenDevices.MOD_ID + ":sync_settings")
 public class SyncSettingsTask extends Task
 {
     private BlockPos pos;

@@ -13,7 +13,7 @@ import net.minecraft.world.World;
 
 import java.util.Objects;
 
-@TaskManager.Register(OpenDevices.MOD_ID + ":open_window")
+@Task.Register(OpenDevices.MOD_ID + ":open_window")
 public class OpenWindowTask extends Task
 {
     private BlockPos pos;

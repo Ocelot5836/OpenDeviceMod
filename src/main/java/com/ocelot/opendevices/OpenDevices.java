@@ -2,11 +2,15 @@ package com.ocelot.opendevices;
 
 import com.mrcrayfish.filters.Filters;
 import com.ocelot.opendevices.api.DeviceConstants;
-import com.ocelot.opendevices.api.laptop.desktop.DesktopManager;
-import com.ocelot.opendevices.api.laptop.application.ApplicationLoader;
+import com.ocelot.opendevices.api.laptop.DeviceRegistries;
+import com.ocelot.opendevices.api.laptop.application.Application;
 import com.ocelot.opendevices.api.laptop.application.ApplicationManager;
-import com.ocelot.opendevices.api.task.TaskManager;
-import com.ocelot.opendevices.core.laptop.SettingsManager;
+import com.ocelot.opendevices.api.laptop.desktop.DesktopManager;
+import com.ocelot.opendevices.api.laptop.settings.LaptopSetting;
+import com.ocelot.opendevices.api.task.Task;
+import com.ocelot.opendevices.core.registry.ApplicationRegistryEntry;
+import com.ocelot.opendevices.core.registry.SettingRegistryEntry;
+import com.ocelot.opendevices.core.registry.TaskRegistryEntry;
 import com.ocelot.opendevices.core.render.LaptopTileEntityRenderer;
 import com.ocelot.opendevices.init.DeviceBlocks;
 import com.ocelot.opendevices.init.DeviceItems;
@@ -28,12 +32,21 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.forgespi.language.ModFileScanData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.objectweb.asm.Type;
+
+import java.lang.annotation.ElementType;
+import java.lang.reflect.Field;
+import java.util.Collection;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Ocelot
  */
+@SuppressWarnings("unused")
 @Mod(OpenDevices.MOD_ID)
 public class OpenDevices
 {
@@ -49,17 +62,13 @@ public class OpenDevices
         }
     };
 
+    private static final Set<ModFileScanData.AnnotationData> annotationScanData = ModList.get().getAllScanData().stream().map(ModFileScanData::getAnnotations).flatMap(Collection::stream).collect(Collectors.toSet());
+
     public OpenDevices()
     {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::init);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::initClient);
         MinecraftForge.EVENT_BUS.register(this);
-
-        LOGGER.debug("Registering Content");
-        SettingsManager.init();
-        TaskManager.init();
-        ApplicationLoader.init();
-        DistExecutor.runWhenOn(Dist.CLIENT, () -> ApplicationManager::init);
     }
 
     private void init(FMLCommonSetupEvent event)
@@ -79,6 +88,7 @@ public class OpenDevices
         }
     }
 
+    @SuppressWarnings("unused")
     @SubscribeEvent
     public void onWorldClose(WorldEvent.Unload event)
     {
@@ -94,7 +104,7 @@ public class OpenDevices
         @SubscribeEvent
         public static void registerRegistries(RegistryEvent.NewRegistry event)
         {
-            ApplicationLoader.registerRegistry();
+            DeviceRegistries.register();
         }
 
         @SubscribeEvent
@@ -113,6 +123,86 @@ public class OpenDevices
         public static void registerTileEntities(RegistryEvent.Register<TileEntityType<?>> event)
         {
             event.getRegistry().registerAll(DeviceBlocks.getTileEntities());
+        }
+
+        @SubscribeEvent
+        public static void registerApplications(RegistryEvent.Register<ApplicationRegistryEntry> event)
+        {
+            Set<ModFileScanData.AnnotationData> annotations = OpenDevices.annotationScanData.stream().filter(it -> it.getTargetType() == ElementType.TYPE && it.getAnnotationType().equals(Type.getType(Application.Register.class))).collect(Collectors.toSet());
+            for (ModFileScanData.AnnotationData data : annotations)
+            {
+                ResourceLocation registryName = new ResourceLocation((String) data.getAnnotationData().get("value"));
+
+                String className = data.getClassType().getClassName();
+                try
+                {
+                    if (registryName.getPath().isEmpty())
+                        throw new IllegalArgumentException("Application: " + registryName + " does not have a valid registry name. Skipping!");
+
+                    event.getRegistry().register(new ApplicationRegistryEntry(className).setRegistryName(registryName));
+                }
+                catch (Exception e)
+                {
+                    OpenDevices.LOGGER.error("Could not register application class " + className + ". Skipping!", e);
+                }
+            }
+
+            DistExecutor.runWhenOn(Dist.CLIENT, () -> ApplicationManager::init);
+        }
+
+        @SubscribeEvent
+        public static void registerSettings(RegistryEvent.Register<SettingRegistryEntry> event)
+        {
+            Set<ModFileScanData.AnnotationData> annotations = OpenDevices.annotationScanData.stream().filter(it -> it.getTargetType() == ElementType.FIELD && it.getAnnotationType().equals(Type.getType(LaptopSetting.Register.class))).collect(Collectors.toSet());
+
+            for (ModFileScanData.AnnotationData data : annotations)
+            {
+                String className = data.getClassType().getClassName();
+                String fieldName = data.getMemberName();
+                try
+                {
+                    Class clazz = Class.forName(className);
+                    Field field = clazz.getField(fieldName);
+                    LaptopSetting<?> setting = (LaptopSetting<?>) field.get(null);
+                    ResourceLocation registryName = setting.getRegistryName();
+
+                    event.getRegistry().register(new SettingRegistryEntry().setRegistryName(registryName));
+                }
+                catch (Exception e)
+                {
+                    OpenDevices.LOGGER.error("Could not register setting field " + fieldName + " in " + className + ". Skipping!", e);
+                }
+            }
+        }
+
+        @SuppressWarnings("unchecked")
+        @SubscribeEvent
+        public static void registerTasks(RegistryEvent.Register<TaskRegistryEntry> event)
+        {
+            Set<ModFileScanData.AnnotationData> annotations = OpenDevices.annotationScanData.stream().filter(it -> it.getTargetType() == ElementType.TYPE && it.getAnnotationType().equals(Type.getType(Task.Register.class))).collect(Collectors.toSet());
+
+            for (ModFileScanData.AnnotationData data : annotations)
+            {
+                ResourceLocation registryName = new ResourceLocation((String) data.getAnnotationData().get("value"));
+
+                String className = data.getClassType().getClassName();
+                try
+                {
+                    Class<?> clazz = Class.forName(className);
+
+                    if (registryName.getPath().isEmpty())
+                        throw new IllegalArgumentException("Task: " + clazz + " does not have a valid registry name. Skipping!");
+
+                    if (!Task.class.isAssignableFrom(clazz))
+                        throw new IllegalArgumentException("Task: " + clazz + " does not extend Task. Skipping!");
+
+                    event.getRegistry().register(new TaskRegistryEntry((Class<? extends Task>) clazz).setRegistryName(registryName));
+                }
+                catch (Exception e)
+                {
+                    OpenDevices.LOGGER.error("Could not register task class " + className + ". Skipping!", e);
+                }
+            }
         }
     }
 }

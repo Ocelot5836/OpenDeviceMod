@@ -1,6 +1,7 @@
 package com.ocelot.opendevices.network.handler;
 
 import com.ocelot.opendevices.api.task.Task;
+import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.init.DeviceMessages;
 import com.ocelot.opendevices.network.MessageClientResponse;
 import com.ocelot.opendevices.network.MessageOpenGui;
@@ -35,6 +36,9 @@ public class ServerMessageHandler implements MessageHandler
                 Task request = msg.getRequest();
                 CompoundNBT nbt = msg.getNbt();
 
+                if (TaskManager.getRegistryName(request.getClass()) == null)
+                    throw new RuntimeException("Unregistered Task: " + request.getClass().getName() + ". Use Task annotation to register a task.");
+
                 request.processRequest(nbt, player.world, player);
                 switch (msg.getReceiver())
                 {
@@ -61,7 +65,12 @@ public class ServerMessageHandler implements MessageHandler
             ServerPlayerEntity player = ctx.get().getSender();
             if (player != null)
             {
-                msg.getRequest().processResponse(msg.getNbt(), player.world, player);
+                Task request = msg.getRequest();
+
+                if (TaskManager.getRegistryName(request.getClass()) == null)
+                    throw new RuntimeException("Unregistered Task: " + request.getClass().getName() + ". Use Task annotation to register a task.");
+
+                request.processResponse(msg.getNbt(), player.world, player);
             }
         });
         ctx.get().setPacketHandled(true);

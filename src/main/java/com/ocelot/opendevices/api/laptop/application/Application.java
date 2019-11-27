@@ -62,10 +62,12 @@ public abstract class Application extends AbstractGui implements WindowContent
     {
         if (this.currentLayout != null)
         {
-            RenderUtil.pushScissor(x, y, this.getWindow().getWidth(), this.getWindow().getHeight());
+            RenderUtil.enableScissor();
+            RenderUtil.pushScissor(x, y, this.getWindow().getWidth() - 2, this.getWindow().getHeight() - 2);
             this.currentLayout.setWindowPosition(x, y);
             this.currentLayout.render(mouseX, mouseY, partialTicks);
             RenderUtil.popScissor();
+            RenderUtil.disableScissor();
         }
     }
 
@@ -191,19 +193,5 @@ public abstract class Application extends AbstractGui implements WindowContent
         if (this.window != null)
             throw new RuntimeException("This method should never be called by the consumer!");
         this.window = window;
-    }
-
-    /**
-     * Registers a new type of window content that can be opened by the {@link Desktop} as a window.
-     *
-     * @author Ocelot
-     * @see WindowContent
-     */
-    public @interface Register
-    {
-        /**
-         * @return The name of this content. Should be in the format of <code>modid:contentName</code>. <b><i>Will not register unless mod id is provided!</i></b>
-         */
-        String value();
     }
 }
