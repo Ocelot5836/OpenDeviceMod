@@ -1,67 +1,72 @@
 package com.ocelot.opendevices.core.task;
 
 import com.ocelot.opendevices.OpenDevices;
+import com.ocelot.opendevices.api.laptop.DeviceRegistries;
+import com.ocelot.opendevices.api.laptop.window.WindowContentType;
 import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.core.LaptopDesktop;
 import com.ocelot.opendevices.core.LaptopTileEntity;
+import com.ocelot.opendevices.core.laptop.window.LaptopWindow;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants;
 
-import javax.annotation.Nullable;
 import java.util.Objects;
 
 @Task.Register(OpenDevices.MOD_ID + ":open_application")
 public class OpenApplicationTask extends Task
 {
     private BlockPos pos;
-    private ResourceLocation registryName;
-    private CompoundNBT layoutData;
-    private CompoundNBT initData;
+    private CompoundNBT windowData;
+    private CompoundNBT contentData;
 
     public OpenApplicationTask()
     {
-        this(null, null, null, null);
+        this(null, null, null);
     }
 
-    public OpenApplicationTask(BlockPos pos, ResourceLocation registryName, CompoundNBT layoutData, @Nullable CompoundNBT initData)
+    public OpenApplicationTask(BlockPos pos, CompoundNBT windowData, CompoundNBT contentData)
     {
         this.pos = pos;
-        this.registryName = registryName;
-        this.layoutData = layoutData;
-        this.initData = initData;
+        this.windowData = windowData;
+        this.contentData = contentData;
     }
 
     @Override
     public void prepareRequest(CompoundNBT nbt)
     {
         nbt.putLong("pos", this.pos.toLong());
-        nbt.putString("registryName", this.registryName.toString());
-        nbt.put("layoutData", this.layoutData);
-
-        if (this.initData != null)
-        {
-            nbt.put("initData", this.initData);
-        }
+        nbt.put("windowData", this.windowData);
+        nbt.put("contentData", this.contentData);
     }
 
     @Override
     public void processRequest(CompoundNBT nbt, World world, PlayerEntity player)
     {
         this.pos = BlockPos.fromLong(nbt.getLong("pos"));
-        this.registryName = new ResourceLocation(nbt.getString("registryName"));
-        this.layoutData = nbt.getCompound("layoutData");
-        this.initData = nbt.contains("initData", Constants.NBT.TAG_COMPOUND) ? nbt.getCompound("initData") : null;
+        this.windowData = nbt.getCompound("windowData");
+        this.contentData = nbt.getCompound("contentData");
 
         if (world.getTileEntity(this.pos) instanceof LaptopTileEntity)
         {
             LaptopTileEntity laptop = (LaptopTileEntity) Objects.requireNonNull(world.getTileEntity(this.pos));
             LaptopDesktop desktop = laptop.getDesktop();
 
-            desktop.syncOpenWindow(desktop.createWindow(this.registryName, this.initData));
+            LaptopWindow window = desktop.createWindow(this.windowData);
+            if (window.getContentType() != WindowContentType.APPLICATION)
+            {
+                OpenDevices.LOGGER.error("Attempted to open application with non-application type window!");
+                return;
+            }
+
+            if (!DeviceRegistries.APPLICATIONS.containsKey(window.getContentId()))
+            {
+                OpenDevices.LOGGER.warn("Attempted to open invalid application: '" + window.getContentId() + "'! Applications MUST be registered on both the client AND server to function!");
+                return;
+            }
+
+            desktop.syncOpenApplication(window, this.contentData);
             this.setSuccessful();
         }
     }

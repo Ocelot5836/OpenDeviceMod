@@ -6,6 +6,8 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 
+import java.util.Objects;
+
 public class MessageRequest
 {
     private Task request;
@@ -26,7 +28,7 @@ public class MessageRequest
 
     public static void encode(MessageRequest msg, PacketBuffer buf)
     {
-        buf.writeResourceLocation(TaskManager.getRegistryName(msg.request.getClass()));
+        buf.writeResourceLocation(Objects.requireNonNull(TaskManager.getRegistryName(msg.request.getClass())));
         msg.request.prepareRequest(msg.nbt);
         buf.writeBoolean(msg.request.isSucessful());
         buf.writeCompoundTag(msg.nbt);

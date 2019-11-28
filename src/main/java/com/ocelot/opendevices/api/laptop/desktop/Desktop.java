@@ -4,6 +4,8 @@ import com.ocelot.opendevices.api.laptop.Laptop;
 import com.ocelot.opendevices.api.laptop.window.Window;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
@@ -21,6 +23,7 @@ public interface Desktop
      *
      * @param registryName The registry name of the app
      */
+    @OnlyIn(Dist.CLIENT)
     default void openApplication(ResourceLocation registryName)
     {
         this.openApplication(registryName, null);
@@ -32,6 +35,7 @@ public interface Desktop
      * @param registryName The registry name of the app
      * @param initData     Additional data that will be processed on initialization
      */
+    @OnlyIn(Dist.CLIENT)
     void openApplication(ResourceLocation registryName, @Nullable CompoundNBT initData);
 
     /**

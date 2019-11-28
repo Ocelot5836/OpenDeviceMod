@@ -22,7 +22,7 @@ import java.util.Objects;
 public class DeviceComponents
 {
     @ComponentSerializer.Register(OpenDevices.MOD_ID + ":layout")
-    public static final ComponentSerializer<Layout> LAYOUT_SERIALIZER = new StandardComponentSerializer<>(Layout::new);
+    public static final ComponentSerializer<Layout> LAYOUT_SERIALIZER = new StandardComponentSerializer<>(Layout.class, Layout::new);
 
     private static final HashBiMap<Class<? extends Component>, ResourceLocation> REGISTRY_CACHE = HashBiMap.create();
 

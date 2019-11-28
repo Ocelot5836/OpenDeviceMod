@@ -35,6 +35,11 @@ public interface Window
     void move(float xDirection, float yDirection);
 
     /**
+     * Marks this window as having changes and saves it to file and other clients.
+     */
+    void markDirty();
+
+    /**
      * @return The id of this window. Used for Client/Server synchronization
      */
     UUID getId();

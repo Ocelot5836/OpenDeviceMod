@@ -1,7 +1,9 @@
 package com.ocelot.opendevices.api.laptop.application;
 
+import com.ocelot.opendevices.api.DeviceComponents;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.component.Layout;
+import com.ocelot.opendevices.api.laptop.Laptop;
 import com.ocelot.opendevices.api.laptop.desktop.Desktop;
 import com.ocelot.opendevices.api.laptop.window.Window;
 import com.ocelot.opendevices.api.laptop.window.WindowContent;
@@ -14,6 +16,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import javax.annotation.Nullable;
+
 /**
  * <p>An application is a window that can be opened and used by the user via the {@link Desktop}.</p>
  *
@@ -25,8 +29,6 @@ public abstract class Application extends AbstractGui implements WindowContent
 {
     private Window window;
     private Layout currentLayout;
-    private Layout nextLayout;
-    private LayoutProtocol nextProtocol;
 
     public Application()
     {
@@ -34,28 +36,13 @@ public abstract class Application extends AbstractGui implements WindowContent
     }
 
     @Override
+    public void init(@Nullable CompoundNBT data)
+    {
+    }
+
+    @Override
     public void update()
     {
-        if (this.nextLayout != null)
-        {
-            this.currentLayout.onLayoutUnload();
-            this.currentLayout = this.nextLayout;
-            this.nextLayout.onLayoutLoad();
-
-            this.window.setSize((int) this.currentLayout.getWidth(), (int) this.currentLayout.getHeight());
-
-            switch (this.nextProtocol)
-            {
-                case NOTHING:
-                    break;
-                case RESET:
-                    this.window.center();
-                    break;
-            }
-
-            this.nextLayout = null;
-            this.nextProtocol = null;
-        }
     }
 
     @Override
@@ -113,13 +100,25 @@ public abstract class Application extends AbstractGui implements WindowContent
     }
 
     @Override
+    public void load(CompoundNBT nbt)
+    {
+    }
+
+    @Override
+    public void save(CompoundNBT nbt)
+    {
+    }
+
+    @Override
     public void saveState(CompoundNBT nbt)
     {
+        nbt.put("currentLayout", DeviceComponents.serializeComponent(this.currentLayout));
     }
 
     @Override
     public void loadState(CompoundNBT nbt)
     {
+        this.setCurrentLayout(DeviceComponents.deserializeComponent(nbt.getCompound("currentLayout")));
     }
 
     @Override
@@ -135,6 +134,15 @@ public abstract class Application extends AbstractGui implements WindowContent
     @Override
     public void onClose()
     {
+    }
+
+    /**
+     * <p>Marks this application as having changes and saves it to file and other clients.</p>
+     * <p>Should be called after each modification to a value that needs to be synced.</p>
+     */
+    protected void markDirty()
+    {
+        this.window.markDirty();
     }
 
     @Override
@@ -178,15 +186,29 @@ public abstract class Application extends AbstractGui implements WindowContent
     }
 
     /**
-     * Sets the current layout to the new one specified on the next update.
-     *
-     * @param layout   The new layout to display
-     * @param protocol The way to use the layout to modify the window
+     * @return The current layout displayed
      */
-    public void setCurrentLayout(Layout layout, LayoutProtocol protocol)
+    public Layout getCurrentLayout()
     {
-        this.nextLayout = layout;
-        this.nextProtocol = protocol;
+        return currentLayout;
+    }
+
+    /**
+     * Sets the current layout to the new one specified on the next update. If in a currentlu running update, make sure to use {@link Laptop#execute(Runnable)} when running this.
+     *
+     * @param layout The new layout to display
+     */
+    public void setCurrentLayout(Layout layout)
+    {
+        this.currentLayout.onLayoutUnload();
+        this.currentLayout = layout;
+        this.currentLayout.onLayoutLoad();
+
+        if (layout.getWidth() != this.window.getWidth() || layout.getHeight() != this.window.getHeight())
+        {
+            this.window.setSize(this.currentLayout.getWidth(), this.currentLayout.getHeight());
+            this.window.center();// TODO maybe add the ability to center on current position?
+        }
     }
 
     public final void setWindow(Window window)

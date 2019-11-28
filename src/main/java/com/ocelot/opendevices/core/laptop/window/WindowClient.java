@@ -40,13 +40,6 @@ public class WindowClient extends LaptopWindow
         this.closeButton = new WindowButton(laptop, button -> this.close());
     }
 
-    public WindowClient(Laptop laptop, @Nullable CompoundNBT initData, WindowContentType contentType, ResourceLocation contentId, int x, int y, int width, int height)
-    {
-        super(laptop, initData, contentType, contentId, x, y, width, height);
-        this.content = createContent(contentType, contentId);
-        this.closeButton = new WindowButton(laptop, button -> this.close());
-    }
-
     private WindowContent createContent(WindowContentType contentType, ResourceLocation contentId)
     {
         switch (contentType)
@@ -59,9 +52,15 @@ public class WindowClient extends LaptopWindow
                     return app;
                 }
             case DIALOG:
-                break;
+            default:
+                return null;
         }
-        return null;
+    }
+
+    @Override
+    public void create()
+    {
+        this.content.create();
     }
 
     @Override
@@ -154,18 +153,6 @@ public class WindowClient extends LaptopWindow
     }
 
     @Override
-    public void saveState(CompoundNBT nbt)
-    {
-        this.content.saveState(nbt);
-    }
-
-    @Override
-    public void loadState(CompoundNBT nbt)
-    {
-        this.content.loadState(nbt);
-    }
-
-    @Override
     public void onClose()
     {
         this.content.onClose();
@@ -222,13 +209,40 @@ public class WindowClient extends LaptopWindow
     }
 
     @Override
+    public CompoundNBT getContentData()
+    {
+        CompoundNBT contentData = new CompoundNBT();
+        this.content.saveState(contentData);
+        return contentData;
+    }
+
+    @Override
+    public void setContentData(CompoundNBT contentData)
+    {
+        this.content.loadState(contentData);
+    }
+
+    @Override
+    public CompoundNBT serializeNBT()
+    {
+        CompoundNBT nbt = super.serializeNBT();
+
+        CompoundNBT contentDataNBT = new CompoundNBT();
+        this.content.save(contentDataNBT);
+        nbt.put("contentData", contentDataNBT);
+        return nbt;
+    }
+
+    @Override
     public void deserializeNBT(CompoundNBT nbt)
     {
         super.deserializeNBT(nbt);
 
         // TODO maybe save data and fully close if server decides to change app
-        if (this.content == null || (this.getContentType() == WindowContentType.APPLICATION && !ApplicationManager.getRegistryName(this.content.getClass()).equals(this.getContentId())))
+        if (this.content == null || (this.getContentType() == WindowContentType.APPLICATION && !this.getContentId().equals(ApplicationManager.getRegistryName(this.content.getClass()))))
             this.content = createContent(this.getContentType(), this.getContentId());
+
+        this.content.load(nbt.getCompound("contentData"));
         this.lastX = this.getX();
         this.lastY = this.getY();
     }

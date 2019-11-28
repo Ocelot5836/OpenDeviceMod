@@ -16,10 +16,11 @@ import java.util.function.Supplier;
 public class StandardComponentSerializer<T extends Component & INBTSerializable<CompoundNBT>> extends ForgeRegistryEntry<ComponentSerializer<?>> implements ComponentSerializer<T>
 {
     private Function<CompoundNBT, T> factory;
+    private Class<T> componentClass;
 
-    public StandardComponentSerializer(Supplier<T> factory)
+    public StandardComponentSerializer(Class<T> componentClass, Supplier<T> factory)
     {
-        this(nbt ->
+        this(componentClass, nbt ->
         {
             T component = factory.get();
             component.deserializeNBT(nbt);
@@ -27,8 +28,9 @@ public class StandardComponentSerializer<T extends Component & INBTSerializable<
         });
     }
 
-    public StandardComponentSerializer(Function<CompoundNBT, T> factory)
+    public StandardComponentSerializer(Class<T> componentClass,Function<CompoundNBT, T> factory)
     {
+        this.componentClass = componentClass;
         this.factory = factory;
     }
 
@@ -36,5 +38,11 @@ public class StandardComponentSerializer<T extends Component & INBTSerializable<
     public T deserializeNBT(CompoundNBT nbt)
     {
         return this.factory.apply(nbt);
+    }
+
+    @Override
+    public Class<T> getComponentClass()
+    {
+        return componentClass;
     }
 }

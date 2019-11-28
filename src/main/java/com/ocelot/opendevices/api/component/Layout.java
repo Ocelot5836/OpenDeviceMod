@@ -30,10 +30,10 @@ public class Layout extends BasicComponent implements INBTSerializable<CompoundN
 {
     public static final ResourceLocation REGISTRY_NAME = new ResourceLocation(OpenDevices.MOD_ID, "layout");
 
-    private float x;
-    private float y;
-    private float width;
-    private float height;
+    private int x;
+    private int y;
+    private int width;
+    private int height;
 
     private List<Component> components;
 
@@ -42,12 +42,12 @@ public class Layout extends BasicComponent implements INBTSerializable<CompoundN
         this(0, 0, DeviceConstants.LAPTOP_DEFAULT_APPLICATION_WIDTH, DeviceConstants.LAPTOP_DEFAULT_APPLICATION_HEIGHT);
     }
 
-    public Layout(float width, float height)
+    public Layout(int width, int height)
     {
         this(0, 0, width, height);
     }
 
-    public Layout(float x, float y, float width, float height)
+    public Layout(int x, int y, int width, int height)
     {
         this.x = x;
         this.y = y;
@@ -195,25 +195,25 @@ public class Layout extends BasicComponent implements INBTSerializable<CompoundN
     }
 
     @Override
-    public float getX()
+    public int getX()
     {
         return x;
     }
 
     @Override
-    public float getY()
+    public int getY()
     {
         return y;
     }
 
     @Override
-    public float getWidth()
+    public int getWidth()
     {
         return width;
     }
 
     @Override
-    public float getHeight()
+    public int getHeight()
     {
         return height;
     }
@@ -222,10 +222,10 @@ public class Layout extends BasicComponent implements INBTSerializable<CompoundN
     public CompoundNBT serializeNBT()
     {
         CompoundNBT nbt = new CompoundNBT();
-        nbt.putFloat("x", this.x);
-        nbt.putFloat("y", this.y);
-        nbt.putFloat("width", this.width);
-        nbt.putFloat("height", this.height);
+        nbt.putInt("x", this.x);
+        nbt.putInt("y", this.y);
+        nbt.putInt("width", this.width);
+        nbt.putInt("height", this.height);
 
         ListNBT components = new ListNBT();
         this.components.forEach(component -> components.add(DeviceComponents.serializeComponent(component)));
@@ -242,6 +242,7 @@ public class Layout extends BasicComponent implements INBTSerializable<CompoundN
         this.width = nbt.getInt("width");
         this.height = nbt.getInt("height");
 
+        this.components.clear();
         ListNBT components = nbt.getList("components", Constants.NBT.TAG_COMPOUND);
         for (int i = 0; i < components.size(); i++)
         {

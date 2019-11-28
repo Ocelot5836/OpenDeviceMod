@@ -1,10 +1,8 @@
 package com.ocelot.opendevices.core;
 
-import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.LaptopSettings;
 import com.ocelot.opendevices.api.laptop.taskbar.TaskBar;
 import com.ocelot.opendevices.api.laptop.window.Window;
-import com.ocelot.opendevices.core.laptop.window.LaptopWindow;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraftforge.common.util.Constants;
@@ -20,13 +18,11 @@ public class LaptopTaskBar implements TaskBar, INBTSerializable<CompoundNBT>
 {
     private LaptopTileEntity laptop;
     private List<Window> openedWindows;
-    private Window[] windowsArray;
 
     LaptopTaskBar(LaptopTileEntity laptop)
     {
         this.laptop = laptop;
         this.openedWindows = new ArrayList<>();
-        this.windowsArray = new LaptopWindow[DeviceConstants.MAX_OPEN_APPS];
     }
 
     void addWindow(Window window)
@@ -84,6 +80,6 @@ public class LaptopTaskBar implements TaskBar, INBTSerializable<CompoundNBT>
     @Override
     public Window[] getDisplayedWindows()
     {
-        return this.openedWindows.toArray(this.windowsArray);
+        return this.openedWindows.toArray(new Window[0]);
     }
 }

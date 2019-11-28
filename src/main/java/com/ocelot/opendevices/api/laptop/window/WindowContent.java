@@ -21,7 +21,12 @@ import java.lang.annotation.Target;
 public interface WindowContent
 {
     /**
-     * Initializes the content with the specified data.
+     * Called once when a window is created.
+     */
+    void create();
+
+    /**
+     * Initializes the content with the specified data. Called each time a new window is opened and when the block loads in the world.
      *
      * @param data The additional data to be used during initialization
      */

@@ -45,21 +45,25 @@ public final class TaskManager
     }
 
     /**
-     * Sends a task from the server to the client. In order to send a task to <b>ALL</b> clients, {@link TaskManager#sendToAll(Task)} should be used instead.
+     * Sends a task from the server to the client. In order to send a task to <b>ALL</b> clients, the player should be null or the receiver set to {@link TaskReceiver#ALL}.
      *
      * @param task     The task to send to the server
      * @param receiver The way the task will be handled when it is being sent to the client
-     * @param player   The player to base the receiver around as the receiver
+     * @param player   The player to base the receiver around as the receiver. If null, it is assumed to be sent to all
      */
     public static void sendTo(Task task, TaskReceiver receiver, ServerPlayerEntity player)
     {
         if (getRegistryName(task.getClass()) == null)
             throw new RuntimeException("Unregistered Task: " + task.getClass().getName() + ". Use Task annotation to register a task.");
 
+        if (player == null || receiver == TaskReceiver.ALL)
+        {
+            DeviceMessages.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageRequest(task, TaskReceiver.ALL));
+            return;
+        }
+
         switch (receiver)
         {
-            case ALL:
-                throw new IllegalArgumentException("Task \'" + getRegistryName(task.getClass()) + "\' should use \'TaskManager#sendToAll\' instead of \'TaskManager#sendTo\' for receiver type \'" + TaskReceiver.ALL + "\'");
             case SENDER:
                 DeviceMessages.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new MessageRequest(task, receiver));
                 break;
@@ -70,19 +74,6 @@ public final class TaskManager
                 DeviceMessages.INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player), new MessageRequest(task, receiver));
                 break;
         }
-    }
-
-    /**
-     * Sends a task from the server to all clients.
-     *
-     * @param task The task to send to all clients
-     */
-    public static void sendToAll(Task task)
-    {
-        if (getRegistryName(task.getClass()) == null)
-            throw new RuntimeException("Unregistered Task: " + task.getClass().getName() + ". Use Task annotation to register a task.");
-
-        DeviceMessages.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageRequest(task, TaskReceiver.ALL));
     }
 
     /**

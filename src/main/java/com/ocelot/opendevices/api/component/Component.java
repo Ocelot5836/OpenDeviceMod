@@ -129,22 +129,22 @@ public interface Component extends INBTSerializable<CompoundNBT>
     /**
      * @return The x position of this component
      */
-    float getX();
+    int getX();
 
     /**
      * @return The y position of this component
      */
-    float getY();
+    int getY();
 
     /**
      * @return The x size of this component
      */
-    float getWidth();
+    int getWidth();
 
     /**
      * @return The y size of this component
      */
-    float getHeight();
+    int getHeight();
 
     /**
      * Updates the position of the screen to the provided values.

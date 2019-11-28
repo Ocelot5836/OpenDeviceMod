@@ -47,6 +47,11 @@ public interface Laptop extends Executor
     IWorld getWorld();
 
     /**
+     * @return The position of the laptop
+     */
+    BlockPos getPos();
+
+    /**
      * @return The laptop's desktop
      */
     Desktop getDesktop();
@@ -57,7 +62,10 @@ public interface Laptop extends Executor
     TaskBar getTaskBar();
 
     /**
-     * @return The position of the laptop
+     * @return Whether or not the laptop is currently in a client world
      */
-    BlockPos getPos();
+    default boolean isClient()
+    {
+        return this.getWorld() != null && this.getWorld().isRemote();
+    }
 }

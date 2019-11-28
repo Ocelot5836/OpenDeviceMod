@@ -82,12 +82,9 @@ public class LaptopRenderer extends AbstractGui
         Window[] windows = desktop.getWindows();
         for (Window value : windows)
         {
-            if (value instanceof WindowClient)
-            {
-                WindowClient window = (WindowClient) value;
-                window.setScreenPosition(posX, posY);
-                window.render(mouseX, mouseY, laptop.readSetting(LaptopSettings.WINDOW_COLOR), partialTicks);
-            }
+            WindowClient window = (WindowClient) value;
+            window.setScreenPosition(posX, posY);
+            window.render(mouseX, mouseY, laptop.readSetting(LaptopSettings.WINDOW_COLOR), partialTicks);
         }
 
         /* Task bar */
@@ -121,14 +118,11 @@ public class LaptopRenderer extends AbstractGui
 
                 for (Window value : taskBar.getDisplayedWindows())
                 {
-                    if (value instanceof WindowClient)
-                    {
-                        WindowClient window = (WindowClient) value;
-                        TextureAtlasSprite icon = ApplicationManager.getAppIcon(window.getContentId());
-                        textureManager.bindTexture(ApplicationManager.LOCATION_APP_ICON_TEXTURE);
-                        RenderUtil.drawRectWithTexture(posX + 4 + (size + 4) * i, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4, size, size, icon);
-                        i++;
-                    }
+                    WindowClient window = (WindowClient) value;
+                    TextureAtlasSprite icon = ApplicationManager.getAppIcon(window.getContentId());
+                    textureManager.bindTexture(ApplicationManager.LOCATION_APP_ICON_TEXTURE);
+                    RenderUtil.drawRectWithTexture(posX + 4 + (size + 4) * i, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4, size, size, icon);
+                    i++;
                 }
             }
         }
@@ -143,12 +137,9 @@ public class LaptopRenderer extends AbstractGui
         Window[] windows = desktop.getWindows();
         for (Window value : windows)
         {
-            if (value instanceof WindowClient)
-            {
-                WindowClient window = (WindowClient) value;
-                window.setScreenPosition(posX, posY);
-                window.renderOverlay(renderer, mouseX, mouseY, partialTicks);
-            }
+            WindowClient window = (WindowClient) value;
+            window.setScreenPosition(posX, posY);
+            window.renderOverlay(renderer, mouseX, mouseY, partialTicks);
         }
 
         /* Task bar */
@@ -158,16 +149,13 @@ public class LaptopRenderer extends AbstractGui
 
             for (Window value : taskBar.getDisplayedWindows())
             {
-                if (value instanceof WindowClient)
+                WindowClient window = (WindowClient) value;
+                if (!StringUtils.isEmpty(window.getContent().getTitle()) && RenderUtil.isMouseInside(mouseX, mouseY, posX + 4 + (size + 4) * i, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4, posX + 4 + (size + 4) * i + size, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4 + size))
                 {
-                    WindowClient window = (WindowClient) value;
-                    if (!StringUtils.isEmpty(window.getContent().getTitle()) && RenderUtil.isMouseInside(mouseX, mouseY, posX + 4 + (size + 4) * i, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4, posX + 4 + (size + 4) * i + size, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4 + size))
-                    {
-                        renderer.renderTooltip(window.getContent().getTitle(), mouseX, mouseY);
-                        break;
-                    }
-                    i++;
+                    renderer.renderTooltip(window.getContent().getTitle(), mouseX, mouseY);
+                    break;
                 }
+                i++;
             }
         }
     }
