@@ -99,10 +99,10 @@ public class WindowClient extends LaptopWindow
             RenderUtil.drawStringClipped(Minecraft.getInstance().fontRenderer, title, this.screenX + this.getInterpolatedX(partialTicks) + 2f + titleOffset, this.screenY + this.getInterpolatedY(partialTicks) + 2.5f, this.getWidth() - 4 - titleOffset - this.closeButton.getWidth(), this.getLaptop().readSetting(LaptopSettings.DESKTOP_TEXT_COLOR), true);
         }
 
-        GlStateManager.color4f(((color >> 16) & 0xff) / 255f, ((color >> 8) & 0xff) / 255f, (color & 0xff) / 255f, 1);
+        RenderUtil.glColor(0xff000000 | color);
         this.closeButton.setPosition(this, partialTicks);
         this.closeButton.render(mouseX, mouseY, partialTicks);
-        GlStateManager.color4f(1, 1, 1, 1);
+        RenderUtil.glColor(0xffffffff);
     }
 
     public void renderOverlay(TooltipRenderer renderer, int mouseX, int mouseY, float partialTicks)
@@ -251,7 +251,7 @@ public class WindowClient extends LaptopWindow
     private static void renderWindow(int posX, int posY, WindowClient window, int color, int borderColor, float partialTicks)
     {
         Minecraft.getInstance().getTextureManager().bindTexture(DeviceConstants.WINDOW_LOCATION);
-        RenderUtil.glColor(borderColor);
+        RenderUtil.glColor(0xff000000 | borderColor);
 
         float windowX = window.getInterpolatedX(partialTicks);
         float windowY = window.getInterpolatedY(partialTicks);
@@ -271,7 +271,7 @@ public class WindowClient extends LaptopWindow
         RenderUtil.drawRectWithTexture(posX + windowX, posY + windowY + 13, 0, 13, 1, windowHeight - 14, 1, 1);
 
         /* Center */
-        RenderUtil.glColor(color);
+        RenderUtil.glColor(0xff000000 | color);
         RenderUtil.drawRectWithTexture(posX + windowX + 1, posY + windowY + 13, 1, 13, windowWidth - 2, windowHeight - 14, 13, 1);
 
         GlStateManager.color4f(1, 1, 1, 1);

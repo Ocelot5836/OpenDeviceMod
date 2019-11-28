@@ -8,6 +8,7 @@ import com.ocelot.opendevices.api.util.TooltipRenderer;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
@@ -51,13 +52,13 @@ public class Layout extends BasicComponent implements INBTSerializable<CompoundN
     {
         this.x = x;
         this.y = y;
-        this.width = width;
-        this.height = height;
+        this.width = MathHelper.clamp(width, DeviceConstants.LAPTOP_MIN_APPLICATION_WIDTH, DeviceConstants.LAPTOP_MAX_APPLICATION_WIDTH+2);
+        this.height = MathHelper.clamp(height, DeviceConstants.LAPTOP_MIN_APPLICATION_HEIGHT, DeviceConstants.LAPTOP_MAX_APPLICATION_HEIGHT+DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT+2);
         this.components = new ArrayList<>();
 
-        if (this.width < DeviceConstants.LAPTOP_MIN_APPLICATION_WIDTH || this.width > DeviceConstants.LAPTOP_MAX_APPLICATION_WIDTH || this.height > DeviceConstants.LAPTOP_MAX_APPLICATION_HEIGHT || this.height < DeviceConstants.LAPTOP_MIN_APPLICATION_HEIGHT)
+        if (width < DeviceConstants.LAPTOP_MIN_APPLICATION_WIDTH || width > DeviceConstants.LAPTOP_MAX_APPLICATION_WIDTH || height > DeviceConstants.LAPTOP_MAX_APPLICATION_HEIGHT || height < DeviceConstants.LAPTOP_MIN_APPLICATION_HEIGHT)
         {
-            throw new RuntimeException("Windows must be between " + DeviceConstants.LAPTOP_MIN_APPLICATION_WIDTH + "x" + DeviceConstants.LAPTOP_MIN_APPLICATION_HEIGHT + " and " + DeviceConstants.LAPTOP_MAX_APPLICATION_WIDTH + "x" + DeviceConstants.LAPTOP_MAX_APPLICATION_HEIGHT);
+            OpenDevices.LOGGER.warn("Layouts must be between " + DeviceConstants.LAPTOP_MIN_APPLICATION_WIDTH + "x" + DeviceConstants.LAPTOP_MIN_APPLICATION_HEIGHT + " and " + DeviceConstants.LAPTOP_MAX_APPLICATION_WIDTH + "x" + DeviceConstants.LAPTOP_MAX_APPLICATION_HEIGHT + ". Clamping size to screen.");
         }
     }
 

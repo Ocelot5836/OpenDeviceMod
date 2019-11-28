@@ -189,11 +189,6 @@ public class RenderUtil
 
     public static void glColor(int color)
     {
-        glColorAlpha(0xff000000 | color);
-    }
-
-    public static void glColorAlpha(int color)
-    {
         GlStateManager.color4f(((color >> 16) & 0xff) / 255f, ((color >> 8) & 0xff) / 255f, (color & 0xff) / 255f, ((color >> 24) & 0xff) / 255f);
     }
 

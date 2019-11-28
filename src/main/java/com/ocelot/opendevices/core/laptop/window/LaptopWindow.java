@@ -1,5 +1,6 @@
 package com.ocelot.opendevices.core.laptop.window;
 
+import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.laptop.Laptop;
 import com.ocelot.opendevices.api.laptop.window.Window;
@@ -8,9 +9,11 @@ import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.core.task.MoveWindowTask;
 import com.ocelot.opendevices.core.task.SetWindowPositionTask;
 import com.ocelot.opendevices.core.task.SetWindowSizeTask;
+import com.ocelot.opendevices.core.task.SyncWindowTask;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
 
@@ -50,7 +53,7 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
         this.contentData = null;
         this.id = UUID.randomUUID();
         this.setPosition(x, y);
-        this.setSize(width + 2, height + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + 2);
+        this.setSize(width, height);
     }
 
     private void checkPosition()
@@ -63,14 +66,6 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
             this.x = DeviceConstants.LAPTOP_SCREEN_WIDTH - this.width;
         if (this.y >= DeviceConstants.LAPTOP_SCREEN_HEIGHT - this.height)
             this.y = DeviceConstants.LAPTOP_SCREEN_HEIGHT - this.height;
-    }
-
-    private void checkSize()
-    {
-        if (this.width < DeviceConstants.LAPTOP_MIN_APPLICATION_WIDTH || this.width > DeviceConstants.LAPTOP_MAX_APPLICATION_WIDTH || this.height > DeviceConstants.LAPTOP_MAX_APPLICATION_HEIGHT || this.height < DeviceConstants.LAPTOP_MIN_APPLICATION_HEIGHT)
-        {
-            throw new RuntimeException("Windows must be between " + DeviceConstants.LAPTOP_MIN_APPLICATION_WIDTH + "x" + DeviceConstants.LAPTOP_MIN_APPLICATION_HEIGHT + " and " + DeviceConstants.LAPTOP_MAX_APPLICATION_WIDTH + "x" + DeviceConstants.LAPTOP_MAX_APPLICATION_HEIGHT);
-        }
     }
 
     public void syncMove(float xDirection, float yDirection)
@@ -89,15 +84,19 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
 
     public void syncSetSize(int width, int height)
     {
-        this.width = width;
-        this.height = height;
-        this.checkSize();
+        this.width = MathHelper.clamp(width + 2, DeviceConstants.LAPTOP_MIN_APPLICATION_WIDTH, DeviceConstants.LAPTOP_MAX_APPLICATION_WIDTH + 2);
+        this.height = MathHelper.clamp(height + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + 2, DeviceConstants.LAPTOP_MIN_APPLICATION_HEIGHT, DeviceConstants.LAPTOP_MAX_APPLICATION_HEIGHT + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + 2);
+
+        if (width < DeviceConstants.LAPTOP_MIN_APPLICATION_WIDTH || width > DeviceConstants.LAPTOP_MAX_APPLICATION_WIDTH || height > DeviceConstants.LAPTOP_MAX_APPLICATION_HEIGHT || height < DeviceConstants.LAPTOP_MIN_APPLICATION_HEIGHT)
+        {
+            OpenDevices.LOGGER.warn("Windows must be between " + DeviceConstants.LAPTOP_MIN_APPLICATION_WIDTH + "x" + DeviceConstants.LAPTOP_MIN_APPLICATION_HEIGHT + " and " + DeviceConstants.LAPTOP_MAX_APPLICATION_WIDTH + "x" + DeviceConstants.LAPTOP_MAX_APPLICATION_HEIGHT + ". Clamping size to screen.");
+        }
     }
 
     @Override
     public void move(float xDirection, float yDirection)
     {
-        if(xDirection == 0 && yDirection == 0)
+        if (xDirection == 0 && yDirection == 0)
             return;
 
         this.syncMove(xDirection, yDirection);
@@ -115,7 +114,14 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
     @Override
     public void markDirty()
     {
-        // TODO send task to server/client about the changes
+        if (this.laptop.isClient())
+        {
+            TaskManager.sendToServer(new SyncWindowTask(this.laptop.getPos(), this.getId(), this.getContentData()), TaskManager.TaskReceiver.SENDER);
+        }
+        else
+        {
+            TaskManager.sendTo(new SyncWindowTask(this.laptop.getPos(), this.getId(), this.getContentData()), TaskManager.TaskReceiver.SENDER, (ServerPlayerEntity) this.laptop.getUser());
+        }
     }
 
     public void create()

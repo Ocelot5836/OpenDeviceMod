@@ -15,16 +15,31 @@ public class TestApplication extends Application
     public static final ResourceLocation REGISTRY_NAME = new ResourceLocation(OpenDevices.MOD_ID, "test");
 
     private Layout layoutTest;
+    private Layout layoutTest2;
+    private long creationTime;
 
     public TestApplication()
     {
-        this.layoutTest = new Layout(80, 100);
+        this.layoutTest = new Layout(50, 25);
+        this.layoutTest2 = new Layout(200, 100);
+        this.creationTime = -1;
     }
 
     @Override
     public void create()
     {
         this.setCurrentLayout(this.layoutTest);
+        this.creationTime = System.currentTimeMillis() + 2000;
+    }
+
+    @Override
+    public void update()
+    {
+        if (this.creationTime != -1 && System.currentTimeMillis() - this.creationTime > 0)
+        {
+            this.setCurrentLayout(this.layoutTest2);
+            this.creationTime = -1;
+        }
     }
 
     @Override

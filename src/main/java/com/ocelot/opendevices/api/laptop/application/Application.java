@@ -3,7 +3,6 @@ package com.ocelot.opendevices.api.laptop.application;
 import com.ocelot.opendevices.api.DeviceComponents;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.component.Layout;
-import com.ocelot.opendevices.api.laptop.Laptop;
 import com.ocelot.opendevices.api.laptop.desktop.Desktop;
 import com.ocelot.opendevices.api.laptop.window.Window;
 import com.ocelot.opendevices.api.laptop.window.WindowContent;
@@ -118,7 +117,17 @@ public abstract class Application extends AbstractGui implements WindowContent
     @Override
     public void loadState(CompoundNBT nbt)
     {
-        this.setCurrentLayout(DeviceComponents.deserializeComponent(nbt.getCompound("currentLayout")));
+        Layout layout = DeviceComponents.deserializeComponent(nbt.getCompound("currentLayout"));
+
+        this.currentLayout.onLayoutUnload();
+        this.currentLayout = layout;
+        this.currentLayout.onLayoutLoad();
+
+        if (layout.getWidth() != this.window.getWidth() || layout.getHeight() != this.window.getHeight())
+        {
+            this.window.setSize(this.currentLayout.getWidth(), this.currentLayout.getHeight());
+            this.window.center();// TODO maybe add the ability to center on current position?
+        }
     }
 
     @Override
@@ -194,21 +203,26 @@ public abstract class Application extends AbstractGui implements WindowContent
     }
 
     /**
-     * Sets the current layout to the new one specified on the next update. If in a currentlu running update, make sure to use {@link Laptop#execute(Runnable)} when running this.
+     * Sets the current layout to the new one specified on the next update.
      *
      * @param layout The new layout to display
      */
     public void setCurrentLayout(Layout layout)
     {
-        this.currentLayout.onLayoutUnload();
-        this.currentLayout = layout;
-        this.currentLayout.onLayoutLoad();
-
-        if (layout.getWidth() != this.window.getWidth() || layout.getHeight() != this.window.getHeight())
+        this.window.getLaptop().execute(() ->
         {
-            this.window.setSize(this.currentLayout.getWidth(), this.currentLayout.getHeight());
-            this.window.center();// TODO maybe add the ability to center on current position?
-        }
+            this.currentLayout.onLayoutUnload();
+            this.currentLayout = layout;
+            this.currentLayout.onLayoutLoad();
+
+            if (layout.getWidth() != this.window.getWidth() || layout.getHeight() != this.window.getHeight())
+            {
+                this.window.setSize(this.currentLayout.getWidth(), this.currentLayout.getHeight());
+                this.window.center();// TODO maybe add the ability to center on current position?
+            }
+
+            this.markDirty();
+        });
     }
 
     public final void setWindow(Window window)

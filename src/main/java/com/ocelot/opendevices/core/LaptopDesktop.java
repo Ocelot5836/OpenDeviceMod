@@ -147,6 +147,11 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
         }
     }
 
+    public void syncApplication(LaptopWindow window, CompoundNBT contentData)
+    {
+        this.laptop.execute(() -> window.setContentData(contentData));
+    }
+
     @Override
     public void openApplication(ResourceLocation registryName, @Nullable CompoundNBT initData)
     {
@@ -177,7 +182,7 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
     @Override
     public void focusWindow(@Nullable UUID windowId)
     {
-        if(this.focusedWindowId == windowId)
+        if (this.focusedWindowId == windowId)
             return;
 
         if (this.laptop.isClient())
