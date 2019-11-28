@@ -17,8 +17,6 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
 
@@ -150,7 +148,6 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public void openApplication(ResourceLocation registryName, @Nullable CompoundNBT initData)
     {
         if (this.windows.size() >= DeviceConstants.MAX_OPEN_APPS)
@@ -166,8 +163,15 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
         }
 
         LaptopWindow window = this.createWindow(registryName, initData);
-        this.syncOpenApplication(window, null);
-        TaskManager.sendToServer(new OpenApplicationTask(this.laptop.getPos(), window.serializeNBT(), window.getContentData()), TaskManager.TaskReceiver.NEARBY);
+        if (this.laptop.isClient())
+        {
+            this.syncOpenApplication(window, null);
+            TaskManager.sendToServer(new OpenApplicationTask(this.laptop.getPos(), window.serializeNBT(), window.getContentData()), TaskManager.TaskReceiver.NEARBY);
+        }
+        else
+        {
+            TaskManager.sendToServer(new OpenApplicationTask(this.laptop.getPos(), window.serializeNBT(), null), TaskManager.TaskReceiver.NEARBY);
+        }
     }
 
     @Override
@@ -176,10 +180,9 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
         if(this.focusedWindowId == windowId)
             return;
 
-        this.syncFocusWindow(windowId);
-
         if (this.laptop.isClient())
         {
+            this.syncFocusWindow(windowId);
             TaskManager.sendToServer(new FocusWindowTask(this.laptop.getPos(), windowId), TaskManager.TaskReceiver.NEARBY);
         }
         else
@@ -197,10 +200,9 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
     @Override
     public void closeWindow(UUID windowId)
     {
-        this.syncCloseWindow(windowId);
-
         if (this.laptop.isClient())
         {
+            this.syncCloseWindow(windowId);
             TaskManager.sendToServer(new CloseWindowTask(this.laptop.getPos(), windowId), TaskManager.TaskReceiver.NEARBY);
         }
         else

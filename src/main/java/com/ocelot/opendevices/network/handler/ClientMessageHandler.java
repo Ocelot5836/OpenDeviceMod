@@ -60,7 +60,8 @@ public class ClientMessageHandler implements MessageHandler
                 throw new RuntimeException("Unregistered Task: " + request.getClass().getName() + ". Use Task annotation to register a task.");
 
             request.processRequest(nbt, player.world, player);
-            DeviceMessages.INSTANCE.send(PacketDistributor.SERVER.noArg(), new MessageClientResponse(request, nbt));
+            if (msg.getReceiver().returnsToSender())
+                DeviceMessages.INSTANCE.send(PacketDistributor.SERVER.noArg(), new MessageClientResponse(request, nbt));
         });
         ctx.get().setPacketHandled(true);
     }

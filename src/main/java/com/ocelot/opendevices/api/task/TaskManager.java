@@ -121,6 +121,11 @@ public final class TaskManager
      */
     public enum TaskReceiver
     {
-        SENDER, NEARBY, SENDER_AND_NEARBY, ALL
+        SENDER, NEARBY, SENDER_AND_NEARBY, ALL;
+
+        public boolean returnsToSender()
+        {
+            return this == SENDER || this == SENDER_AND_NEARBY || this == ALL;
+        }
     }
 }

@@ -11,7 +11,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
 
+import javax.annotation.Nullable;
 import java.util.Objects;
 
 @Task.Register(OpenDevices.MOD_ID + ":open_application")
@@ -26,7 +28,7 @@ public class OpenApplicationTask extends Task
         this(null, null, null);
     }
 
-    public OpenApplicationTask(BlockPos pos, CompoundNBT windowData, CompoundNBT contentData)
+    public OpenApplicationTask(BlockPos pos, CompoundNBT windowData, @Nullable CompoundNBT contentData)
     {
         this.pos = pos;
         this.windowData = windowData;
@@ -38,7 +40,8 @@ public class OpenApplicationTask extends Task
     {
         nbt.putLong("pos", this.pos.toLong());
         nbt.put("windowData", this.windowData);
-        nbt.put("contentData", this.contentData);
+        if (this.contentData != null)
+            nbt.put("contentData", this.contentData);
     }
 
     @Override
@@ -46,7 +49,7 @@ public class OpenApplicationTask extends Task
     {
         this.pos = BlockPos.fromLong(nbt.getLong("pos"));
         this.windowData = nbt.getCompound("windowData");
-        this.contentData = nbt.getCompound("contentData");
+        this.contentData = nbt.contains("contentData", Constants.NBT.TAG_COMPOUND) ? nbt.getCompound("contentData") : null;
 
         if (world.getTileEntity(this.pos) instanceof LaptopTileEntity)
         {

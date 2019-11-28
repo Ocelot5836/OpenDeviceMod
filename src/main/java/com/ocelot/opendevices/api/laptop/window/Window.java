@@ -19,12 +19,18 @@ public interface Window
     /**
      * Sets this window to be the main, focused window.
      */
-    void focus();
+    default void focus()
+    {
+        this.getLaptop().getDesktop().focusWindow(this.getId());
+    }
 
     /**
      * Closes this window.
      */
-    void close();
+    default void close()
+    {
+        this.getLaptop().getDesktop().closeWindow(this.getId());
+    }
 
     /**
      * Moves this window in the specified direction.

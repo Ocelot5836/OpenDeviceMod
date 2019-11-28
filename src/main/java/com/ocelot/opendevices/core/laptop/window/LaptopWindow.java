@@ -95,21 +95,12 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
     }
 
     @Override
-    public void focus()
-    {
-        this.laptop.getDesktop().focusWindow(this.id);
-    }
-
-    @Override
-    public void close()
-    {
-        this.laptop.getDesktop().closeWindow(this.id);
-    }
-
-    @Override
     public void move(float xDirection, float yDirection)
     {
-            this.syncMove(xDirection, yDirection);
+        if(xDirection == 0 && yDirection == 0)
+            return;
+
+        this.syncMove(xDirection, yDirection);
 
         if (this.laptop.isClient())
         {
@@ -243,6 +234,9 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
     @Override
     public void setPosition(float x, float y)
     {
+        if (this.x == x && this.y == y)
+            return;
+
         this.syncSetPosition(x, y);
 
         if (this.laptop.isClient())
@@ -258,6 +252,9 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
     @Override
     public void setSize(int width, int height)
     {
+        if (this.width == width && this.height == height)
+            return;
+
         this.syncSetSize(width, height);
 
         if (this.laptop.isClient())
