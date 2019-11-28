@@ -16,6 +16,8 @@ import net.minecraft.resources.IFutureReloadListener;
 import net.minecraft.resources.IReloadableResourceManager;
 import net.minecraft.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -40,7 +42,8 @@ import java.util.concurrent.Executor;
  * @author Ocelot
  * @see AppInfo
  */
-@Mod.EventBusSubscriber(modid = OpenDevices.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@Mod.EventBusSubscriber(modid = OpenDevices.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class ApplicationManager
 {
     public static final AppInfo MISSING_INFO = AppInfo.createMissingInfo(TextureManager.RESOURCE_LOCATION_EMPTY);
@@ -49,7 +52,6 @@ public class ApplicationManager
     private static final HashBiMap<Class<? extends Application>, ResourceLocation> REGISTRY_CACHE = HashBiMap.create();
     private static final Map<ResourceLocation, AppInfo> APP_INFO = new HashMap<>();
     private static AtlasTexture iconAtlas;
-    private static boolean initialized = false;
 
     private ApplicationManager() {}
 

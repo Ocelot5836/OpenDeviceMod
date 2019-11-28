@@ -3,8 +3,6 @@ package com.ocelot.opendevices.api.component;
 import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.api.util.TooltipRenderer;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.INBTSerializable;
 
 /**
@@ -14,7 +12,6 @@ import net.minecraftforge.common.util.INBTSerializable;
  * @author Ocelot
  * @see Layout
  */
-@OnlyIn(Dist.CLIENT)
 public interface Component extends INBTSerializable<CompoundNBT>
 {
     /**

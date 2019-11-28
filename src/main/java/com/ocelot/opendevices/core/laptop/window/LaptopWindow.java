@@ -6,6 +6,7 @@ import com.ocelot.opendevices.api.laptop.Laptop;
 import com.ocelot.opendevices.api.laptop.window.Window;
 import com.ocelot.opendevices.api.laptop.window.WindowContentType;
 import com.ocelot.opendevices.api.task.TaskManager;
+import com.ocelot.opendevices.core.LaptopTileEntity;
 import com.ocelot.opendevices.core.task.MoveWindowTask;
 import com.ocelot.opendevices.core.task.SetWindowPositionTask;
 import com.ocelot.opendevices.core.task.SetWindowSizeTask;
@@ -23,7 +24,7 @@ import java.util.UUID;
 
 public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
 {
-    private Laptop laptop;
+    private LaptopTileEntity laptop;
     private UUID id;
     private float x;
     private float y;
@@ -34,17 +35,17 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
     private ResourceLocation contentId;
     private CompoundNBT contentData;
 
-    public LaptopWindow(Laptop laptop)
+    public LaptopWindow(LaptopTileEntity laptop)
     {
         this.laptop = laptop;
     }
 
-    public LaptopWindow(Laptop laptop, @Nullable CompoundNBT initData, WindowContentType contentType, ResourceLocation contentId, int width, int height)
+    public LaptopWindow(LaptopTileEntity laptop, @Nullable CompoundNBT initData, WindowContentType contentType, ResourceLocation contentId, int width, int height)
     {
         this(laptop, initData, contentType, contentId, (DeviceConstants.LAPTOP_SCREEN_WIDTH - width) / 2f, (DeviceConstants.LAPTOP_SCREEN_HEIGHT - laptop.getTaskBar().getHeight() - (height + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + 2)) / 2f, width, height);
     }
 
-    public LaptopWindow(Laptop laptop, @Nullable CompoundNBT initData, WindowContentType contentType, ResourceLocation contentId, float x, float y, int width, int height)
+    public LaptopWindow(LaptopTileEntity laptop, @Nullable CompoundNBT initData, WindowContentType contentType, ResourceLocation contentId, float x, float y, int width, int height)
     {
         this.laptop = laptop;
         this.initData = initData;
@@ -120,6 +121,7 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
         }
         else
         {
+            this.laptop.markDirty();
             TaskManager.sendTo(new SyncWindowTask(this.laptop.getPos(), this.getId(), this.getContentData()), TaskManager.TaskReceiver.SENDER, (ServerPlayerEntity) this.laptop.getUser());
         }
     }

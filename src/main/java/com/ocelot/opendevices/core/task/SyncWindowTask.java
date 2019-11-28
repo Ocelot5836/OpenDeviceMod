@@ -59,6 +59,9 @@ public class SyncWindowTask extends Task
                 return;
             }
 
+            if (!laptop.isClient())
+                laptop.markDirty();
+
             desktop.syncApplication(window, this.contentData);
             this.setSuccessful();
         }

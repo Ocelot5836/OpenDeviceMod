@@ -8,7 +8,10 @@ import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.core.laptop.window.WindowClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.button.Button;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
+@OnlyIn(Dist.CLIENT)
 public class WindowButton extends Button
 {
     private Laptop laptop;
