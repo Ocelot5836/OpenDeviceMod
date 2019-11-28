@@ -4,7 +4,6 @@ import com.mrcrayfish.filters.Filters;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.laptop.DeviceRegistries;
 import com.ocelot.opendevices.api.laptop.application.Application;
-import com.ocelot.opendevices.api.laptop.application.ApplicationManager;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopManager;
 import com.ocelot.opendevices.api.laptop.settings.LaptopSetting;
 import com.ocelot.opendevices.api.task.Task;
@@ -96,7 +95,7 @@ public class OpenDevices
         }
     }
 
-    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
+    @Mod.EventBusSubscriber(modid = OpenDevices.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
     public static class RegistryEvents
     {
         @SubscribeEvent
@@ -145,8 +144,6 @@ public class OpenDevices
                     OpenDevices.LOGGER.error("Could not register application class " + className + ". Skipping!", e);
                 }
             }
-
-            DistExecutor.runWhenOn(Dist.CLIENT, () -> ApplicationManager::init);
         }
 
         @SubscribeEvent

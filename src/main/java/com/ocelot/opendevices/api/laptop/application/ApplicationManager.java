@@ -10,11 +10,15 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.MissingTextureSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.profiler.IProfiler;
 import net.minecraft.resources.IFutureReloadListener;
 import net.minecraft.resources.IReloadableResourceManager;
 import net.minecraft.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import org.apache.commons.io.IOUtils;
 
 import javax.annotation.Nullable;
@@ -36,8 +40,10 @@ import java.util.concurrent.Executor;
  * @author Ocelot
  * @see AppInfo
  */
+@Mod.EventBusSubscriber(modid = OpenDevices.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ApplicationManager
 {
+    public static final AppInfo MISSING_INFO = AppInfo.createMissingInfo(TextureManager.RESOURCE_LOCATION_EMPTY);
     public static final ResourceLocation LOCATION_APP_ICON_TEXTURE = new ResourceLocation(OpenDevices.MOD_ID, "textures/atlas/application_icons.png");
 
     private static final HashBiMap<Class<? extends Application>, ResourceLocation> REGISTRY_CACHE = HashBiMap.create();
@@ -75,20 +81,11 @@ public class ApplicationManager
         }
     }
 
-    /**
-     * This should never be used by the consumer. Core use only!
-     */
-    public static void init()
+    @SuppressWarnings("unused")
+    @SubscribeEvent
+    public static void registerApplications(RegistryEvent.Register<ApplicationRegistryEntry> event)
     {
-        if (initialized)
-        {
-            OpenDevices.LOGGER.warn("Attempted to initialize Client Application Manager even though it has already been initialized. This should NOT happen!");
-            return;
-        }
-
         ((IReloadableResourceManager) Minecraft.getInstance().getResourceManager()).addReloadListener(new ReloadListener());
-
-        initialized = true;
     }
 
     /**
@@ -121,11 +118,11 @@ public class ApplicationManager
      * Checks the registry for app info under the specified registry name.
      *
      * @param registryName The name of the application to get the info of
-     * @return The application info of that app
+     * @return The application info of that app or null if there is no loaded info for
      */
     public static AppInfo getAppInfo(ResourceLocation registryName)
     {
-        return APP_INFO.get(registryName);
+        return APP_INFO.getOrDefault(registryName, MISSING_INFO);
     }
 
     /**

@@ -234,7 +234,7 @@ public class AppInfo
         return createMissingInfo(registryName);
     }
 
-    private static AppInfo createMissingInfo(ResourceLocation registryName)
+    static AppInfo createMissingInfo(ResourceLocation registryName)
     {
         AppInfo info = new AppInfo();
         info.setRegistryName(registryName);
