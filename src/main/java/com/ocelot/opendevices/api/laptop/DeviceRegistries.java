@@ -1,6 +1,7 @@
 package com.ocelot.opendevices.api.laptop;
 
 import com.ocelot.opendevices.OpenDevices;
+import com.ocelot.opendevices.api.component.ComponentSerializer;
 import com.ocelot.opendevices.api.laptop.settings.LaptopSetting;
 import com.ocelot.opendevices.core.registry.ApplicationRegistryEntry;
 import com.ocelot.opendevices.core.registry.TaskRegistryEntry;
@@ -20,6 +21,7 @@ public class DeviceRegistries
     public static IForgeRegistry<ApplicationRegistryEntry> APPLICATIONS = null;
     public static IForgeRegistry<LaptopSetting<?>> SETTINGS = null;
     public static IForgeRegistry<TaskRegistryEntry> TASKS = null;
+    public static IForgeRegistry<ComponentSerializer<?>> COMPONENT_SERIALIZERS = null;
 
     private DeviceRegistries() {}
 
@@ -32,10 +34,12 @@ public class DeviceRegistries
         makeRegistry("applications", ApplicationRegistryEntry.class).create();
         makeRegistry("settings", LaptopSetting.class).create();
         makeRegistry("tasks", TaskRegistryEntry.class).create();
+        makeRegistry("components", ComponentSerializer.class).create();
 
         APPLICATIONS = RegistryManager.ACTIVE.getRegistry(ApplicationRegistryEntry.class);
         SETTINGS = RegistryManager.ACTIVE.getRegistry(LaptopSetting.class);
         TASKS = RegistryManager.ACTIVE.getRegistry(TaskRegistryEntry.class);
+        COMPONENT_SERIALIZERS = RegistryManager.ACTIVE.getRegistry(ComponentSerializer.class);
     }
 
     private static <T extends IForgeRegistryEntry<T>> RegistryBuilder<T> makeRegistry(String name, Class<T> type)

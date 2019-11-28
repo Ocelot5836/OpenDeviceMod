@@ -9,6 +9,7 @@ import com.ocelot.opendevices.api.laptop.settings.LaptopSetting;
  * <p>Contains settings that are used by the base mod content.</p>
  *
  * @author Ocelot
+ * @see LaptopSetting
  */
 public class LaptopSettings
 {

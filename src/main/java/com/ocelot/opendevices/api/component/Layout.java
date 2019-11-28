@@ -1,10 +1,17 @@
 package com.ocelot.opendevices.api.component;
 
+import com.ocelot.opendevices.OpenDevices;
+import com.ocelot.opendevices.api.DeviceComponents;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.api.util.TooltipRenderer;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.common.util.INBTSerializable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,8 +26,10 @@ import java.util.List;
  * @see Component
  */
 @OnlyIn(Dist.CLIENT)
-public class Layout extends BasicComponent
+public class Layout extends BasicComponent implements INBTSerializable<CompoundNBT>
 {
+    public static final ResourceLocation REGISTRY_NAME = new ResourceLocation(OpenDevices.MOD_ID, "layout");
+
     private float x;
     private float y;
     private float width;
@@ -59,7 +68,7 @@ public class Layout extends BasicComponent
      */
     public void addComponents(Component... components)
     {
-        this.components.addAll(Arrays.asList(components));
+        Arrays.stream(components).forEach(this::addComponent);
     }
 
     /**
@@ -69,7 +78,7 @@ public class Layout extends BasicComponent
      */
     public void addComponents(Collection<Component> components)
     {
-        this.components.addAll(components);
+        components.forEach(this::addComponent);
     }
 
     /**
@@ -79,6 +88,8 @@ public class Layout extends BasicComponent
      */
     public void addComponent(Component component)
     {
+        if (DeviceComponents.getRegistryName(component.getClass()) == null)
+            throw new RuntimeException("Attempted to add unregistered component to layout: \'" + component.getClass().getName() + "\'! Must be registered using ComponentSerializer registry annotation.");
         this.components.add(component);
     }
 
@@ -205,5 +216,36 @@ public class Layout extends BasicComponent
     public float getHeight()
     {
         return height;
+    }
+
+    @Override
+    public CompoundNBT serializeNBT()
+    {
+        CompoundNBT nbt = new CompoundNBT();
+        nbt.putFloat("x", this.x);
+        nbt.putFloat("y", this.y);
+        nbt.putFloat("width", this.width);
+        nbt.putFloat("height", this.height);
+
+        ListNBT components = new ListNBT();
+        this.components.forEach(component -> components.add(DeviceComponents.serializeComponent(component)));
+        nbt.put("components", components);
+
+        return nbt;
+    }
+
+    @Override
+    public void deserializeNBT(CompoundNBT nbt)
+    {
+        this.x = nbt.getInt("x");
+        this.y = nbt.getInt("y");
+        this.width = nbt.getInt("width");
+        this.height = nbt.getInt("height");
+
+        ListNBT components = nbt.getList("components", Constants.NBT.TAG_COMPOUND);
+        for (int i = 0; i < components.size(); i++)
+        {
+            this.components.add(DeviceComponents.deserializeComponent(components.getCompound(i)));
+        }
     }
 }

@@ -2,8 +2,10 @@ package com.ocelot.opendevices.api.component;
 
 import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.api.util.TooltipRenderer;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.util.INBTSerializable;
 
 /**
  * <p>Components are the building blocks of the rendering API in windows by default. Everything supported in the default API must implement this class in order to be used.</p>
@@ -13,7 +15,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
  * @see Layout
  */
 @OnlyIn(Dist.CLIENT)
-public interface Component
+public interface Component extends INBTSerializable<CompoundNBT>
 {
     /**
      * Called 20 times per second to update any logic.

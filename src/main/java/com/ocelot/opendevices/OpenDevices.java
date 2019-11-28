@@ -2,6 +2,7 @@ package com.ocelot.opendevices;
 
 import com.mrcrayfish.filters.Filters;
 import com.ocelot.opendevices.api.DeviceConstants;
+import com.ocelot.opendevices.api.component.ComponentSerializer;
 import com.ocelot.opendevices.api.laptop.DeviceRegistries;
 import com.ocelot.opendevices.api.laptop.application.Application;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopManager;
@@ -85,7 +86,6 @@ public class OpenDevices
         }
     }
 
-    @SuppressWarnings("unused")
     @SubscribeEvent
     public void onWorldClose(WorldEvent.Unload event)
     {
@@ -198,6 +198,32 @@ public class OpenDevices
                 catch (Exception e)
                 {
                     OpenDevices.LOGGER.error("Could not register task class " + className + ". Skipping!", e);
+                }
+            }
+        }
+
+        @SubscribeEvent
+        public static void registerComponents(RegistryEvent.Register<ComponentSerializer<?>> event)
+        {
+            Set<ModFileScanData.AnnotationData> annotations = OpenDevices.annotationScanData.stream().filter(it -> it.getTargetType() == ElementType.FIELD && it.getAnnotationType().equals(Type.getType(ComponentSerializer.Register.class))).collect(Collectors.toSet());
+
+            for (ModFileScanData.AnnotationData data : annotations)
+            {
+                ResourceLocation registryName = new ResourceLocation((String) data.getAnnotationData().get("value"));
+
+                String className = data.getClassType().getClassName();
+                String fieldName = data.getMemberName();
+                try
+                {
+                    Class clazz = Class.forName(className);
+                    Field field = clazz.getField(fieldName);
+                    ComponentSerializer<?> serializer = (ComponentSerializer<?>) field.get(null);
+
+                    event.getRegistry().register(serializer.setRegistryName(registryName));
+                }
+                catch (Exception e)
+                {
+                    OpenDevices.LOGGER.error("Could not register component serializer field " + fieldName + " in " + className + ". Skipping!", e);
                 }
             }
         }
