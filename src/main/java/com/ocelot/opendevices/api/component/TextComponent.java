@@ -1,5 +1,6 @@
 package com.ocelot.opendevices.api.component;
 
+import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.handler.ComponentClickListener;
 import com.ocelot.opendevices.api.laptop.Laptop;
 import com.ocelot.opendevices.api.util.RenderUtil;
@@ -29,6 +30,8 @@ import java.util.List;
  * @see ITextComponent
  * @see Layout
  */
+@SuppressWarnings("unused")
+@Component.Register(OpenDevices.MOD_ID + ":text")
 public class TextComponent extends BasicComponent
 {
     private int x;

@@ -2,13 +2,14 @@ package com.ocelot.opendevices;
 
 import com.mrcrayfish.filters.Filters;
 import com.ocelot.opendevices.api.DeviceConstants;
-import com.ocelot.opendevices.api.component.ComponentSerializer;
-import com.ocelot.opendevices.api.laptop.DeviceRegistries;
+import com.ocelot.opendevices.api.DeviceRegistries;
+import com.ocelot.opendevices.api.component.Component;
 import com.ocelot.opendevices.api.laptop.application.Application;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopManager;
 import com.ocelot.opendevices.api.laptop.settings.LaptopSetting;
 import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.core.registry.ApplicationRegistryEntry;
+import com.ocelot.opendevices.core.registry.ComponentRegistryEntry;
 import com.ocelot.opendevices.core.registry.TaskRegistryEntry;
 import com.ocelot.opendevices.core.render.LaptopTileEntityRenderer;
 import com.ocelot.opendevices.init.DeviceBlocks;
@@ -203,27 +204,25 @@ public class OpenDevices
         }
 
         @SubscribeEvent
-        public static void registerComponents(RegistryEvent.Register<ComponentSerializer<?>> event)
+        public static void registerComponents(RegistryEvent.Register<ComponentRegistryEntry> event)
         {
-            Set<ModFileScanData.AnnotationData> annotations = OpenDevices.annotationScanData.stream().filter(it -> it.getTargetType() == ElementType.FIELD && it.getAnnotationType().equals(Type.getType(ComponentSerializer.Register.class))).collect(Collectors.toSet());
+            Set<ModFileScanData.AnnotationData> annotations = OpenDevices.annotationScanData.stream().filter(it -> it.getTargetType() == ElementType.TYPE && it.getAnnotationType().equals(Type.getType(Component.Register.class))).collect(Collectors.toSet());
 
             for (ModFileScanData.AnnotationData data : annotations)
             {
                 ResourceLocation registryName = new ResourceLocation((String) data.getAnnotationData().get("value"));
 
                 String className = data.getClassType().getClassName();
-                String fieldName = data.getMemberName();
                 try
                 {
-                    Class clazz = Class.forName(className);
-                    Field field = clazz.getField(fieldName);
-                    ComponentSerializer<?> serializer = (ComponentSerializer<?>) field.get(null);
+                    if (registryName.getPath().isEmpty())
+                        throw new IllegalArgumentException("Component: " + registryName + " does not have a valid registry name. Skipping!");
 
-                    event.getRegistry().register(serializer.setRegistryName(registryName));
+                    event.getRegistry().register(new ComponentRegistryEntry(className).setRegistryName(registryName));
                 }
                 catch (Exception e)
                 {
-                    OpenDevices.LOGGER.error("Could not register component serializer field " + fieldName + " in " + className + ". Skipping!", e);
+                    OpenDevices.LOGGER.error("Could not register component class: " + className + ". Skipping!", e);
                 }
             }
         }

@@ -1,6 +1,6 @@
 package com.ocelot.opendevices.api.laptop.application;
 
-import com.ocelot.opendevices.api.DeviceComponents;
+import com.ocelot.opendevices.api.component.ComponentSerializer;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.component.Layout;
 import com.ocelot.opendevices.api.laptop.desktop.Desktop;
@@ -109,13 +109,13 @@ public abstract class Application extends AbstractGui implements WindowContent
     @Override
     public void saveState(CompoundNBT nbt)
     {
-        nbt.put("currentLayout", DeviceComponents.serializeComponent(this.currentLayout));
+        nbt.put("currentLayout", ComponentSerializer.serializeComponent(this.currentLayout));
     }
 
     @Override
     public void loadState(CompoundNBT nbt)
     {
-        Layout layout = DeviceComponents.deserializeComponent(nbt.getCompound("currentLayout"));
+        Layout layout = ComponentSerializer.deserializeComponent(nbt.getCompound("currentLayout"));
 
         this.currentLayout.onLayoutUnload();
         this.currentLayout = layout;

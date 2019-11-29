@@ -2,7 +2,6 @@ package com.ocelot.opendevices.api.component;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.api.DeviceComponents;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.api.util.TooltipRenderer;
@@ -24,6 +23,8 @@ import java.util.List;
  * @author Ocelot
  * @see Component
  */
+@SuppressWarnings("unused")
+@Component.Register(OpenDevices.MOD_ID + ":layout")
 public class Layout extends BasicComponent
 {
     public static final ResourceLocation REGISTRY_NAME = new ResourceLocation(OpenDevices.MOD_ID, "layout");
@@ -86,7 +87,7 @@ public class Layout extends BasicComponent
      */
     public void addComponent(Component component)
     {
-        if (DeviceComponents.getRegistryName(component.getClass()) == null)
+        if (ComponentSerializer.getRegistryName(component.getClass()) == null)
             throw new RuntimeException("Attempted to add unregistered component to layout: \'" + component.getClass().getName() + "\'! Must be registered using ComponentSerializer registry annotation.");
         this.components.add(component);
     }
@@ -249,7 +250,7 @@ public class Layout extends BasicComponent
         nbt.putInt("height", this.height);
 
         ListNBT components = new ListNBT();
-        this.components.forEach(component -> components.add(DeviceComponents.serializeComponent(component)));
+        this.components.forEach(component -> components.add(ComponentSerializer.serializeComponent(component)));
         nbt.put("components", components);
 
         return nbt;
@@ -267,7 +268,7 @@ public class Layout extends BasicComponent
         ListNBT components = nbt.getList("components", Constants.NBT.TAG_COMPOUND);
         for (int i = 0; i < components.size(); i++)
         {
-            this.components.add(DeviceComponents.deserializeComponent(components.getCompound(i)));
+            this.components.add(ComponentSerializer.deserializeComponent(components.getCompound(i)));
         }
     }
 }

@@ -3,7 +3,7 @@ package com.ocelot.opendevices.api.laptop.application;
 import com.google.common.base.Charsets;
 import com.google.common.collect.HashBiMap;
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.api.laptop.DeviceRegistries;
+import com.ocelot.opendevices.api.DeviceRegistries;
 import com.ocelot.opendevices.api.laptop.window.WindowContent;
 import com.ocelot.opendevices.core.registry.ApplicationRegistryEntry;
 import net.minecraft.client.Minecraft;
@@ -69,7 +69,7 @@ public class ApplicationManager
             String className = entry.getValue().getApplicationClassName();
             try
             {
-                Class applicationClass = Class.forName(className);
+                Class<?> applicationClass = Class.forName(className);
 
                 if (!Application.class.isAssignableFrom(applicationClass))
                     throw new IllegalArgumentException("Application: " + applicationClass + " does not extend Application. Skipping!");
@@ -100,9 +100,7 @@ public class ApplicationManager
     public static Application createApplication(ResourceLocation registryName)
     {
         if (!DeviceRegistries.APPLICATIONS.containsKey(registryName))
-        {
             throw new RuntimeException("Unregistered Application: " + registryName + ". Use WindowContent#Register annotations to register an application.");
-        }
 
         try
         {
@@ -149,13 +147,10 @@ public class ApplicationManager
     public static Class<? extends Application> getApplicationClass(ResourceLocation registryName)
     {
         if (!DeviceRegistries.APPLICATIONS.containsKey(registryName))
-        {
             throw new RuntimeException("Unregistered Application: " + registryName + ". Use WindowContent#Register annotations to register an application.");
-        }
 
         if (REGISTRY_CACHE.isEmpty())
             fillCache();
-
         return REGISTRY_CACHE.inverse().get(registryName);
     }
 
@@ -172,7 +167,6 @@ public class ApplicationManager
 
         if (REGISTRY_CACHE.isEmpty())
             fillCache();
-
         return REGISTRY_CACHE.get(clazz);
     }
 

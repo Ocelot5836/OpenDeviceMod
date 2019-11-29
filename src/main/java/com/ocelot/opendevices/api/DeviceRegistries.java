@@ -1,9 +1,9 @@
-package com.ocelot.opendevices.api.laptop;
+package com.ocelot.opendevices.api;
 
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.api.component.ComponentSerializer;
 import com.ocelot.opendevices.api.laptop.settings.LaptopSetting;
 import com.ocelot.opendevices.core.registry.ApplicationRegistryEntry;
+import com.ocelot.opendevices.core.registry.ComponentRegistryEntry;
 import com.ocelot.opendevices.core.registry.TaskRegistryEntry;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -21,7 +21,7 @@ public class DeviceRegistries
     public static IForgeRegistry<ApplicationRegistryEntry> APPLICATIONS = null;
     public static IForgeRegistry<LaptopSetting<?>> SETTINGS = null;
     public static IForgeRegistry<TaskRegistryEntry> TASKS = null;
-    public static IForgeRegistry<ComponentSerializer<?>> COMPONENT_SERIALIZERS = null;
+    public static IForgeRegistry<ComponentRegistryEntry> COMPONENTS = null;
 
     private DeviceRegistries() {}
 
@@ -34,12 +34,12 @@ public class DeviceRegistries
         makeRegistry("applications", ApplicationRegistryEntry.class).create();
         makeRegistry("settings", LaptopSetting.class).create();
         makeRegistry("tasks", TaskRegistryEntry.class).create();
-        makeRegistry("components", ComponentSerializer.class).create();
+        makeRegistry("components", ComponentRegistryEntry.class).create();
 
         APPLICATIONS = RegistryManager.ACTIVE.getRegistry(ApplicationRegistryEntry.class);
         SETTINGS = RegistryManager.ACTIVE.getRegistry(LaptopSetting.class);
         TASKS = RegistryManager.ACTIVE.getRegistry(TaskRegistryEntry.class);
-        COMPONENT_SERIALIZERS = RegistryManager.ACTIVE.getRegistry(ComponentSerializer.class);
+        COMPONENTS = RegistryManager.ACTIVE.getRegistry(ComponentRegistryEntry.class);
     }
 
     private static <T extends IForgeRegistryEntry<T>> RegistryBuilder<T> makeRegistry(String name, Class<T> type)

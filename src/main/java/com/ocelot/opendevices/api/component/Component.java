@@ -5,6 +5,9 @@ import com.ocelot.opendevices.api.util.TooltipRenderer;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.INBTSerializable;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Target;
+
 /**
  * <p>Components are the building blocks of the rendering API in windows by default. Everything supported in the default API must implement this class in order to be used.</p>
  * <p>Mainly used in {@link Layout} to specify components for locations.</p>
@@ -160,4 +163,19 @@ public interface Component extends INBTSerializable<CompoundNBT>
      * @param windowY The y position of the window
      */
     void setWindowPosition(float windowX, float windowY);
+
+    /**
+     * Registers a new component.
+     *
+     * @author Ocelot
+     * @see Component
+     */
+    @Target(ElementType.TYPE)
+    @interface Register
+    {
+        /**
+         * @return The name of this component. Should be in the format of <code>modid:componentName</code>
+         */
+        String value();
+    }
 }
