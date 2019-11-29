@@ -1,6 +1,7 @@
 install: gradle wrapper --gradle-version 4.9
 
 language: java
+dist: trusty
 jdk:
   - jdk8
 
