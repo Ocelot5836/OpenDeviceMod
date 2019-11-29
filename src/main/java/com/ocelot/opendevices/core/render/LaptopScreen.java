@@ -20,6 +20,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -113,6 +114,12 @@ public class LaptopScreen extends Screen implements TooltipRenderer
     public void renderTooltip(String tooltip, int posX, int posY, FontRenderer fontRenderer)
     {
         this.renderTooltip(Collections.singletonList(tooltip), posX, posY, fontRenderer);
+    }
+
+    @Override
+    public void renderComponentHoverEffect(ITextComponent textComponent, int posX, int posY)
+    {
+        super.renderComponentHoverEffect(textComponent, posX, posY);
     }
 
     @Override

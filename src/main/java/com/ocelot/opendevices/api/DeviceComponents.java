@@ -2,10 +2,7 @@ package com.ocelot.opendevices.api;
 
 import com.google.common.collect.HashBiMap;
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.api.component.Component;
-import com.ocelot.opendevices.api.component.ComponentSerializer;
-import com.ocelot.opendevices.api.component.Layout;
-import com.ocelot.opendevices.api.component.StandardComponentSerializer;
+import com.ocelot.opendevices.api.component.*;
 import com.ocelot.opendevices.api.laptop.DeviceRegistries;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
@@ -21,10 +18,12 @@ import java.util.Objects;
  */
 public class DeviceComponents
 {
+    private static final HashBiMap<Class<? extends Component>, ResourceLocation> REGISTRY_CACHE = HashBiMap.create();
+
     @ComponentSerializer.Register(OpenDevices.MOD_ID + ":layout")
     public static final ComponentSerializer<Layout> LAYOUT_SERIALIZER = new StandardComponentSerializer<>(Layout.class, Layout::new);
-
-    private static final HashBiMap<Class<? extends Component>, ResourceLocation> REGISTRY_CACHE = HashBiMap.create();
+    @ComponentSerializer.Register(OpenDevices.MOD_ID + ":text")
+    public static final ComponentSerializer<TextComponent> TEXT_SERIALIZER = new StandardComponentSerializer<>(TextComponent.class, TextComponent::new);
 
     private static void fillCache()
     {

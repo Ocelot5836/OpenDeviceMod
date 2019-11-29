@@ -4,7 +4,6 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -15,20 +14,10 @@ import java.util.function.Supplier;
  */
 public class StandardComponentSerializer<T extends Component & INBTSerializable<CompoundNBT>> extends ForgeRegistryEntry<ComponentSerializer<?>> implements ComponentSerializer<T>
 {
-    private Function<CompoundNBT, T> factory;
+    private Supplier<T> factory;
     private Class<T> componentClass;
 
     public StandardComponentSerializer(Class<T> componentClass, Supplier<T> factory)
-    {
-        this(componentClass, nbt ->
-        {
-            T component = factory.get();
-            component.deserializeNBT(nbt);
-            return component;
-        });
-    }
-
-    public StandardComponentSerializer(Class<T> componentClass,Function<CompoundNBT, T> factory)
     {
         this.componentClass = componentClass;
         this.factory = factory;
@@ -37,7 +26,9 @@ public class StandardComponentSerializer<T extends Component & INBTSerializable<
     @Override
     public T deserializeNBT(CompoundNBT nbt)
     {
-        return this.factory.apply(nbt);
+        T component = this.factory.get();
+        component.deserializeNBT(nbt);
+        return component;
     }
 
     @Override

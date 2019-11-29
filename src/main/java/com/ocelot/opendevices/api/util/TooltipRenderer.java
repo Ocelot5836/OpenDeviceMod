@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -14,6 +15,7 @@ import java.util.List;
  * <p>Mainly used in the API to allow the rendering of tooltips without the overhead of screen.</p>
  *
  * @author Ocelot
+ * @see Screen
  */
 @OnlyIn(Dist.CLIENT)
 public interface TooltipRenderer
@@ -91,4 +93,13 @@ public interface TooltipRenderer
      * @param fontRenderer The font to use when rendering the text
      */
     void renderTooltip(List<String> tooltip, int posX, int posY, FontRenderer fontRenderer);
+
+    /**
+     * Renders the tooltip for the specified text component.
+     *
+     * @param textComponent The component to render the tooltip for
+     * @param posX          The x position to render the tooltip at
+     * @param posY          The y position to render the tooltip at
+     */
+    void renderComponentHoverEffect(ITextComponent textComponent, int posX, int posY);
 }

@@ -120,7 +120,7 @@ public interface Component extends INBTSerializable<CompoundNBT>
      */
     default boolean isHovered(double mouseX, double mouseY)
     {
-        return RenderUtil.isMouseInside(mouseX, mouseY, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight());
+        return RenderUtil.isMouseInside(mouseX, mouseY, this.getWindowX() + this.getX(), this.getWindowY() + this.getY(), this.getWindowX() + this.getX() + this.getWidth(), this.getWindowY() + this.getY() + this.getHeight());
     }
 
     /**
@@ -132,6 +132,16 @@ public interface Component extends INBTSerializable<CompoundNBT>
      * @return The y position of this component
      */
     int getY();
+
+    /**
+     * @return The x position of the start of the window frame
+     */
+    float getWindowX();
+
+    /**
+     * @return The y position of the start of the window frame
+     */
+    float getWindowY();
 
     /**
      * @return The x size of this component

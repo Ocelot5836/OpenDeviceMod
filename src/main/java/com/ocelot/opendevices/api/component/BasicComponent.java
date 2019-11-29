@@ -4,6 +4,7 @@ package com.ocelot.opendevices.api.component;
  * <p>A simple implementation of {@link Component} that defines some common data shared across all components.</p>
  *
  * @author Ocelot
+ * @see Layout
  */
 public abstract class BasicComponent implements Component
 {
@@ -65,17 +66,13 @@ public abstract class BasicComponent implements Component
     {
     }
 
-    /**
-     * @return The x position of the start of this window frame
-     */
+    @Override
     public float getWindowX()
     {
         return windowX;
     }
 
-    /**
-     * @return The y position of the start of this window frame
-     */
+    @Override
     public float getWindowY()
     {
         return windowY;

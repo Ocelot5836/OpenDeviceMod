@@ -1,5 +1,6 @@
 package com.ocelot.opendevices.api.component;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceComponents;
 import com.ocelot.opendevices.api.DeviceConstants;
@@ -10,7 +11,6 @@ import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.common.util.INBTSerializable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,7 +24,7 @@ import java.util.List;
  * @author Ocelot
  * @see Component
  */
-public class Layout extends BasicComponent implements INBTSerializable<CompoundNBT>
+public class Layout extends BasicComponent
 {
     public static final ResourceLocation REGISTRY_NAME = new ResourceLocation(OpenDevices.MOD_ID, "layout");
 
@@ -49,8 +49,8 @@ public class Layout extends BasicComponent implements INBTSerializable<CompoundN
     {
         this.x = x;
         this.y = y;
-        this.width = MathHelper.clamp(width, DeviceConstants.LAPTOP_MIN_APPLICATION_WIDTH, DeviceConstants.LAPTOP_MAX_APPLICATION_WIDTH+2);
-        this.height = MathHelper.clamp(height, DeviceConstants.LAPTOP_MIN_APPLICATION_HEIGHT, DeviceConstants.LAPTOP_MAX_APPLICATION_HEIGHT+DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT+2);
+        this.width = MathHelper.clamp(width, DeviceConstants.LAPTOP_MIN_APPLICATION_WIDTH, DeviceConstants.LAPTOP_MAX_APPLICATION_WIDTH + 2);
+        this.height = MathHelper.clamp(height, DeviceConstants.LAPTOP_MIN_APPLICATION_HEIGHT, DeviceConstants.LAPTOP_MAX_APPLICATION_HEIGHT + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + 2);
         this.components = new ArrayList<>();
 
         if (width < DeviceConstants.LAPTOP_MIN_APPLICATION_WIDTH || width > DeviceConstants.LAPTOP_MAX_APPLICATION_WIDTH || height > DeviceConstants.LAPTOP_MAX_APPLICATION_HEIGHT || height < DeviceConstants.LAPTOP_MIN_APPLICATION_HEIGHT)
@@ -101,24 +101,37 @@ public class Layout extends BasicComponent implements INBTSerializable<CompoundN
     public void render(int mouseX, int mouseY, float partialTicks)
     {
         RenderUtil.pushScissor(this.getX(), this.getY(), this.getWidth(), this.getHeight());
-        this.components.forEach(component -> component.render(mouseX, mouseY, partialTicks));
+        GlStateManager.pushMatrix();
+        GlStateManager.translatef(this.getX(), this.getY(), 0f);
+        this.components.forEach(component ->
+        {
+            component.setWindowPosition(this.getWindowX(), this.getWindowY());
+            component.render(mouseX, mouseY, partialTicks);
+        });
+        GlStateManager.popMatrix();
         RenderUtil.popScissor();
     }
 
     @Override
     public void renderOverlay(TooltipRenderer renderer, int mouseX, int mouseY, float partialTicks)
     {
-        this.components.forEach(component -> component.renderOverlay(renderer, mouseX, mouseY, partialTicks));
+        if (this.isHovered(mouseX, mouseY))
+        {
+            this.components.forEach(component -> component.renderOverlay(renderer, mouseX, mouseY, partialTicks));
+        }
     }
 
     @Override
     public boolean onMousePressed(double mouseX, double mouseY, int mouseButton)
     {
-        for (Component component : this.components)
+        if (this.isHovered(mouseX, mouseY))
         {
-            if (component.onMousePressed(mouseX, mouseY, mouseButton))
+            for (Component component : this.components)
             {
-                return true;
+                if (component.onMousePressed(mouseX, mouseY, mouseButton))
+                {
+                    return true;
+                }
             }
         }
         return super.onMousePressed(mouseX, mouseY, mouseButton);
