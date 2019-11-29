@@ -120,7 +120,14 @@ public class Layout extends BasicComponent
     {
         if (this.isHovered(mouseX, mouseY))
         {
-            this.components.forEach(component -> component.renderOverlay(renderer, mouseX, mouseY, partialTicks));
+            this.components.forEach(component ->
+            {
+                if (component.getX() + component.getWidth() >= this.x && component.getX() < this.x + this.width && component.getY() + component.getHeight() >= this.y && component.getY() < this.y + this.height)
+                {
+                    component.setWindowPosition(this.getWindowX(), this.getWindowY());
+                    component.renderOverlay(renderer, mouseX, mouseY, partialTicks);
+                }
+            });
         }
     }
 
