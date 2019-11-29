@@ -1,6 +1,7 @@
 package com.ocelot.opendevices.core.laptop.window;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.LaptopSettings;
 import com.ocelot.opendevices.api.laptop.application.Application;
@@ -83,6 +84,13 @@ public class WindowClient extends LaptopWindow
         renderWindow(this.screenX, this.screenY, this, color, this.getId().equals(this.getLaptop().getDesktop().getFocusedWindowId()) ? this.getLaptop().readSetting(LaptopSettings.FOCUSED_WINDOW_COLOR) : color, partialTicks);
 
         this.content.render(this.screenX + this.getInterpolatedX(partialTicks) + 1, this.screenY + this.getInterpolatedY(partialTicks) + 1 + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT, mouseX, mouseY, partialTicks);
+
+        if (!RenderUtil.isScissorStackEmpty())
+        {
+            OpenDevices.LOGGER.error("Scissor stack has not been completely popped for class: " + this.content.getClass().getName());
+            RenderUtil.clearScissorStack();
+            RenderUtil.disableScissor();
+        }
 
         TextureAtlasSprite icon = this.content.getIconSprite();
         int titleOffset = 0;
@@ -188,7 +196,7 @@ public class WindowClient extends LaptopWindow
 
     public boolean isWithinWindowBar(double mouseX, double mouseY)
     {
-        return RenderUtil.isMouseInside(mouseX, mouseY, this.screenX + this.getX(), this.screenY + this.getY(), this.screenX + this.getX() + this.getWidth() - DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE - 1, this.screenY + this.getY() + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT);
+        return RenderUtil.isMouseInside(mouseX, mouseY, this.screenX + this.getX(), this.screenY + this.getY() + 1, this.screenX + this.getX() + this.getWidth() - DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE - 1, this.screenY + this.getY() + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT);
     }
 
     public float getInterpolatedX(float partialTicks)
