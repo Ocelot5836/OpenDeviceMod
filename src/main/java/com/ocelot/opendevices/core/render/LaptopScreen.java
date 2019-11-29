@@ -196,6 +196,9 @@ public class LaptopScreen extends Screen implements TooltipRenderer
             {
                 for (int i = 0; i < windows.length; i++)
                 {
+                    if(!loseFocus)
+                        break;
+
                     WindowClient window = (WindowClient) windows[windows.length - i - 1];
                     if (window.pressButtons(mouseX, mouseY))
                     {
