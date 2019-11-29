@@ -177,12 +177,6 @@ public class RenderUtil
 
     public static boolean isMouseInside(double mouseX, double mouseY, double x1, double y1, double x2, double y2)
     {
-        GlStateManager.disableTexture();
-        GlStateManager.color4f(0f, 0f, 1f, 1f);
-        RenderUtil.drawRectWithTexture((float) x1, (float) y1, 0, 0, (float) (x2 - x1), (float) (y2 - y1), 1, 1, 1, 1);
-        GlStateManager.color4f(1f, 1f, 1f, 1f);
-        GlStateManager.enableTexture();
-
         return mouseX >= x1 && mouseX < x2 && mouseY >= y1 && mouseY < y2;
     }
 
