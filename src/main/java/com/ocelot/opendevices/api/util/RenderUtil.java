@@ -114,41 +114,41 @@ public class RenderUtil
         return ((int) (COLOR_GET_BUFFER.get(3) * 0xff) << 24) & 0xff | ((int) (COLOR_GET_BUFFER.get(0) * 0xff) << 16) & 0xff | ((int) (COLOR_GET_BUFFER.get(1) * 0xff) << 8) & 0xff | (int) (COLOR_GET_BUFFER.get(2) * 0xff) & 0xff;
     }
 
-    public static void drawRectWithTexture(double x, double y, float u, float v, float width, float height, float textureWidth, float textureHeight)
+    public static void drawRectWithTexture(float x, float y, float u, float v, float width, float height, float textureWidth, float textureHeight)
     {
         drawRectWithTexture(x, y, 0, u, v, width, height, textureWidth, textureHeight, 256, 256);
     }
 
-    public static void drawRectWithTexture(double x, double y, float u, float v, float width, float height, float textureWidth, float textureHeight, int sourceWidth, int sourceHeight)
+    public static void drawRectWithTexture(float x, float y, float u, float v, float width, float height, float textureWidth, float textureHeight, int sourceWidth, int sourceHeight)
     {
         drawRectWithTexture(x, y, 0, u, v, width, height, textureWidth, textureHeight, sourceWidth, sourceHeight);
     }
 
-    public static void drawRectWithTexture(double x, double y, double z, float u, float v, float width, float height, float textureWidth, float textureHeight)
+    public static void drawRectWithTexture(float x, float y, float z, float u, float v, float width, float height, float textureWidth, float textureHeight)
     {
         drawRectWithTexture(x, y, z, u, v, width, height, textureWidth, textureHeight, 256, 256);
     }
 
-    public static void drawRectWithTexture(double x, double y, double z, float width, float height, TextureAtlasSprite sprite)
+    public static void drawRectWithTexture(float x, float y, float z, float width, float height, TextureAtlasSprite sprite)
     {
         drawRectWithTexture(x, y, z, sprite.getMinU(), sprite.getMinV(), width, height, sprite.getMaxU() - sprite.getMinU(), sprite.getMaxV() - sprite.getMinV(), 1, 1);
     }
 
-    public static void drawRectWithTexture(double x, double y, float width, float height, TextureAtlasSprite sprite)
+    public static void drawRectWithTexture(float x, float y, float width, float height, TextureAtlasSprite sprite)
     {
         drawRectWithTexture(x, y, 0, sprite.getMinU(), sprite.getMinV(), width, height, sprite.getMaxU() - sprite.getMinU(), sprite.getMaxV() - sprite.getMinV(), 1, 1);
     }
 
-    public static void drawRectWithTexture(double x, double y, double z, float u, float v, float width, float height, float textureWidth, float textureHeight, int sourceWidth, int sourceHeight)
+    public static void drawRectWithTexture(float x, float y, float z, float u, float v, float width, float height, float textureWidth, float textureHeight, int sourceWidth, int sourceHeight)
     {
         float scaleWidth = 1.0F / sourceWidth;
         float scaleHeight = 1.0F / sourceHeight;
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-        buffer.pos(x, y + height, z).tex(u * scaleWidth, (double) (v + textureHeight) * scaleHeight).endVertex();
-        buffer.pos(x + width, y + height, z).tex((double) (u + textureWidth) * scaleWidth, (double) (v + textureHeight) * scaleHeight).endVertex();
-        buffer.pos(x + width, y, z).tex((double) (u + textureWidth) * scaleWidth, v * scaleHeight).endVertex();
+        buffer.pos(x, y + height, z).tex(u * scaleWidth, (v + textureHeight) * scaleHeight).endVertex();
+        buffer.pos(x + width, y + height, z).tex((u + textureWidth) * scaleWidth, (v + textureHeight) * scaleHeight).endVertex();
+        buffer.pos(x + width, y, z).tex((u + textureWidth) * scaleWidth, v * scaleHeight).endVertex();
         buffer.pos(x, y, z).tex(u * scaleWidth, v * scaleHeight).endVertex();
         tessellator.draw();
     }
@@ -177,6 +177,12 @@ public class RenderUtil
 
     public static boolean isMouseInside(double mouseX, double mouseY, double x1, double y1, double x2, double y2)
     {
+        GlStateManager.disableTexture();
+        GlStateManager.color4f(0f, 0f, 1f, 1f);
+        RenderUtil.drawRectWithTexture((float) x1, (float) y1, 0, 0, (float) (x2 - x1), (float) (y2 - y1), 1, 1, 1, 1);
+        GlStateManager.color4f(1f, 1f, 1f, 1f);
+        GlStateManager.enableTexture();
+
         return mouseX >= x1 && mouseX < x2 && mouseY >= y1 && mouseY < y2;
     }
 
