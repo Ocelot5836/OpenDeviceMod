@@ -10,7 +10,6 @@ import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.StringNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.event.ClickEvent;
 import net.minecraftforge.common.util.Constants;
 
@@ -33,13 +32,14 @@ public class TextComponent extends BasicComponent
     private int x;
     private int y;
     private int maxWidth;
+    private ResourceLocation fontRendererLocation;
     private FontRenderer fontRenderer;
     private List<Line> lines;
     private int width;
 
     public TextComponent()
     {
-        this(0, 0, -1, Minecraft.DEFAULT_FONT_RENDERER_NAME, new StringTextComponent("null"));
+        this.lines = new ArrayList<>();
     }
 
     public TextComponent(int x, int y, ResourceLocation fontRenderer, ITextComponent... texts)
@@ -52,6 +52,7 @@ public class TextComponent extends BasicComponent
         this.x = x;
         this.y = y;
         this.maxWidth = maxWidth;
+        this.fontRendererLocation = fontRenderer;
         this.fontRenderer = Minecraft.getInstance().getFontResourceManager().getFontRenderer(fontRenderer);
         this.lines = new ArrayList<>();
         Arrays.stream(texts).forEach(this::addLine);
@@ -121,12 +122,6 @@ public class TextComponent extends BasicComponent
     }
 
     @Override
-    public boolean isHovered(double mouseX, double mouseY)
-    {
-        return super.isHovered(mouseX, mouseY);
-    }
-
-    @Override
     public int getX()
     {
         return x;
@@ -166,15 +161,23 @@ public class TextComponent extends BasicComponent
         this.y = y;
     }
 
+    public void setFontRenderer(ResourceLocation fontRenderer)
+    {
+        this.fontRendererLocation = fontRenderer;
+        this.fontRenderer = Minecraft.getInstance().getFontResourceManager().getFontRenderer(fontRenderer);
+    }
+
     @Override
     public CompoundNBT serializeNBT()
     {
         CompoundNBT nbt = new CompoundNBT();
         nbt.putInt("x", this.x);
         nbt.putInt("y", this.y);
+        nbt.putString("fontRenderer", this.fontRendererLocation.toString());
+        nbt.putInt("maxWidth", this.maxWidth);
 
         ListNBT text = new ListNBT();
-        this.lines.forEach(line -> text.add(new StringNBT(line.serialize())));
+        this.lines.forEach(line -> text.add(new StringNBT(line.toJson())));
         nbt.put("text", text);
 
         return nbt;
@@ -185,6 +188,8 @@ public class TextComponent extends BasicComponent
     {
         this.x = nbt.getInt("x");
         this.y = nbt.getInt("y");
+        this.setFontRenderer(new ResourceLocation(nbt.getString("fontRenderer")));
+        this.maxWidth = nbt.getInt("maxWidth");
 
         ListNBT text = nbt.getList("text", Constants.NBT.TAG_STRING);
         for (int i = 0; i < text.size(); i++)
@@ -200,10 +205,10 @@ public class TextComponent extends BasicComponent
         private String text;
         private int width;
 
-        private Line(FontRenderer fontRenderer, String nbt)
+        private Line(FontRenderer fontRenderer, String json)
         {
             this.fontRenderer = fontRenderer;
-            this.deserialize(nbt);
+            this.setText(ITextComponent.Serializer.fromJson(json));
         }
 
         private Line(FontRenderer fontRenderer, ITextComponent text)
@@ -219,14 +224,9 @@ public class TextComponent extends BasicComponent
             this.width = this.fontRenderer.getStringWidth(this.text);
         }
 
-        public String serialize()
+        public String toJson()
         {
             return ITextComponent.Serializer.toJson(this.textComponent);
-        }
-
-        public void deserialize(String json)
-        {
-            this.setText(ITextComponent.Serializer.fromJson(json));
         }
     }
 }
