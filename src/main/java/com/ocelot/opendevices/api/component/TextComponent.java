@@ -194,7 +194,12 @@ public class TextComponent extends BasicComponent
         ListNBT text = nbt.getList("text", Constants.NBT.TAG_STRING);
         for (int i = 0; i < text.size(); i++)
         {
-            this.lines.add(new Line(this.fontRenderer, text.getString(i)));
+            Line line = new Line(this.fontRenderer, text.getString(i));
+            this.lines.add(line);
+            if (line.width > this.width)
+            {
+                this.width = line.width;
+            }
         }
     }
 
