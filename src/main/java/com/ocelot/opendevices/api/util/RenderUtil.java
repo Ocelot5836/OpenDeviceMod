@@ -31,17 +31,27 @@ public class RenderUtil
 
     private static boolean scissor = glGetBoolean(GL_SCISSOR_TEST);
 
+    /**Specifies the width of the entire non-scaled FBO.*/
+    public static int framebufferHeight = 0;
+    /**Specifies the scale factor {@link #framebufferHeight} is modified by. Usually GUI scale setting in Minecraft.*/
+    public static double framebufferScale = 0;
+
     private RenderUtil() {}
 
-    private static void restoreScissor()
+    private static void applyScissor()
     {
         if (!SCISSOR_STACK.isEmpty())
         {
             Scissor scissor = SCISSOR_STACK.peek();
             MainWindow window = Minecraft.getInstance().mainWindow;
-            int scale = (int) window.getGuiScaleFactor();
+            double scale = framebufferScale == 0 ? window.getGuiScaleFactor() : framebufferScale;
+            int frameHeight = framebufferHeight == 0 ? window.getFramebufferHeight() : framebufferHeight;
             enableScissor();
-            glScissor(scissor.x * scale, window.getFramebufferHeight() - scissor.y * scale - scissor.height * scale, Math.max(0, scissor.width * scale), Math.max(0, scissor.height * scale));
+            glScissor((int) (scissor.x * scale), (int) (frameHeight - scissor.y * scale - scissor.height * scale), (int) Math.max(0, scissor.width * scale), (int) Math.max(0, scissor.height * scale));
+        }
+        else
+        {
+            disableScissor();
         }
     }
 
@@ -61,7 +71,7 @@ public class RenderUtil
      * @param width  The x size of the rectangle
      * @param height The y size of the rectangle
      */
-    public static void pushScissor(float x, float y, float width, float height)
+    public static void pushScissor(double x, double y, double width, double height)
     {
         if (SCISSOR_STACK.size() > 0)
         {
@@ -73,7 +83,7 @@ public class RenderUtil
         }
 
         SCISSOR_STACK.push(new Scissor(x, y, width, height));
-        restoreScissor();
+        applyScissor();
     }
 
     /**
@@ -82,12 +92,8 @@ public class RenderUtil
     public static void popScissor()
     {
         if (!SCISSOR_STACK.isEmpty())
-        {
             SCISSOR_STACK.pop();
-        }
-        if (SCISSOR_STACK.isEmpty())
-            disableScissor();
-        restoreScissor();
+        applyScissor();
     }
 
     /**
@@ -212,17 +218,17 @@ public class RenderUtil
 
     private static class Scissor
     {
-        private int x;
-        private int y;
-        private int width;
-        private int height;
+        private double x;
+        private double y;
+        private double width;
+        private double height;
 
-        Scissor(float x, float y, float width, float height)
+        Scissor(double x, double y, double width, double height)
         {
-            this.x = Math.round(x);
-            this.y = Math.round(y);
-            this.width = Math.round(width);
-            this.height = Math.round(height);
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
         }
     }
 }

@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.GLX;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceConstants;
+import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.block.DeviceBlock;
 import com.ocelot.opendevices.block.LaptopBlock;
 import com.ocelot.opendevices.core.LaptopTileEntity;
@@ -91,14 +92,14 @@ public class LaptopTileEntityRenderer extends TileEntityRenderer<LaptopTileEntit
 
             GlStateManager.pushMatrix();
             {
-                GlStateManager.translated(0.5, 0, 0.5);
-                GlStateManager.rotated(180 - state.get(DeviceBlock.HORIZONTAL_FACING).getHorizontalAngle(), 0, 1, 0);
-                GlStateManager.translated(-0.5, 0, -0.5);
-                GlStateManager.translated(0, 0.0625, -0.25);
+                GlStateManager.translatef(0.5f, 0f, 0.5f);
+                GlStateManager.rotatef(180f - state.get(DeviceBlock.HORIZONTAL_FACING).getHorizontalAngle(), 0f, 1f, 0f);
+                GlStateManager.translatef(-0.5f, 0f, -0.5f);
+                GlStateManager.translatef(0f, 0.0625f, -0.25f);
 
-                GlStateManager.translated(0, 0, 1);
-                GlStateManager.rotated(te.getScreenAngle(partialTicks), 1, 0, 0);
-                GlStateManager.translated(0, 0, -1);
+                GlStateManager.translatef(0f, 0f, 1f);
+                GlStateManager.rotatef(te.getScreenAngle(partialTicks), 1f, 0f, 0f);
+                GlStateManager.translatef(0f, 0f, -1f);
 
                 GlStateManager.disableLighting();
                 Tessellator tessellator = Tessellator.getInstance();
@@ -120,10 +121,12 @@ public class LaptopTileEntityRenderer extends TileEntityRenderer<LaptopTileEntit
             {
                 GlStateManager.pushMatrix();
                 {
+                    //TODO add a setting to change the scale
+                    float scale = 2f;
+
                     if (this.framebuffer == null)
                     {
-                        this.framebuffer = new Framebuffer(DeviceConstants.LAPTOP_SCREEN_WIDTH, DeviceConstants.LAPTOP_SCREEN_HEIGHT, true, true);
-                        this.framebuffer.checkFramebufferComplete();
+                        this.framebuffer = new Framebuffer((int) (DeviceConstants.LAPTOP_SCREEN_WIDTH * scale), (int) (DeviceConstants.LAPTOP_SCREEN_HEIGHT * scale), true, true);
                     }
 
                     GlStateManager.disableLighting();
@@ -135,16 +138,21 @@ public class LaptopTileEntityRenderer extends TileEntityRenderer<LaptopTileEntit
                     GlStateManager.matrixMode(GL_PROJECTION);
                     GlStateManager.pushMatrix();
                     GlStateManager.loadIdentity();
-                    GlStateManager.ortho(0.0D, this.framebuffer.framebufferWidth, this.framebuffer.framebufferHeight, 0.0D, 1000.0D, 3000.0D);
+                    GlStateManager.ortho(0.0D, this.framebuffer.framebufferWidth / scale, this.framebuffer.framebufferHeight / scale, 0.0D, 0.3D, 2000.0D);
                     GlStateManager.matrixMode(GL_MODELVIEW);
                     GlStateManager.pushMatrix();
                     GlStateManager.loadIdentity();
-                    GlStateManager.translatef(0.0F, 0.0F, -2000.0F);
+                    GlStateManager.translatef(0.0F, 0.0F, -1000.0F);
+
+                    RenderUtil.framebufferHeight = this.framebuffer.framebufferHeight;
+                    RenderUtil.framebufferScale = scale;
 
                     {
                         GlStateManager.color4f(1, 1, 1, 1);
                         LaptopRenderer.render(te, minecraft, minecraft.fontRenderer, 0, 0, -Integer.MAX_VALUE, -Integer.MAX_VALUE, partialTicks);
                     }
+
+                    glGenerateMipmap(GL_TEXTURE_2D);
 
                     GlStateManager.matrixMode(GL_PROJECTION);
                     GlStateManager.popMatrix();

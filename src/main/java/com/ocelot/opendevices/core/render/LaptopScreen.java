@@ -95,6 +95,9 @@ public class LaptopScreen extends Screen implements TooltipRenderer
             RenderUtil.drawRectWithTexture(this.posX + DeviceConstants.LAPTOP_GUI_BORDER, posY + DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_SCREEN_WIDTH, DeviceConstants.LAPTOP_SCREEN_HEIGHT, 1, 1);
         }
 
+        RenderUtil.framebufferHeight = 0;
+        RenderUtil.framebufferScale = 0;
+
         /* Renders the Content */
         LaptopRenderer.render(this.laptop, minecraft, fontRenderer, this.posX + DeviceConstants.LAPTOP_GUI_BORDER, this.posY + DeviceConstants.LAPTOP_GUI_BORDER, mouseX, mouseY, partialTicks);
 
