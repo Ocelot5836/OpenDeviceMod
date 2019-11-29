@@ -43,7 +43,7 @@ public class LaptopRenderer extends AbstractGui
         }
         else
         {
-            MOD_VERSION = I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.version.unknown");
+            MOD_VERSION = I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.unknown_version");
         }
     }
 

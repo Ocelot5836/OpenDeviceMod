@@ -212,6 +212,18 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
     }
 
     @Override
+    public int getContentWidth()
+    {
+        return width - 2;
+    }
+
+    @Override
+    public int getContentHeight()
+    {
+        return height - DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT - 2;
+    }
+
+    @Override
     public void center()
     {
         this.setPosition((DeviceConstants.LAPTOP_SCREEN_WIDTH - this.width) / 2f, (DeviceConstants.LAPTOP_SCREEN_HEIGHT - this.laptop.getTaskBar().getHeight() - (this.height + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + 2)) / 2f);

@@ -22,7 +22,7 @@
 	"block.opendevices.laptop.using.specific": "%s is using the Laptop!",
 
 	"screen.opendevices.laptop": "Laptop",
-	"screen.opendevices.laptop.version.unknown": "Unknown",
+	"screen.opendevices.laptop.unknown_version": "Unknown",
 	"screen.opendevices.laptop.version": "Alpha v%s",
 	"screen.opendevices.laptop.dev_version": "Developer Version - %s",
 

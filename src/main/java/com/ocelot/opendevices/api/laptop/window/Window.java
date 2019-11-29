@@ -76,14 +76,24 @@ public interface Window
     float getY();
 
     /**
-     * @return The x size of this window
+     * @return The x size of this window including the borders
      */
     int getWidth();
 
     /**
-     * @return The y size of this window
+     * @return The y size of this window including the borders
      */
     int getHeight();
+
+    /**
+     * @return The x size of this window
+     */
+    int getContentWidth();
+
+    /**
+     * @return The y size of this window
+     */
+    int getContentHeight();
 
     /**
      * Centers this window on the desktop of the laptop.

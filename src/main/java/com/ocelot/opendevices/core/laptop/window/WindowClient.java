@@ -3,13 +3,13 @@ package com.ocelot.opendevices.core.laptop.window;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.LaptopSettings;
-import com.ocelot.opendevices.api.laptop.Laptop;
 import com.ocelot.opendevices.api.laptop.application.Application;
 import com.ocelot.opendevices.api.laptop.application.ApplicationManager;
 import com.ocelot.opendevices.api.laptop.window.WindowContent;
 import com.ocelot.opendevices.api.laptop.window.WindowContentType;
 import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.api.util.TooltipRenderer;
+import com.ocelot.opendevices.core.LaptopTileEntity;
 import com.ocelot.opendevices.core.render.WindowButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -27,13 +27,13 @@ public class WindowClient extends LaptopWindow
     private WindowContent content;
     private WindowButton closeButton;
 
-    public WindowClient(Laptop laptop)
+    public WindowClient(LaptopTileEntity laptop)
     {
         super(laptop);
         this.closeButton = new WindowButton(laptop, button -> this.close());
     }
 
-    public WindowClient(Laptop laptop, @Nullable CompoundNBT initData, WindowContentType contentType, ResourceLocation contentId, int width, int height)
+    public WindowClient(LaptopTileEntity laptop, @Nullable CompoundNBT initData, WindowContentType contentType, ResourceLocation contentId, int width, int height)
     {
         super(laptop, initData, contentType, contentId, width, height);
         this.content = createContent(contentType, contentId);
