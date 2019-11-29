@@ -3,7 +3,7 @@ package com.ocelot.opendevices.api.handler;
 /**
  * <p>Used to detect a response from an asynchronous task.</p>
  *
- * @param <T> The type of response returned in {@link Callback#handle(boolean, T)}
+ * @param <T> The type of response returned in {@link #handle(boolean, T)}
  * @author Ocelot
  */
 public interface Callback<T>

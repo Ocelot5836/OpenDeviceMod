@@ -17,16 +17,23 @@ public class TestApplication extends Application
     public static final ResourceLocation REGISTRY_NAME = new ResourceLocation(OpenDevices.MOD_ID, "test");
 
     private Layout layoutTest;
+    private TextComponent testText;
 
     public TestApplication()
     {
         //        this.layoutTest = new Layout(DeviceConstants.LAPTOP_MAX_APPLICATION_WIDTH, DeviceConstants.LAPTOP_MAX_APPLICATION_HEIGHT);
         this.layoutTest = new Layout();
 
-        int i = 0;
+        this.testText = new TextComponent(0, 0, Minecraft.DEFAULT_FONT_RENDERER_NAME, Minecraft.getInstance().player.getDisplayName());
+        this.testText.setClickListener((textComponent, mouseX, mouseY, mouseButton) -> this.getWindow().getLaptop().execute(() -> this.testText.setFontRenderer(this.testText.getFontRenderer() == Minecraft.getInstance().fontRenderer ? Minecraft.standardGalacticFontRenderer : Minecraft.DEFAULT_FONT_RENDERER_NAME)));
+        this.layoutTest.addComponent(this.testText);
+
+        int i = 1;
         for (Item item : ForgeRegistries.ITEMS)
         {
-            this.layoutTest.addComponent(new TextComponent((i / 21) * 75, (i % 21) * 8, Minecraft.DEFAULT_FONT_RENDERER_NAME, new ItemStack(item).getTextComponent()));
+            TextComponent text = new TextComponent((i / 21) * 75, (i % 21) * 9, Minecraft.DEFAULT_FONT_RENDERER_NAME, new ItemStack(item).getTextComponent());
+            text.setClickListener((textComponent, mouseX, mouseY, mouseButton) -> this.getWindow().getLaptop().execute(() -> text.setFontRenderer(this.testText.getFontRenderer() == Minecraft.getInstance().fontRenderer ? Minecraft.standardGalacticFontRenderer : Minecraft.DEFAULT_FONT_RENDERER_NAME)));
+            this.layoutTest.addComponent(text);
             i++;
         }
     }

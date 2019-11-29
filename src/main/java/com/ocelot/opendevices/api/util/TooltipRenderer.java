@@ -8,6 +8,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -101,5 +102,5 @@ public interface TooltipRenderer
      * @param posX          The x position to render the tooltip at
      * @param posY          The y position to render the tooltip at
      */
-    void renderComponentHoverEffect(ITextComponent textComponent, int posX, int posY);
+    void renderComponentHoverEffect(@Nullable ITextComponent textComponent, int posX, int posY);
 }

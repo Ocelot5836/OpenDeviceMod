@@ -1,5 +1,7 @@
 package com.ocelot.opendevices.api.component;
 
+import com.ocelot.opendevices.api.handler.ComponentClickListener;
+import com.ocelot.opendevices.api.laptop.Laptop;
 import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.api.util.TooltipRenderer;
 import net.minecraft.client.Minecraft;
@@ -21,7 +23,7 @@ import java.util.List;
 
 /**
  * <p>Allows the addition of {@link ITextComponent} lines of text to be added to a {@link Layout}.</p>
- * <p><i>Note: {@link ClickEvent} will <b>ONLY</b> run the supplied listener and will not respect {@link ClickEvent.Action}.</i></p>
+ * <p><i>Note: {@link ClickEvent.Action} will be completely ignored in favor for {@link ComponentClickListener}.</i></p>
  *
  * @author Ocelot
  * @see ITextComponent
@@ -32,13 +34,17 @@ public class TextComponent extends BasicComponent
     private int x;
     private int y;
     private int maxWidth;
+    private List<ITextComponent> text;
+    private List<Line> lines;
     private ResourceLocation fontRendererLocation;
     private FontRenderer fontRenderer;
-    private List<Line> lines;
     private int width;
+
+    private ComponentClickListener<ITextComponent> clickListener;
 
     public TextComponent()
     {
+        this.text = new ArrayList<>();
         this.lines = new ArrayList<>();
     }
 
@@ -52,21 +58,22 @@ public class TextComponent extends BasicComponent
         this.x = x;
         this.y = y;
         this.maxWidth = maxWidth;
-        this.fontRendererLocation = fontRenderer;
-        this.fontRenderer = Minecraft.getInstance().getFontResourceManager().getFontRenderer(fontRenderer);
+        this.text = new ArrayList<>();
         this.lines = new ArrayList<>();
+        this.setFontRenderer(fontRenderer);
         Arrays.stream(texts).forEach(this::addLine);
     }
 
-    /**
-     * Adds the specified text to this component. Make sure not to call this during a tick!
-     *
-     * @param text The text to add
-     */
-    public void addLine(ITextComponent text)
+    private void rebuildText()
+    {
+        this.width = 0;
+        this.lines.clear();
+        this.text.forEach(this::addLineInternal);
+    }
+
+    private void addLineInternal(ITextComponent text)
     {
         List<ITextComponent> texts = this.maxWidth == -1 ? Collections.singletonList(text) : RenderComponentsUtil.splitText(text, this.maxWidth, this.fontRenderer, true, true);
-
         for (ITextComponent textComponent : texts)
         {
             Line line = new Line(this.fontRenderer, textComponent);
@@ -77,6 +84,44 @@ public class TextComponent extends BasicComponent
                 this.width = line.width;
             }
         }
+    }
+
+    private ITextComponent getHoveredText(double mouseX, double mouseY)
+    {
+        if (!this.isHovered(mouseX, mouseY))
+            return null;
+
+        for (int i = 0; i < this.lines.size(); i++)
+        {
+            Line line = this.lines.get(i);
+            int yOffset = i * this.fontRenderer.FONT_HEIGHT;
+            if (RenderUtil.isMouseInside(mouseX, mouseY, this.getWindowX() + this.x, this.getWindowY() + this.y + yOffset, this.getWindowX() + this.x + line.width, this.getWindowY() + this.y + yOffset + this.fontRenderer.FONT_HEIGHT))
+            {
+                int x = 0;
+                for (ITextComponent lineComponent : line.textComponent.getSiblings())
+                {
+                    x += this.fontRenderer.getStringWidth(lineComponent.getFormattedText());
+                    if (mouseX > x)
+                    {
+                        return lineComponent;
+                    }
+                }
+                break;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Adds the specified text to this component. In order to call this during a tick, use {@link Laptop#execute(Runnable)}!
+     *
+     * @param text The text to add
+     */
+    public void addLine(ITextComponent text)
+    {
+        this.text.add(text);
+        this.addLineInternal(text);
     }
 
     @Override
@@ -98,27 +143,21 @@ public class TextComponent extends BasicComponent
     @Override
     public void renderOverlay(TooltipRenderer renderer, int mouseX, int mouseY, float partialTicks)
     {
-        if (this.isHovered(mouseX, mouseY))
+        renderer.renderComponentHoverEffect(this.getHoveredText(mouseX, mouseY), mouseX, mouseY);
+    }
+
+    @Override
+    public boolean onMousePressed(double mouseX, double mouseY, int mouseButton)
+    {
+        if (this.clickListener != null)
         {
-            for (int i = 0; i < this.lines.size(); i++)
+            ITextComponent hoveredText = this.getHoveredText(mouseX, mouseY);
+            if (hoveredText != null)
             {
-                Line line = this.lines.get(i);
-                int yOffset = i * this.fontRenderer.FONT_HEIGHT;
-                if (RenderUtil.isMouseInside(mouseX, mouseY, this.getWindowX() + this.x, this.getWindowY() + this.y + yOffset, this.getWindowX() + this.x + line.width, this.getWindowY() + this.y + yOffset + this.fontRenderer.FONT_HEIGHT))
-                {
-                    int x = 0;
-                    for (ITextComponent lineComponent : line.textComponent)
-                    {
-                        x += this.fontRenderer.getStringWidth(lineComponent.getFormattedText());
-                        if (mouseX > x)
-                        {
-                            renderer.renderComponentHoverEffect(lineComponent, mouseX, mouseY);
-                        }
-                    }
-                    break;
-                }
+                this.clickListener.handle(hoveredText, mouseX, mouseY, mouseButton);
             }
         }
+        return super.onMousePressed(mouseX, mouseY, mouseButton);
     }
 
     @Override
@@ -145,26 +184,94 @@ public class TextComponent extends BasicComponent
         return this.lines.size() * this.fontRenderer.FONT_HEIGHT;
     }
 
+    /**
+     * @return The maximum width of a line before being split
+     */
+    public int getMaxWidth()
+    {
+        return maxWidth;
+    }
+
+    /**
+     * @return The font renderer used for rendering text
+     */
+    public FontRenderer getFontRenderer()
+    {
+        return fontRenderer;
+    }
+
+    /**
+     * @return The set click listener or null if there is no click listener
+     */
+    @Nullable
+    public ComponentClickListener<ITextComponent> getClickListener()
+    {
+        return clickListener;
+    }
+
+    /**
+     * Sets the x position of this component to the specified value.
+     *
+     * @param x The new x position
+     */
     public void setX(int x)
     {
         this.x = x;
     }
 
+    /**
+     * Sets the y position of this component to the specified value.
+     *
+     * @param y The new y position
+     */
     public void setY(int y)
     {
         this.y = y;
     }
 
+    /**
+     * Sets the position of this component to the specified values.
+     *
+     * @param x The new x position
+     * @param y The new y position
+     */
     public void setPosition(int x, int y)
     {
         this.x = x;
         this.y = y;
     }
 
+    /**
+     * Sets the maximum width of a line before being split. In order to call this during a tick, use {@link Laptop#execute(Runnable)}!
+     *
+     * @param maxWidth The new maximum width
+     */
+    public void setMaxWidth(int maxWidth)
+    {
+        this.maxWidth = maxWidth;
+        this.rebuildText();
+    }
+
+    /**
+     * Sets the font renderer used for rendering text. In order to call this during a tick, use {@link Laptop#execute(Runnable)}!
+     *
+     * @param fontRenderer The new font renderer
+     */
     public void setFontRenderer(ResourceLocation fontRenderer)
     {
         this.fontRendererLocation = fontRenderer;
         this.fontRenderer = Minecraft.getInstance().getFontResourceManager().getFontRenderer(fontRenderer);
+        this.rebuildText();
+    }
+
+    /**
+     * Sets the click listener for this text.
+     *
+     * @param clickListener The new click listener to use or null to remove the listener
+     */
+    public void setClickListener(@Nullable ComponentClickListener<ITextComponent> clickListener)
+    {
+        this.clickListener = clickListener;
     }
 
     @Override
@@ -176,9 +283,9 @@ public class TextComponent extends BasicComponent
         nbt.putString("fontRenderer", this.fontRendererLocation.toString());
         nbt.putInt("maxWidth", this.maxWidth);
 
-        ListNBT text = new ListNBT();
-        this.lines.forEach(line -> text.add(new StringNBT(line.toJson())));
-        nbt.put("text", text);
+        ListNBT textList = new ListNBT();
+        this.text.forEach(text -> textList.add(new StringNBT(ITextComponent.Serializer.toJson(text))));
+        nbt.put("text", textList);
 
         return nbt;
     }
@@ -191,15 +298,10 @@ public class TextComponent extends BasicComponent
         this.setFontRenderer(new ResourceLocation(nbt.getString("fontRenderer")));
         this.maxWidth = nbt.getInt("maxWidth");
 
-        ListNBT text = nbt.getList("text", Constants.NBT.TAG_STRING);
-        for (int i = 0; i < text.size(); i++)
+        ListNBT textList = nbt.getList("text", Constants.NBT.TAG_STRING);
+        for (int i = 0; i < textList.size(); i++)
         {
-            Line line = new Line(this.fontRenderer, text.getString(i));
-            this.lines.add(line);
-            if (line.width > this.width)
-            {
-                this.width = line.width;
-            }
+            this.addLine(ITextComponent.Serializer.fromJson(textList.getString(i)));
         }
     }
 
@@ -209,12 +311,6 @@ public class TextComponent extends BasicComponent
         private ITextComponent textComponent;
         private String text;
         private int width;
-
-        private Line(FontRenderer fontRenderer, String json)
-        {
-            this.fontRenderer = fontRenderer;
-            this.setText(ITextComponent.Serializer.fromJson(json));
-        }
 
         private Line(FontRenderer fontRenderer, ITextComponent text)
         {
@@ -227,11 +323,6 @@ public class TextComponent extends BasicComponent
             this.textComponent = text;
             this.text = text == null ? "null" : text.getFormattedText();
             this.width = this.fontRenderer.getStringWidth(this.text);
-        }
-
-        public String toJson()
-        {
-            return ITextComponent.Serializer.toJson(this.textComponent);
         }
     }
 }

@@ -1,6 +1,6 @@
 package com.ocelot.opendevices.api.laptop.window;
 
-import com.ocelot.opendevices.api.laptop.DeviceRegistries;
+import com.ocelot.opendevices.api.DeviceRegistries;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.function.Function;

@@ -173,7 +173,7 @@ public class LaptopScreen extends Screen implements TooltipRenderer
         else if (desktop.getFocusedWindow() != null)
         {
             WindowClient window = (WindowClient) desktop.getFocusedWindow();
-            if (window.isWithinContent(mouseX, mouseY) && window.onMouseDragged(mouseX - (this.posX + DeviceConstants.LAPTOP_GUI_BORDER + window.getX() + 1), mouseY - (this.posY + DeviceConstants.LAPTOP_GUI_BORDER + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + window.getY() + 1), mouseButton, deltaX, deltaY))
+            if (window.isWithinContent(mouseX, mouseY) && window.onMouseDragged(mouseX, mouseY, mouseButton, deltaX, deltaY))
             {
                 return true;
             }
@@ -196,7 +196,7 @@ public class LaptopScreen extends Screen implements TooltipRenderer
             {
                 for (int i = 0; i < windows.length; i++)
                 {
-                    if(!loseFocus)
+                    if (!loseFocus)
                         break;
 
                     WindowClient window = (WindowClient) windows[windows.length - i - 1];
@@ -211,7 +211,7 @@ public class LaptopScreen extends Screen implements TooltipRenderer
                     }
                     if (window.isWithinContent(mouseX, mouseY))
                     {
-                        if (window.onMousePressed(mouseX - (this.posX + DeviceConstants.LAPTOP_GUI_BORDER + window.getX() + 1), mouseY - (this.posY + DeviceConstants.LAPTOP_GUI_BORDER + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + window.getY() + 1), mouseButton))
+                        if (window.onMousePressed(mouseX, mouseY, mouseButton))
                         {
                             return true;
                         }
@@ -277,7 +277,7 @@ public class LaptopScreen extends Screen implements TooltipRenderer
         {
             this.clickable = false;
             WindowClient window = (WindowClient) desktop.getFocusedWindow();
-            if (window.isWithinContent(mouseX, mouseY) && window.onMouseReleased(mouseX - (this.posX + DeviceConstants.LAPTOP_GUI_BORDER + window.getX() + 1), mouseY - (this.posY + DeviceConstants.LAPTOP_GUI_BORDER + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + window.getY() + 1), mouseButton))
+            if (window.isWithinContent(mouseX, mouseY) && window.onMouseReleased(mouseX, mouseY, mouseButton))
             {
                 return true;
             }
