@@ -133,15 +133,6 @@ public class LaptopRenderer extends AbstractGui
         Desktop desktop = laptop.getDesktop();
         TaskBar taskBar = laptop.getTaskBar();
 
-        /* Applications */
-        Window[] windows = desktop.getWindows();
-        for (Window value : windows)
-        {
-            WindowClient window = (WindowClient) value;
-            window.setScreenPosition(posX, posY);
-            window.renderOverlay(renderer, mouseX, mouseY, partialTicks);
-        }
-
         /* Task bar */
         {
             int size = taskBar.isEnlarged() ? 16 : 8;
@@ -153,9 +144,19 @@ public class LaptopRenderer extends AbstractGui
                 if (!StringUtils.isEmpty(window.getContent().getTitle()) && RenderUtil.isMouseInside(mouseX, mouseY, posX + 4 + (size + 4) * i, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4, posX + 4 + (size + 4) * i + size, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4 + size))
                 {
                     renderer.renderTooltip(window.getContent().getTitle(), mouseX, mouseY);
-                    break;
+                    return;
                 }
                 i++;
+            }
+        }
+
+        /* Applications */
+        {
+            if (desktop.getFocusedWindow() != null)
+            {
+                WindowClient window = (WindowClient) desktop.getFocusedWindow();
+                window.setScreenPosition(posX, posY);
+                window.renderOverlay(renderer, mouseX, mouseY, partialTicks);
             }
         }
     }

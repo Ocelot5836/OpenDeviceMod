@@ -1,7 +1,6 @@
 package com.ocelot.opendevices.core.laptop.application;
 
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.component.Layout;
 import com.ocelot.opendevices.api.component.TextComponent;
 import com.ocelot.opendevices.api.laptop.application.Application;
@@ -21,7 +20,8 @@ public class TestApplication extends Application
 
     public TestApplication()
     {
-        this.layoutTest = new Layout(DeviceConstants.LAPTOP_MAX_APPLICATION_WIDTH, DeviceConstants.LAPTOP_MAX_APPLICATION_HEIGHT);
+        //        this.layoutTest = new Layout(DeviceConstants.LAPTOP_MAX_APPLICATION_WIDTH, DeviceConstants.LAPTOP_MAX_APPLICATION_HEIGHT);
+        this.layoutTest = new Layout();
 
         int i = 0;
         for (Item item : ForgeRegistries.ITEMS)
