@@ -1,9 +1,8 @@
 install: gradle wrapper --gradle-version 4.9
 
 language: java
-dist: trusty
 jdk:
-  - jdk8
+  - openjdk9
 
 before_install:
   - chmod +x gradlew
