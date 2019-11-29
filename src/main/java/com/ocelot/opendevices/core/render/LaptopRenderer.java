@@ -152,9 +152,10 @@ public class LaptopRenderer extends AbstractGui
 
         /* Applications */
         {
-            if (desktop.getFocusedWindow() != null)
+            Window[] windows = desktop.getWindows();
+            WindowClient window = desktop.getWindows().length > 0 ? (WindowClient) windows[windows.length - 1] : null;
+            if (window != null)
             {
-                WindowClient window = (WindowClient) desktop.getFocusedWindow();
                 window.setScreenPosition(posX, posY);
                 window.renderOverlay(renderer, mouseX, mouseY, partialTicks);
             }

@@ -160,7 +160,7 @@ public class WindowClient extends LaptopWindow
 
     public boolean pressButtons(double mouseX, double mouseY)
     {
-        if (RenderUtil.isMouseInside(mouseX, mouseY, this.screenX + this.getX() + this.getWidth() - DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE - 1, this.screenY + this.getY(), this.screenX + this.getX() + this.getWidth(), this.screenY + this.getY() + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT))
+        if (this.closeButton.isMouseOver(mouseX, mouseY))
         {
             this.closeButton.onClick(mouseX, mouseY);
             return true;

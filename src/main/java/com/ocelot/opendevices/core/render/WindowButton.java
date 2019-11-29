@@ -41,9 +41,15 @@ public class WindowButton extends Button
         GlStateManager.pushMatrix();
         {
             GlStateManager.translatef(this.posX, this.posY, 0);
-            this.blit(this.screenX, this.screenY, 26 + this.getYImage(RenderUtil.isMouseInside(mouseX, mouseY, this.screenX + this.posX, this.screenY + this.posY, this.screenX + this.posX + this.width, this.screenY + this.posY + this.height)) * DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE, 0, this.width, this.height);
+            this.blit(this.screenX, this.screenY, 26 + this.getYImage(this.isMouseOver(mouseX, mouseY)) * DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE, 0, this.width, this.height);
         }
         GlStateManager.popMatrix();
+    }
+
+    @Override
+    public boolean isMouseOver(double mouseX, double mouseY)
+    {
+        return this.active && this.visible && RenderUtil.isMouseInside(mouseX, mouseY, this.screenX + this.posX, this.screenY + this.posY, this.screenX + this.posX + this.width, this.screenY + this.posY + this.height);
     }
 
     public void setScreenPosition(int screenX, int screenY)
