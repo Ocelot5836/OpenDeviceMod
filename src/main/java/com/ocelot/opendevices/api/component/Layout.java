@@ -105,8 +105,11 @@ public class Layout extends BasicComponent
         GlStateManager.translatef(this.getX(), this.getY(), 0f);
         this.components.forEach(component ->
         {
-            component.setWindowPosition(this.getWindowX(), this.getWindowY());
-            component.render(mouseX, mouseY, partialTicks);
+            if (component.getX() + component.getWidth() >= this.x && component.getX() < this.x + this.width && component.getY() + component.getHeight() >= this.y && component.getY() < this.y + this.height)
+            {
+                component.setWindowPosition(this.getWindowX(), this.getWindowY());
+                component.render(mouseX, mouseY, partialTicks);
+            }
         });
         GlStateManager.popMatrix();
         RenderUtil.popScissor();

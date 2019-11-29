@@ -49,12 +49,10 @@ public abstract class Application extends AbstractGui implements WindowContent
     {
         if (this.currentLayout != null)
         {
-            RenderUtil.enableScissor();
             RenderUtil.pushScissor(x, y, this.getWindow().getWidth() - 2, this.getWindow().getHeight() - 2 - DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT);
             this.currentLayout.setWindowPosition(x, y);
             this.currentLayout.render(mouseX, mouseY, partialTicks);
             RenderUtil.popScissor();
-            RenderUtil.disableScissor();
         }
     }
 
