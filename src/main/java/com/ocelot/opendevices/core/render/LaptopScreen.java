@@ -194,35 +194,32 @@ public class LaptopScreen extends Screen implements TooltipRenderer
                 for (int i = 0; i < windows.length; i++)
                 {
                     WindowClient window = (WindowClient) windows[windows.length - i - 1];
-                    if (window != null)
+                    if (window.pressButtons(mouseX, mouseY))
                     {
-                        if (window.pressButtons(mouseX, mouseY))
-                        {
-                            return true;
-                        }
-                        if (window.isWithin(mouseX, mouseY))
-                        {
-                            window.focus();
-                            loseFocus = false;
-                        }
-                        if (window.isWithinContent(mouseX, mouseY))
-                        {
-                            if (window.onMousePressed(mouseX - (this.posX + DeviceConstants.LAPTOP_GUI_BORDER + window.getX() + 1), mouseY - (this.posY + DeviceConstants.LAPTOP_GUI_BORDER + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + window.getY() + 1), mouseButton))
-                            {
-                                return true;
-                            }
-                            else
-                            {
-                                return super.mouseClicked(mouseX, mouseY, mouseButton);
-                            }
-                        }
-                        else if (window.isWithinWindowBar(mouseX, mouseY))
-                        {
-                            this.draggingWindow = window;
-                            return true;
-                        }
-                        this.clickable = true;
+                        return true;
                     }
+                    if (window.isWithin(mouseX, mouseY))
+                    {
+                        window.focus();
+                        loseFocus = false;
+                    }
+                    if (window.isWithinContent(mouseX, mouseY))
+                    {
+                        if (window.onMousePressed(mouseX - (this.posX + DeviceConstants.LAPTOP_GUI_BORDER + window.getX() + 1), mouseY - (this.posY + DeviceConstants.LAPTOP_GUI_BORDER + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + window.getY() + 1), mouseButton))
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            return super.mouseClicked(mouseX, mouseY, mouseButton);
+                        }
+                    }
+                    else if (window.isWithinWindowBar(mouseX, mouseY))
+                    {
+                        this.draggingWindow = window;
+                        return true;
+                    }
+                    this.clickable = true;
                 }
             }
 
@@ -239,16 +236,13 @@ public class LaptopScreen extends Screen implements TooltipRenderer
             Window hoveredWindow = null;
             for (Window value : taskBar.getDisplayedWindows())
             {
-                if (value instanceof WindowClient)
+                WindowClient window = (WindowClient) value;
+                if (RenderUtil.isMouseInside(mouseX, mouseY, this.posX + DeviceConstants.LAPTOP_GUI_BORDER + 4 + (size + 4) * i, this.posY + DeviceConstants.LAPTOP_GUI_BORDER + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4, this.posX + DeviceConstants.LAPTOP_GUI_BORDER + 4 + (size + 4) * i + size, this.posY + DeviceConstants.LAPTOP_GUI_BORDER + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4 + size))
                 {
-                    WindowClient window = (WindowClient) value;
-                    if (RenderUtil.isMouseInside(mouseX, mouseY, this.posX + DeviceConstants.LAPTOP_GUI_BORDER + 4 + (size + 4) * i, this.posY + DeviceConstants.LAPTOP_GUI_BORDER + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4, this.posX + DeviceConstants.LAPTOP_GUI_BORDER + 4 + (size + 4) * i + size, this.posY + DeviceConstants.LAPTOP_GUI_BORDER + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4 + size))
-                    {
-                        hoveredWindow = window;
-                        break;
-                    }
-                    i++;
+                    hoveredWindow = window;
+                    break;
                 }
+                i++;
             }
 
             if (hoveredWindow != null)
