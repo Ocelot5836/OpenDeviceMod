@@ -144,7 +144,7 @@ public interface Component extends INBTSerializable<CompoundNBT>
     int getY();
 
     /**
-     * @return The window this component is in
+     * @return The window this component is in. This reference is null during class construction
      */
     Window getWindow();
 

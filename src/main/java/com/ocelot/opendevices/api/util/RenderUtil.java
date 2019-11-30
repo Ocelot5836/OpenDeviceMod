@@ -31,9 +31,13 @@ public class RenderUtil
 
     private static boolean scissor = glGetBoolean(GL_SCISSOR_TEST);
 
-    /**Specifies the width of the entire non-scaled FBO.*/
+    /**
+     * Specifies the width of the entire non-scaled FBO.
+     */
     public static int framebufferHeight = 0;
-    /**Specifies the scale factor {@link #framebufferHeight} is modified by. Usually GUI scale setting in Minecraft.*/
+    /**
+     * Specifies the scale factor {@link #framebufferHeight} is modified by. Usually GUI scale setting in Minecraft.
+     */
     public static double framebufferScale = 0;
 
     private RenderUtil() {}

@@ -149,14 +149,17 @@ public class TextComponent extends BasicComponent
         {
             Line line = this.lines.get(i);
             int yOffset = i * this.fontRenderer.FONT_HEIGHT;
-            this.fontRenderer.drawString(line.text, this.getWindowX() + this.x, this.getWindowY() + this.y + yOffset, 0xffffffff);
+            this.fontRenderer.drawString(line.text, this.x, this.y + yOffset, 0xffffffff);
         }
     }
 
     @Override
     public void renderOverlay(TooltipRenderer renderer, int mouseX, int mouseY, float partialTicks)
     {
-        renderer.renderComponentHoverEffect(this.getHoveredText(mouseX, mouseY), mouseX, mouseY);
+        if (this.getWindow().isTop())
+        {
+            renderer.renderComponentHoverEffect(this.getHoveredText(mouseX, mouseY), mouseX, mouseY);
+        }
     }
 
     @Override

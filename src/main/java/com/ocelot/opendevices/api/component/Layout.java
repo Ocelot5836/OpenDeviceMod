@@ -3,6 +3,7 @@ package com.ocelot.opendevices.api.component;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceConstants;
+import com.ocelot.opendevices.api.laptop.window.Window;
 import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.api.util.TooltipRenderer;
 import net.minecraft.nbt.CompoundNBT;
@@ -88,7 +89,7 @@ public class Layout extends BasicComponent
     public void addComponent(Component component)
     {
         if (ComponentSerializer.getRegistryName(component.getClass()) == null)
-            throw new RuntimeException("Attempted to add unregistered component to layout: \'" + component.getClass().getName() + "\'! Must be registered using ComponentSerializer registry annotation.");
+            throw new RuntimeException("Attempted to add unregistered component to layout: '" + component.getClass().getName() + "'! Must be registered using Component#Register annotation.");
         this.components.add(component);
     }
 
@@ -246,6 +247,13 @@ public class Layout extends BasicComponent
     public int getHeight()
     {
         return height;
+    }
+
+    @Override
+    public void setWindow(Window window)
+    {
+        super.setWindow(window);
+        this.components.forEach(component -> component.setWindow(window));
     }
 
     @Override

@@ -6,6 +6,7 @@ import com.ocelot.opendevices.api.DeviceRegistries;
 import com.ocelot.opendevices.api.laptop.desktop.Desktop;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopBackground;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopManager;
+import com.ocelot.opendevices.api.laptop.window.Window;
 import com.ocelot.opendevices.api.laptop.window.WindowContentType;
 import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.core.laptop.window.LaptopWindow;
@@ -216,6 +217,70 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
         }
     }
 
+    @Nullable
+    @Override
+    public LaptopWindow getWindow(UUID windowId)
+    {
+        if (windowId == null)
+            return null;
+        return this.windows.stream().filter(window -> window.getId().equals(windowId)).findFirst().orElse(null);
+    }
+
+    @Override
+    public LaptopWindow[] getWindows()
+    {
+        return this.windows.toArray(new LaptopWindow[0]);
+    }
+
+    @Nullable
+    public LaptopWindow getFocusedWindow()
+    {
+        return this.getFocusedWindowId() == null ? null : this.getWindow(this.getFocusedWindowId());
+    }
+
+    @Nullable
+    @Override
+    public Window getTopWindow()
+    {
+        return !this.windows.isEmpty() ? this.windows.lastElement() : null;
+    }
+
+    @Nullable
+    @Override
+    public UUID getFocusedWindowId()
+    {
+        return focusedWindowId;
+    }
+
+    @Nullable
+    @Override
+    public UUID getTopWindowId()
+    {
+        return !this.windows.isEmpty() ? this.windows.lastElement().getId() : null;
+    }
+
+    @Override
+    public DesktopBackground getBackground()
+    {
+        return background;
+    }
+
+    // TODO test
+    @Override
+    public void setBackground(@Nullable DesktopBackground background)
+    {
+        if (background == null)
+            background = DesktopBackground.DEFAULT.copy();
+
+        if (!background.isOnline() && !DesktopManager.isValidLocation(background.getLocation()))
+        {
+            OpenDevices.LOGGER.warn("Resource Location Desktop Backgrounds need to be registered on both the client and server!");
+            return;
+        }
+
+        this.background = background;
+    }
+
     @Override
     public CompoundNBT serializeNBT()
     {
@@ -253,58 +318,5 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
             this.windows.push(window);
         }
         this.focusedWindowId = nbt.hasUniqueId("focusedWindowId") ? nbt.getUniqueId("focusedWindowId") : null;
-    }
-
-    @Nullable
-    @Override
-    public LaptopWindow getWindow(UUID windowId)
-    {
-        if (windowId == null)
-            return null;
-        return this.windows.stream().filter(window -> window.getId().equals(windowId)).findFirst().orElse(null);
-    }
-
-    @Override
-    public LaptopWindow[] getWindows()
-    {
-        return this.windows.toArray(new LaptopWindow[0]);
-    }
-
-    /**
-     * @return The currently focused window or null if there is no window focused
-     */
-    @Nullable
-    public LaptopWindow getFocusedWindow()
-    {
-        return this.getFocusedWindowId() == null ? null : this.getWindow(this.getFocusedWindowId());
-    }
-
-    @Nullable
-    @Override
-    public UUID getFocusedWindowId()
-    {
-        return focusedWindowId;
-    }
-
-    @Override
-    public DesktopBackground getBackground()
-    {
-        return background;
-    }
-
-    // TODO test
-    @Override
-    public void setBackground(@Nullable DesktopBackground background)
-    {
-        if (background == null)
-            background = DesktopBackground.DEFAULT.copy();
-
-        if (!background.isOnline() && !DesktopManager.isValidLocation(background.getLocation()))
-        {
-            OpenDevices.LOGGER.warn("Resource Location Desktop Backgrounds need to be registered on both the client and server!");
-            return;
-        }
-
-        this.background = background;
     }
 }

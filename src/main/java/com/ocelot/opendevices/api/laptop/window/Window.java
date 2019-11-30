@@ -46,6 +46,11 @@ public interface Window
     void markDirty();
 
     /**
+     * Centers this window on the desktop of the laptop.
+     */
+    void center();
+
+    /**
      * @return The id of this window. Used for Client/Server synchronization
      */
     UUID getId();
@@ -96,9 +101,20 @@ public interface Window
     int getContentHeight();
 
     /**
-     * Centers this window on the desktop of the laptop.
+     * @return Whether or not this window is the focused window receiving events
      */
-    void center();
+    default boolean isFocused()
+    {
+        return this.getLaptop().getDesktop().getFocusedWindowId() == this.getId();
+    }
+
+    /**
+     * @return Whether or not this window is being rendered on top of all others
+     */
+    default boolean isTop()
+    {
+        return this.getLaptop().getDesktop().getTopWindowId() == this.getId();
+    }
 
     /**
      * Moves this window to the specified position.

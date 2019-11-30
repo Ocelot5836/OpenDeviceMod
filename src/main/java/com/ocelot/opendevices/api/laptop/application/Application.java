@@ -1,5 +1,6 @@
 package com.ocelot.opendevices.api.laptop.application;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.ocelot.opendevices.api.component.ComponentSerializer;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.component.Layout;
@@ -50,8 +51,11 @@ public abstract class Application extends AbstractGui implements WindowContent
         if (this.currentLayout != null)
         {
             RenderUtil.pushScissor(x, y, this.getWindow().getWidth() - 2, this.getWindow().getHeight() - 2 - DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT);
+            GlStateManager.pushMatrix();
+            GlStateManager.translatef(x, y, 0);
             this.currentLayout.setWindowPosition(x, y);
             this.currentLayout.render(mouseX, mouseY, partialTicks);
+            GlStateManager.popMatrix();
             RenderUtil.popScissor();
         }
     }
@@ -115,17 +119,14 @@ public abstract class Application extends AbstractGui implements WindowContent
     @Override
     public void loadState(CompoundNBT nbt)
     {
-        Layout layout = ComponentSerializer.deserializeComponent(nbt.getCompound("currentLayout"));
-
-        this.currentLayout.onLayoutUnload();
-        this.currentLayout = layout;
+        this.currentLayout = ComponentSerializer.deserializeComponent(nbt.getCompound("currentLayout"));
+        this.currentLayout.setWindow(this.window);
         this.currentLayout.onLayoutLoad();
 
-        if (layout.getWidth() != this.window.getContentWidth() || layout.getHeight() != this.window.getContentHeight())
+        if (this.currentLayout.getWidth() != this.window.getContentWidth() || this.currentLayout.getHeight() != this.window.getContentHeight())
         {
             this.window.setSize(this.currentLayout.getWidth(), this.currentLayout.getHeight());
             this.window.center();
-            // TODO maybe add the ability to center on current position?
         }
     }
 
@@ -212,6 +213,7 @@ public abstract class Application extends AbstractGui implements WindowContent
         {
             this.currentLayout.onLayoutUnload();
             this.currentLayout = layout;
+            this.currentLayout.setWindow(this.window);
             this.currentLayout.onLayoutLoad();
 
             if (layout.getWidth() != this.window.getWidth() || layout.getHeight() != this.window.getHeight())

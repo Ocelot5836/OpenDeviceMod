@@ -71,16 +71,25 @@ public interface Desktop
      * @return The currently focused window or null if there is no window focused
      */
     @Nullable
-    default Window getFocusedWindow()
-    {
-        return this.getFocusedWindowId() == null ? null : this.getWindow(this.getFocusedWindowId());
-    }
+    Window getFocusedWindow();
+
+    /**
+     * @return The window rendering with the highest priority over others or null if there are no windows opened
+     */
+    @Nullable
+    Window getTopWindow();
 
     /**
      * @return The id of the currently focused window or null if there is no window focused
      */
     @Nullable
     UUID getFocusedWindowId();
+
+    /**
+     * @return The id of the window rendering with the highest priority over others or null if there are no windows opened
+     */
+    @Nullable
+    UUID getTopWindowId();
 
     /**
      * @return The current desktop background

@@ -68,14 +68,14 @@ public class LaptopRenderer extends AbstractGui
         }
 
         /* Version Text */
-        if (!DeviceConstants.DEVELOPER_MODE)
-        {
-            fontRenderer.drawStringWithShadow(I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.version", MOD_VERSION), posX + 5, posY + 5, laptop.readSetting(LaptopSettings.DESKTOP_TEXT_COLOR));
-        }
-        else
+        if (DeviceConstants.DEVELOPER_MODE)
         {
             fontRenderer.drawStringWithShadow(I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.dev_version", MOD_VERSION), posX + 5, posY + 5, laptop.readSetting(LaptopSettings.DESKTOP_TEXT_COLOR));
             fontRenderer.drawStringWithShadow(Minecraft.getDebugFPS() + " FPS", posX + 5, posY + 18, laptop.readSetting(LaptopSettings.DESKTOP_TEXT_COLOR));
+        }
+        else
+        {
+            fontRenderer.drawStringWithShadow(I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.version", MOD_VERSION), posX + 5, posY + 5, laptop.readSetting(LaptopSettings.DESKTOP_TEXT_COLOR));
         }
 
         /* Applications */
@@ -152,10 +152,9 @@ public class LaptopRenderer extends AbstractGui
 
         /* Applications */
         {
-            Window[] windows = desktop.getWindows();
-            WindowClient window = desktop.getWindows().length > 0 ? (WindowClient) windows[windows.length - 1] : null;
-            if (window != null)
+            for (Window value : desktop.getWindows())
             {
+                WindowClient window = (WindowClient) value;
                 window.setScreenPosition(posX, posY);
                 window.renderOverlay(renderer, mouseX, mouseY, partialTicks);
             }
