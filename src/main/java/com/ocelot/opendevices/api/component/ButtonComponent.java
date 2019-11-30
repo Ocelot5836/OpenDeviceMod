@@ -1,19 +1,21 @@
 package com.ocelot.opendevices.api.component;
 
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.ocelot.opendevices.OpenDevices;
+import com.ocelot.opendevices.api.DeviceConstants;
+import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.api.util.TooltipRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.nbt.StringNBT;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StringUtils;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+
+import static org.lwjgl.opengl.GL11.*;
 
 /**
  * <p>Allows the addition of buttons to a {@link Layout}.</p>
@@ -21,6 +23,8 @@ import java.util.List;
  * @author Ocelot
  * @see Layout
  */
+@SuppressWarnings("unused")
+@Component.Register(OpenDevices.MOD_ID + ":button")
 public class ButtonComponent extends BasicComponent
 {
     private int x;
@@ -34,9 +38,7 @@ public class ButtonComponent extends BasicComponent
     private FontRenderer fontRenderer;
     private ResourceLocation fontRendererLocation;
     private ITextComponent text;
-    private List<ITextComponent> tooltip;
     private long tooltipDelay;
-    private long lastTooltip;
 
     private ResourceLocation iconLocation;
     private int iconU;
@@ -47,12 +49,30 @@ public class ButtonComponent extends BasicComponent
     private int iconTextureHeight;
 
     private ButtonState state;
+    private int disabledButtonColor;
+    private int buttonColor;
+    private int hoveredButtonColor;
+    private int disabledTextColor;
+    private int textColor;
+    private int hoveredTextColor;
+
+    private String rawText;
+    private int textWidth;
+    private long lastTooltip;
 
     public ButtonComponent()
     {
-        this.fontRendererLocation = Minecraft.DEFAULT_FONT_RENDERER_NAME;
-        this.padding = 5;
+        this(0, 0);
+    }
+
+    public ButtonComponent(int x, int y)
+    {
+        this.x = x;
+        this.y = y;
+        this.setFontRenderer(Minecraft.DEFAULT_FONT_RENDERER_NAME);
+        this.setPadding(5);
         this.lastTooltip = Long.MAX_VALUE;
+        this.state = ButtonState.VISIBLE;
     }
 
     public ButtonComponent(ButtonComponent other)
@@ -68,7 +88,6 @@ public class ButtonComponent extends BasicComponent
         this.fontRenderer = other.fontRenderer;
         this.fontRendererLocation = other.fontRendererLocation;
         this.text = other.text;
-        this.tooltip = new ArrayList<>(other.tooltip);
         this.tooltipDelay = other.tooltipDelay;
 
         this.iconLocation = other.iconLocation;
@@ -80,6 +99,23 @@ public class ButtonComponent extends BasicComponent
         this.iconTextureHeight = other.iconTextureHeight;
 
         this.state = other.state;
+        this.disabledButtonColor = other.disabledButtonColor;
+        this.buttonColor = other.buttonColor;
+        this.hoveredButtonColor = other.hoveredButtonColor;
+        this.disabledTextColor = other.disabledTextColor;
+        this.textColor = other.textColor;
+        this.hoveredTextColor = other.hoveredTextColor;
+
+        this.updateTextCache();
+    }
+
+    private void updateTextCache()
+    {
+        if (this.text != null)
+        {
+            this.rawText = this.text.getFormattedText();
+            this.textWidth = this.fontRenderer.getStringWidth(this.rawText);
+        }
     }
 
     private void updateSize()
@@ -98,14 +134,14 @@ public class ButtonComponent extends BasicComponent
 
         if (this.text != null)
         {
-            width += this.fontRenderer.getStringWidth(this.text.getFormattedText());
+            width += this.textWidth;
             height = 16;
-        }
 
-        if (this.iconLocation != null && this.text != null)
-        {
-            width += 3;
-            height = this.iconHeight + this.padding * 2;
+            if (this.iconLocation != null)
+            {
+                width += 3;
+                height = this.iconHeight + this.padding * 2;
+            }
         }
 
         if (!this.explicitWidth)
@@ -122,65 +158,64 @@ public class ButtonComponent extends BasicComponent
     @Override
     public void render(int mouseX, int mouseY, float partialTicks)
     {
-//        if (this.state != ButtonState.INVISIBLE)
-//        {
-//            Minecraft.getInstance().getTextureManager().bindTexture(DeviceConstants.COMPONENTS_LOCATION);
-//            RenderUtil.glColor(this.getWindow().getLaptop().readSetting(LaptopSettings.DESKTOP_TEXT_COLOR));
-//            Color bgColor = new Color(getColorScheme().getBackgroundColor()).brighter().brighter();
-//            float[] hsb = Color.RGBtoHSB(bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(), null);
-//            bgColor = new Color(Color.HSBtoRGB(hsb[0], hsb[1], 1.0F));
-//            GL11.glColor4f(bgColor.getRed() / 255F, bgColor.getGreen() / 255F, bgColor.getBlue() / 255F, 1.0F);
-//            this.hovered = GuiHelper.isMouseWithin(mouseX, mouseY, x, y, width, height) && windowActive;
-//            int i = this.getHoverState(this.hovered);
-//            GlStateManager.enableBlend();
-//            GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-//            GlStateManager.blendFunc(770, 771);
-//
-//            /* Corners */
-//            RenderUtil.drawRectWithTexture(x, y, 96 + i * 5, 12, 2, 2, 2, 2);
-//            RenderUtil.drawRectWithTexture(x + width - 2, y, 99 + i * 5, 12, 2, 2, 2, 2);
-//            RenderUtil.drawRectWithTexture(x + width - 2, y + height - 2, 99 + i * 5, 15, 2, 2, 2, 2);
-//            RenderUtil.drawRectWithTexture(x, y + height - 2, 96 + i * 5, 15, 2, 2, 2, 2);
-//
-//            /* Middles */
-//            RenderUtil.drawRectWithTexture(x + 2, y, 98 + i * 5, 12, width - 4, 2, 1, 2);
-//            RenderUtil.drawRectWithTexture(x + width - 2, y + 2, 99 + i * 5, 14, 2, height - 4, 2, 1);
-//            RenderUtil.drawRectWithTexture(x + 2, y + height - 2, 98 + i * 5, 15, width - 4, 2, 1, 2);
-//            RenderUtil.drawRectWithTexture(x, y + 2, 96 + i * 5, 14, 2, height - 4, 2, 1);
-//
-//            /* Center */
-//            RenderUtil.drawRectWithTexture(x + 2, y + 2, 98 + i * 5, 14, width - 4, height - 4, 1, 1);
-//
-//            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-//            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-//
-//            int contentWidth = (iconResource != null ? iconWidth: 0) + getTextWidth(text);
-//            if(iconResource != null && !StringUtils.isNullOrEmpty(text)) contentWidth += 3;
-//            int contentX = (int) Math.ceil((width - contentWidth) / 2.0);
-//
-//            if(iconResource != null)
-//            {
-//                int iconY = (height - iconHeight) / 2;
-//                mc.getTextureManager().bindTexture(iconResource);
-//                RenderUtil.drawRectWithTexture(x + contentX, y + iconY, iconU, iconV, iconWidth, iconHeight, iconWidth, iconHeight, iconSourceWidth, iconSourceHeight);
-//            }
-//
-//            if(!StringUtils.isNullOrEmpty(text))
-//            {
-//                int textY = (height - mc.fontRenderer.FONT_HEIGHT) / 2 + 1;
-//                int textOffsetX = iconResource != null ? iconWidth + 3 : 0;
-//                int textColor = !Button.this.enabled ? 10526880 : (Button.this.hovered ? 16777120 : 14737632);
-//                drawString(mc.fontRenderer, text, x + contentX + textOffsetX, y + textY, textColor);
-//            }
-//        }
+        if (this.state != ButtonState.INVISIBLE)
+        {
+            Minecraft.getInstance().getTextureManager().bindTexture(DeviceConstants.COMPONENTS_LOCATION);
+            //                    RenderUtil.glColor(this.getWindow().getLaptop().readSetting(LaptopSettings.DESKTOP_TEXT_COLOR));
+
+            boolean hovered = this.isHovered(mouseX, mouseY) && this.getWindow().isTop();
+            int offset = this.state == ButtonState.DISABLED ? 0 : hovered ? 2 : 1;
+            GlStateManager.enableBlend();
+            GlStateManager.blendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
+            GlStateManager.blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+            /* Corners */
+            RenderUtil.drawRectWithTexture(x, y, 96 + offset * 5, 12, 2, 2, 2, 2);
+            RenderUtil.drawRectWithTexture(x + width - 2, y, 99 + offset * 5, 12, 2, 2, 2, 2);
+            RenderUtil.drawRectWithTexture(x + width - 2, y + height - 2, 99 + offset * 5, 15, 2, 2, 2, 2);
+            RenderUtil.drawRectWithTexture(x, y + height - 2, 96 + offset * 5, 15, 2, 2, 2, 2);
+
+            /* Middles */
+            RenderUtil.drawRectWithTexture(x + 2, y, 98 + offset * 5, 12, width - 4, 2, 1, 2);
+            RenderUtil.drawRectWithTexture(x + width - 2, y + 2, 99 + offset * 5, 14, 2, height - 4, 2, 1);
+            RenderUtil.drawRectWithTexture(x + 2, y + height - 2, 98 + offset * 5, 15, width - 4, 2, 1, 2);
+            RenderUtil.drawRectWithTexture(x, y + 2, 96 + offset * 5, 14, 2, height - 4, 2, 1);
+
+            /* Center */
+            RenderUtil.drawRectWithTexture(x + 2, y + 2, 98 + offset * 5, 14, width - 4, height - 4, 1, 1);
+
+            GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+
+
+            int contentWidth = (this.iconLocation != null ? this.iconWidth : 0) + this.textWidth;
+            if (this.iconLocation != null && !StringUtils.isNullOrEmpty(this.rawText))
+                contentWidth += 3;
+            int contentX = (int) Math.ceil((this.width - contentWidth) / 2.0);
+
+            if (this.iconLocation != null)
+            {
+                int iconY = (this.height - this.iconHeight) / 2;
+                Minecraft.getInstance().getTextureManager().bindTexture(this.iconLocation);
+                RenderUtil.drawRectWithTexture(this.x + contentX, this.y + iconY, this.iconU, this.iconV, this.iconWidth, this.iconHeight, this.iconWidth, this.iconHeight, this.iconTextureWidth, this.iconTextureHeight);
+            }
+
+            if (!StringUtils.isNullOrEmpty(this.rawText))
+            {
+                int textY = (this.height - this.fontRenderer.FONT_HEIGHT) / 2 + 1;
+                int textOffsetX = this.iconLocation != null ? this.iconWidth + 3 : 0;
+                int textColor = this.state == ButtonState.DISABLED ? 10526880 : (hovered ? 16777120 : 14737632);
+                this.fontRenderer.drawString(this.rawText, this.x + contentX + textOffsetX, this.y + textY, textColor);
+            }
+        }
     }
 
     @Override
     public void renderOverlay(TooltipRenderer renderer, int mouseX, int mouseY, float partialTicks)
     {
-if(this.isHovered(mouseX, mouseY)){
-
-}
+        if (this.getWindow().isTop() && this.isHovered(mouseX, mouseY))
+        {
+            renderer.renderComponentHoverEffect(this.text, mouseX, mouseY);
+        }
     }
 
     @Override
@@ -262,15 +297,6 @@ if(this.isHovered(mouseX, mouseY)){
     public ITextComponent getText()
     {
         return text;
-    }
-
-    /**
-     * @return The lines to use as the tooltip
-     */
-    @Nullable
-    public List<ITextComponent> getTooltip()
-    {
-        return tooltip;
     }
 
     /**
@@ -429,6 +455,7 @@ if(this.isHovered(mouseX, mouseY)){
     {
         this.fontRenderer = Minecraft.getInstance().getFontResourceManager().getFontRenderer(fontRenderer);
         this.fontRendererLocation = fontRenderer;
+        this.updateTextCache();
         this.updateSize();
         return this;
     }
@@ -441,38 +468,8 @@ if(this.isHovered(mouseX, mouseY)){
     public ButtonComponent setText(ITextComponent text)
     {
         this.text = text;
+        this.updateTextCache();
         this.updateSize();
-        return this;
-    }
-
-    /**
-     * Sets the tooltip lines to the provided tooltip values or null to remove the tooltip.
-     *
-     * @param lines The lines to use as the tooltip
-     */
-    public ButtonComponent setTooltip(@Nullable ITextComponent... lines)
-    {
-        this.setTooltip(lines == null || lines.length == 0 ? null : Arrays.asList(lines));
-        return this;
-    }
-
-    /**
-     * Sets the tooltip lines to the provided tooltip values or null to remove the tooltip.
-     *
-     * @param lines The lines to use as the tooltip
-     */
-    public ButtonComponent setTooltip(@Nullable List<ITextComponent> lines)
-    {
-        if (lines == null || lines.isEmpty())
-        {
-            this.tooltip = null;
-        }
-        else
-        {
-            if (this.tooltip == null)
-                this.tooltip = new ArrayList<>();
-            this.tooltip.addAll(lines);
-        }
         return this;
     }
 
@@ -550,14 +547,7 @@ if(this.isHovered(mouseX, mouseY)){
         if (this.text != null)
             nbt.putString("text", ITextComponent.Serializer.toJson(this.text));
 
-        if (this.tooltip != null)
-        {
-            ListNBT tooltipList = new ListNBT();
-            this.tooltip.forEach(text -> tooltipList.add(new StringNBT(ITextComponent.Serializer.toJson(text))));
-            nbt.put("tooltip", tooltipList);
-
-            nbt.putLong("tooltipDelay", this.tooltipDelay);
-        }
+        nbt.putLong("tooltipDelay", this.tooltipDelay);
 
         if (this.iconLocation != null)
         {
@@ -570,6 +560,14 @@ if(this.isHovered(mouseX, mouseY)){
             nbt.putInt("iconTextureHeight", this.iconTextureHeight);
         }
 
+        nbt.putByte("state", (byte) this.state.ordinal());
+        nbt.putInt("disabledButtonColor", this.disabledButtonColor);
+        nbt.putInt("buttonColor", this.buttonColor);
+        nbt.putInt("hoveredButtonColor", this.hoveredButtonColor);
+        nbt.putInt("disabledTextColor", this.disabledTextColor);
+        nbt.putInt("textColor", this.textColor);
+        nbt.putInt("hoveredTextColor", this.hoveredTextColor);
+
         return nbt;
     }
 
@@ -581,25 +579,17 @@ if(this.isHovered(mouseX, mouseY)){
         this.width = nbt.getInt("width");
         this.height = nbt.getInt("height");
 
-        this.setFontRenderer(new ResourceLocation(nbt.getString("fontRenderer")));
+        this.fontRendererLocation = new ResourceLocation(nbt.getString("fontRenderer"));
+        this.fontRenderer = Minecraft.getInstance().getFontResourceManager().getFontRenderer(this.fontRendererLocation);
 
         if (nbt.contains("text", Constants.NBT.TAG_STRING))
         {
             this.text = ITextComponent.Serializer.fromJson(nbt.getString("text"));
         }
 
-        if (nbt.contains("tooltip", Constants.NBT.TAG_LIST))
-        {
-            this.tooltip = new ArrayList<>();
+        this.updateTextCache();
 
-            ListNBT tooltipList = nbt.getList("tooltip", Constants.NBT.TAG_STRING);
-            for (int i = 0; i < tooltipList.size(); i++)
-            {
-                this.tooltip.add(ITextComponent.Serializer.fromJson(tooltipList.getString(i)));
-            }
-
-            this.tooltipDelay = nbt.getLong("tooltipDelay");
-        }
+        this.tooltipDelay = nbt.getLong("tooltipDelay");
 
         if (nbt.contains("iconLocation", Constants.NBT.TAG_STRING))
         {
@@ -611,5 +601,13 @@ if(this.isHovered(mouseX, mouseY)){
             this.iconTextureWidth = nbt.getInt("iconTextureWidth");
             this.iconTextureHeight = nbt.getInt("iconTextureHeight");
         }
+
+        this.state = ButtonState.values()[nbt.getByte("state") & ButtonState.values().length];
+        this.disabledButtonColor = nbt.getInt("disabledButtonColor");
+        this.buttonColor = nbt.getInt("buttonColor");
+        this.hoveredButtonColor = nbt.getInt("hoveredButtonColor");
+        this.disabledTextColor = nbt.getInt("disabledTextColor");
+        this.textColor = nbt.getInt("textColor");
+        this.hoveredTextColor = nbt.getInt("hoveredTextColor");
     }
 }
