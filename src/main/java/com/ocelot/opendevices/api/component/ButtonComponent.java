@@ -3,6 +3,7 @@ package com.ocelot.opendevices.api.component;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceConstants;
+import com.ocelot.opendevices.api.handler.ClickListener;
 import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.api.util.TooltipRenderer;
 import net.minecraft.client.Minecraft;
@@ -49,6 +50,7 @@ public class ButtonComponent extends BasicComponent
     private int iconTextureHeight;
 
     private ButtonState state;
+    //TODO implement button colors
     private int disabledButtonColor;
     private int buttonColor;
     private int hoveredButtonColor;
@@ -59,6 +61,7 @@ public class ButtonComponent extends BasicComponent
     private String rawText;
     private int textWidth;
     private long lastTooltip;
+    private ClickListener clickListener;
 
     public ButtonComponent()
     {
@@ -69,9 +72,11 @@ public class ButtonComponent extends BasicComponent
     {
         this.x = x;
         this.y = y;
-        this.setFontRenderer(Minecraft.DEFAULT_FONT_RENDERER_NAME);
         this.setPadding(5);
+        this.setFontRenderer(Minecraft.DEFAULT_FONT_RENDERER_NAME);
+        this.tooltipDelay = DeviceConstants.DEFAULT_TOOLTIP_DELAY;
         this.lastTooltip = Long.MAX_VALUE;
+
         this.state = ButtonState.VISIBLE;
     }
 
@@ -151,23 +156,18 @@ public class ButtonComponent extends BasicComponent
     }
 
     @Override
-    public void update()
-    {
-    }
-
-    @Override
     public void render(int mouseX, int mouseY, float partialTicks)
     {
         if (this.state != ButtonState.INVISIBLE)
         {
-            Minecraft.getInstance().getTextureManager().bindTexture(DeviceConstants.COMPONENTS_LOCATION);
-            //                    RenderUtil.glColor(this.getWindow().getLaptop().readSetting(LaptopSettings.DESKTOP_TEXT_COLOR));
-
             boolean hovered = this.isHovered(mouseX, mouseY) && this.getWindow().isTop();
             int offset = this.state == ButtonState.DISABLED ? 0 : hovered ? 2 : 1;
             GlStateManager.enableBlend();
             GlStateManager.blendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
             GlStateManager.blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+            Minecraft.getInstance().getTextureManager().bindTexture(DeviceConstants.COMPONENTS_LOCATION);
+            //                    RenderUtil.glColor(this.getWindow().getLaptop().readSetting(LaptopSettings.DESKTOP_TEXT_COLOR));
 
             /* Corners */
             RenderUtil.drawRectWithTexture(x, y, 96 + offset * 5, 12, 2, 2, 2, 2);
@@ -185,7 +185,6 @@ public class ButtonComponent extends BasicComponent
             RenderUtil.drawRectWithTexture(x + 2, y + 2, 98 + offset * 5, 14, width - 4, height - 4, 1, 1);
 
             GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-
 
             int contentWidth = (this.iconLocation != null ? this.iconWidth : 0) + this.textWidth;
             if (this.iconLocation != null && !StringUtils.isNullOrEmpty(this.rawText))
@@ -214,8 +213,25 @@ public class ButtonComponent extends BasicComponent
     {
         if (this.getWindow().isTop() && this.isHovered(mouseX, mouseY))
         {
-            renderer.renderComponentHoverEffect(this.text, mouseX, mouseY);
+            if (this.lastTooltip == Long.MAX_VALUE)
+                this.lastTooltip = System.currentTimeMillis();
+            if (System.currentTimeMillis() - this.lastTooltip >= this.tooltipDelay)
+                renderer.renderComponentHoverEffect(this.text, mouseX, mouseY);
         }
+        else
+        {
+            this.lastTooltip = Long.MAX_VALUE;
+        }
+    }
+
+    @Override
+    public boolean onMousePressed(double mouseX, double mouseY, int mouseButton)
+    {
+        if (this.clickListener != null && this.isHovered(mouseX, mouseY))
+        {
+            this.clickListener.handle(mouseX, mouseY, mouseButton);
+        }
+        return super.onMousePressed(mouseX, mouseY, mouseButton);
     }
 
     @Override
@@ -291,7 +307,7 @@ public class ButtonComponent extends BasicComponent
     }
 
     /**
-     * @return The new text to display
+     * @return The text to displayed on the button or null if there is no text displayed
      */
     @Nullable
     public ITextComponent getText()
@@ -361,6 +377,15 @@ public class ButtonComponent extends BasicComponent
     public int getIconTextureHeight()
     {
         return iconTextureHeight;
+    }
+
+    /**
+     * @return The set click listener or null if there is no click listener
+     */
+    @Nullable
+    public ClickListener getClickListener()
+    {
+        return clickListener;
     }
 
     /**
@@ -480,7 +505,7 @@ public class ButtonComponent extends BasicComponent
      */
     public ButtonComponent setTooltipDelay(long tooltipDelay)
     {
-        this.tooltipDelay = tooltipDelay;
+        this.tooltipDelay = Math.max(0, tooltipDelay);
         return this;
     }
 
@@ -531,6 +556,17 @@ public class ButtonComponent extends BasicComponent
         this.iconTextureWidth = textureWidth;
         this.iconTextureHeight = textureHeight;
         this.updateSize();
+        return this;
+    }
+
+    /**
+     * Sets the click listener for this text.
+     *
+     * @param clickListener The new click listener to use or null to remove the listener
+     */
+    public ButtonComponent setClickListener(@Nullable ClickListener clickListener)
+    {
+        this.clickListener = clickListener;
         return this;
     }
 
@@ -589,7 +625,7 @@ public class ButtonComponent extends BasicComponent
 
         this.updateTextCache();
 
-        this.tooltipDelay = nbt.getLong("tooltipDelay");
+        this.tooltipDelay = Math.max(0, nbt.getLong("tooltipDelay"));
 
         if (nbt.contains("iconLocation", Constants.NBT.TAG_STRING))
         {

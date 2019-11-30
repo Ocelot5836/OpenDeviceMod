@@ -5,7 +5,9 @@ import com.ocelot.opendevices.api.component.ButtonComponent;
 import com.ocelot.opendevices.api.component.Layout;
 import com.ocelot.opendevices.api.component.TextComponent;
 import com.ocelot.opendevices.api.laptop.application.Application;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.Style;
@@ -19,25 +21,24 @@ public class TestApplication extends Application
     public static final ResourceLocation REGISTRY_NAME = new ResourceLocation(OpenDevices.MOD_ID, "test");
 
     private Layout layoutTest;
-    private TextComponent testText;
 
     public TestApplication()
     {
-        //        this.layoutTest = new Layout(DeviceConstants.LAPTOP_MAX_APPLICATION_WIDTH, DeviceConstants.LAPTOP_MAX_APPLICATION_HEIGHT);
         this.layoutTest = new Layout();
 
-        this.testText = new TextComponent(0, 0, Minecraft.DEFAULT_FONT_RENDERER_NAME, Minecraft.getInstance().player.getDisplayName());
-        this.testText.setClickListener((textComponent, mouseX, mouseY, mouseButton) -> this.getWindow().getLaptop().execute(() -> this.testText.setFontRenderer(this.testText.getFontRenderer() == Minecraft.getInstance().fontRenderer ? Minecraft.standardGalacticFontRenderer : Minecraft.DEFAULT_FONT_RENDERER_NAME)));
-        this.layoutTest.addComponent(this.testText);
+        TextComponent testText = new TextComponent(0, 0, Minecraft.DEFAULT_FONT_RENDERER_NAME, Minecraft.getInstance().player.getDisplayName().appendSibling(new ItemStack(Blocks.DIAMOND_BLOCK).getTextComponent()));
+        testText.setClickListener((textComponent, mouseX, mouseY, mouseButton) -> this.getWindow().getLaptop().execute(() -> testText.setFontRenderer(testText.getFontRenderer() == Minecraft.getInstance().fontRenderer ? Minecraft.standardGalacticFontRenderer : Minecraft.DEFAULT_FONT_RENDERER_NAME)));
+        this.layoutTest.addComponent(testText);
 
-        ButtonComponent testButton = new ButtonComponent(0, 16).setText(
-                new StringTextComponent("dick").setStyle(new Style().setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                        new StringTextComponent("Line 1 of the tooltip ")
-                                .appendSibling(Minecraft.getInstance().player.getDisplayName())
-                                .appendSibling(new StringTextComponent(" Some colored text after the player name").setStyle(new Style().setColor(TextFormatting.AQUA)))
-                                .appendSibling(new StringTextComponent(" Testing color overflow"))
-                                .appendSibling(new StringTextComponent(" Seems to work fine to me, and the tooltip wraps after a little bit too! Testing new line character\njust before this\nmight have worked!").setStyle(new Style().setColor(TextFormatting.GOLD))))))
+        ButtonComponent testButton = new ButtonComponent(0, 16);
+        testButton.setText(new StringTextComponent("Press Me!").setStyle(new Style().setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                new StringTextComponent("Line 1 of the tooltip ")
+                        .appendSibling(Minecraft.getInstance().player.getDisplayName())
+                        .appendSibling(new StringTextComponent(" Some colored text after the player name").setStyle(new Style().setColor(TextFormatting.AQUA)))
+                        .appendSibling(new StringTextComponent(" Testing color overflow"))
+                        .appendSibling(new StringTextComponent(" Seems to work fine to me, and the tooltip wraps after a little bit too! Testing new line character\njust before this\nmight have worked!").setStyle(new Style().setColor(TextFormatting.GOLD))))))
         );
+        testButton.setClickListener(((mouseX, mouseY, mouseButton) -> Minecraft.getInstance().player.sendChatMessage("I pressed mouse button " + mouseButton + " at " + mouseX + "," + mouseY + " on the Laptop!")));
         this.layoutTest.addComponent(testButton);
 
         //        int i = 1;

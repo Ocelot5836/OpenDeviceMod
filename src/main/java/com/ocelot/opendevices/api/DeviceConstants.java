@@ -32,6 +32,8 @@ public class DeviceConstants
     public static final int LAPTOP_MAX_APPLICATION_WIDTH = LAPTOP_SCREEN_WIDTH - 2;
     public static final int LAPTOP_MAX_APPLICATION_HEIGHT = LAPTOP_SCREEN_HEIGHT - LAPTOP_WINDOW_BAR_HEIGHT - 2;
 
+    public static final long DEFAULT_TOOLTIP_DELAY = 1000;
+
     public static final float LAPTOP_OPENED_ANGLE = 102;
     public static final float LAPTOP_TE_SCREEN_WIDTH = 12 * 0.0625f;
     public static final float LAPTOP_TE_SCREEN_HEIGHT = ((float) LAPTOP_SCREEN_HEIGHT / (float) LAPTOP_SCREEN_WIDTH) * LAPTOP_TE_SCREEN_WIDTH;
