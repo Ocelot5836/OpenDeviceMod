@@ -1,6 +1,7 @@
 package com.ocelot.opendevices.api.component;
 
 import com.ocelot.opendevices.api.laptop.window.Window;
+import com.ocelot.opendevices.api.util.TooltipRenderer;
 
 /**
  * <p>A simple implementation of {@link Component} that defines some common data shared across all components.</p>
@@ -13,6 +14,21 @@ public abstract class BasicComponent implements Component
     private Window window;
     private float windowX;
     private float windowY;
+
+    @Override
+    public void update()
+    {
+    }
+
+    @Override
+    public void render(int mouseX, int mouseY, float partialTicks)
+    {
+    }
+
+    @Override
+    public void renderOverlay(TooltipRenderer renderer, int mouseX, int mouseY, float partialTicks)
+    {
+    }
 
     @Override
     public boolean onMousePressed(double mouseX, double mouseY, int mouseButton)

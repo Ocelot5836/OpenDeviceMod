@@ -1,6 +1,7 @@
 package com.ocelot.opendevices.api.component;
 
 import com.ocelot.opendevices.OpenDevices;
+import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.handler.ComponentClickListener;
 import com.ocelot.opendevices.api.laptop.Laptop;
 import com.ocelot.opendevices.api.util.RenderUtil;
@@ -13,6 +14,7 @@ import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.StringNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.event.ClickEvent;
 import net.minecraftforge.common.util.Constants;
 
@@ -37,18 +39,26 @@ public class TextComponent extends BasicComponent
     private int x;
     private int y;
     private int maxWidth;
-    private List<ITextComponent> text;
-    private List<Line> lines;
-    private ResourceLocation fontRendererLocation;
-    private FontRenderer fontRenderer;
-    private int width;
 
+    private FontRenderer fontRenderer;
+    private ResourceLocation fontRendererLocation;
+    private List<ITextComponent> text;
+    private long tooltipDelay;
+
+    private List<Line> lines;
+    private long lastTooltip;
+    private int width;
     private ComponentClickListener<ITextComponent> clickListener;
 
     public TextComponent()
     {
+        this.maxWidth = -1;
+
         this.text = new ArrayList<>();
+        this.tooltipDelay = DeviceConstants.DEFAULT_TOOLTIP_DELAY;
+
         this.lines = new ArrayList<>();
+        this.lastTooltip = Long.MAX_VALUE;
     }
 
     public TextComponent(int x, int y, ResourceLocation fontRenderer, ITextComponent... texts)
@@ -71,10 +81,31 @@ public class TextComponent extends BasicComponent
         this.x = x;
         this.y = y;
         this.maxWidth = maxWidth;
+
         this.text = new ArrayList<>();
         this.lines = new ArrayList<>();
+
         this.setFontRenderer(fontRenderer);
+        this.tooltipDelay = DeviceConstants.DEFAULT_TOOLTIP_DELAY;
+
+        this.lastTooltip = Long.MAX_VALUE;
         texts.forEach(this::addLine);
+    }
+
+    public TextComponent(TextComponent other)
+    {
+        this.x = other.x;
+        this.y = other.y;
+        this.maxWidth = other.maxWidth;
+
+        this.fontRenderer = other.fontRenderer;
+        this.fontRendererLocation = other.fontRendererLocation;
+        this.text = new ArrayList<>();
+        this.tooltipDelay = other.tooltipDelay;
+
+        this.lines = new ArrayList<>();
+
+        this.rebuildText();
     }
 
     private void rebuildText()
@@ -110,13 +141,14 @@ public class TextComponent extends BasicComponent
             int yOffset = i * this.fontRenderer.FONT_HEIGHT;
             if (RenderUtil.isMouseInside(mouseX, mouseY, this.getWindowX() + this.x, this.getWindowY() + this.y + yOffset, this.getWindowX() + this.x + line.width, this.getWindowY() + this.y + yOffset + this.fontRenderer.FONT_HEIGHT))
             {
-                int x = 0;
-                for (ITextComponent lineComponent : line.textComponent.getSiblings())
+                double x = this.getWindowX() + this.x;
+                for (ITextComponent lineComponent : line.textComponent)
                 {
-                    x += this.fontRenderer.getStringWidth(lineComponent.getFormattedText());
-                    if (mouseX > x)
-                    {
-                        return lineComponent;
+                    if (lineComponent instanceof StringTextComponent) {
+                        x += this.fontRenderer.getStringWidth(((StringTextComponent)lineComponent).getText());
+                        if (x > mouseX) {
+                            return lineComponent;
+                        }
                     }
                 }
                 break;
@@ -156,9 +188,16 @@ public class TextComponent extends BasicComponent
     @Override
     public void renderOverlay(TooltipRenderer renderer, int mouseX, int mouseY, float partialTicks)
     {
-        if (this.getWindow().isTop())
+        if (this.getWindow().isTop() && this.isHovered(mouseX, mouseY))
         {
-            renderer.renderComponentHoverEffect(this.getHoveredText(mouseX, mouseY), mouseX, mouseY);
+            if (this.lastTooltip == Long.MAX_VALUE)
+                this.lastTooltip = System.currentTimeMillis();
+            if (System.currentTimeMillis() - this.lastTooltip >= this.tooltipDelay)
+                renderer.renderComponentHoverEffect(this.getHoveredText(mouseX, mouseY), mouseX, mouseY);
+        }
+        else
+        {
+            this.lastTooltip = Long.MAX_VALUE;
         }
     }
 
@@ -223,6 +262,22 @@ public class TextComponent extends BasicComponent
     }
 
     /**
+     * @return The text this component displays
+     */
+    public ITextComponent[] getText()
+    {
+        return this.text.toArray(new ITextComponent[0]);
+    }
+
+    /**
+     * @return The time it takes for tooltips to begin rendering
+     */
+    public long getTooltipDelay()
+    {
+        return tooltipDelay;
+    }
+
+    /**
      * @return The set click listener or null if there is no click listener
      */
     @Nullable
@@ -236,9 +291,10 @@ public class TextComponent extends BasicComponent
      *
      * @param x The new x position
      */
-    public void setX(int x)
+    public TextComponent setX(int x)
     {
         this.x = x;
+        return this;
     }
 
     /**
@@ -246,9 +302,10 @@ public class TextComponent extends BasicComponent
      *
      * @param y The new y position
      */
-    public void setY(int y)
+    public TextComponent setY(int y)
     {
         this.y = y;
+        return this;
     }
 
     /**
@@ -257,10 +314,11 @@ public class TextComponent extends BasicComponent
      * @param x The new x position
      * @param y The new y position
      */
-    public void setPosition(int x, int y)
+    public TextComponent setPosition(int x, int y)
     {
         this.x = x;
         this.y = y;
+        return this;
     }
 
     /**
@@ -268,10 +326,11 @@ public class TextComponent extends BasicComponent
      *
      * @param maxWidth The new maximum width
      */
-    public void setMaxWidth(int maxWidth)
+    public TextComponent setMaxWidth(int maxWidth)
     {
         this.maxWidth = maxWidth;
         this.rebuildText();
+        return this;
     }
 
     /**
@@ -279,11 +338,48 @@ public class TextComponent extends BasicComponent
      *
      * @param fontRenderer The new font renderer
      */
-    public void setFontRenderer(ResourceLocation fontRenderer)
+    public TextComponent setFontRenderer(ResourceLocation fontRenderer)
     {
         this.fontRendererLocation = fontRenderer;
         this.fontRenderer = Minecraft.getInstance().getFontResourceManager().getFontRenderer(fontRenderer);
         this.rebuildText();
+        return this;
+    }
+
+    /**
+     * Sets the text displayed on the button to the specified information. In order to call this during a tick, use {@link Laptop#execute(Runnable)}!
+     *
+     * @param text The new text to display
+     */
+    public TextComponent setText(ITextComponent... text)
+    {
+        this.setText(Arrays.asList(text));
+        return this;
+    }
+
+    /**
+     * Sets the text displayed on the button to the specified information. In order to call this during a tick, use {@link Laptop#execute(Runnable)}!
+     *
+     * @param text The new text to display
+     */
+    public TextComponent setText(@Nullable List<ITextComponent> text)
+    {
+        this.text.clear();
+        if (text != null)
+            text.forEach(this::addLine);
+        this.rebuildText();
+        return this;
+    }
+
+    /**
+     * Sets the amount of time in ms it takes for a tooltip to begin rendering.
+     *
+     * @param tooltipDelay The time it takes for tooltips to begin rendering
+     */
+    public TextComponent setTooltipDelay(long tooltipDelay)
+    {
+        this.tooltipDelay = Math.max(0, tooltipDelay);
+        return this;
     }
 
     /**
@@ -291,9 +387,10 @@ public class TextComponent extends BasicComponent
      *
      * @param clickListener The new click listener to use or null to remove the listener
      */
-    public void setClickListener(@Nullable ComponentClickListener<ITextComponent> clickListener)
+    public TextComponent setClickListener(@Nullable ComponentClickListener<ITextComponent> clickListener)
     {
         this.clickListener = clickListener;
+        return this;
     }
 
     @Override
@@ -308,6 +405,8 @@ public class TextComponent extends BasicComponent
         ListNBT textList = new ListNBT();
         this.text.forEach(text -> textList.add(new StringNBT(ITextComponent.Serializer.toJson(text))));
         nbt.put("text", textList);
+
+        nbt.putLong("tooltipDelay", this.tooltipDelay);
 
         return nbt;
     }
@@ -325,6 +424,8 @@ public class TextComponent extends BasicComponent
         {
             this.addLine(ITextComponent.Serializer.fromJson(textList.getString(i)));
         }
+
+        this.tooltipDelay = Math.max(0, nbt.getLong("tooltipDelay"));
     }
 
     private static class Line

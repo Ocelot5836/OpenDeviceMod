@@ -238,6 +238,7 @@ public class WindowClient extends LaptopWindow
         CompoundNBT contentDataNBT = new CompoundNBT();
         this.content.save(contentDataNBT);
         nbt.put("contentData", contentDataNBT);
+
         return nbt;
     }
 
@@ -250,7 +251,9 @@ public class WindowClient extends LaptopWindow
         if (this.content == null || (this.getContentType() == WindowContentType.APPLICATION && !this.getContentId().equals(ApplicationManager.getRegistryName(this.content.getClass()))))
             this.content = createContent(this.getContentType(), this.getContentId());
 
+        assert this.content != null;
         this.content.load(nbt.getCompound("contentData"));
+        this.content.create();
         this.lastX = this.getX();
         this.lastY = this.getY();
     }

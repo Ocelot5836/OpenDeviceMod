@@ -216,7 +216,7 @@ public abstract class Application extends AbstractGui implements WindowContent
             this.currentLayout.setWindow(this.window);
             this.currentLayout.onLayoutLoad();
 
-            if (layout.getWidth() != this.window.getWidth() || layout.getHeight() != this.window.getHeight())
+            if (layout.getWidth() != this.window.getContentWidth() || layout.getHeight() != this.window.getContentHeight())
             {
                 this.window.setSize(this.currentLayout.getWidth(), this.currentLayout.getHeight());
                 this.window.center();// TODO maybe add the ability to center on current position?
