@@ -5,10 +5,7 @@ import com.ocelot.opendevices.api.component.Layout;
 import com.ocelot.opendevices.api.component.TextComponent;
 import com.ocelot.opendevices.api.laptop.application.Application;
 import net.minecraft.client.Minecraft;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.registries.ForgeRegistries;
 
 // TODO move to an example mod
 @Application.Register(OpenDevices.MOD_ID + ":test")
@@ -28,14 +25,14 @@ public class TestApplication extends Application
         this.testText.setClickListener((textComponent, mouseX, mouseY, mouseButton) -> this.getWindow().getLaptop().execute(() -> this.testText.setFontRenderer(this.testText.getFontRenderer() == Minecraft.getInstance().fontRenderer ? Minecraft.standardGalacticFontRenderer : Minecraft.DEFAULT_FONT_RENDERER_NAME)));
         this.layoutTest.addComponent(this.testText);
 
-        int i = 1;
-        for (Item item : ForgeRegistries.ITEMS)
-        {
-            TextComponent text = new TextComponent((i / 21) * 75, (i % 21) * 9, Minecraft.DEFAULT_FONT_RENDERER_NAME, new ItemStack(item).getTextComponent());
-            text.setClickListener((textComponent, mouseX, mouseY, mouseButton) -> this.getWindow().getLaptop().execute(() -> text.setFontRenderer(this.testText.getFontRenderer() == Minecraft.getInstance().fontRenderer ? Minecraft.standardGalacticFontRenderer : Minecraft.DEFAULT_FONT_RENDERER_NAME)));
-            this.layoutTest.addComponent(text);
-            i++;
-        }
+//        int i = 1;
+//        for (Item item : ForgeRegistries.ITEMS)
+//        {
+//            TextComponent text = new TextComponent((i / 21) * 75, (i % 21) * 9, Minecraft.DEFAULT_FONT_RENDERER_NAME, new ItemStack(item).getTextComponent());
+//            text.setClickListener((textComponent, mouseX, mouseY, mouseButton) -> this.getWindow().getLaptop().execute(() -> text.setFontRenderer(this.testText.getFontRenderer() == Minecraft.getInstance().fontRenderer ? Minecraft.standardGalacticFontRenderer : Minecraft.DEFAULT_FONT_RENDERER_NAME)));
+//            this.layoutTest.addComponent(text);
+//            i++;
+//        }
     }
 
     @Override

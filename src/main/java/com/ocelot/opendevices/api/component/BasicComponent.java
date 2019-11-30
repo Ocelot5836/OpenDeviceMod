@@ -1,5 +1,7 @@
 package com.ocelot.opendevices.api.component;
 
+import com.ocelot.opendevices.api.laptop.window.Window;
+
 /**
  * <p>A simple implementation of {@link Component} that defines some common data shared across all components.</p>
  *
@@ -8,6 +10,7 @@ package com.ocelot.opendevices.api.component;
  */
 public abstract class BasicComponent implements Component
 {
+    private Window window;
     private float windowX;
     private float windowY;
 
@@ -67,6 +70,12 @@ public abstract class BasicComponent implements Component
     }
 
     @Override
+    public Window getWindow()
+    {
+        return window;
+    }
+
+    @Override
     public float getWindowX()
     {
         return windowX;
@@ -76,6 +85,12 @@ public abstract class BasicComponent implements Component
     public float getWindowY()
     {
         return windowY;
+    }
+
+    @Override
+    public void setWindow(Window window)
+    {
+        this.window = window;
     }
 
     @Override

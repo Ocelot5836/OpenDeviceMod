@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * <p>Allows the addition of {@link ITextComponent} lines of text to be added to a {@link Layout}.</p>
+ * <p>Allows the addition of {@link ITextComponent} lines of text to a {@link Layout}.</p>
  * <p><i>Note: {@link ClickEvent.Action} will be completely ignored in favor for {@link ComponentClickListener}.</i></p>
  *
  * @author Ocelot
@@ -53,10 +53,20 @@ public class TextComponent extends BasicComponent
 
     public TextComponent(int x, int y, ResourceLocation fontRenderer, ITextComponent... texts)
     {
-        this(x, y, -1, fontRenderer, texts);
+        this(x, y, -1, fontRenderer, Arrays.asList(texts));
     }
 
     public TextComponent(int x, int y, int maxWidth, ResourceLocation fontRenderer, ITextComponent... texts)
+    {
+        this(x, y, maxWidth, fontRenderer, Arrays.asList(texts));
+    }
+
+    public TextComponent(int x, int y, ResourceLocation fontRenderer, List<ITextComponent> texts)
+    {
+        this(x, y, -1, fontRenderer, texts);
+    }
+
+    public TextComponent(int x, int y, int maxWidth, ResourceLocation fontRenderer, List<ITextComponent> texts)
     {
         this.x = x;
         this.y = y;
@@ -64,7 +74,7 @@ public class TextComponent extends BasicComponent
         this.text = new ArrayList<>();
         this.lines = new ArrayList<>();
         this.setFontRenderer(fontRenderer);
-        Arrays.stream(texts).forEach(this::addLine);
+        texts.forEach(this::addLine);
     }
 
     private void rebuildText()
@@ -161,6 +171,12 @@ public class TextComponent extends BasicComponent
             }
         }
         return super.onMousePressed(mouseX, mouseY, mouseButton);
+    }
+
+    @Override
+    public TextComponent copy()
+    {
+        return new TextComponent(this.x, this.y, this.maxWidth, this.fontRendererLocation, this.text);
     }
 
     @Override

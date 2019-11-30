@@ -1,5 +1,6 @@
 package com.ocelot.opendevices.api.component;
 
+import com.ocelot.opendevices.api.laptop.window.Window;
 import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.api.util.TooltipRenderer;
 import net.minecraft.nbt.CompoundNBT;
@@ -115,6 +116,12 @@ public interface Component extends INBTSerializable<CompoundNBT>
     void onLayoutUnload();
 
     /**
+     * @return An exact copy of this component
+     */
+    @SuppressWarnings("unused")
+    Component copy();
+
+    /**
      * Checks to see if this component is hovered or not.
      *
      * @param mouseX The x position of the mouse
@@ -137,6 +144,11 @@ public interface Component extends INBTSerializable<CompoundNBT>
     int getY();
 
     /**
+     * @return The window this component is in
+     */
+    Window getWindow();
+
+    /**
      * @return The x position of the start of the window frame
      */
     float getWindowX();
@@ -155,6 +167,13 @@ public interface Component extends INBTSerializable<CompoundNBT>
      * @return The y size of this component
      */
     int getHeight();
+
+    /**
+     * Sets the window instance for this component
+     *
+     * @param window The new window
+     */
+    void setWindow(Window window);
 
     /**
      * Updates the position of the screen to the provided values.

@@ -217,6 +217,14 @@ public class Layout extends BasicComponent
     }
 
     @Override
+    public Layout copy()
+    {
+        Layout copy = new Layout(this.x, this.y, this.width, this.height);
+        copy.addComponents(this.components);
+        return copy;
+    }
+
+    @Override
     public int getX()
     {
         return x;

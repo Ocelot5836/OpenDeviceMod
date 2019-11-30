@@ -38,5 +38,6 @@ public class DeviceConstants
 
     public static final ResourceLocation DEFAULT_BACKGROUND_LOCATION = new ResourceLocation(OpenDevices.MOD_ID, "textures/laptop/default_background.png");
     public static final ResourceLocation WINDOW_LOCATION = new ResourceLocation(OpenDevices.MOD_ID, "textures/laptop/window.png");
+    public static final ResourceLocation COMPONENTS_LOCATION = new ResourceLocation(OpenDevices.MOD_ID, "textures/laptop/component.png");
 
 }
