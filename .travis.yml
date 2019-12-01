@@ -1,12 +1,11 @@
-install: gradle wrapper --gradle-version 4.9
-cache: bundler
-
 language: java
-jdk:
-  - openjdk9
-
+jdk: oraclejdk8
 before_install:
-  - chmod +x gradlew
+  - wget https://files.minecraftforge.net/maven/net/minecraftforge/forge/1.14.4-28.1.96/forge-1.14.4-28.1.96-mdk.zip
+  - unzip -n forge-1.14.4-28.1.96-mdk.zip
+  - rm forge-1.14.4-28.1.96-mdk.zip
+install: ./gradlew setupCiWorkspace
+script: ./gradlew build
   
 after_success:
   - wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh
