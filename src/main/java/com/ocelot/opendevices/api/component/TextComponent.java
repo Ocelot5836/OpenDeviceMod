@@ -203,10 +203,18 @@ public class TextComponent extends BasicComponent
     @Override
     public boolean onMousePressed(double mouseX, double mouseY, int mouseButton)
     {
-        if (this.clickListener != null)
+        ITextComponent hoveredText = this.getHoveredText(mouseX, mouseY);
+        if (hoveredText != null)
         {
-            ITextComponent hoveredText = this.getHoveredText(mouseX, mouseY);
-            if (hoveredText != null && this.clickListener.handle(hoveredText, mouseX, mouseY, mouseButton))
+            if (this.clickListener != null)
+            {
+                if (this.clickListener.handle(hoveredText, mouseX, mouseY, mouseButton))
+                {
+                    this.playPressSound(mouseX, mouseY, mouseButton);
+                    return true;
+                }
+            }
+            else
             {
                 this.playPressSound(mouseX, mouseY, mouseButton);
                 return true;

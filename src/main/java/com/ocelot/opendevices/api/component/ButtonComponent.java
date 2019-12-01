@@ -215,10 +215,21 @@ public class ButtonComponent extends BasicComponent
     @Override
     public boolean onMousePressed(double mouseX, double mouseY, int mouseButton)
     {
-        if (this.clickListener != null && this.isHovered(mouseX, mouseY)&&this.clickListener.handle(mouseX, mouseY, mouseButton))
+        if (this.isHovered(mouseX, mouseY))
         {
-            this.playPressSound(mouseX, mouseY, mouseButton);
-            return true;
+            if (this.clickListener != null)
+            {
+                if (this.clickListener.handle(mouseX, mouseY, mouseButton))
+                {
+                    this.playPressSound(mouseX, mouseY, mouseButton);
+                    return true;
+                }
+            }
+            else
+            {
+                this.playPressSound(mouseX, mouseY, mouseButton);
+                return true;
+            }
         }
         return super.onMousePressed(mouseX, mouseY, mouseButton);
     }
