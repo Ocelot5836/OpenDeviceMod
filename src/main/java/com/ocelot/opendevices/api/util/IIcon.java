@@ -1,7 +1,6 @@
-package com.ocelot.opendevices.api.component;
+package com.ocelot.opendevices.api.util;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import com.ocelot.opendevices.api.util.RenderUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 

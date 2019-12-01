@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.handler.ClickListener;
+import com.ocelot.opendevices.api.util.IIcon;
 import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.api.util.TooltipRenderer;
 import net.minecraft.client.Minecraft;
@@ -19,7 +20,7 @@ import javax.annotation.Nullable;
 import static org.lwjgl.opengl.GL11.*;
 
 /**
- * <p>Allows the addition of buttons to a {@link Layout}.</p>
+ * <p>Allows the addition of clickable buttons to a {@link Layout}.</p>
  *
  * @author Ocelot
  * @see Layout
@@ -299,7 +300,7 @@ public class ButtonComponent extends BasicComponent
     }
 
     /**
-     * The font renderer used to draw text
+     * @return The font renderer used to draw text
      */
     public FontRenderer getFontRenderer()
     {
@@ -307,7 +308,7 @@ public class ButtonComponent extends BasicComponent
     }
 
     /**
-     * @return The text to displayed on the button or null if there is no text displayed
+     * @return The text displayed on the button or null if there is no text displayed
      */
     @Nullable
     public ITextComponent getText()
@@ -316,7 +317,7 @@ public class ButtonComponent extends BasicComponent
     }
 
     /**
-     * @return The time it takes for tooltips to begin rendering
+     * @return The time it takes for tooltips to begin rendering in ms
      */
     public long getTooltipDelay()
     {
@@ -499,9 +500,9 @@ public class ButtonComponent extends BasicComponent
     }
 
     /**
-     * Sets the amount of time in ms it takes for a tooltip to begin rendering.
+     * Sets the amount of time in ms <i>(1/1000 of a second)</i> it takes for a tooltip to begin rendering.
      *
-     * @param tooltipDelay The time it takes for tooltips to begin rendering
+     * @param tooltipDelay The time it takes for tooltips to begin rendering in ms
      */
     public ButtonComponent setTooltipDelay(long tooltipDelay)
     {
