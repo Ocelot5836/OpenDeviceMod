@@ -1,4 +1,5 @@
 install: gradle wrapper --gradle-version 4.9
+cache: bundler
 
 language: java
 jdk:
