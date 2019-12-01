@@ -46,15 +46,6 @@ public class TestApplication extends Application
                         .appendSibling(new StringTextComponent(" Testing color overflow"))
                         .appendSibling(new StringTextComponent(" Seems to work fine to me, and the tooltip wraps after a little bit too! Testing new line character\njust before this\nmight have worked!").setStyle(new Style().setColor(TextFormatting.GOLD))))))
         );
-        testButton.setClickListener(((mouseX, mouseY, mouseButton) ->
-        {
-            if (mouseButton == 0)
-            {
-                Minecraft.getInstance().player.sendChatMessage("I pressed mouse button " + mouseButton + " at " + mouseX + "," + mouseY + " on the Laptop!");
-                return true;
-            }
-            return false;
-        }));
         this.layoutTest.addComponent(testButton);
 
         //        int i = 1;

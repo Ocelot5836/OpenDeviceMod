@@ -44,6 +44,11 @@ public class Layout extends BasicComponent
         this.deserializeNBT(nbt);
     }
 
+    public Layout()
+    {
+        this(0, 0, DeviceConstants.LAPTOP_DEFAULT_APPLICATION_WIDTH, DeviceConstants.LAPTOP_DEFAULT_APPLICATION_HEIGHT);
+    }
+
     public Layout(int width, int height)
     {
         this(0, 0, width, height);
