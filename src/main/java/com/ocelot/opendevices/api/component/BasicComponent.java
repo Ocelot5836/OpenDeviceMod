@@ -2,6 +2,7 @@ package com.ocelot.opendevices.api.component;
 
 import com.ocelot.opendevices.api.laptop.window.Window;
 import com.ocelot.opendevices.api.util.TooltipRenderer;
+import net.minecraft.client.gui.AbstractGui;
 
 /**
  * <p>A simple implementation of {@link Component} that defines some common data shared across all components.</p>
@@ -9,11 +10,12 @@ import com.ocelot.opendevices.api.util.TooltipRenderer;
  * @author Ocelot
  * @see Layout
  */
-public abstract class BasicComponent implements Component
+public abstract class BasicComponent extends AbstractGui implements Component
 {
     private Window window;
     private float windowX;
     private float windowY;
+    private boolean dirty;
 
     @Override
     public void update()
@@ -86,6 +88,18 @@ public abstract class BasicComponent implements Component
     }
 
     @Override
+    public void markDirty()
+    {
+        this.dirty = true;
+    }
+
+    @Override
+    public void removeDirtyMarker()
+    {
+        this.dirty = false;
+    }
+
+    @Override
     public Window getWindow()
     {
         return window;
@@ -101,6 +115,12 @@ public abstract class BasicComponent implements Component
     public float getWindowY()
     {
         return windowY;
+    }
+
+    @Override
+    public boolean isDirty()
+    {
+        return dirty;
     }
 
     @Override

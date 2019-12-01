@@ -116,10 +116,14 @@ public interface Component extends INBTSerializable<CompoundNBT>
     void onLayoutUnload();
 
     /**
-     * @return An exact copy of this component
+     * Marks this component to be sent to all clients.
      */
-    @SuppressWarnings("unused")
-    Component copy();
+    void markDirty();
+
+    /**
+     * Marks this component as having been sent to clients and resets the dirty marker.
+     */
+    void removeDirtyMarker();
 
     /**
      * Checks to see if this component is hovered or not.
@@ -167,6 +171,11 @@ public interface Component extends INBTSerializable<CompoundNBT>
      * @return The y size of this component
      */
     int getHeight();
+
+    /**
+     * @return Whether or not this component needs to be synced with the client
+     */
+    boolean isDirty();
 
     /**
      * Sets the window instance for this component

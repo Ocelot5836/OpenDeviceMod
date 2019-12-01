@@ -50,7 +50,7 @@ public class TextComponent extends BasicComponent
     private int width;
     private ComponentClickListener<ITextComponent> clickListener;
 
-    public TextComponent()
+    public TextComponent(CompoundNBT nbt)
     {
         this.maxWidth = -1;
 
@@ -59,6 +59,8 @@ public class TextComponent extends BasicComponent
 
         this.lines = new ArrayList<>();
         this.lastTooltip = Long.MAX_VALUE;
+
+        this.deserializeNBT(nbt);
     }
 
     public TextComponent(int x, int y, ResourceLocation fontRenderer, ITextComponent... texts)
@@ -90,22 +92,6 @@ public class TextComponent extends BasicComponent
 
         this.lastTooltip = Long.MAX_VALUE;
         texts.forEach(this::addLine);
-    }
-
-    public TextComponent(TextComponent other)
-    {
-        this.x = other.x;
-        this.y = other.y;
-        this.maxWidth = other.maxWidth;
-
-        this.fontRenderer = other.fontRenderer;
-        this.fontRendererLocation = other.fontRendererLocation;
-        this.text = new ArrayList<>();
-        this.tooltipDelay = other.tooltipDelay;
-
-        this.lines = new ArrayList<>();
-
-        this.rebuildText();
     }
 
     private void rebuildText()
@@ -227,12 +213,6 @@ public class TextComponent extends BasicComponent
             }
         }
         return super.onMousePressed(mouseX, mouseY, mouseButton);
-    }
-
-    @Override
-    public TextComponent copy()
-    {
-        return new TextComponent(this.x, this.y, this.maxWidth, this.fontRendererLocation, this.text);
     }
 
     @Override

@@ -72,11 +72,10 @@ public class ComponentSerializer
         if (!DeviceRegistries.COMPONENTS.containsKey(registryName))
             throw new RuntimeException("Attempted to deserialize unregistered component: '" + registryName + "'! Must be registered using ComponentSerializer registry annotation.");
 
-        T component = createComponent(registryName);
+        T component = createComponent(registryName, data);
         if (component == null)
             throw new RuntimeException("Component could not create itself due to an error: " + registryName);
 
-        component.deserializeNBT(data);
         return component;
     }
 
@@ -87,7 +86,7 @@ public class ComponentSerializer
      * @return The component created or null if there was an error
      */
     @Nullable
-    public static <T extends Component> T createComponent(ResourceLocation registryName)
+    public static <T extends Component> T createComponent(ResourceLocation registryName, CompoundNBT nbt)
     {
         if (!DeviceRegistries.COMPONENTS.containsKey(registryName))
         {
@@ -96,7 +95,7 @@ public class ComponentSerializer
 
         try
         {
-            return (T) getComponentClass(registryName).newInstance();
+            return (T) getComponentClass(registryName).getConstructor(CompoundNBT.class).newInstance(nbt);
         }
         catch (Exception e)
         {

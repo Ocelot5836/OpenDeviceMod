@@ -66,9 +66,16 @@ public class ButtonComponent extends BasicComponent
     private long lastTooltip;
     private ClickListener clickListener;
 
-    public ButtonComponent()
+    public ButtonComponent(CompoundNBT nbt)
     {
-        this(0, 0);
+        this.setPadding(5);
+        this.setFontRenderer(Minecraft.DEFAULT_FONT_RENDERER_NAME);
+        this.tooltipDelay = DeviceConstants.DEFAULT_TOOLTIP_DELAY;
+        this.lastTooltip = Long.MAX_VALUE;
+
+        this.state = ButtonState.VISIBLE;
+
+        this.deserializeNBT(nbt);
     }
 
     public ButtonComponent(int x, int y)
@@ -81,40 +88,6 @@ public class ButtonComponent extends BasicComponent
         this.lastTooltip = Long.MAX_VALUE;
 
         this.state = ButtonState.VISIBLE;
-    }
-
-    public ButtonComponent(ButtonComponent other)
-    {
-        this.x = other.x;
-        this.y = other.y;
-        this.width = other.width;
-        this.height = other.height;
-        this.padding = other.padding;
-        this.explicitWidth = other.explicitWidth;
-        this.explicitHeight = other.explicitHeight;
-
-        this.fontRenderer = other.fontRenderer;
-        this.fontRendererLocation = other.fontRendererLocation;
-        this.text = other.text;
-        this.tooltipDelay = other.tooltipDelay;
-
-        this.iconLocation = other.iconLocation;
-        this.iconU = other.iconU;
-        this.iconV = other.iconV;
-        this.iconWidth = other.iconWidth;
-        this.iconHeight = other.iconHeight;
-        this.iconTextureWidth = other.iconTextureWidth;
-        this.iconTextureHeight = other.iconTextureHeight;
-
-        this.state = other.state;
-        this.disabledButtonColor = other.disabledButtonColor;
-        this.buttonColor = other.buttonColor;
-        this.hoveredButtonColor = other.hoveredButtonColor;
-        this.disabledTextColor = other.disabledTextColor;
-        this.textColor = other.textColor;
-        this.hoveredTextColor = other.hoveredTextColor;
-
-        this.updateTextCache();
     }
 
     private void updateTextCache()
@@ -248,12 +221,6 @@ public class ButtonComponent extends BasicComponent
             return true;
         }
         return super.onMousePressed(mouseX, mouseY, mouseButton);
-    }
-
-    @Override
-    public ButtonComponent copy()
-    {
-        return new ButtonComponent(this);
     }
 
     /**

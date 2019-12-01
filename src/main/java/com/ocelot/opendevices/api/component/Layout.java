@@ -37,9 +37,11 @@ public class Layout extends BasicComponent
 
     private List<Component> components;
 
-    public Layout()
+    public Layout(CompoundNBT nbt)
     {
-        this(0, 0, DeviceConstants.LAPTOP_DEFAULT_APPLICATION_WIDTH, DeviceConstants.LAPTOP_DEFAULT_APPLICATION_HEIGHT);
+        this.components = new ArrayList<>();
+
+        this.deserializeNBT(nbt);
     }
 
     public Layout(int width, int height)
@@ -215,14 +217,6 @@ public class Layout extends BasicComponent
     public void onLayoutUnload()
     {
         this.components.forEach(Component::onLayoutUnload);
-    }
-
-    @Override
-    public Layout copy()
-    {
-        Layout copy = new Layout(this.x, this.y, this.width, this.height);
-        copy.addComponents(this.components);
-        return copy;
     }
 
     @Override
