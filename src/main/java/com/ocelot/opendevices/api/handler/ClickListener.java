@@ -13,6 +13,7 @@ public interface ClickListener
      * @param mouseX      The x position of the mouse
      * @param mouseY      The y position of the mouse
      * @param mouseButton The button on the mouse pressed
+     * @return Whether or not the action was handled
      */
-    void handle(double mouseX, double mouseY, int mouseButton);
+    boolean handle(double mouseX, double mouseY, int mouseButton);
 }

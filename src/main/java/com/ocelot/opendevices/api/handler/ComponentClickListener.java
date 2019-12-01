@@ -15,6 +15,7 @@ public interface ComponentClickListener<T>
      * @param mouseX      The x position of the mouse
      * @param mouseY      The y position of the mouse
      * @param mouseButton The button on the mouse pressed
+     * @return Whether or not the action was handled
      */
-    void handle(T component, double mouseX, double mouseY, int mouseButton);
+    boolean handle(T component, double mouseX, double mouseY, int mouseButton);
 }

@@ -8,9 +8,11 @@ import com.ocelot.opendevices.api.util.IIcon;
 import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.api.util.TooltipRenderer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.StringUtils;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.util.Constants;
@@ -156,6 +158,18 @@ public class ButtonComponent extends BasicComponent
             this.height = height;
     }
 
+    /**
+     * Plays the sound when this component is pressed.
+     *
+     * @param mouseX      The x position of the mouse
+     * @param mouseY      The y position of the mouse
+     * @param mouseButton The button pressed
+     */
+    protected void playPressSound(double mouseX, double mouseY, int mouseButton)
+    {
+        Minecraft.getInstance().getSoundHandler().play(SimpleSound.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+    }
+
     @Override
     public void render(int mouseX, int mouseY, float partialTicks)
     {
@@ -228,9 +242,10 @@ public class ButtonComponent extends BasicComponent
     @Override
     public boolean onMousePressed(double mouseX, double mouseY, int mouseButton)
     {
-        if (this.clickListener != null && this.isHovered(mouseX, mouseY))
+        if (this.clickListener != null && this.isHovered(mouseX, mouseY)&&this.clickListener.handle(mouseX, mouseY, mouseButton))
         {
-            this.clickListener.handle(mouseX, mouseY, mouseButton);
+            this.playPressSound(mouseX, mouseY, mouseButton);
+            return true;
         }
         return super.onMousePressed(mouseX, mouseY, mouseButton);
     }

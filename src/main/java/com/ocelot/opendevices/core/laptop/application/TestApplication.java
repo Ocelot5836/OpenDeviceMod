@@ -27,7 +27,15 @@ public class TestApplication extends Application
         this.layoutTest = new Layout();
 
         TextComponent testText = new TextComponent(0, 0, Minecraft.DEFAULT_FONT_RENDERER_NAME, Minecraft.getInstance().player.getDisplayName().appendSibling(new ItemStack(Blocks.DIAMOND_BLOCK).getTextComponent()));
-        testText.setClickListener((textComponent, mouseX, mouseY, mouseButton) -> this.getWindow().getLaptop().execute(() -> testText.setFontRenderer(testText.getFontRenderer() == Minecraft.getInstance().fontRenderer ? Minecraft.standardGalacticFontRenderer : Minecraft.DEFAULT_FONT_RENDERER_NAME)));
+        testText.setClickListener((textComponent, mouseX, mouseY, mouseButton) ->
+        {
+            if (mouseButton == 0)
+            {
+                this.getWindow().getLaptop().execute(() -> testText.setFontRenderer(testText.getFontRenderer() == Minecraft.getInstance().fontRenderer ? Minecraft.standardGalacticFontRenderer : Minecraft.DEFAULT_FONT_RENDERER_NAME));
+                return true;
+            }
+            return false;
+        });
         this.layoutTest.addComponent(testText);
 
         ButtonComponent testButton = new ButtonComponent(0, 16);
@@ -38,7 +46,15 @@ public class TestApplication extends Application
                         .appendSibling(new StringTextComponent(" Testing color overflow"))
                         .appendSibling(new StringTextComponent(" Seems to work fine to me, and the tooltip wraps after a little bit too! Testing new line character\njust before this\nmight have worked!").setStyle(new Style().setColor(TextFormatting.GOLD))))))
         );
-        testButton.setClickListener(((mouseX, mouseY, mouseButton) -> Minecraft.getInstance().player.sendChatMessage("I pressed mouse button " + mouseButton + " at " + mouseX + "," + mouseY + " on the Laptop!")));
+        testButton.setClickListener(((mouseX, mouseY, mouseButton) ->
+        {
+            if (mouseButton == 0)
+            {
+                Minecraft.getInstance().player.sendChatMessage("I pressed mouse button " + mouseButton + " at " + mouseX + "," + mouseY + " on the Laptop!");
+                return true;
+            }
+            return false;
+        }));
         this.layoutTest.addComponent(testButton);
 
         //        int i = 1;

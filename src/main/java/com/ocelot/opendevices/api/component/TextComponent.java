@@ -144,9 +144,11 @@ public class TextComponent extends BasicComponent
                 double x = this.getWindowX() + this.x;
                 for (ITextComponent lineComponent : line.textComponent)
                 {
-                    if (lineComponent instanceof StringTextComponent) {
-                        x += this.fontRenderer.getStringWidth(((StringTextComponent)lineComponent).getText());
-                        if (x > mouseX) {
+                    if (lineComponent instanceof StringTextComponent)
+                    {
+                        x += this.fontRenderer.getStringWidth(((StringTextComponent) lineComponent).getText());
+                        if (x > mouseX)
+                        {
                             return lineComponent;
                         }
                     }
@@ -156,6 +158,17 @@ public class TextComponent extends BasicComponent
         }
 
         return null;
+    }
+
+    /**
+     * Plays the sound when this component is pressed.
+     *
+     * @param mouseX      The x position of the mouse
+     * @param mouseY      The y position of the mouse
+     * @param mouseButton The button pressed
+     */
+    protected void playPressSound(double mouseX, double mouseY, int mouseButton)
+    {
     }
 
     /**
@@ -207,9 +220,10 @@ public class TextComponent extends BasicComponent
         if (this.clickListener != null)
         {
             ITextComponent hoveredText = this.getHoveredText(mouseX, mouseY);
-            if (hoveredText != null)
+            if (hoveredText != null && this.clickListener.handle(hoveredText, mouseX, mouseY, mouseButton))
             {
-                this.clickListener.handle(hoveredText, mouseX, mouseY, mouseButton);
+                this.playPressSound(mouseX, mouseY, mouseButton);
+                return true;
             }
         }
         return super.onMousePressed(mouseX, mouseY, mouseButton);
