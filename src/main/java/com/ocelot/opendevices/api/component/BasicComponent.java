@@ -15,7 +15,6 @@ public abstract class BasicComponent extends AbstractGui implements Component
     private Window window;
     private float windowX;
     private float windowY;
-    private boolean dirty;
 
     @Override
     public void update()
@@ -42,6 +41,17 @@ public abstract class BasicComponent extends AbstractGui implements Component
     public boolean onMouseReleased(double mouseX, double mouseY, int mouseButton)
     {
         return false;
+    }
+
+    @Override
+    public boolean onMouseScrolled(double mouseX, double mouseY, double amount)
+    {
+        return false;
+    }
+
+    @Override
+    public void onMouseMoved(double mouseX, double mouseY)
+    {
     }
 
     @Override
@@ -88,18 +98,6 @@ public abstract class BasicComponent extends AbstractGui implements Component
     }
 
     @Override
-    public void markDirty()
-    {
-        this.dirty = true;
-    }
-
-    @Override
-    public void removeDirtyMarker()
-    {
-        this.dirty = false;
-    }
-
-    @Override
     public Window getWindow()
     {
         return window;
@@ -115,12 +113,6 @@ public abstract class BasicComponent extends AbstractGui implements Component
     public float getWindowY()
     {
         return windowY;
-    }
-
-    @Override
-    public boolean isDirty()
-    {
-        return dirty;
     }
 
     @Override

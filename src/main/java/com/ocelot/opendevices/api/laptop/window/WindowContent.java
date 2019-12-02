@@ -81,6 +81,24 @@ public interface WindowContent
     boolean onMouseReleased(double mouseX, double mouseY, int mouseButton);
 
     /**
+     * Called when the mouse wheel is scrolled.
+     *
+     * @param mouseX The x position of the mouse
+     * @param mouseY The y position of the mouse
+     * @param amount The amount scrolled
+     * @return Whether or not the action was handled
+     */
+    boolean onMouseScrolled(double mouseX, double mouseY, double amount);
+
+    /**
+     * Called when the mouse is moved.
+     *
+     * @param mouseX The x position of the mouse
+     * @param mouseY The y position of the mouse
+     */
+    void onMouseMoved(double mouseX, double mouseY);
+
+    /**
      * Called when the mouse is moved while being pressed.
      *
      * @param mouseX      The x position of the mouse

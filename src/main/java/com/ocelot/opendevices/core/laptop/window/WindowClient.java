@@ -92,6 +92,8 @@ public class WindowClient extends LaptopWindow
             RenderUtil.disableScissor();
         }
 
+        GlStateManager.color4f(1f, 1f, 1f, 1f);
+
         TextureAtlasSprite icon = this.content.getIconSprite();
         int titleOffset = 0;
         if (icon != null)
@@ -110,7 +112,7 @@ public class WindowClient extends LaptopWindow
         RenderUtil.glColor(0xff000000 | color);
         this.closeButton.setPosition(this, partialTicks);
         this.closeButton.render(mouseX, mouseY, partialTicks);
-        RenderUtil.glColor(0xffffffff);
+        GlStateManager.color4f(1f, 1f, 1f, 1f);
     }
 
     public void renderOverlay(TooltipRenderer renderer, int mouseX, int mouseY, float partialTicks)
@@ -140,6 +142,18 @@ public class WindowClient extends LaptopWindow
     public boolean onMouseReleased(double mouseX, double mouseY, int mouseButton)
     {
         return this.content.onMouseReleased(mouseX, mouseY, mouseButton);
+    }
+
+    @Override
+    public boolean onMouseScrolled(double mouseX, double mouseY, double amount)
+    {
+        return this.content.onMouseScrolled(mouseX, mouseY, amount);
+    }
+
+    @Override
+    public void onMouseMoved(double mouseX, double mouseY)
+    {
+        this.content.onMouseMoved(mouseX, mouseY);
     }
 
     @Override

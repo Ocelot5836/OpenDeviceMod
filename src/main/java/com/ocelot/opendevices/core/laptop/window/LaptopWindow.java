@@ -156,6 +156,15 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
         return false;
     }
 
+    public boolean onMouseScrolled(double mouseX, double mouseY, double amount)
+    {
+        return false;
+    }
+
+    public void onMouseMoved(double mouseX, double mouseY)
+    {
+    }
+
     public boolean onMouseDragged(double mouseX, double mouseY, int mouseButton, double deltaX, double detaY)
     {
         return false;

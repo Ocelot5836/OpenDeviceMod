@@ -1,8 +1,8 @@
 package com.ocelot.opendevices.api.laptop.application;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import com.ocelot.opendevices.api.component.ComponentSerializer;
 import com.ocelot.opendevices.api.DeviceConstants;
+import com.ocelot.opendevices.api.component.ComponentSerializer;
 import com.ocelot.opendevices.api.component.Layout;
 import com.ocelot.opendevices.api.laptop.desktop.Desktop;
 import com.ocelot.opendevices.api.laptop.window.Window;
@@ -80,6 +80,21 @@ public abstract class Application extends AbstractGui implements WindowContent
     public boolean onMouseReleased(double mouseX, double mouseY, int mouseButton)
     {
         return this.currentLayout != null && this.currentLayout.onMouseReleased(mouseX, mouseY, mouseButton);
+    }
+
+    @Override
+    public boolean onMouseScrolled(double mouseX, double mouseY, double amount)
+    {
+        return this.currentLayout != null && this.currentLayout.onMouseScrolled(mouseX, mouseY, amount);
+    }
+
+    @Override
+    public void onMouseMoved(double mouseX, double mouseY)
+    {
+        if (this.currentLayout != null)
+        {
+            this.currentLayout.onMouseMoved(mouseX, mouseY);
+        }
     }
 
     @Override

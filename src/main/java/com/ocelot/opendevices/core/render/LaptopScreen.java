@@ -147,7 +147,7 @@ public class LaptopScreen extends Screen implements TooltipRenderer
     }
 
     @Override
-    public boolean keyReleased(int keyCode, int scanCode, int p_223281_3_)
+    public boolean keyReleased(int keyCode, int scanCode, int mods)
     {
         if (this.draggingWindow == null)
         {
@@ -158,28 +158,7 @@ public class LaptopScreen extends Screen implements TooltipRenderer
                 return true;
             }
         }
-        return super.keyReleased(keyCode, scanCode, p_223281_3_);
-    }
-
-    @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int mouseButton, double deltaX, double deltaY)
-    {
-        LaptopDesktop desktop = this.laptop.getDesktop();
-        if (this.draggingWindow != null)
-        {
-            this.draggingWindow.move((float) deltaX, (float) deltaY);
-            return true;
-        }
-        else if (desktop.getFocusedWindow() != null)
-        {
-            WindowClient window = (WindowClient) desktop.getFocusedWindow();
-            if (window.isWithinContent(mouseX, mouseY) && window.onMouseDragged(mouseX, mouseY, mouseButton, deltaX, deltaY))
-            {
-                return true;
-            }
-        }
-
-        return super.mouseDragged(mouseX, mouseY, mouseButton, deltaX, deltaY);
+        return super.keyReleased(keyCode, scanCode, mods);
     }
 
     @Override
@@ -284,6 +263,57 @@ public class LaptopScreen extends Screen implements TooltipRenderer
         }
 
         return super.mouseReleased(mouseX, mouseY, mouseButton);
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount)
+    {
+        if (this.draggingWindow == null)
+        {
+            LaptopDesktop desktop = this.laptop.getDesktop();
+            LaptopWindow focusedWindow = desktop.getFocusedWindow();
+            if (focusedWindow != null && focusedWindow.onMouseScrolled(mouseX, mouseY, amount))
+            {
+                return true;
+            }
+        }
+
+        return super.mouseScrolled(mouseX, mouseY, amount);
+    }
+
+    @Override
+    public void mouseMoved(double mouseX, double mouseY)
+    {
+        if (this.draggingWindow == null)
+        {
+            LaptopDesktop desktop = this.laptop.getDesktop();
+            LaptopWindow focusedWindow = desktop.getFocusedWindow();
+            if (focusedWindow != null)
+            {
+                focusedWindow.onMouseMoved(mouseX, mouseY);
+            }
+        }
+    }
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int mouseButton, double deltaX, double deltaY)
+    {
+        LaptopDesktop desktop = this.laptop.getDesktop();
+        if (this.draggingWindow != null)
+        {
+            this.draggingWindow.move((float) deltaX, (float) deltaY);
+            return true;
+        }
+        else if (desktop.getFocusedWindow() != null)
+        {
+            WindowClient window = (WindowClient) desktop.getFocusedWindow();
+            if (window.isWithinContent(mouseX, mouseY) && window.onMouseDragged(mouseX, mouseY, mouseButton, deltaX, deltaY))
+            {
+                return true;
+            }
+        }
+
+        return super.mouseDragged(mouseX, mouseY, mouseButton, deltaX, deltaY);
     }
 
     @Override

@@ -163,6 +163,80 @@ public class RenderUtil
         tessellator.draw();
     }
 
+    public static void drawSizedRectWithTexture(float x, float y, float u, float v, float width, float height, float tileWidth, float tileHeight)
+    {
+        drawSizedRectWithTexture(x, y, 0, u, v, width, height, tileWidth, tileHeight, 256, 256);
+    }
+
+    public static void drawSizedRectWithTexture(float x, float y, float u, float v, float width, float height, float tileWidth, float tileHeight, int sourceWidth, int sourceHeight)
+    {
+        drawSizedRectWithTexture(x, y, 0, u, v, width, height, tileWidth, tileHeight, sourceWidth, sourceHeight);
+    }
+
+    public static void drawSizedRectWithTexture(float x, float y, float z, float u, float v, float width, float height, float tileWidth, float tileHeight)
+    {
+        drawSizedRectWithTexture(x, y, z, u, v, width, height, tileWidth, tileHeight, 256, 256);
+    }
+
+    public static void drawSizedRectWithTexture(float x, float y, float z, float u, float v, float width, float height, float tileWidth, float tileHeight, int sourceWidth, int sourceHeight)
+    {
+        float scaleWidth = 1.0F / sourceWidth;
+        float scaleHeight = 1.0F / sourceHeight;
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder buffer = tessellator.getBuffer();
+        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+
+        /* Corners */
+        buffer.pos(x, y + tileHeight, z).tex(u * scaleWidth, (v + tileHeight) * scaleHeight).endVertex();
+        buffer.pos(x + tileWidth, y + tileHeight, z).tex((u + tileWidth) * scaleWidth, (v + tileHeight) * scaleHeight).endVertex();
+        buffer.pos(x + tileWidth, y, z).tex((u + tileWidth) * scaleWidth, v * scaleHeight).endVertex();
+        buffer.pos(x, y, z).tex(u * scaleWidth, v * scaleHeight).endVertex();
+
+        buffer.pos(x + width - tileWidth, y + tileHeight, z).tex((u + tileWidth * 2) * scaleWidth, (v + tileHeight) * scaleHeight).endVertex();
+        buffer.pos(x + width, y + tileHeight, z).tex((u + tileWidth * 3) * scaleWidth, (v + tileHeight) * scaleHeight).endVertex();
+        buffer.pos(x + width, y, z).tex((u + tileWidth * 3) * scaleWidth, v * scaleHeight).endVertex();
+        buffer.pos(x + width - tileWidth, y, z).tex((u + tileWidth * 2) * scaleWidth, v * scaleHeight).endVertex();
+
+        buffer.pos(x, y + height, z).tex(u * scaleWidth, (v + tileHeight * 3) * scaleHeight).endVertex();
+        buffer.pos(x + tileWidth, y + height, z).tex((u + tileWidth) * scaleWidth, (v + tileHeight * 3) * scaleHeight).endVertex();
+        buffer.pos(x + tileWidth, y + height - tileHeight, z).tex((u + tileWidth) * scaleWidth, (v + tileHeight * 2) * scaleHeight).endVertex();
+        buffer.pos(x, y + height - tileHeight, z).tex(u * scaleWidth, (v + tileHeight * 2) * scaleHeight).endVertex();
+
+        buffer.pos(x + width - tileWidth, y + height, z).tex((u + tileWidth * 2) * scaleWidth, (v + tileHeight * 3) * scaleHeight).endVertex();
+        buffer.pos(x + width, y + height, z).tex((u + tileWidth * 3) * scaleWidth, (v + tileHeight * 3) * scaleHeight).endVertex();
+        buffer.pos(x + width, y + height - tileHeight, z).tex((u + tileWidth * 3) * scaleWidth, (v + tileHeight * 2) * scaleHeight).endVertex();
+        buffer.pos(x + width - tileWidth, y + height - tileHeight, z).tex((u + tileWidth * 2) * scaleWidth, (v + tileHeight * 2) * scaleHeight).endVertex();
+
+        /* Edges */
+        buffer.pos(x + tileWidth, y + tileHeight, z).tex((u + tileWidth) * scaleWidth, (v + tileHeight) * scaleHeight).endVertex();
+        buffer.pos(x + width - tileWidth, y + tileHeight, z).tex((u + tileWidth * 2) * scaleWidth, (v + tileHeight) * scaleHeight).endVertex();
+        buffer.pos(x + width - tileWidth, y, z).tex((u + tileWidth * 2) * scaleWidth, v * scaleHeight).endVertex();
+        buffer.pos(x + tileWidth, y, z).tex((u + tileWidth) * scaleWidth, v * scaleHeight).endVertex();
+
+        buffer.pos(x + width - tileWidth, y + height - tileHeight, z).tex((u + tileWidth * 2) * scaleWidth, (v + tileHeight * 2) * scaleHeight).endVertex();
+        buffer.pos(x + width, y + height - tileHeight, z).tex((u + tileWidth * 3) * scaleWidth, (v + tileHeight * 2) * scaleHeight).endVertex();
+        buffer.pos(x + width, y + tileHeight, z).tex((u + tileWidth * 3) * scaleWidth, (v + tileHeight) * scaleHeight).endVertex();
+        buffer.pos(x + width - tileWidth, y + tileHeight, z).tex((u + tileWidth * 2) * scaleWidth, (v + tileHeight) * scaleHeight).endVertex();
+
+        buffer.pos(x + tileWidth, y + height, z).tex((u + tileWidth) * scaleWidth, (v + tileHeight * 3) * scaleHeight).endVertex();
+        buffer.pos(x + width - tileWidth, y + height, z).tex((u + tileWidth * 2) * scaleWidth, (v + tileHeight * 3) * scaleHeight).endVertex();
+        buffer.pos(x + width - tileWidth, y + height - tileHeight, z).tex((u + tileWidth * 2) * scaleWidth, (v + tileHeight * 2) * scaleHeight).endVertex();
+        buffer.pos(x + tileWidth, y + height - tileHeight, z).tex((u + tileWidth) * scaleWidth, (v + tileHeight * 2) * scaleHeight).endVertex();
+
+        buffer.pos(x, y + height - tileHeight, z).tex(u * scaleWidth, (v + tileHeight * 2) * scaleHeight).endVertex();
+        buffer.pos(x + tileWidth, y + height - tileHeight, z).tex((u + tileWidth) * scaleWidth, (v + tileHeight * 2) * scaleHeight).endVertex();
+        buffer.pos(x + tileWidth, y + tileHeight, z).tex((u + tileWidth) * scaleWidth, (v + tileHeight) * scaleHeight).endVertex();
+        buffer.pos(x, y + tileHeight, z).tex(u * scaleWidth, (v + tileHeight) * scaleHeight).endVertex();
+
+        /* Center */
+        buffer.pos(x + tileWidth, y + height - tileHeight, z).tex((u + tileWidth) * scaleWidth, (v + tileHeight * 2) * scaleHeight).endVertex();
+        buffer.pos(x + width - tileWidth, y + height - tileHeight, z).tex((u + tileWidth * 2) * scaleWidth, (v + tileHeight * 2) * scaleHeight).endVertex();
+        buffer.pos(x + width - tileWidth, y + tileHeight, z).tex((u + tileWidth * 2) * scaleWidth, (v + tileHeight) * scaleHeight).endVertex();
+        buffer.pos(x + tileWidth, y + tileHeight, z).tex((u + tileWidth) * scaleWidth, (v + tileHeight) * scaleHeight).endVertex();
+
+        tessellator.draw();
+    }
+
     public static void drawStringClipped(FontRenderer fontRenderer, String text, float x, float y, int width, int color, boolean shadow)
     {
         if (shadow)
