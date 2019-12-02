@@ -1,11 +1,11 @@
 package com.ocelot.opendevices.api.laptop;
 
+import com.ocelot.opendevices.api.device.Device;
 import com.ocelot.opendevices.api.laptop.desktop.Desktop;
 import com.ocelot.opendevices.api.laptop.settings.LaptopSetting;
 import com.ocelot.opendevices.api.laptop.taskbar.TaskBar;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
 
 import javax.annotation.Nullable;
 import java.util.concurrent.Executor;
@@ -15,7 +15,7 @@ import java.util.concurrent.Executor;
  *
  * @author Ocelot
  */
-public interface Laptop extends Executor
+public interface Laptop extends Device, Executor
 {
     /**
      * Writes the specified setting value to NBT.
@@ -42,11 +42,6 @@ public interface Laptop extends Executor
     PlayerEntity getUser();
 
     /**
-     * @return The world the laptop is in
-     */
-    IWorld getWorld();
-
-    /**
      * @return The position of the laptop
      */
     BlockPos getPos();
@@ -60,12 +55,4 @@ public interface Laptop extends Executor
      * @return The laptop's task bar
      */
     TaskBar getTaskBar();
-
-    /**
-     * @return Whether or not the laptop is currently in a client world
-     */
-    default boolean isClient()
-    {
-        return this.getWorld() != null && this.getWorld().isRemote();
-    }
 }

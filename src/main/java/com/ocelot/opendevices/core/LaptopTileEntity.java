@@ -32,6 +32,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
     private boolean open;
     private Queue<Runnable> executionQueue;
 
+    private UUID address;
     private CompoundNBT settings;
     private LaptopDesktop desktop;
     private LaptopTaskBar taskBar;
@@ -48,6 +49,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
         this.open = false;
         this.executionQueue = new ConcurrentLinkedQueue<>();
 
+        this.address = UUID.randomUUID();
         this.settings = new CompoundNBT();
         this.desktop = new LaptopDesktop(this);
         this.taskBar = new LaptopTaskBar(this);
@@ -58,7 +60,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
     {
         if (this.hasWorld())
         {
-            if (this.world.isRemote())
+            if (this.isClient())
             {
                 this.lastRotation = this.rotation;
                 if (!this.open)
@@ -124,6 +126,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
     @Override
     public void save(CompoundNBT nbt)
     {
+        nbt.putUniqueId("address", this.address);
         nbt.put("settings", this.settings);
         nbt.put("desktop", this.desktop.serializeNBT());
         nbt.put("taskBar", this.taskBar.serializeNBT());
@@ -132,6 +135,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
     @Override
     public void load(CompoundNBT nbt)
     {
+        this.address = nbt.getUniqueId("address");
         this.settings = nbt.getCompound("settings");
         this.desktop.deserializeNBT(nbt.getCompound("desktop"));
         this.taskBar.deserializeNBT(nbt.getCompound("taskBar"));
@@ -228,6 +232,12 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
         if (this.user == null || this.world == null)
             return null;
         return this.world.getPlayerByUuid(this.user);
+    }
+
+    @Override
+    public UUID getAddress()
+    {
+        return address;
     }
 
     @Override
