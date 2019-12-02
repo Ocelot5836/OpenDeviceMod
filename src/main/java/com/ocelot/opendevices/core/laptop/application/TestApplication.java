@@ -60,7 +60,7 @@ public class TestApplication extends Application
         //            i++;
         //        }
 
-        MenuBarComponent testMenuBar = new MenuBarComponent(0, 0, this.layoutTest.getWidth(), 9);
+        MenuBarComponent testMenuBar = new MenuBarComponent(0, 0, this.layoutTest.getWidth(), 9).setBorder(true);
         {
             for (int i = 0; i < 25; i++)
             {

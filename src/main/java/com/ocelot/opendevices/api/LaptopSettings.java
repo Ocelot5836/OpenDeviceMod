@@ -49,5 +49,5 @@ public class LaptopSettings
     public static final LaptopSetting<Integer> BUTTON_TEXT_HIGHLIGHT_COLOR = new IntegerLaptopSetting(0xFFFFFFA0);
 
     @LaptopSetting.Register(OpenDevices.MOD_ID + ":menu_bar_color")
-    public static final LaptopSetting<Integer> MENU_BAR_COLOR = new IntegerLaptopSetting(0xFF9E9E9E);
+    public static final LaptopSetting<Integer> MENU_BAR_COLOR = new IntegerLaptopSetting(0xFF36393C);
 }

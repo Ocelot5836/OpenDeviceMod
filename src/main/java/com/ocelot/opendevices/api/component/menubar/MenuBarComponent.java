@@ -56,6 +56,7 @@ public class MenuBarComponent extends BasicComponent
     private boolean hasScroll;
     private double scroll;
     private int maxScroll;
+    private int lastTooltipIndex;
     private long lastTooltip;
     private ComponentClickListener<MenuBarItem> clickListener;
 
@@ -68,6 +69,7 @@ public class MenuBarComponent extends BasicComponent
         this.state = ButtonState.VISIBLE;
         this.hoveredIndex = -1;
         this.selectedIndex = -1;
+        this.lastTooltipIndex = -1;
         this.lastTooltip = Long.MAX_VALUE;
 
         this.deserializeNBT(nbt);
@@ -165,7 +167,7 @@ public class MenuBarComponent extends BasicComponent
             GlStateManager.blendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
             Minecraft.getInstance().getTextureManager().bindTexture(DeviceConstants.COMPONENTS_LOCATION);
 
-//            RenderUtil.glColor(this.getColor());
+            RenderUtil.glColor(0xFF36393C);
             if (this.border)
             {
                 RenderUtil.drawSizedRectWithTexture(this.x, this.y, 111, 12, this.width, this.height, 1, 1);
@@ -174,7 +176,7 @@ public class MenuBarComponent extends BasicComponent
             {
                 RenderUtil.drawRectWithTexture(this.x, this.y, 112, 13, this.width, this.height, 1, 1);
             }
-            GlStateManager.color4f(1f,1f,1f,1f);
+            GlStateManager.color4f(1f, 1f, 1f, 1f);
 
             RenderUtil.pushScissor(this.getWindowX() + this.x, this.getWindowY() + this.y, this.width, this.height);
 
@@ -193,7 +195,7 @@ public class MenuBarComponent extends BasicComponent
                     break;
 
                 String text = item.getRawText();
-                boolean hovered = this.isHovered(mouseX, mouseY, item);
+                boolean hovered = this.getWindow().isTop() && this.isHovered(mouseX, mouseY, item);
 
                 if (item.getIconLocation() != null)
                 {
@@ -219,19 +221,37 @@ public class MenuBarComponent extends BasicComponent
             }
 
             RenderUtil.popScissor();
+
+            if (this.selectedIndex != -1)
+            {
+                MenuBarItem item = this.items.get(this.selectedIndex);
+                //TODO render the drop-down menu
+                fill(this.x, this.getMaxY(), this.x + this.getWidth(item), this.getMaxY() + 64, 0xffff00ff);
+                this.fontRenderer.drawString("WIP", this.x + 1, this.getMaxY() + 1, this.getWindow().getLaptop().readSetting(LaptopSettings.DESKTOP_TEXT_COLOR));
+            }
         }
     }
 
     @Override
     public void renderOverlay(TooltipRenderer renderer, int mouseX, int mouseY, float partialTicks)
     {
-        if (this.state != ButtonState.INVISIBLE && this.getWindow().isTop() && this.isHovered(mouseX, mouseY) && this.selectedIndex != -1)
+        if (this.state != ButtonState.INVISIBLE && this.getWindow().isTop() && this.isHovered(mouseX, mouseY) && this.hoveredIndex != -1)
         {
-            MenuBarItem item = this.items.get(this.selectedIndex);
-            if (this.isHovered(mouseX, mouseY, item))
+            if (this.lastTooltipIndex != this.hoveredIndex)
             {
-                renderer.renderComponentHoverEffect(item.getText(), mouseX, mouseY);
+                this.lastTooltipIndex = this.hoveredIndex;
+                this.lastTooltip = Long.MAX_VALUE;
             }
+            MenuBarItem item = this.items.get(this.hoveredIndex);
+            if (this.lastTooltip == Long.MAX_VALUE)
+                this.lastTooltip = System.currentTimeMillis();
+            if (System.currentTimeMillis() - this.lastTooltip >= item.getTooltipDelay())
+                renderer.renderComponentHoverEffect(item.getText(), mouseX, mouseY);
+        }
+        else
+        {
+            this.lastTooltipIndex = -1;
+            this.lastTooltip = Long.MAX_VALUE;
         }
     }
 
