@@ -170,6 +170,25 @@ public class Layout extends BasicComponent
     }
 
     @Override
+    public boolean onMouseScrolled(double mouseX, double mouseY, double amount)
+    {
+        for (Component component : this.components)
+        {
+            if (component.onMouseScrolled(mouseX, mouseY, amount))
+            {
+                return true;
+            }
+        }
+        return super.onMouseScrolled(mouseX, mouseY, amount);
+    }
+
+    @Override
+    public void onMouseMoved(double mouseX, double mouseY)
+    {
+        this.components.forEach(component -> component.onMouseMoved(mouseX, mouseY));
+    }
+
+    @Override
     public boolean onMouseDragged(double mouseX, double mouseY, int mouseButton, double deltaX, double deltaY)
     {
         for (Component component : this.components)

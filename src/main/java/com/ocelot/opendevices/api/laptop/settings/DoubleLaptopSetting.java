@@ -1,7 +1,6 @@
 package com.ocelot.opendevices.api.laptop.settings;
 
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
@@ -13,31 +12,29 @@ import net.minecraftforge.registries.ForgeRegistryEntry;
  */
 public class DoubleLaptopSetting extends ForgeRegistryEntry<LaptopSetting<?>> implements LaptopSetting<Double>
 {
-    private ResourceLocation registryName;
     private double defaultValue;
 
-    public DoubleLaptopSetting(ResourceLocation registryName, double defaultValue)
+    public DoubleLaptopSetting(double defaultValue)
     {
-        this.registryName = registryName;
         this.defaultValue = defaultValue;
     }
 
     @Override
     public Double read(CompoundNBT nbt)
     {
-        return nbt.getDouble(this.registryName.toString());
+        return nbt.getDouble(String.valueOf(this.getRegistryName()));
     }
 
     @Override
     public void write(Double value, CompoundNBT nbt)
     {
-        nbt.putDouble(this.registryName.toString(), value);
+        nbt.putDouble(String.valueOf(this.getRegistryName()), value);
     }
 
     @Override
     public boolean contains(CompoundNBT nbt)
     {
-        return nbt.contains(this.registryName.toString(), Constants.NBT.TAG_DOUBLE);
+        return nbt.contains(String.valueOf(this.getRegistryName()), Constants.NBT.TAG_DOUBLE);
     }
 
     @Override

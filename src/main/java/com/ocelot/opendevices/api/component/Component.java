@@ -63,6 +63,24 @@ public interface Component extends INBTSerializable<CompoundNBT>
     boolean onMouseReleased(double mouseX, double mouseY, int mouseButton);
 
     /**
+     * Called when the mouse wheel is scrolled.
+     *
+     * @param mouseX The x position of the mouse
+     * @param mouseY The y position of the mouse
+     * @param amount The amount scrolled
+     * @return Whether or not the action was handled
+     */
+    boolean onMouseScrolled(double mouseX, double mouseY, double amount);
+
+    /**
+     * Called when the mouse is moved.
+     *
+     * @param mouseX The x position of the mouse
+     * @param mouseY The y position of the mouse
+     */
+    void onMouseMoved(double mouseX, double mouseY);
+
+    /**
      * Called when the mouse is moved while being pressed.
      *
      * @param mouseX      The x position of the mouse
@@ -118,12 +136,10 @@ public interface Component extends INBTSerializable<CompoundNBT>
     /**
      * Marks this component to be sent to all clients.
      */
-    void markDirty();
-
-    /**
-     * Marks this component as having been sent to clients and resets the dirty marker.
-     */
-    void removeDirtyMarker();
+    default void markDirty()
+    {
+        this.getWindow().markDirty();
+    }
 
     /**
      * Checks to see if this component is hovered or not.
@@ -134,18 +150,44 @@ public interface Component extends INBTSerializable<CompoundNBT>
      */
     default boolean isHovered(double mouseX, double mouseY)
     {
-        return RenderUtil.isMouseInside(mouseX, mouseY, this.getWindowX() + this.getX(), this.getWindowY() + this.getY(), this.getWindowX() + this.getX() + this.getWidth(), this.getWindowY() + this.getY() + this.getHeight());
+        return RenderUtil.isMouseInside(mouseX, mouseY, this.getWindowX() + this.getX(), this.getWindowY() + this.getY(), this.getWindowX() + this.getMaxX(), this.getWindowY() + this.getMaxY());
     }
 
     /**
-     * @return The x position of this component
+     * @return The left x position of this component
      */
     int getX();
 
     /**
-     * @return The y position of this component
+     * @return The top y position of this component
      */
     int getY();
+
+    /**
+     * @return The right x position of this component
+     */
+    default int getMaxX()
+    {
+        return this.getX() + this.getWidth();
+    }
+
+    /**
+     * @return The bottom y position of this component
+     */
+    default int getMaxY()
+    {
+        return this.getY() + this.getHeight();
+    }
+
+    /**
+     * @return The x size of this component
+     */
+    int getWidth();
+
+    /**
+     * @return The y size of this component
+     */
+    int getHeight();
 
     /**
      * @return The window this component is in. This reference is null during class construction
@@ -161,21 +203,6 @@ public interface Component extends INBTSerializable<CompoundNBT>
      * @return The y position of the start of the window frame
      */
     float getWindowY();
-
-    /**
-     * @return The x size of this component
-     */
-    int getWidth();
-
-    /**
-     * @return The y size of this component
-     */
-    int getHeight();
-
-    /**
-     * @return Whether or not this component needs to be synced with the client
-     */
-    boolean isDirty();
 
     /**
      * Sets the window instance for this component

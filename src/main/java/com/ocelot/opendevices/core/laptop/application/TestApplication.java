@@ -2,8 +2,11 @@ package com.ocelot.opendevices.core.laptop.application;
 
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.component.ButtonComponent;
+import com.ocelot.opendevices.api.component.ButtonState;
 import com.ocelot.opendevices.api.component.Layout;
 import com.ocelot.opendevices.api.component.TextComponent;
+import com.ocelot.opendevices.api.component.menubar.MenuBarComponent;
+import com.ocelot.opendevices.api.component.menubar.MenuBarItem;
 import com.ocelot.opendevices.api.laptop.application.Application;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
@@ -26,7 +29,7 @@ public class TestApplication extends Application
     {
         this.layoutTest = new Layout();
 
-        TextComponent testText = new TextComponent(0, 0, Minecraft.DEFAULT_FONT_RENDERER_NAME, Minecraft.getInstance().player.getDisplayName().appendSibling(new ItemStack(Blocks.DIAMOND_BLOCK).getTextComponent()));
+        TextComponent testText = new TextComponent(0, 12, Minecraft.DEFAULT_FONT_RENDERER_NAME, Minecraft.getInstance().player.getDisplayName().appendSibling(new ItemStack(Blocks.DIAMOND_BLOCK).getTextComponent()));
         testText.setClickListener((textComponent, mouseX, mouseY, mouseButton) ->
         {
             if (mouseButton == 0)
@@ -38,7 +41,7 @@ public class TestApplication extends Application
         });
         this.layoutTest.addComponent(testText);
 
-        ButtonComponent testButton = new ButtonComponent(0, 16);
+        ButtonComponent testButton = new ButtonComponent(0, 24);
         testButton.setText(new StringTextComponent("Press Me!").setStyle(new Style().setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
                 new StringTextComponent("Line 1 of the tooltip ")
                         .appendSibling(Minecraft.getInstance().player.getDisplayName())
@@ -56,6 +59,18 @@ public class TestApplication extends Application
         //            this.layoutTest.addComponent(text);
         //            i++;
         //        }
+
+        MenuBarComponent testMenuBar = new MenuBarComponent(0, 0, this.layoutTest.getWidth(), 9).setBorder(true);
+        {
+            for (int i = 0; i < 25; i++)
+            {
+                MenuBarItem testItem = new MenuBarItem();
+                testItem.setState(ButtonState.deserialize(i));
+                testItem.setText(Minecraft.getInstance().player.getDisplayName().appendText(" " + i));
+                testMenuBar.add(testItem);
+            }
+        }
+        this.layoutTest.addComponent(testMenuBar);
     }
 
     @Override

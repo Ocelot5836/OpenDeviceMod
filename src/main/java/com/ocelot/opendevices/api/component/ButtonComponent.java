@@ -3,6 +3,7 @@ package com.ocelot.opendevices.api.component;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceConstants;
+import com.ocelot.opendevices.api.LaptopSettings;
 import com.ocelot.opendevices.api.handler.ClickListener;
 import com.ocelot.opendevices.api.util.IIcon;
 import com.ocelot.opendevices.api.util.RenderUtil;
@@ -152,7 +153,6 @@ public class ButtonComponent extends BasicComponent
             int offset = this.state == ButtonState.DISABLED ? 0 : hovered ? 2 : 1;
             GlStateManager.enableBlend();
             GlStateManager.blendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
-            GlStateManager.blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
             Minecraft.getInstance().getTextureManager().bindTexture(DeviceConstants.COMPONENTS_LOCATION);
             //                    RenderUtil.glColor(this.getWindow().getLaptop().readSetting(LaptopSettings.DESKTOP_TEXT_COLOR));
@@ -190,7 +190,7 @@ public class ButtonComponent extends BasicComponent
             {
                 int textY = (this.height - this.fontRenderer.FONT_HEIGHT) / 2 + 1;
                 int textOffsetX = this.iconLocation != null ? this.iconWidth + 3 : 0;
-                int textColor = this.state == ButtonState.DISABLED ? 10526880 : (hovered ? 16777120 : 14737632);
+                int textColor = this.state == ButtonState.DISABLED ? this.getDisabledTextColor() : (hovered ? this.getHoveredTextColor() : this.getTextColor());
                 this.fontRenderer.drawString(this.rawText, this.x + contentX + textOffsetX, this.y + textY, textColor);
             }
         }
@@ -374,6 +374,62 @@ public class ButtonComponent extends BasicComponent
     }
 
     /**
+     * @return The state this component is currently displayed in
+     */
+    public ButtonState getState()
+    {
+        return state;
+    }
+
+    /**
+     * @return The color of the buttons when they are disabled
+     */
+    public int getDisabledButtonColor()
+    {
+        return this.disabledButtonColor == 0 ? this.getWindow().getLaptop().readSetting(LaptopSettings.BUTTON_DISABLED_COLOR) : this.disabledButtonColor;
+    }
+
+    /**
+     * @return The color of the buttons when they are normal
+     */
+    public int getButtonColor()
+    {
+        return this.buttonColor == 0 ? this.getWindow().getLaptop().readSetting(LaptopSettings.BUTTON_COLOR) : this.buttonColor;
+    }
+
+    /**
+     * @return The color of the buttons when they are hovered
+     */
+    public int getHoveredButtonColor()
+    {
+        return this.hoveredButtonColor == 0 ? this.getWindow().getLaptop().readSetting(LaptopSettings.BUTTON_HIGHLIGHT_COLOR) : this.hoveredButtonColor;
+    }
+
+    /**
+     * @return The color of text when its disabled
+     */
+    public int getDisabledTextColor()
+    {
+        return this.disabledTextColor == 0 ? this.getWindow().getLaptop().readSetting(LaptopSettings.BUTTON_TEXT_DISABLED_COLOR) : this.disabledTextColor;
+    }
+
+    /**
+     * @return The color of text when its normal
+     */
+    public int getTextColor()
+    {
+        return this.textColor == 0 ? this.getWindow().getLaptop().readSetting(LaptopSettings.BUTTON_TEXT_COLOR) : this.textColor;
+    }
+
+    /**
+     * @return The color of text when its hovered
+     */
+    public int getHoveredTextColor()
+    {
+        return this.hoveredTextColor == 0 ? this.getWindow().getLaptop().readSetting(LaptopSettings.BUTTON_TEXT_HIGHLIGHT_COLOR) : this.hoveredTextColor;
+    }
+
+    /**
      * @return The set click listener or null if there is no click listener
      */
     @Nullable
@@ -387,9 +443,10 @@ public class ButtonComponent extends BasicComponent
      *
      * @param x The new x position
      */
-    public void setX(int x)
+    public ButtonComponent setX(int x)
     {
         this.x = x;
+        return this;
     }
 
     /**
@@ -397,9 +454,10 @@ public class ButtonComponent extends BasicComponent
      *
      * @param y The new y position
      */
-    public void setY(int y)
+    public ButtonComponent setY(int y)
     {
         this.y = y;
+        return this;
     }
 
     /**
@@ -408,10 +466,11 @@ public class ButtonComponent extends BasicComponent
      * @param x The new x position
      * @param y The new y position
      */
-    public void setPosition(int x, int y)
+    public ButtonComponent setPosition(int x, int y)
     {
         this.x = x;
         this.y = y;
+        return this;
     }
 
     /**
@@ -550,6 +609,47 @@ public class ButtonComponent extends BasicComponent
         this.iconTextureWidth = textureWidth;
         this.iconTextureHeight = textureHeight;
         this.updateSize();
+        return this;
+    }
+
+    /**
+     * Sets the rendering state of this component.
+     *
+     * @param state The new state to use
+     */
+    public ButtonComponent setState(ButtonState state)
+    {
+        this.state = state;
+        return this;
+    }
+
+    /**
+     * Sets the color of the buttons when they are normal, disabled, and hovered.
+     *
+     * @param color         The normal color or 0 for system default
+     * @param disabledColor The color to use when disabled or 0 for system default
+     * @param hoveredColor  The color to use when hovered or 0 for system default
+     */
+    public ButtonComponent setButtonColor(int color, int disabledColor, int hoveredColor)
+    {
+        this.buttonColor = color;
+        this.disabledButtonColor = disabledColor;
+        this.hoveredButtonColor = hoveredColor;
+        return this;
+    }
+
+    /**
+     * Sets the color of the text on the buttons when they are normal, disabled, and hovered.
+     *
+     * @param color         The normal color or 0 for system default
+     * @param disabledColor The color to use when disabled or 0 for system default
+     * @param hoveredColor  The color to use when hovered or 0 for system default
+     */
+    public ButtonComponent setTextColor(int color, int disabledColor, int hoveredColor)
+    {
+        this.textColor = color;
+        this.disabledTextColor = disabledColor;
+        this.hoveredTextColor = hoveredColor;
         return this;
     }
 
