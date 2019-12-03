@@ -2,7 +2,6 @@ package com.ocelot.opendevices.core;
 
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceConstants;
-import com.ocelot.opendevices.api.DeviceRegistries;
 import com.ocelot.opendevices.api.laptop.desktop.Desktop;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopBackground;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopManager;
@@ -93,6 +92,12 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
 
     public void syncOpenApplication(LaptopWindow window, CompoundNBT contentData)
     {
+        if (this.windows.size() >= DeviceConstants.MAX_OPEN_APPS)
+        {
+            this.windows.setSize(DeviceConstants.MAX_OPEN_APPS);
+            return;
+        }
+
         if (contentData != null)
         {
             window.setContentData(contentData);
@@ -162,7 +167,7 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
             return;
         }
 
-        if (!DeviceRegistries.APPLICATIONS.containsKey(registryName))
+        if (!WindowContentType.APPLICATION.isValid(registryName))
         {
             OpenDevices.LOGGER.warn("Attempted to open invalid application: '" + registryName + "'! Applications MUST be registered on both the client AND server to function!");
             return;

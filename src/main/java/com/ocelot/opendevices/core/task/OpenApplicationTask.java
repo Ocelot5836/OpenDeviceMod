@@ -1,7 +1,6 @@
 package com.ocelot.opendevices.core.task;
 
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.api.DeviceRegistries;
 import com.ocelot.opendevices.api.laptop.window.WindowContentType;
 import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.core.LaptopDesktop;
@@ -63,7 +62,7 @@ public class OpenApplicationTask extends Task
                 return;
             }
 
-            if (!DeviceRegistries.APPLICATIONS.containsKey(window.getContentId()))
+            if (!window.getContentType().isValid(window.getContentId()))
             {
                 OpenDevices.LOGGER.warn("Attempted to open invalid application: '" + window.getContentId() + "'! Applications MUST be registered on both the client AND server to function!");
                 return;
