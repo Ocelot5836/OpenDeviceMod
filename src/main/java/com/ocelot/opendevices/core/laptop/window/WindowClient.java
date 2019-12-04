@@ -27,6 +27,7 @@ public class WindowClient extends LaptopWindow
     private float lastY;
     private WindowContent content;
     private WindowButton closeButton;
+    private boolean dirty;
 
     public WindowClient(LaptopTileEntity laptop)
     {
@@ -77,6 +78,12 @@ public class WindowClient extends LaptopWindow
         this.lastX = this.getX();
         this.lastY = this.getY();
         this.content.update();
+
+        if (!this.dirty && this.content.isDirty())
+        {
+            this.getLaptop().getDesktop().markDirty(this.getId());
+            this.dirty = true;
+        }
     }
 
     public void render(int mouseX, int mouseY, int color, float partialTicks)
@@ -231,7 +238,7 @@ public class WindowClient extends LaptopWindow
     }
 
     @Override
-    public CompoundNBT getContentData()
+    public CompoundNBT getStateData()
     {
         CompoundNBT contentData = new CompoundNBT();
         this.content.saveState(contentData);
@@ -239,9 +246,11 @@ public class WindowClient extends LaptopWindow
     }
 
     @Override
-    public void setContentData(CompoundNBT contentData)
+    public void setStateData(CompoundNBT stateData)
     {
-        this.content.loadState(contentData);
+        this.content.loadState(stateData);
+        this.content.removeDirtyMark();
+        this.dirty = false;
     }
 
     @Override

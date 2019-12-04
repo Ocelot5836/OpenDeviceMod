@@ -10,7 +10,6 @@ import com.ocelot.opendevices.core.LaptopTileEntity;
 import com.ocelot.opendevices.core.task.MoveWindowTask;
 import com.ocelot.opendevices.core.task.SetWindowPositionTask;
 import com.ocelot.opendevices.core.task.SetWindowSizeTask;
-import com.ocelot.opendevices.core.task.SyncWindowTask;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
@@ -33,7 +32,7 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
     private CompoundNBT initData;
     private WindowContentType contentType;
     private ResourceLocation contentId;
-    private CompoundNBT contentData;
+    private CompoundNBT stateData;
 
     public LaptopWindow(LaptopTileEntity laptop)
     {
@@ -51,7 +50,7 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
         this.initData = initData;
         this.contentType = contentType;
         this.contentId = contentId;
-        this.contentData = null;
+        this.stateData = null;
         this.id = UUID.randomUUID();
         this.setPosition(x, y);
         this.setSize(width, height);
@@ -113,16 +112,38 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
     }
 
     @Override
-    public void markDirty()
+    public void setPosition(float x, float y)
     {
+        if (this.x == x && this.y == y)
+            return;
+
+        this.syncSetPosition(x, y);
+
         if (this.laptop.isClient())
         {
-            TaskManager.sendToServer(new SyncWindowTask(this.laptop.getPos(), this.getId(), this.getContentData()), TaskManager.TaskReceiver.SENDER);
+            TaskManager.sendToServer(new SetWindowPositionTask(this.laptop.getPos(), this.getId(), x, y), TaskManager.TaskReceiver.NEARBY);
         }
         else
         {
-            this.laptop.markDirty();
-            TaskManager.sendTo(new SyncWindowTask(this.laptop.getPos(), this.getId(), this.getContentData()), TaskManager.TaskReceiver.SENDER, (ServerPlayerEntity) this.laptop.getUser());
+            TaskManager.sendTo(new SetWindowPositionTask(this.laptop.getPos(), this.getId(), x, y), TaskManager.TaskReceiver.SENDER_AND_NEARBY, (ServerPlayerEntity) this.laptop.getUser());
+        }
+    }
+
+    @Override
+    public void setSize(int width, int height)
+    {
+        if (this.width == width && this.height == height)
+            return;
+
+        this.syncSetSize(width, height);
+
+        if (this.laptop.isClient())
+        {
+            TaskManager.sendToServer(new SetWindowSizeTask(this.laptop.getPos(), this.getId(), width, height), TaskManager.TaskReceiver.NEARBY);
+        }
+        else
+        {
+            TaskManager.sendTo(new SetWindowSizeTask(this.laptop.getPos(), this.getId(), width, height), TaskManager.TaskReceiver.SENDER_AND_NEARBY, (ServerPlayerEntity) this.laptop.getUser());
         }
     }
 
@@ -232,12 +253,6 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
         return height - DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT - 2;
     }
 
-    @Override
-    public void center()
-    {
-        this.setPosition((DeviceConstants.LAPTOP_SCREEN_WIDTH - this.width) / 2f, (DeviceConstants.LAPTOP_SCREEN_HEIGHT - this.laptop.getTaskBar().getHeight() - (this.height + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + 2)) / 2f);
-    }
-
     public CompoundNBT getInitData()
     {
         return initData;
@@ -255,50 +270,14 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
         return contentId;
     }
 
-    public CompoundNBT getContentData()
+    public CompoundNBT getStateData()
     {
-        return contentData;
+        return stateData;
     }
 
-    @Override
-    public void setPosition(float x, float y)
+    public void setStateData(CompoundNBT stateData)
     {
-        if (this.x == x && this.y == y)
-            return;
-
-        this.syncSetPosition(x, y);
-
-        if (this.laptop.isClient())
-        {
-            TaskManager.sendToServer(new SetWindowPositionTask(this.laptop.getPos(), this.getId(), x, y), TaskManager.TaskReceiver.NEARBY);
-        }
-        else
-        {
-            TaskManager.sendTo(new SetWindowPositionTask(this.laptop.getPos(), this.getId(), x, y), TaskManager.TaskReceiver.SENDER_AND_NEARBY, (ServerPlayerEntity) this.laptop.getUser());
-        }
-    }
-
-    @Override
-    public void setSize(int width, int height)
-    {
-        if (this.width == width && this.height == height)
-            return;
-
-        this.syncSetSize(width, height);
-
-        if (this.laptop.isClient())
-        {
-            TaskManager.sendToServer(new SetWindowSizeTask(this.laptop.getPos(), this.getId(), width, height), TaskManager.TaskReceiver.NEARBY);
-        }
-        else
-        {
-            TaskManager.sendTo(new SetWindowSizeTask(this.laptop.getPos(), this.getId(), width, height), TaskManager.TaskReceiver.SENDER_AND_NEARBY, (ServerPlayerEntity) this.laptop.getUser());
-        }
-    }
-
-    public void setContentData(CompoundNBT contentData)
-    {
-        this.contentData = contentData;
+        this.stateData = stateData;
     }
 
     @Override

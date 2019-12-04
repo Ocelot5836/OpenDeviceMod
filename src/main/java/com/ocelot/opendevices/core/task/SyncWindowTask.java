@@ -59,9 +59,7 @@ public class SyncWindowTask extends Task
                 return;
             }
 
-            if (!laptop.isClient())
-                laptop.markDirty();
-
+            laptop.markDirty();
             desktop.syncApplication(window, this.contentData);
             this.setSuccessful();
         }
@@ -70,10 +68,18 @@ public class SyncWindowTask extends Task
     @Override
     public void prepareResponse(CompoundNBT nbt)
     {
+        if (this.isSucessful())
+        {
+            this.prepareRequest(nbt);
+        }
     }
 
     @Override
     public void processResponse(CompoundNBT nbt, World world, PlayerEntity player)
     {
+        if (this.isSucessful())
+        {
+            this.processRequest(nbt, world, player);
+        }
     }
 }

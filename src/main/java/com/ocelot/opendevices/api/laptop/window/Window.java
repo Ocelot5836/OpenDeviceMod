@@ -1,5 +1,6 @@
 package com.ocelot.opendevices.api.laptop.window;
 
+import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.laptop.Laptop;
 import com.ocelot.opendevices.api.laptop.desktop.Desktop;
 import net.minecraft.util.ResourceLocation;
@@ -43,12 +44,18 @@ public interface Window
     /**
      * Marks this window as having changes and saves it to file and other clients.
      */
-    void markDirty();
+    default void markDirty()
+    {
+        this.getLaptop().getDesktop().markDirty(this.getId());
+    }
 
     /**
      * Centers this window on the desktop of the laptop.
      */
-    void center();
+    default void center()
+    {
+        this.setPosition((DeviceConstants.LAPTOP_SCREEN_WIDTH - this.getWidth()) / 2f, (DeviceConstants.LAPTOP_SCREEN_HEIGHT - this.getLaptop().getTaskBar().getHeight() - (this.getHeight() + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + 2)) / 2f);
+    }
 
     /**
      * @return The id of this window. Used for Client/Server synchronization

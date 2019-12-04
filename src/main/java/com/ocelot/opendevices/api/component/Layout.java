@@ -95,9 +95,16 @@ public class Layout extends BasicComponent
      */
     public void addComponent(Component component)
     {
-        if (ComponentSerializer.getRegistryName(component.getClass()) == null)
+        if (ComponentSerializer.isRegistered(component.getClass()) == null)
             throw new RuntimeException("Attempted to add unregistered component to layout: '" + component.getClass().getName() + "'! Must be registered using Component#Register annotation.");
         this.components.add(component);
+    }
+
+    @Override
+    public void removeDirtyMark()
+    {
+        super.removeDirtyMark();
+        this.components.forEach(Component::removeDirtyMark);
     }
 
     @Override
@@ -268,6 +275,23 @@ public class Layout extends BasicComponent
     }
 
     @Override
+    public boolean isDirty()
+    {
+        if (super.isDirty())
+            return true;
+
+        for (Component component : this.components)
+        {
+            if (component.isDirty())
+            {
+                this.markDirty();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public void setWindow(Window window)
     {
         super.setWindow(window);
@@ -284,7 +308,7 @@ public class Layout extends BasicComponent
         nbt.putInt("height", this.height);
 
         ListNBT components = new ListNBT();
-        this.components.forEach(component -> components.add(ComponentSerializer.serializeComponent(component)));
+        this.components.forEach(component -> components.add(component.serializeNBT()));
         nbt.put("components", components);
 
         return nbt;
@@ -298,11 +322,10 @@ public class Layout extends BasicComponent
         this.width = nbt.getInt("width");
         this.height = nbt.getInt("height");
 
-        this.components.clear();
         ListNBT components = nbt.getList("components", Constants.NBT.TAG_COMPOUND);
         for (int i = 0; i < components.size(); i++)
         {
-            this.components.add(ComponentSerializer.deserializeComponent(components.getCompound(i)));
+            this.components.get(i).deserializeNBT(components.getCompound(i));
         }
     }
 }

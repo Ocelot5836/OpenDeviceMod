@@ -2,8 +2,8 @@ package com.ocelot.opendevices.api.laptop.application;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.ocelot.opendevices.api.DeviceConstants;
-import com.ocelot.opendevices.api.component.ComponentSerializer;
 import com.ocelot.opendevices.api.component.Layout;
+import com.ocelot.opendevices.api.laptop.Laptop;
 import com.ocelot.opendevices.api.laptop.desktop.Desktop;
 import com.ocelot.opendevices.api.laptop.window.Window;
 import com.ocelot.opendevices.api.laptop.window.WindowContent;
@@ -43,76 +43,80 @@ public abstract class Application extends AbstractGui implements WindowContent
     @Override
     public void update()
     {
+        this.currentLayout.update();
     }
 
     @Override
     public void render(float x, float y, int mouseX, int mouseY, float partialTicks)
     {
-        if (this.currentLayout != null)
-        {
-            RenderUtil.pushScissor(x, y, this.getWindow().getWidth() - 2, this.getWindow().getHeight() - 2 - DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT);
-            GlStateManager.pushMatrix();
-            GlStateManager.translatef(x, y, 0);
-            this.currentLayout.setWindowPosition(x, y);
-            this.currentLayout.render(mouseX, mouseY, partialTicks);
-            GlStateManager.popMatrix();
-            RenderUtil.popScissor();
-        }
+        RenderUtil.pushScissor(x, y, this.getWindow().getWidth() - 2, this.getWindow().getHeight() - 2 - DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT);
+        GlStateManager.pushMatrix();
+        GlStateManager.translatef(x, y, 0);
+        this.currentLayout.setWindowPosition(x, y);
+        this.currentLayout.render(mouseX, mouseY, partialTicks);
+        GlStateManager.popMatrix();
+        RenderUtil.popScissor();
     }
 
     @Override
     public void renderOverlay(TooltipRenderer renderer, float x, float y, int mouseX, int mouseY, float partialTicks)
     {
-        if (this.currentLayout != null)
-        {
-            this.currentLayout.setWindowPosition(x, y);
-            this.currentLayout.renderOverlay(renderer, mouseX, mouseY, partialTicks);
-        }
+        this.currentLayout.setWindowPosition(x, y);
+        this.currentLayout.renderOverlay(renderer, mouseX, mouseY, partialTicks);
     }
 
     @Override
     public boolean onMousePressed(double mouseX, double mouseY, int mouseButton)
     {
-        return this.currentLayout != null && this.currentLayout.onMousePressed(mouseX, mouseY, mouseButton);
+        return this.currentLayout.onMousePressed(mouseX, mouseY, mouseButton);
     }
 
     @Override
     public boolean onMouseReleased(double mouseX, double mouseY, int mouseButton)
     {
-        return this.currentLayout != null && this.currentLayout.onMouseReleased(mouseX, mouseY, mouseButton);
+        return this.currentLayout.onMouseReleased(mouseX, mouseY, mouseButton);
     }
 
     @Override
     public boolean onMouseScrolled(double mouseX, double mouseY, double amount)
     {
-        return this.currentLayout != null && this.currentLayout.onMouseScrolled(mouseX, mouseY, amount);
+        return this.currentLayout.onMouseScrolled(mouseX, mouseY, amount);
     }
 
     @Override
     public void onMouseMoved(double mouseX, double mouseY)
     {
-        if (this.currentLayout != null)
-        {
-            this.currentLayout.onMouseMoved(mouseX, mouseY);
-        }
+        this.currentLayout.onMouseMoved(mouseX, mouseY);
     }
 
     @Override
     public boolean onMouseDragged(double mouseX, double mouseY, int mouseButton, double deltaX, double deltaY)
     {
-        return this.currentLayout != null && this.currentLayout.onMouseDragged(mouseX, mouseY, mouseButton, deltaX, deltaY);
+        return this.currentLayout.onMouseDragged(mouseX, mouseY, mouseButton, deltaX, deltaY);
     }
 
     @Override
     public boolean onKeyPressed(int keyCode)
     {
-        return this.currentLayout != null && this.currentLayout.onKeyPressed(keyCode);
+        return this.currentLayout.onKeyPressed(keyCode);
     }
 
     @Override
     public boolean onKeyReleased(int keyCode)
     {
-        return this.currentLayout != null && this.currentLayout.onKeyReleased(keyCode);
+        return this.currentLayout.onKeyReleased(keyCode);
+    }
+
+    @Override
+    public void markDirty()
+    {
+        this.currentLayout.markDirty();
+    }
+
+    @Override
+    public void removeDirtyMark()
+    {
+        this.currentLayout.removeDirtyMark();
     }
 
     @Override
@@ -128,13 +132,13 @@ public abstract class Application extends AbstractGui implements WindowContent
     @Override
     public void saveState(CompoundNBT nbt)
     {
-        nbt.put("currentLayout", ComponentSerializer.serializeComponent(this.currentLayout));
+        nbt.put("currentLayout", this.currentLayout.serializeNBT());
     }
 
     @Override
     public void loadState(CompoundNBT nbt)
     {
-        this.currentLayout = ComponentSerializer.deserializeComponent(nbt.getCompound("currentLayout"));
+        this.currentLayout.deserializeNBT(nbt.getCompound("currentLayout"));
         this.currentLayout.setWindow(this.window);
         this.currentLayout.onLayoutLoad();
 
@@ -160,15 +164,6 @@ public abstract class Application extends AbstractGui implements WindowContent
     {
     }
 
-    /**
-     * <p>Marks this application as having changes and saves it to file and other clients.</p>
-     * <p>Should be called after each modification to a value that needs to be synced.</p>
-     */
-    protected void markDirty()
-    {
-        this.window.markDirty();
-    }
-
     @Override
     public String getTitle()
     {
@@ -191,6 +186,12 @@ public abstract class Application extends AbstractGui implements WindowContent
     public final Window getWindow()
     {
         return window;
+    }
+
+    @Override
+    public boolean isDirty()
+    {
+        return this.currentLayout.isDirty();
     }
 
     /**
@@ -218,27 +219,24 @@ public abstract class Application extends AbstractGui implements WindowContent
     }
 
     /**
-     * Sets the current layout to the new one specified on the next update.
+     * Sets the current layout to the new one specified. In order to call during a tick, use {@link Laptop#execute(Runnable)}
      *
      * @param layout The new layout to display
      */
     public void setCurrentLayout(Layout layout)
     {
-        this.window.getLaptop().execute(() ->
+        this.currentLayout.onLayoutUnload();
+        this.currentLayout = layout;
+        this.currentLayout.setWindow(this.window);
+        this.currentLayout.onLayoutLoad();
+
+        if (layout.getWidth() != this.window.getContentWidth() || layout.getHeight() != this.window.getContentHeight())
         {
-            this.currentLayout.onLayoutUnload();
-            this.currentLayout = layout;
-            this.currentLayout.setWindow(this.window);
-            this.currentLayout.onLayoutLoad();
+            this.window.setSize(this.currentLayout.getWidth(), this.currentLayout.getHeight());
+            this.window.center();// TODO maybe add the ability to center on current position?
+        }
 
-            if (layout.getWidth() != this.window.getContentWidth() || layout.getHeight() != this.window.getContentHeight())
-            {
-                this.window.setSize(this.currentLayout.getWidth(), this.currentLayout.getHeight());
-                this.window.center();// TODO maybe add the ability to center on current position?
-            }
-
-            this.markDirty();
-        });
+        this.markDirty();
     }
 
     public final void setWindow(Window window)

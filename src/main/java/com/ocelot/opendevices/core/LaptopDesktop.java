@@ -13,6 +13,7 @@ import com.ocelot.opendevices.core.laptop.window.WindowClient;
 import com.ocelot.opendevices.core.task.CloseWindowTask;
 import com.ocelot.opendevices.core.task.FocusWindowTask;
 import com.ocelot.opendevices.core.task.OpenApplicationTask;
+import com.ocelot.opendevices.core.task.SyncWindowTask;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
@@ -48,6 +49,7 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
     {
         LaptopWindow window = this.laptop.isClient() ? new WindowClient(this.laptop) : new LaptopWindow(this.laptop);
         window.deserializeNBT(windowData);
+        window.create();
         return window;
     }
 
@@ -100,7 +102,7 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
 
         if (contentData != null)
         {
-            window.setContentData(contentData);
+            window.setStateData(contentData);
         }
         else
         {
@@ -155,7 +157,7 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
 
     public void syncApplication(LaptopWindow window, CompoundNBT contentData)
     {
-        this.laptop.execute(() -> window.setContentData(contentData));
+        this.laptop.execute(() -> window.setStateData(contentData));
     }
 
     @Override
@@ -177,11 +179,32 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
         if (this.laptop.isClient())
         {
             this.syncOpenApplication(window, null);
-            TaskManager.sendToServer(new OpenApplicationTask(this.laptop.getPos(), window.serializeNBT(), window.getContentData()), TaskManager.TaskReceiver.NEARBY);
+            TaskManager.sendToServer(new OpenApplicationTask(this.laptop.getPos(), window.serializeNBT(), window.getStateData()), TaskManager.TaskReceiver.NEARBY);
         }
         else
         {
             TaskManager.sendToServer(new OpenApplicationTask(this.laptop.getPos(), window.serializeNBT(), null), TaskManager.TaskReceiver.NEARBY);
+        }
+    }
+
+    @Override
+    public void markDirty(UUID windowId)
+    {
+        LaptopWindow window = this.getWindow(windowId);
+        if (window == null)
+        {
+            OpenDevices.LOGGER.error("Attempted to sync window that doesn't exist!");
+            return;
+        }
+
+        CompoundNBT contentData = window.getStateData();
+        if (this.laptop.isClient())
+        {
+            TaskManager.sendToServer(new SyncWindowTask(this.laptop.getPos(), windowId, contentData), TaskManager.TaskReceiver.SENDER_AND_NEARBY);
+        }
+        else
+        {
+            this.laptop.markDirty();
         }
     }
 
@@ -297,7 +320,7 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
             CompoundNBT windowNbt = new CompoundNBT();
             {
                 windowNbt.put("data", window.serializeNBT());
-                windowNbt.put("contentData", window.getContentData());
+                windowNbt.put("contentData", window.getStateData());
             }
             windowsNbt.add(windowNbt);
         }
@@ -319,7 +342,8 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
         {
             CompoundNBT windowNbt = windowsNbt.getCompound(i);
             LaptopWindow window = this.createWindow(windowNbt.getCompound("data"));
-            window.setContentData(windowNbt.getCompound("contentData"));
+            window.setStateData(windowNbt.getCompound("contentData"));
+            window.init();
             this.windows.push(window);
         }
         this.focusedWindowId = nbt.hasUniqueId("focusedWindowId") ? nbt.getUniqueId("focusedWindowId") : null;

@@ -127,6 +127,16 @@ public interface WindowContent
     boolean onKeyReleased(int keyCode);
 
     /**
+     * Notifies this component that it needs to be saved in the future.
+     */
+    void markDirty();
+
+    /**
+     * Notifies this component that it has been saved.
+     */
+    void removeDirtyMark();
+
+    /**
      * Saves any persistent data to NBT.
      *
      * @param nbt The tag to fill with data
@@ -190,6 +200,11 @@ public interface WindowContent
      * @return The window this content is displayed in
      */
     Window getWindow();
+
+    /**
+     * @return Whether or not this component needs to be synced with others
+     */
+    boolean isDirty();
 
     /**
      * Registers a new type of window content that can be opened by the {@link Desktop} as a window.

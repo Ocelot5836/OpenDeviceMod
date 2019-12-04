@@ -19,6 +19,16 @@ import java.lang.annotation.Target;
 public interface Component extends INBTSerializable<CompoundNBT>
 {
     /**
+     * Notifies this component that it needs to be saved in the future.
+     */
+    void markDirty();
+
+    /**
+     * Notifies this component that it has been saved.
+     */
+    void removeDirtyMark();
+
+    /**
      * Called 20 times per second to update any logic.
      */
     void update();
@@ -134,14 +144,6 @@ public interface Component extends INBTSerializable<CompoundNBT>
     void onLayoutUnload();
 
     /**
-     * Marks this component to be sent to all clients.
-     */
-    default void markDirty()
-    {
-        this.getWindow().markDirty();
-    }
-
-    /**
      * Checks to see if this component is hovered or not.
      *
      * @param mouseX The x position of the mouse
@@ -191,8 +193,14 @@ public interface Component extends INBTSerializable<CompoundNBT>
 
     /**
      * @return The window this component is in. This reference is null during class construction
+     * @deprecated Find a way to not require the window instance. Components don't need to be in windows!
      */
     Window getWindow();
+
+    /**
+     * @return Whether or not this component needs to be synced with others
+     */
+    boolean isDirty();
 
     /**
      * @return The x position of the start of the window frame

@@ -296,6 +296,7 @@ public class TextComponent extends BasicComponent
     public TextComponent setX(int x)
     {
         this.x = x;
+        this.markDirty();
         return this;
     }
 
@@ -307,6 +308,7 @@ public class TextComponent extends BasicComponent
     public TextComponent setY(int y)
     {
         this.y = y;
+        this.markDirty();
         return this;
     }
 
@@ -320,6 +322,7 @@ public class TextComponent extends BasicComponent
     {
         this.x = x;
         this.y = y;
+        this.markDirty();
         return this;
     }
 
@@ -331,6 +334,7 @@ public class TextComponent extends BasicComponent
     public TextComponent setMaxWidth(int maxWidth)
     {
         this.maxWidth = maxWidth;
+        this.markDirty();
         this.rebuildText();
         return this;
     }
@@ -344,6 +348,7 @@ public class TextComponent extends BasicComponent
     {
         this.fontRendererLocation = fontRenderer;
         this.fontRenderer = Minecraft.getInstance().getFontResourceManager().getFontRenderer(fontRenderer);
+        this.markDirty();
         this.rebuildText();
         return this;
     }
@@ -367,6 +372,7 @@ public class TextComponent extends BasicComponent
     public TextComponent setText(@Nullable List<ITextComponent> text)
     {
         this.text.clear();
+        this.markDirty();
         if (text != null)
             text.forEach(this::addLine);
         this.rebuildText();
@@ -381,6 +387,7 @@ public class TextComponent extends BasicComponent
     public TextComponent setTooltipDelay(long tooltipDelay)
     {
         this.tooltipDelay = Math.max(0, tooltipDelay);
+        this.markDirty();
         return this;
     }
 
@@ -392,6 +399,7 @@ public class TextComponent extends BasicComponent
     public TextComponent setClickListener(@Nullable ComponentClickListener<ITextComponent> clickListener)
     {
         this.clickListener = clickListener;
+        this.markDirty();
         return this;
     }
 
@@ -421,11 +429,13 @@ public class TextComponent extends BasicComponent
         this.setFontRenderer(new ResourceLocation(nbt.getString("fontRenderer")));
         this.maxWidth = nbt.getInt("maxWidth");
 
+        this.text.clear();
         ListNBT textList = nbt.getList("text", Constants.NBT.TAG_STRING);
         for (int i = 0; i < textList.size(); i++)
         {
-            this.addLine(ITextComponent.Serializer.fromJson(textList.getString(i)));
+            this.text.add(ITextComponent.Serializer.fromJson(textList.getString(i)));
         }
+        this.rebuildText();
 
         this.tooltipDelay = Math.max(0, nbt.getLong("tooltipDelay"));
     }

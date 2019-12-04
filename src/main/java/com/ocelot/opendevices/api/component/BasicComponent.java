@@ -15,6 +15,19 @@ public abstract class BasicComponent extends AbstractGui implements Component
     private Window window;
     private float windowX;
     private float windowY;
+    private boolean dirty;
+
+    @Override
+    public void markDirty()
+    {
+        this.dirty = true;
+    }
+
+    @Override
+    public void removeDirtyMark()
+    {
+        this.dirty = false;
+    }
 
     @Override
     public void update()
@@ -107,6 +120,12 @@ public abstract class BasicComponent extends AbstractGui implements Component
     public float getWindowX()
     {
         return windowX;
+    }
+
+    @Override
+    public boolean isDirty()
+    {
+        return dirty;
     }
 
     @Override

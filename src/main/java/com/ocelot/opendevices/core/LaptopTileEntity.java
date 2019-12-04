@@ -176,6 +176,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
             else
             {
                 TaskManager.sendTo(new SyncSettingsTask(this.pos, nbt), TaskManager.TaskReceiver.SENDER_AND_NEARBY, (ServerPlayerEntity) this.getUser());
+                this.markDirty();
             }
         }
     }

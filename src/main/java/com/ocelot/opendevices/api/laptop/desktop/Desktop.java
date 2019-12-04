@@ -35,6 +35,13 @@ public interface Desktop
     void openApplication(ResourceLocation registryName, @Nullable CompoundNBT initData);
 
     /**
+     * Marks the window with the specified ID as changed and syncs its data.
+     *
+     * @param windowId The id of the window to mark
+     */
+    void markDirty(UUID windowId);
+
+    /**
      * Focuses the window with the specified ID and moves it to the front.
      *
      * @param windowId The id of the window to focus or null to unfocus

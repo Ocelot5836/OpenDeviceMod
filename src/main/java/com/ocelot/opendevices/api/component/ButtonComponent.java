@@ -446,6 +446,7 @@ public class ButtonComponent extends BasicComponent
     public ButtonComponent setX(int x)
     {
         this.x = x;
+        this.markDirty();
         return this;
     }
 
@@ -457,6 +458,7 @@ public class ButtonComponent extends BasicComponent
     public ButtonComponent setY(int y)
     {
         this.y = y;
+        this.markDirty();
         return this;
     }
 
@@ -470,6 +472,7 @@ public class ButtonComponent extends BasicComponent
     {
         this.x = x;
         this.y = y;
+        this.markDirty();
         return this;
     }
 
@@ -482,6 +485,7 @@ public class ButtonComponent extends BasicComponent
     {
         this.width = width;
         this.explicitWidth = true;
+        this.markDirty();
         return this;
     }
 
@@ -494,6 +498,7 @@ public class ButtonComponent extends BasicComponent
     {
         this.height = height;
         this.explicitHeight = true;
+        this.markDirty();
         return this;
     }
 
@@ -509,6 +514,7 @@ public class ButtonComponent extends BasicComponent
         this.height = height;
         this.explicitWidth = true;
         this.explicitHeight = true;
+        this.markDirty();
         return this;
     }
 
@@ -520,6 +526,7 @@ public class ButtonComponent extends BasicComponent
     public ButtonComponent setPadding(int padding)
     {
         this.padding = padding;
+        this.markDirty();
         this.updateSize();
         return this;
     }
@@ -533,6 +540,7 @@ public class ButtonComponent extends BasicComponent
     {
         this.fontRenderer = Minecraft.getInstance().getFontResourceManager().getFontRenderer(fontRenderer);
         this.fontRendererLocation = fontRenderer;
+        this.markDirty();
         this.updateTextCache();
         this.updateSize();
         return this;
@@ -546,6 +554,7 @@ public class ButtonComponent extends BasicComponent
     public ButtonComponent setText(ITextComponent text)
     {
         this.text = text;
+        this.markDirty();
         this.updateTextCache();
         this.updateSize();
         return this;
@@ -559,6 +568,7 @@ public class ButtonComponent extends BasicComponent
     public ButtonComponent setTooltipDelay(long tooltipDelay)
     {
         this.tooltipDelay = Math.max(0, tooltipDelay);
+        this.markDirty();
         return this;
     }
 
@@ -608,6 +618,7 @@ public class ButtonComponent extends BasicComponent
         this.iconHeight = height;
         this.iconTextureWidth = textureWidth;
         this.iconTextureHeight = textureHeight;
+        this.markDirty();
         this.updateSize();
         return this;
     }
@@ -620,6 +631,7 @@ public class ButtonComponent extends BasicComponent
     public ButtonComponent setState(ButtonState state)
     {
         this.state = state;
+        this.markDirty();
         return this;
     }
 
@@ -635,6 +647,7 @@ public class ButtonComponent extends BasicComponent
         this.buttonColor = color;
         this.disabledButtonColor = disabledColor;
         this.hoveredButtonColor = hoveredColor;
+        this.markDirty();
         return this;
     }
 
@@ -650,6 +663,7 @@ public class ButtonComponent extends BasicComponent
         this.textColor = color;
         this.disabledTextColor = disabledColor;
         this.hoveredTextColor = hoveredColor;
+        this.markDirty();
         return this;
     }
 
