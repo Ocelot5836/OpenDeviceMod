@@ -37,13 +37,6 @@ public class Layout extends BasicComponent
 
     private List<Component> components;
 
-    public Layout(CompoundNBT nbt)
-    {
-        this.components = new ArrayList<>();
-
-        this.deserializeNBT(nbt);
-    }
-
     public Layout()
     {
         this(0, 0, DeviceConstants.LAPTOP_DEFAULT_APPLICATION_WIDTH, DeviceConstants.LAPTOP_DEFAULT_APPLICATION_HEIGHT);

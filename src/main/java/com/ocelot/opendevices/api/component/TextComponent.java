@@ -19,10 +19,7 @@ import net.minecraft.util.text.event.ClickEvent;
 import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * <p>Allows the addition of {@link ITextComponent} lines of text to a {@link Layout}.</p>
@@ -49,19 +46,6 @@ public class TextComponent extends BasicComponent
     private long lastTooltip;
     private int width;
     private ComponentClickListener<ITextComponent> clickListener;
-
-    public TextComponent(CompoundNBT nbt)
-    {
-        this.maxWidth = -1;
-
-        this.text = new ArrayList<>();
-        this.tooltipDelay = DeviceConstants.DEFAULT_TOOLTIP_DELAY;
-
-        this.lines = new ArrayList<>();
-        this.lastTooltip = Long.MAX_VALUE;
-
-        this.deserializeNBT(nbt);
-    }
 
     public TextComponent(int x, int y, ResourceLocation fontRenderer, ITextComponent... texts)
     {
@@ -413,7 +397,7 @@ public class TextComponent extends BasicComponent
         nbt.putInt("maxWidth", this.maxWidth);
 
         ListNBT textList = new ListNBT();
-        this.text.forEach(text -> textList.add(new StringNBT(ITextComponent.Serializer.toJson(text))));
+        this.text.forEach(text -> textList.add(new StringNBT(new String(Base64.getEncoder().encode(ITextComponent.Serializer.toJson(text).getBytes())))));
         nbt.put("text", textList);
 
         nbt.putLong("tooltipDelay", this.tooltipDelay);
@@ -433,7 +417,7 @@ public class TextComponent extends BasicComponent
         ListNBT textList = nbt.getList("text", Constants.NBT.TAG_STRING);
         for (int i = 0; i < textList.size(); i++)
         {
-            this.text.add(ITextComponent.Serializer.fromJson(textList.getString(i)));
+            this.text.add(ITextComponent.Serializer.fromJson(new String(Base64.getDecoder().decode(textList.getString(i)))));
         }
         this.rebuildText();
 

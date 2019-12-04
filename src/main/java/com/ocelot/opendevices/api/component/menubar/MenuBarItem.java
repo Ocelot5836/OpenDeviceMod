@@ -10,6 +10,7 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nullable;
+import java.util.Base64;
 
 /**
  * <p>An item that can be added to a {@link MenuBarComponent}. Contains a list of {@link MenuBarItemComponent} that gets rendered as a drop-down box.</p>
@@ -233,7 +234,7 @@ public class MenuBarItem implements INBTSerializable<CompoundNBT>
         CompoundNBT nbt = new CompoundNBT();
 
         if (this.text != null)
-            nbt.putString("text", ITextComponent.Serializer.toJson(this.text));
+            nbt.putString("text", new String(Base64.getEncoder().encode(ITextComponent.Serializer.toJson(this.text).getBytes())));
 
         nbt.putLong("tooltipDelay", this.tooltipDelay);
 
@@ -258,7 +259,7 @@ public class MenuBarItem implements INBTSerializable<CompoundNBT>
     {
         if (nbt.contains("text", Constants.NBT.TAG_STRING))
         {
-            this.text = ITextComponent.Serializer.fromJson(nbt.getString("text"));
+            this.text = ITextComponent.Serializer.fromJson(new String(Base64.getDecoder().decode(nbt.getString("text"))));
             assert this.text != null;
             this.rawText = this.text.getFormattedText();
         }

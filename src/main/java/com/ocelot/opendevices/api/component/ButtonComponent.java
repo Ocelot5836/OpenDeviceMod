@@ -19,6 +19,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
+import java.util.Base64;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -66,18 +67,6 @@ public class ButtonComponent extends BasicComponent
     private int textWidth;
     private long lastTooltip;
     private ClickListener clickListener;
-
-    public ButtonComponent(CompoundNBT nbt)
-    {
-        this.setPadding(5);
-        this.setFontRenderer(Minecraft.DEFAULT_FONT_RENDERER_NAME);
-        this.tooltipDelay = DeviceConstants.DEFAULT_TOOLTIP_DELAY;
-        this.lastTooltip = Long.MAX_VALUE;
-
-        this.state = ButtonState.VISIBLE;
-
-        this.deserializeNBT(nbt);
-    }
 
     public ButtonComponent(int x, int y)
     {
@@ -689,7 +678,7 @@ public class ButtonComponent extends BasicComponent
 
         nbt.putString("fontRenderer", this.fontRendererLocation.toString());
         if (this.text != null)
-            nbt.putString("text", ITextComponent.Serializer.toJson(this.text));
+            nbt.putString("text", new String(Base64.getEncoder().encode(ITextComponent.Serializer.toJson(this.text).getBytes())));
 
         nbt.putLong("tooltipDelay", this.tooltipDelay);
 
@@ -728,7 +717,7 @@ public class ButtonComponent extends BasicComponent
 
         if (nbt.contains("text", Constants.NBT.TAG_STRING))
         {
-            this.text = ITextComponent.Serializer.fromJson(nbt.getString("text"));
+            this.text = ITextComponent.Serializer.fromJson(new String(Base64.getDecoder().decode(nbt.getString("text"))));
         }
 
         this.updateTextCache();

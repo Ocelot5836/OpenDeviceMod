@@ -60,21 +60,6 @@ public class MenuBarComponent extends BasicComponent
     private long lastTooltip;
     private ComponentClickListener<MenuBarItem> clickListener;
 
-    public MenuBarComponent(CompoundNBT nbt)
-    {
-        this.itemPadding = 2;
-        this.items = new ArrayList<>();
-        this.setFontRenderer(Minecraft.DEFAULT_FONT_RENDERER_NAME);
-
-        this.state = ButtonState.VISIBLE;
-        this.hoveredIndex = -1;
-        this.selectedIndex = -1;
-        this.lastTooltipIndex = -1;
-        this.lastTooltip = Long.MAX_VALUE;
-
-        this.deserializeNBT(nbt);
-    }
-
     public MenuBarComponent(int x, int y, int width, int height)
     {
         this.x = x;
