@@ -160,7 +160,7 @@ public class OpenDevices
                 String fieldName = data.getMemberName();
                 try
                 {
-                    Class clazz = Class.forName(className);
+                    Class<?> clazz = Class.forName(className);
                     Field field = clazz.getField(fieldName);
                     LaptopSetting<?> setting = (LaptopSetting<?>) field.get(null);
 
