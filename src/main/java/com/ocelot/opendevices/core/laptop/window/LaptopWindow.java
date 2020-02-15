@@ -35,7 +35,7 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
     public UUID getProcessId()
     {
         return processId;
-    }
+    }//All windows will be created from a process
 
     @Override
     public UUID getId()

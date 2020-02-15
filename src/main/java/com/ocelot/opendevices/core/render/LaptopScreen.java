@@ -38,6 +38,7 @@ public class LaptopScreen extends Screen implements TooltipRenderer
     {
         super(new TranslationTextComponent("screen." + OpenDevices.MOD_ID + ".laptop"));
         this.laptop = laptop;
+        this.laptop.executeProcess(null);
     }
 
     @Override

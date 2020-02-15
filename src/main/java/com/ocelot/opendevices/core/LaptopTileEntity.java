@@ -8,11 +8,13 @@ import com.ocelot.opendevices.api.device.DeviceTileEntity;
 import com.ocelot.opendevices.api.laptop.Laptop;
 import com.ocelot.opendevices.api.laptop.settings.LaptopSetting;
 import com.ocelot.opendevices.api.task.TaskManager;
+import com.ocelot.opendevices.core.laptop.process.TestProcess;
 import com.ocelot.opendevices.core.task.SyncSettingsTask;
 import com.ocelot.opendevices.init.DeviceBlocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraftforge.api.distmarker.Dist;
@@ -20,10 +22,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Queue;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITickableTileEntity
@@ -32,7 +31,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
 
     private UUID user;
     private boolean open;
-    private HashMap<UUID, DeviceProcess> processes;
+    private HashMap<UUID, DeviceProcess<Laptop>> processes;
     private Queue<Runnable> executionQueue;
 
     private UUID address;
@@ -103,10 +102,20 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
                 runnable.run();
             }
 
-            this.processes.values().forEach(DeviceProcess::update);
+            this.processes.values().forEach(process -> process.update(this));
 
             this.desktop.update();
         }
+    }
+
+    @Override
+    public UUID executeProcess(ResourceLocation processName)
+    {
+        UUID processId = UUID.randomUUID();
+        //TODO fetch process from a registry and create it
+        DeviceProcess<Laptop> process = new TestProcess(processId);
+        this.processes.put(processId, process);
+        return processId;
     }
 
     @Override
@@ -250,9 +259,15 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
     }
 
     @Override
-    public Collection<DeviceProcess> getProcesses()
+    public Collection<UUID> getProcessIds()
     {
-        return processes.values();
+        return new HashSet<>(processes.keySet());
+    }
+
+    @Override
+    public DeviceProcess<Laptop> getProcess(UUID id)
+    {
+        return processes.get(id);
     }
 
     @Override

@@ -1,18 +1,34 @@
 package com.ocelot.opendevices.core.laptop.process;
 
 import com.ocelot.opendevices.api.device.DeviceProcess;
+import com.ocelot.opendevices.api.laptop.Laptop;
 
-public class TestProcess implements DeviceProcess
+import java.util.UUID;
+
+public class TestProcess implements DeviceProcess<Laptop>
 {
-    @Override
-    public void update()
+    private UUID processId;
+
+    public TestProcess(UUID processId)
     {
-        System.out.println("Hi");
+        this.processId = processId;
+    }
+
+    @Override
+    public void update(Laptop laptop)
+    {
+        System.out.println("[" + this.processId + "] Hi");
     }
 
     @Override
     public boolean isTerminated()
     {
         return false;
+    }
+
+    @Override
+    public UUID getProcessId()
+    {
+        return processId;
     }
 }

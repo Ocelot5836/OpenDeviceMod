@@ -1,16 +1,18 @@
 package com.ocelot.opendevices.api.device;
 
+import java.util.UUID;
+
 /**
  * <p>A process is a continuous task that is being executed by a {@link Device}.</p>
  *
  * @author Ocelot
  */
-public interface DeviceProcess
+public interface DeviceProcess<T extends Device>
 {
     /**
      * Updates this process.
      */
-    void update();
+    void update(T device);
 
     /**
      * Called when this process is terminated by the device.
@@ -23,4 +25,9 @@ public interface DeviceProcess
      * @return Whether or not this process has completed execution
      */
     boolean isTerminated();
+
+    /**
+     * @return The id of this process
+     */
+    UUID getProcessId();
 }

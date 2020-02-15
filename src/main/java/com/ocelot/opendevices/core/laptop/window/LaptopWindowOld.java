@@ -208,6 +208,12 @@ public class LaptopWindowOld implements Window, INBTSerializable<CompoundNBT>
     }
 
     @Override
+    public UUID getProcessId()
+    {
+        return null;
+    }
+
+    @Override
     public UUID getId()
     {
         return id;
