@@ -9,6 +9,7 @@ import com.ocelot.opendevices.api.laptop.Laptop;
 import com.ocelot.opendevices.api.laptop.settings.LaptopSetting;
 import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.core.laptop.process.TestProcess;
+import com.ocelot.opendevices.core.task.ExecuteProcessTask;
 import com.ocelot.opendevices.core.task.SyncSettingsTask;
 import com.ocelot.opendevices.init.DeviceBlocks;
 import net.minecraft.entity.player.PlayerEntity;
@@ -108,13 +109,27 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
         }
     }
 
+    public void syncExecuteProcess(ResourceLocation processName, UUID processId)
+    {
+        //TODO fetch process from a registry and create it
+        DeviceProcess<Laptop> process = new TestProcess(processId);
+        this.processes.put(processId, process);
+    }
+
     @Override
     public UUID executeProcess(ResourceLocation processName)
     {
         UUID processId = UUID.randomUUID();
-        //TODO fetch process from a registry and create it
-        DeviceProcess<Laptop> process = new TestProcess(processId);
-        this.processes.put(processId, process);
+
+        if (this.isClient())
+        {
+            TaskManager.sendToServer(new ExecuteProcessTask(this.getPos(), processName, processId), TaskManager.TaskReceiver.SENDER_AND_NEARBY);
+        }
+        else
+        {
+            TaskManager.sendToTracking(new ExecuteProcessTask(this.getPos(), processName, processId), this.getWorld(), this.getPos());
+        }
+
         return processId;
     }
 
