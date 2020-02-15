@@ -3,6 +3,7 @@ package com.ocelot.opendevices.api.device;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IWorld;
 
+import java.util.Collection;
 import java.util.UUID;
 
 /**
@@ -22,6 +23,11 @@ public interface Device
      * @return The unique address id of this device used for communication
      */
     UUID getAddress();
+
+    /**
+     * @return The processes that are currently being executed
+     */
+    Collection<DeviceProcess> getProcesses();
 
     /**
      * @return Whether or not the laptop is currently in a client world

@@ -5,7 +5,6 @@ import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.LaptopSettings;
 import com.ocelot.opendevices.api.laptop.Laptop;
 import com.ocelot.opendevices.api.util.RenderUtil;
-import com.ocelot.opendevices.core.laptop.window.WindowClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraftforge.api.distmarker.Dist;
@@ -58,9 +57,9 @@ public class WindowButton extends Button
         this.screenY = screenY;
     }
 
-    public void setPosition(WindowClient window, float partialTicks)
-    {
-        this.posX = window.getInterpolatedX(partialTicks) + window.getWidth() - DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE - 1;
-        this.posY = window.getInterpolatedY(partialTicks) + 1;
-    }
+//    public void setPosition(WindowClient window, float partialTicks)
+//    {
+//        this.posX = window.getInterpolatedX(partialTicks) + window.getWidth() - DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE - 1;
+//        this.posY = window.getInterpolatedY(partialTicks) + 1;
+//    }
 }

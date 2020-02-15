@@ -4,7 +4,7 @@ import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.core.LaptopDesktop;
 import com.ocelot.opendevices.core.LaptopTileEntity;
-import com.ocelot.opendevices.core.laptop.window.LaptopWindow;
+import com.ocelot.opendevices.core.laptop.window.LaptopWindowOld;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
@@ -55,7 +55,7 @@ public class MoveWindowTask extends Task
         {
             LaptopTileEntity laptop = (LaptopTileEntity) Objects.requireNonNull(world.getTileEntity(this.pos));
             LaptopDesktop desktop = laptop.getDesktop();
-            LaptopWindow window = desktop.getWindow(this.windowId);
+            LaptopWindowOld window = desktop.getWindow(this.windowId);
             if (window != null)
             {
                 window.syncMove(this.xDirection, this.yDirection);

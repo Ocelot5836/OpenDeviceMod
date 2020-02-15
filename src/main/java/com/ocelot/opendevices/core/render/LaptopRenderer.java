@@ -5,18 +5,14 @@ import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.LaptopSettings;
 import com.ocelot.opendevices.api.laptop.Laptop;
-import com.ocelot.opendevices.api.laptop.application.ApplicationManager;
 import com.ocelot.opendevices.api.laptop.desktop.Desktop;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopBackground;
 import com.ocelot.opendevices.api.laptop.taskbar.TaskBar;
-import com.ocelot.opendevices.api.laptop.window.Window;
 import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.api.util.TooltipRenderer;
-import com.ocelot.opendevices.core.laptop.window.WindowClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraftforge.api.distmarker.Dist;
@@ -78,14 +74,14 @@ public class LaptopRenderer extends AbstractGui
             fontRenderer.drawStringWithShadow(I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.version", MOD_VERSION), posX + 5, posY + 5, laptop.readSetting(LaptopSettings.DESKTOP_TEXT_COLOR));
         }
 
-        /* Applications */
-        Window[] windows = desktop.getWindows();
-        for (Window value : windows)
-        {
-            WindowClient window = (WindowClient) value;
-            window.setScreenPosition(posX, posY);
-            window.render(mouseX, mouseY, laptop.readSetting(LaptopSettings.WINDOW_COLOR), partialTicks);
-        }
+        //        /* Applications */
+        //        Window[] windows = desktop.getWindows();
+        //        for (Window value : windows)
+        //        {
+        //            WindowClient window = (WindowClient) value;
+        //            window.setScreenPosition(posX, posY);
+        //            window.render(mouseX, mouseY, laptop.readSetting(LaptopSettings.WINDOW_COLOR), partialTicks);
+        //        }
 
         /* Task bar */
         {
@@ -112,19 +108,19 @@ public class LaptopRenderer extends AbstractGui
             }
             GlStateManager.color4f(1, 1, 1, 1);
 
-            {
-                int size = taskBar.isEnlarged() ? 16 : 8;
-                int i = 0;
-
-                for (Window value : taskBar.getDisplayedWindows())
-                {
-                    WindowClient window = (WindowClient) value;
-                    TextureAtlasSprite icon = ApplicationManager.getAppIcon(window.getContentId());
-                    textureManager.bindTexture(ApplicationManager.LOCATION_APP_ICON_TEXTURE);
-                    RenderUtil.drawRectWithTexture(posX + 4 + (size + 4) * i, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4, size, size, icon);
-                    i++;
-                }
-            }
+            //            {
+            //                int size = taskBar.isEnlarged() ? 16 : 8;
+            //                int i = 0;
+            //
+            //                for (Window value : taskBar.getDisplayedWindows())
+            //                {
+            //                    WindowClient window = (WindowClient) value;
+            //                    TextureAtlasSprite icon = ApplicationManager.getAppIcon(window.getContentId());
+            //                    textureManager.bindTexture(ApplicationManager.LOCATION_APP_ICON_TEXTURE);
+            //                    RenderUtil.drawRectWithTexture(posX + 4 + (size + 4) * i, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4, size, size, icon);
+            //                    i++;
+            //                }
+            //            }
         }
     }
 
@@ -133,31 +129,31 @@ public class LaptopRenderer extends AbstractGui
         Desktop desktop = laptop.getDesktop();
         TaskBar taskBar = laptop.getTaskBar();
 
-        /* Task bar */
-        {
-            int size = taskBar.isEnlarged() ? 16 : 8;
-            int i = 0;
-
-            for (Window value : taskBar.getDisplayedWindows())
-            {
-                WindowClient window = (WindowClient) value;
-                if (!StringUtils.isEmpty(window.getContent().getTitle()) && RenderUtil.isMouseInside(mouseX, mouseY, posX + 4 + (size + 4) * i, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4, posX + 4 + (size + 4) * i + size, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4 + size))
-                {
-                    renderer.renderTooltip(window.getContent().getTitle(), mouseX, mouseY);
-                    return;
-                }
-                i++;
-            }
-        }
-
-        /* Applications */
-        {
-            for (Window value : desktop.getWindows())
-            {
-                WindowClient window = (WindowClient) value;
-                window.setScreenPosition(posX, posY);
-                window.renderOverlay(renderer, mouseX, mouseY, partialTicks);
-            }
-        }
+        //        /* Task bar */
+        //        {
+        //            int size = taskBar.isEnlarged() ? 16 : 8;
+        //            int i = 0;
+        //
+        //            for (Window value : taskBar.getDisplayedWindows())
+        //            {
+        //                WindowClient window = (WindowClient) value;
+        //                if (!StringUtils.isEmpty(window.getContent().getTitle()) && RenderUtil.isMouseInside(mouseX, mouseY, posX + 4 + (size + 4) * i, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4, posX + 4 + (size + 4) * i + size, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4 + size))
+        //                {
+        //                    renderer.renderTooltip(window.getContent().getTitle(), mouseX, mouseY);
+        //                    return;
+        //                }
+        //                i++;
+        //            }
+        //        }
+        //
+        //        /* Applications */
+        //        {
+        //            for (Window value : desktop.getWindows())
+        //            {
+        //                WindowClient window = (WindowClient) value;
+        //                window.setScreenPosition(posX, posY);
+        //                window.renderOverlay(renderer, mouseX, mouseY, partialTicks);
+        //            }
+        //        }
     }
 }

@@ -3,6 +3,7 @@ package com.ocelot.opendevices.core;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.DeviceRegistries;
+import com.ocelot.opendevices.api.device.DeviceProcess;
 import com.ocelot.opendevices.api.device.DeviceTileEntity;
 import com.ocelot.opendevices.api.laptop.Laptop;
 import com.ocelot.opendevices.api.laptop.settings.LaptopSetting;
@@ -19,6 +20,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -29,6 +32,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
 
     private UUID user;
     private boolean open;
+    private HashMap<UUID, DeviceProcess> processes;
     private Queue<Runnable> executionQueue;
 
     private UUID address;
@@ -36,6 +40,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
     private LaptopDesktop desktop;
     private LaptopTaskBar taskBar;
 
+    //TODO make this a better system
     @OnlyIn(Dist.CLIENT)
     private float rotation;
     @OnlyIn(Dist.CLIENT)
@@ -46,6 +51,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
         super(DeviceBlocks.TE_LAPTOP);
         this.user = null;
         this.open = false;
+        this.processes = new HashMap<>();
         this.executionQueue = new ConcurrentLinkedQueue<>();
 
         this.address = UUID.randomUUID();
@@ -97,6 +103,8 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
                 runnable.run();
             }
 
+            this.processes.values().forEach(DeviceProcess::update);
+
             this.desktop.update();
         }
     }
@@ -125,6 +133,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
     @Override
     public void save(CompoundNBT nbt)
     {
+        //TODO add process saving/loading
         nbt.putUniqueId("address", this.address);
         nbt.put("settings", this.settings);
         nbt.put("desktop", this.desktop.serializeNBT());
@@ -174,7 +183,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
             }
             else
             {
-                TaskManager.sendToTracking(new SyncSettingsTask(this.pos, nbt), this.world.getChunkAt(this.getPos()));
+                TaskManager.sendToTracking(new SyncSettingsTask(this.pos, nbt), this.world, this.getPos());
                 this.markDirty();
             }
         }
@@ -238,6 +247,12 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
     public UUID getAddress()
     {
         return address;
+    }
+
+    @Override
+    public Collection<DeviceProcess> getProcesses()
+    {
+        return processes.values();
     }
 
     @Override

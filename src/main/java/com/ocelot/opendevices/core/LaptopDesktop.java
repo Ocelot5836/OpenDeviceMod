@@ -8,8 +8,7 @@ import com.ocelot.opendevices.api.laptop.desktop.DesktopManager;
 import com.ocelot.opendevices.api.laptop.window.Window;
 import com.ocelot.opendevices.api.laptop.window.WindowContentType;
 import com.ocelot.opendevices.api.task.TaskManager;
-import com.ocelot.opendevices.core.laptop.window.LaptopWindow;
-import com.ocelot.opendevices.core.laptop.window.WindowClient;
+import com.ocelot.opendevices.core.laptop.window.LaptopWindowOld;
 import com.ocelot.opendevices.core.task.CloseWindowTask;
 import com.ocelot.opendevices.core.task.FocusWindowTask;
 import com.ocelot.opendevices.core.task.OpenApplicationTask;
@@ -27,7 +26,7 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
 {
     private LaptopTileEntity laptop;
     private DesktopBackground background;
-    private Stack<LaptopWindow> windows;
+    private Stack<LaptopWindowOld> windows;
     private UUID focusedWindowId;
 
     LaptopDesktop(LaptopTileEntity laptop)
@@ -38,59 +37,60 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
         this.focusedWindowId = null;
     }
 
-    private LaptopWindow createWindow(ResourceLocation registryName, @Nullable CompoundNBT initData)
+    private LaptopWindowOld createWindow(ResourceLocation registryName, @Nullable CompoundNBT initData)
     {
-        return this.laptop.isClient() ? new WindowClient(this.laptop, initData, WindowContentType.APPLICATION, registryName, DeviceConstants.LAPTOP_DEFAULT_APPLICATION_WIDTH, DeviceConstants.LAPTOP_DEFAULT_APPLICATION_HEIGHT) : new LaptopWindow(this.laptop, initData, WindowContentType.APPLICATION, registryName, DeviceConstants.LAPTOP_DEFAULT_APPLICATION_WIDTH, DeviceConstants.LAPTOP_DEFAULT_APPLICATION_HEIGHT);
+        //        return this.laptop.isClient() ? new WindowClient(this.laptop, initData, WindowContentType.APPLICATION, registryName, DeviceConstants.LAPTOP_DEFAULT_APPLICATION_WIDTH, DeviceConstants.LAPTOP_DEFAULT_APPLICATION_HEIGHT) : new LaptopWindow(this.laptop, initData, WindowContentType.APPLICATION, registryName, DeviceConstants.LAPTOP_DEFAULT_APPLICATION_WIDTH, DeviceConstants.LAPTOP_DEFAULT_APPLICATION_HEIGHT);
+        return new LaptopWindowOld(this.laptop, initData, WindowContentType.APPLICATION, registryName, DeviceConstants.LAPTOP_DEFAULT_APPLICATION_WIDTH, DeviceConstants.LAPTOP_DEFAULT_APPLICATION_HEIGHT);
     }
 
-    public LaptopWindow createWindow(CompoundNBT windowData)
+    public LaptopWindowOld createWindow(CompoundNBT windowData)
     {
-        LaptopWindow window = this.laptop.isClient() ? new WindowClient(this.laptop) : new LaptopWindow(this.laptop);
+        LaptopWindowOld window = new LaptopWindowOld(this.laptop);//this.laptop.isClient() ? new WindowClient(this.laptop) : new LaptopWindow(this.laptop);
         window.deserializeNBT(windowData);
         window.create();
         return window;
     }
 
-    private void openWindow(LaptopWindow window)
-    {
-        if (this.laptop.isClient())
-        {
-            if (!(window instanceof WindowClient))
-            {
-                OpenDevices.LOGGER.error("Attempted to open server window on the client!");
-                return;
-            }
-        }
-        else
-        {
-            if (window instanceof WindowClient)
-            {
-                OpenDevices.LOGGER.error("Attempted to open client window on the server!");
-                return;
-            }
-        }
-
-        if (this.windows.stream().noneMatch(frame -> frame.equals(window)))
-        {
-            this.laptop.execute(() ->
-            {
-                window.init();
-                this.windows.push(window);
-                this.laptop.getTaskBar().addWindow(window);
-                window.focus();
-            });
-        }
-    }
+    //    private void openWindow(LaptopWindow window)
+    //    {
+    //        if (this.laptop.isClient())
+    //        {
+    //            if (!(window instanceof WindowClient))
+    //            {
+    //                OpenDevices.LOGGER.error("Attempted to open server window on the client!");
+    //                return;
+    //            }
+    //        }
+    //        else
+    //        {
+    //            if (window instanceof WindowClient)
+    //            {
+    //                OpenDevices.LOGGER.error("Attempted to open client window on the server!");
+    //                return;
+    //            }
+    //        }
+    //
+    //        if (this.windows.stream().noneMatch(frame -> frame.equals(window)))
+    //        {
+    //            this.laptop.execute(() ->
+    //            {
+    //                window.init();
+    //                this.windows.push(window);
+    //                this.laptop.getTaskBar().addWindow(window);
+    //                window.focus();
+    //            });
+    //        }
+    //    }
 
     public void update()
     {
-        for (LaptopWindow window : this.windows)
+        for (LaptopWindowOld window : this.windows)
         {
             window.update();
         }
     }
 
-    public void syncOpenApplication(LaptopWindow window, CompoundNBT contentData)
+    public void syncOpenApplication(LaptopWindowOld window, CompoundNBT contentData)
     {
         if (this.windows.size() >= DeviceConstants.MAX_OPEN_APPS)
         {
@@ -106,7 +106,7 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
         {
             window.create();
         }
-        this.openWindow(window);
+        //        this.openWindow(window);
     }
 
     public void syncFocusWindow(@Nullable UUID windowId)
@@ -114,8 +114,8 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
         if (this.focusedWindowId != null && this.focusedWindowId.equals(windowId))
             return;
 
-        LaptopWindow lastFocusWindow = this.getWindow(this.focusedWindowId);
-        LaptopWindow window = this.getWindow(windowId);
+        LaptopWindowOld lastFocusWindow = this.getWindow(this.focusedWindowId);
+        LaptopWindowOld window = this.getWindow(windowId);
 
         this.laptop.execute(() ->
         {
@@ -137,7 +137,7 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
 
     public void syncCloseWindow(UUID windowId)
     {
-        LaptopWindow window = this.getWindow(windowId);
+        LaptopWindowOld window = this.getWindow(windowId);
         if (window != null)
         {
             this.laptop.execute(() ->
@@ -153,7 +153,7 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
         }
     }
 
-    public void syncApplication(LaptopWindow window, CompoundNBT contentData)
+    public void syncApplication(LaptopWindowOld window, CompoundNBT contentData)
     {
         this.laptop.execute(() -> window.setStateData(contentData));
     }
@@ -173,7 +173,7 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
             return;
         }
 
-        LaptopWindow window = this.createWindow(registryName, initData);
+        LaptopWindowOld window = this.createWindow(registryName, initData);
         if (this.laptop.isClient())
         {
             this.syncOpenApplication(window, null);
@@ -185,26 +185,26 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
         }
     }
 
-//    @Override
-//    public void markDirty(UUID windowId)
-//    {
-//        LaptopWindow window = this.getWindow(windowId);
-//        if (window == null)
-//        {
-//            OpenDevices.LOGGER.error("Attempted to sync window that doesn't exist!");
-//            return;
-//        }
-//
-//        CompoundNBT contentData = window.getStateData();
-//        if (this.laptop.isClient())
-//        {
-//            TaskManager.sendToServer(new SyncWindowTask(this.laptop.getPos(), windowId, contentData), TaskManager.TaskReceiver.SENDER_AND_NEARBY);
-//        }
-//        else
-//        {
-//            this.laptop.markDirty();
-//        }
-//    }
+    //    @Override
+    //    public void markDirty(UUID windowId)
+    //    {
+    //        LaptopWindow window = this.getWindow(windowId);
+    //        if (window == null)
+    //        {
+    //            OpenDevices.LOGGER.error("Attempted to sync window that doesn't exist!");
+    //            return;
+    //        }
+    //
+    //        CompoundNBT contentData = window.getStateData();
+    //        if (this.laptop.isClient())
+    //        {
+    //            TaskManager.sendToServer(new SyncWindowTask(this.laptop.getPos(), windowId, contentData), TaskManager.TaskReceiver.SENDER_AND_NEARBY);
+    //        }
+    //        else
+    //        {
+    //            this.laptop.markDirty();
+    //        }
+    //    }
 
     @Override
     public void focusWindow(@Nullable UUID windowId)
@@ -226,7 +226,7 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
     @Override
     public void closeAllWindows()
     {
-        UUID[] windowIds = this.windows.stream().map(LaptopWindow::getId).distinct().toArray(UUID[]::new);
+        UUID[] windowIds = this.windows.stream().map(LaptopWindowOld::getId).distinct().toArray(UUID[]::new);
         if (this.laptop.isClient())
         {
             for (UUID windowId : windowIds)
@@ -257,7 +257,7 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
 
     @Nullable
     @Override
-    public LaptopWindow getWindow(UUID windowId)
+    public LaptopWindowOld getWindow(UUID windowId)
     {
         if (windowId == null)
             return null;
@@ -265,13 +265,13 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
     }
 
     @Override
-    public LaptopWindow[] getWindows()
+    public LaptopWindowOld[] getWindows()
     {
-        return this.windows.toArray(new LaptopWindow[0]);
+        return this.windows.toArray(new LaptopWindowOld[0]);
     }
 
     @Nullable
-    public LaptopWindow getFocusedWindow()
+    public LaptopWindowOld getFocusedWindow()
     {
         return this.getFocusedWindowId() == null ? null : this.getWindow(this.getFocusedWindowId());
     }
@@ -324,7 +324,7 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
         CompoundNBT nbt = new CompoundNBT();
         nbt.put("background", this.background.serializeNBT());
         ListNBT windowsNbt = new ListNBT();
-        for (LaptopWindow window : this.windows)
+        for (LaptopWindowOld window : this.windows)
         {
             CompoundNBT windowNbt = new CompoundNBT();
             {
@@ -350,7 +350,7 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
         for (int i = 0; i < windowsNbt.size(); i++)
         {
             CompoundNBT windowNbt = windowsNbt.getCompound(i);
-            LaptopWindow window = this.createWindow(windowNbt.getCompound("data"));
+            LaptopWindowOld window = this.createWindow(windowNbt.getCompound("data"));
             window.setStateData(windowNbt.getCompound("contentData"));
             window.init();
             this.windows.push(window);
