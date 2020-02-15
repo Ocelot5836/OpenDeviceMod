@@ -3,7 +3,6 @@ package com.ocelot.opendevices.api.component;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceConstants;
-import com.ocelot.opendevices.api.laptop.window.Window;
 import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.api.util.TooltipRenderer;
 import net.minecraft.nbt.CompoundNBT;
@@ -283,13 +282,13 @@ public class Layout extends BasicComponent
         }
         return false;
     }
-
-    @Override
-    public void setWindow(Window window)
-    {
-        super.setWindow(window);
-        this.components.forEach(component -> component.setWindow(window));
-    }
+//
+//    @Override
+//    public void setWindow(Window window)
+//    {
+//        super.setWindow(window);
+//        this.components.forEach(component -> component.setWindow(window));
+//    }
 
     @Override
     public CompoundNBT serializeNBT()

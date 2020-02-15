@@ -13,8 +13,6 @@ import com.ocelot.opendevices.core.laptop.window.WindowClient;
 import com.ocelot.opendevices.core.task.CloseWindowTask;
 import com.ocelot.opendevices.core.task.FocusWindowTask;
 import com.ocelot.opendevices.core.task.OpenApplicationTask;
-import com.ocelot.opendevices.core.task.SyncWindowTask;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.ResourceLocation;
@@ -183,30 +181,30 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
         }
         else
         {
-            TaskManager.sendToServer(new OpenApplicationTask(this.laptop.getPos(), window.serializeNBT(), null), TaskManager.TaskReceiver.NEARBY);
+            TaskManager.sendToTracking(new OpenApplicationTask(this.laptop.getPos(), window.serializeNBT(), null), this.laptop.getWorld(), this.laptop.getPos());
         }
     }
 
-    @Override
-    public void markDirty(UUID windowId)
-    {
-        LaptopWindow window = this.getWindow(windowId);
-        if (window == null)
-        {
-            OpenDevices.LOGGER.error("Attempted to sync window that doesn't exist!");
-            return;
-        }
-
-        CompoundNBT contentData = window.getStateData();
-        if (this.laptop.isClient())
-        {
-            TaskManager.sendToServer(new SyncWindowTask(this.laptop.getPos(), windowId, contentData), TaskManager.TaskReceiver.SENDER_AND_NEARBY);
-        }
-        else
-        {
-            this.laptop.markDirty();
-        }
-    }
+//    @Override
+//    public void markDirty(UUID windowId)
+//    {
+//        LaptopWindow window = this.getWindow(windowId);
+//        if (window == null)
+//        {
+//            OpenDevices.LOGGER.error("Attempted to sync window that doesn't exist!");
+//            return;
+//        }
+//
+//        CompoundNBT contentData = window.getStateData();
+//        if (this.laptop.isClient())
+//        {
+//            TaskManager.sendToServer(new SyncWindowTask(this.laptop.getPos(), windowId, contentData), TaskManager.TaskReceiver.SENDER_AND_NEARBY);
+//        }
+//        else
+//        {
+//            this.laptop.markDirty();
+//        }
+//    }
 
     @Override
     public void focusWindow(@Nullable UUID windowId)
@@ -221,14 +219,26 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
         }
         else
         {
-            TaskManager.sendTo(new FocusWindowTask(this.laptop.getPos(), windowId), TaskManager.TaskReceiver.SENDER_AND_NEARBY, (ServerPlayerEntity) this.laptop.getUser());
+            TaskManager.sendToTracking(new FocusWindowTask(this.laptop.getPos(), windowId), this.laptop.getWorld(), this.laptop.getPos());
         }
     }
 
     @Override
     public void closeAllWindows()
     {
-        this.laptop.execute(() -> this.windows.forEach(window -> this.closeWindow(window.getId())));
+        UUID[] windowIds = this.windows.stream().map(LaptopWindow::getId).distinct().toArray(UUID[]::new);
+        if (this.laptop.isClient())
+        {
+            for (UUID windowId : windowIds)
+            {
+                this.syncCloseWindow(windowId);
+            }
+            TaskManager.sendToServer(new CloseWindowTask(this.laptop.getPos(), windowIds), TaskManager.TaskReceiver.NEARBY);
+        }
+        else
+        {
+            TaskManager.sendToTracking(new CloseWindowTask(this.laptop.getPos(), windowIds), this.laptop.getWorld(), this.laptop.getPos());
+        }
     }
 
     @Override
@@ -241,7 +251,7 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
         }
         else
         {
-            TaskManager.sendTo(new CloseWindowTask(this.laptop.getPos(), windowId), TaskManager.TaskReceiver.SENDER_AND_NEARBY, (ServerPlayerEntity) this.laptop.getUser());
+            TaskManager.sendToTracking(new CloseWindowTask(this.laptop.getPos(), windowId), this.laptop.getWorld(), this.laptop.getPos());
         }
     }
 
@@ -293,7 +303,6 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
         return background;
     }
 
-    // TODO test
     @Override
     public void setBackground(@Nullable DesktopBackground background)
     {

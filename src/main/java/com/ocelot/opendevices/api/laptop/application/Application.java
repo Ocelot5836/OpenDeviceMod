@@ -13,8 +13,6 @@ import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 
@@ -24,7 +22,6 @@ import javax.annotation.Nullable;
  * @author Ocelot
  * @see Desktop
  */
-@OnlyIn(Dist.CLIENT)
 public abstract class Application extends AbstractGui implements WindowContent
 {
     private Window window;
@@ -139,7 +136,7 @@ public abstract class Application extends AbstractGui implements WindowContent
     public void loadState(CompoundNBT nbt)
     {
         this.currentLayout.deserializeNBT(nbt.getCompound("currentLayout"));
-        this.currentLayout.setWindow(this.window);
+        this.currentLayout.setContent(this.window);
         this.currentLayout.onLayoutLoad();
 
         if (this.currentLayout.getWidth() != this.window.getContentWidth() || this.currentLayout.getHeight() != this.window.getContentHeight())
@@ -227,7 +224,7 @@ public abstract class Application extends AbstractGui implements WindowContent
     {
         this.currentLayout.onLayoutUnload();
         this.currentLayout = layout;
-        this.currentLayout.setWindow(this.window);
+        this.currentLayout.setContent(this.window);
         this.currentLayout.onLayoutLoad();
 
         if (layout.getWidth() != this.window.getContentWidth() || layout.getHeight() != this.window.getContentHeight())
@@ -235,8 +232,6 @@ public abstract class Application extends AbstractGui implements WindowContent
             this.window.setSize(this.currentLayout.getWidth(), this.currentLayout.getHeight());
             this.window.center();// TODO maybe add the ability to center on current position?
         }
-
-        this.markDirty();
     }
 
     public final void setWindow(Window window)

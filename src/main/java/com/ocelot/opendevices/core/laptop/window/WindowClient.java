@@ -94,7 +94,7 @@ public class WindowClient extends LaptopWindow
 
         if (!RenderUtil.isScissorStackEmpty())
         {
-            OpenDevices.LOGGER.error("Scissor stack has not been completely popped for class: " + this.content.getClass().getName());
+            OpenDevices.LOGGER.error("Scissor stack has not been completely popped for content: " + this.content.getClass().getName());
             RenderUtil.clearScissorStack();
             RenderUtil.disableScissor();
         }
@@ -249,21 +249,21 @@ public class WindowClient extends LaptopWindow
     public void setStateData(CompoundNBT stateData)
     {
         this.content.loadState(stateData);
-        this.content.removeDirtyMark();
         this.dirty = false;
     }
 
-    @Override
-    public CompoundNBT serializeNBT()
-    {
-        CompoundNBT nbt = super.serializeNBT();
-
-        CompoundNBT contentDataNBT = new CompoundNBT();
-        this.content.save(contentDataNBT);
-        nbt.put("contentData", contentDataNBT);
-
-        return nbt;
-    }
+//    @Override
+//    public CompoundNBT serializeNBT()
+//    {
+//        CompoundNBT nbt = super.serializeNBT();
+//
+//        //TODO put save/load on a message to the server instead of here. Data must be sent to the server to be saved and loaded. It can then be synced back to the clients
+//        CompoundNBT contentDataNBT = new CompoundNBT();
+//        this.content.save(contentDataNBT);
+//        nbt.put("contentData", contentDataNBT);
+//
+//        return nbt;
+//    }
 
     @Override
     public void deserializeNBT(CompoundNBT nbt)
@@ -274,8 +274,7 @@ public class WindowClient extends LaptopWindow
         if (this.content == null || (this.getContentType() == WindowContentType.APPLICATION && !this.getContentId().equals(ApplicationManager.getRegistryName(this.content.getClass()))))
             this.content = createContent(this.getContentType(), this.getContentId());
 
-        assert this.content != null;
-        this.content.load(nbt.getCompound("contentData"));
+//        this.content.load(nbt.getCompound("contentData"));
         this.content.create();
         this.lastX = this.getX();
         this.lastY = this.getY();

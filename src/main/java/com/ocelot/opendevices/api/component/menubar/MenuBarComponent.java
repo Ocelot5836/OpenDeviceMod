@@ -180,7 +180,7 @@ public class MenuBarComponent extends BasicComponent
                     break;
 
                 String text = item.getRawText();
-                boolean hovered = this.getWindow().isTop() && this.isHovered(mouseX, mouseY, item);
+                boolean hovered = this.getContent().isTop() && this.isHovered(mouseX, mouseY, item);
 
                 if (item.getIconLocation() != null)
                 {
@@ -212,7 +212,7 @@ public class MenuBarComponent extends BasicComponent
                 MenuBarItem item = this.items.get(this.selectedIndex);
                 //TODO render the drop-down menu
                 fill(this.x, this.getMaxY(), this.x + this.getWidth(item), this.getMaxY() + 64, 0xffff00ff);
-                this.fontRenderer.drawString("WIP", this.x + 1, this.getMaxY() + 1, this.getWindow().getLaptop().readSetting(LaptopSettings.DESKTOP_TEXT_COLOR));
+                this.fontRenderer.drawString("WIP", this.x + 1, this.getMaxY() + 1, this.getContent().getLaptop().readSetting(LaptopSettings.DESKTOP_TEXT_COLOR));
             }
         }
     }
@@ -220,7 +220,7 @@ public class MenuBarComponent extends BasicComponent
     @Override
     public void renderOverlay(TooltipRenderer renderer, int mouseX, int mouseY, float partialTicks)
     {
-        if (this.state != ButtonState.INVISIBLE && this.getWindow().isTop() && this.isHovered(mouseX, mouseY) && this.hoveredIndex != -1)
+        if (this.state != ButtonState.INVISIBLE && this.getContent().isTop() && this.isHovered(mouseX, mouseY) && this.hoveredIndex != -1)
         {
             if (this.lastTooltipIndex != this.hoveredIndex)
             {
@@ -279,7 +279,7 @@ public class MenuBarComponent extends BasicComponent
     {
         if (this.isHovered(mouseX, mouseY) && this.hasScroll)
         {
-            this.scroll += -amount * this.getWindow().getLaptop().readSetting(LaptopSettings.SCROLL_SPEED);
+            this.scroll += -amount * this.getContent().getLaptop().readSetting(LaptopSettings.SCROLL_SPEED);
             if (this.scroll < 0)
                 this.scroll = 0;
             if (this.scroll > this.maxScroll)
@@ -360,7 +360,7 @@ public class MenuBarComponent extends BasicComponent
      */
     public int getColor()
     {
-        return this.color == 0 ? this.getWindow().getLaptop().readSetting(LaptopSettings.MENU_BAR_COLOR) : this.color;
+        return this.color == 0 ? this.getContent().getLaptop().readSetting(LaptopSettings.MENU_BAR_COLOR) : this.color;
     }
 
     /**
@@ -376,7 +376,7 @@ public class MenuBarComponent extends BasicComponent
      */
     public int getDisabledTextColor()
     {
-        return this.disabledTextColor == 0 ? this.getWindow().getLaptop().readSetting(LaptopSettings.BUTTON_TEXT_DISABLED_COLOR) : this.disabledTextColor;
+        return this.disabledTextColor == 0 ? this.getContent().getLaptop().readSetting(LaptopSettings.BUTTON_TEXT_DISABLED_COLOR) : this.disabledTextColor;
     }
 
     /**
@@ -384,7 +384,7 @@ public class MenuBarComponent extends BasicComponent
      */
     public int getTextColor()
     {
-        return this.textColor == 0 ? this.getWindow().getLaptop().readSetting(LaptopSettings.BUTTON_TEXT_COLOR) : this.textColor;
+        return this.textColor == 0 ? this.getContent().getLaptop().readSetting(LaptopSettings.BUTTON_TEXT_COLOR) : this.textColor;
     }
 
     /**
@@ -392,7 +392,7 @@ public class MenuBarComponent extends BasicComponent
      */
     public int getHoveredTextColor()
     {
-        return this.hoveredTextColor == 0 ? this.getWindow().getLaptop().readSetting(LaptopSettings.BUTTON_TEXT_HIGHLIGHT_COLOR) : this.hoveredTextColor;
+        return this.hoveredTextColor == 0 ? this.getContent().getLaptop().readSetting(LaptopSettings.BUTTON_TEXT_HIGHLIGHT_COLOR) : this.hoveredTextColor;
     }
 
     /**

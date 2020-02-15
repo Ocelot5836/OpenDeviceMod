@@ -1,6 +1,6 @@
 package com.ocelot.opendevices.api.component;
 
-import com.ocelot.opendevices.api.laptop.window.Window;
+import com.ocelot.opendevices.api.laptop.window.DesktopContent;
 import com.ocelot.opendevices.api.util.TooltipRenderer;
 import net.minecraft.client.gui.AbstractGui;
 
@@ -12,7 +12,7 @@ import net.minecraft.client.gui.AbstractGui;
  */
 public abstract class BasicComponent extends AbstractGui implements Component
 {
-    private Window window;
+    private DesktopContent content;
     private float windowX;
     private float windowY;
     private boolean dirty;
@@ -111,9 +111,9 @@ public abstract class BasicComponent extends AbstractGui implements Component
     }
 
     @Override
-    public Window getWindow()
+    public DesktopContent getContent()
     {
-        return window;
+        return content;
     }
 
     @Override
@@ -123,21 +123,21 @@ public abstract class BasicComponent extends AbstractGui implements Component
     }
 
     @Override
-    public boolean isDirty()
-    {
-        return dirty;
-    }
-
-    @Override
     public float getWindowY()
     {
         return windowY;
     }
 
     @Override
-    public void setWindow(Window window)
+    public boolean isDirty()
     {
-        this.window = window;
+        return dirty;
+    }
+
+    @Override
+    public void setContent(DesktopContent content)
+    {
+        this.content = content;
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.ocelot.opendevices.api.component;
 
-import com.ocelot.opendevices.api.laptop.window.Window;
+import com.ocelot.opendevices.api.laptop.window.DesktopContent;
 import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.api.util.TooltipRenderer;
 import net.minecraft.nbt.CompoundNBT;
@@ -192,10 +192,9 @@ public interface Component extends INBTSerializable<CompoundNBT>
     int getHeight();
 
     /**
-     * @return The window this component is in. This reference is null during class construction
-     * @deprecated Find a way to not require the window instance. Components don't need to be in windows!
+     * @return The content this component is in. This reference is null during class construction
      */
-    Window getWindow();
+    DesktopContent getContent();
 
     /**
      * @return Whether or not this component needs to be synced with others
@@ -213,11 +212,11 @@ public interface Component extends INBTSerializable<CompoundNBT>
     float getWindowY();
 
     /**
-     * Sets the window instance for this component
+     * Sets the content instance for this component.
      *
-     * @param window The new window
+     * @param content The new content
      */
-    void setWindow(Window window);
+    void setContent(DesktopContent content);
 
     /**
      * Updates the position of the screen to the provided values.

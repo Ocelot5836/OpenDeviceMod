@@ -2,15 +2,14 @@ package com.ocelot.opendevices.core;
 
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceConstants;
+import com.ocelot.opendevices.api.DeviceRegistries;
 import com.ocelot.opendevices.api.device.DeviceTileEntity;
 import com.ocelot.opendevices.api.laptop.Laptop;
 import com.ocelot.opendevices.api.laptop.settings.LaptopSetting;
-import com.ocelot.opendevices.api.DeviceRegistries;
 import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.core.task.SyncSettingsTask;
 import com.ocelot.opendevices.init.DeviceBlocks;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -175,7 +174,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
             }
             else
             {
-                TaskManager.sendTo(new SyncSettingsTask(this.pos, nbt), TaskManager.TaskReceiver.SENDER_AND_NEARBY, (ServerPlayerEntity) this.getUser());
+                TaskManager.sendToTracking(new SyncSettingsTask(this.pos, nbt), this.world.getChunkAt(this.getPos()));
                 this.markDirty();
             }
         }

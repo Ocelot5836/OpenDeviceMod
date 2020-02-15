@@ -6,6 +6,9 @@ import com.ocelot.opendevices.init.DeviceMessages;
 import com.ocelot.opendevices.network.MessageRequest;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.PacketDistributor;
@@ -17,8 +20,8 @@ import java.util.Map;
 /**
  * <p>The Task Manager handles all {@link Task} related information.<p>
  * <p>To register a task, use the {@link Task.Register} annotation on the task class and extend {@link Task}.<p>
- * <p>To send a task from the client to the server, see {@link TaskManager#sendToServer(Task, TaskReceiver)}.<p>
- * <p>To send a task from the server to a client, see {@link TaskManager#sendTo(Task, TaskReceiver, ServerPlayerEntity)}.<p>
+ * <p>To send a task from the client to the server, see {@link #sendToServer(Task, TaskReceiver)}.<p>
+ * <p>To send a task from the server to a client, see {@link #sendToPlayer(Task, TaskReceiver, ServerPlayerEntity)}. and {@link #sendToTracking(Task, Chunk)}<p>
  *
  * @author Ocelot
  * @see Task
@@ -49,9 +52,9 @@ public final class TaskManager
      *
      * @param task     The task to send to the server
      * @param receiver The way the task will be handled when it is being sent to the client
-     * @param player   The player to base the receiver around as the receiver. If null, it is assumed to be sent to all
+     * @param player   The player to base the receiver around as the receiver.
      */
-    public static void sendTo(Task task, TaskReceiver receiver, ServerPlayerEntity player)
+    public static void sendToPlayer(Task task, TaskReceiver receiver, @Nullable ServerPlayerEntity player)
     {
         if (getRegistryName(task.getClass()) == null)
             throw new RuntimeException("Unregistered Task: " + task.getClass().getName() + ". Use Task annotation to register a task.");
@@ -74,6 +77,21 @@ public final class TaskManager
                 DeviceMessages.INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player), new MessageRequest(task, receiver));
                 break;
         }
+    }
+
+    /**
+     * Sends a task from the server to all clients tracking the specified {@link Chunk}.
+     *
+     * @param task  The task to send to the clients
+     * @param world The world to base the task from.
+     * @param pos   The pos to base the task from.
+     */
+    public static void sendToTracking(Task task, World world, BlockPos pos)
+    {
+        if (getRegistryName(task.getClass()) == null)
+            throw new RuntimeException("Unregistered Task: " + task.getClass().getName() + ". Use Task annotation to register a task.");
+
+        DeviceMessages.INSTANCE.send(PacketDistributor.TRACKING_CHUNK.with(() -> world.getChunkAt(pos)), new MessageRequest(task, TaskReceiver.SENDER));
     }
 
     /**

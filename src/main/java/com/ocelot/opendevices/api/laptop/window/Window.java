@@ -5,8 +5,6 @@ import com.ocelot.opendevices.api.laptop.Laptop;
 import com.ocelot.opendevices.api.laptop.desktop.Desktop;
 import net.minecraft.util.ResourceLocation;
 
-import java.util.UUID;
-
 /**
  * <p>The most abstract form of a Window. This contains all the required functionality for the API.</p>
  * <p>A window is a box that can display onto a {@link Laptop}. The window has the ability to be moved and render it's content.</p>
@@ -15,7 +13,7 @@ import java.util.UUID;
  * @author Ocelot
  * @see Desktop
  */
-public interface Window
+public interface Window extends DesktopContent
 {
     /**
      * Sets this window to be the main, focused window.
@@ -49,6 +47,11 @@ public interface Window
         this.getLaptop().getDesktop().markDirty(this.getId());
     }
 
+    default void sync()
+    {
+        //TODO
+    }
+
     /**
      * Centers this window on the desktop of the laptop.
      */
@@ -56,11 +59,6 @@ public interface Window
     {
         this.setPosition((DeviceConstants.LAPTOP_SCREEN_WIDTH - this.getWidth()) / 2f, (DeviceConstants.LAPTOP_SCREEN_HEIGHT - this.getLaptop().getTaskBar().getHeight() - (this.getHeight() + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + 2)) / 2f);
     }
-
-    /**
-     * @return The id of this window. Used for Client/Server synchronization
-     */
-    UUID getId();
 
     /**
      * @return The type of content inside this window
@@ -71,11 +69,6 @@ public interface Window
      * @return The registry name of the content inside this window
      */
     ResourceLocation getContentId();
-
-    /**
-     * @return The laptop this window is opened inside of
-     */
-    Laptop getLaptop();
 
     /**
      * @return The x position of this window
@@ -107,17 +100,13 @@ public interface Window
      */
     int getContentHeight();
 
-    /**
-     * @return Whether or not this window is the focused window receiving events
-     */
+    @Override
     default boolean isFocused()
     {
         return this.getLaptop().getDesktop().getFocusedWindowId() == this.getId();
     }
 
-    /**
-     * @return Whether or not this window is being rendered on top of all others
-     */
+    @Override
     default boolean isTop()
     {
         return this.getLaptop().getDesktop().getTopWindowId() == this.getId();
