@@ -4,6 +4,7 @@ import com.ocelot.opendevices.api.DeviceRegistries;
 import com.ocelot.opendevices.core.registry.TaskRegistryEntry;
 import com.ocelot.opendevices.init.DeviceMessages;
 import com.ocelot.opendevices.network.MessageRequest;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -77,6 +78,21 @@ public final class TaskManager
     //                break;
     //        }
     //    }
+
+    /**
+     * Sends a task from the server to the specified client.
+     *
+     * @param task           The task to send to the clients
+     * @param player         The player to send the task to.
+     * @param returnToSender Whether or not to return the task to the server after execution
+     */
+    public static void sendToClient(Task task, ServerPlayerEntity player, boolean returnToSender)
+    {
+        if (getRegistryName(task.getClass()) == null)
+            throw new RuntimeException("Unregistered Task: " + task.getClass().getName() + ". Use Task annotation to register a task.");
+
+        DeviceMessages.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new MessageRequest(task, returnToSender ? TaskReceiver.SENDER : TaskReceiver.NONE));
+    }
 
     /**
      * Sends a task from the server to all clients tracking the specified {@link Chunk}.

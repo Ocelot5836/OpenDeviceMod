@@ -133,7 +133,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
         return true;
     }
 
-    public boolean syncExecuteProcess(ResourceLocation processName, UUID processId, boolean init)
+    public boolean syncExecuteProcess(ResourceLocation processName, UUID processId, boolean starting, boolean returning)
     {
         DeviceProcessRegistryEntry entry = DeviceRegistries.PROCESSES.getValue(processName);
 
@@ -149,18 +149,17 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
             this.execute(() ->
             {
                 this.processes.put(processId, process);
-                this.startingProcesses.add(processId);
-
-                if (init)
+                if (starting)
+                    this.startingProcesses.add(processId);
+                if (returning)
                 {
                     if (this.isClient())
                     {
-                        this.syncInitProcess(processId);
                         TaskManager.sendToServer(new InitProcessTask(this.pos, processId), TaskManager.TaskReceiver.NONE);
                     }
                     else
                     {
-                        TaskManager.sendToTracking(new InitProcessTask(this.pos, processId), this.world, this.pos, false);
+                        this.syncInitProcess(processId);
                     }
                 }
             });
@@ -211,13 +210,13 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
 
         if (this.isClient())
         {
-            TaskManager.sendToServer(new ExecuteProcessTask(this.getPos(), processName, processId), TaskManager.TaskReceiver.SENDER_AND_NEARBY);
+            TaskManager.sendToServer(new ExecuteProcessTask(this.getPos(), processName, processId, null), TaskManager.TaskReceiver.SENDER_AND_NEARBY);
         }
         else
         {
-            if (this.syncExecuteProcess(processName, processId, false))
+            if (this.syncExecuteProcess(processName, processId, true, false))
             {
-                TaskManager.sendToTracking(new ExecuteProcessTask(this.getPos(), processName, processId), this.getWorld(), this.getPos(), false);
+                TaskManager.sendToTracking(new ExecuteProcessTask(this.getPos(), processName, processId, null), this.getWorld(), this.getPos(), true);
             }
         }
 
@@ -276,16 +275,24 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
         this.windowManager.deserializeNBT(nbt.getCompound("windowManager"));
         this.taskBar.deserializeNBT(nbt.getCompound("taskBar"));
 
-        ListNBT processesNbt = nbt.getList("processes", Constants.NBT.TAG_COMPOUND);
-        for (int i = 0; i < processesNbt.size(); i++)
+        if (!this.isClient())
         {
-            CompoundNBT processNbt = processesNbt.getCompound(i);
-            DeviceProcess<Laptop> process = ProcessSerializer.read(Laptop.class, this, processNbt);
-            if (process != null)
+            ListNBT processesNbt = nbt.getList("processes", Constants.NBT.TAG_COMPOUND);
+            for (int i = 0; i < processesNbt.size(); i++)
             {
-                process.deserializeNBT(processNbt.getCompound("data"));
-                this.processes.put(process.getProcessId(), process);
-                process.init();//TODO this may cause problems
+                CompoundNBT processNbt = processesNbt.getCompound(i);
+                DeviceProcess<Laptop> process = ProcessSerializer.read(Laptop.class, this, processNbt);
+                if (process != null)
+                {
+                    CompoundNBT processData = processNbt.getCompound("data");
+                    ResourceLocation processName = ProcessSerializer.getRegistryName(process);
+                    UUID processId = process.getProcessId();
+
+                    if (this.syncExecuteProcess(processName, processId, true, false))
+                    {
+                        this.execute(() -> TaskManager.sendToTracking(new ExecuteProcessTask(this.getPos(), processName, processId, processData), this.getWorld(), this.getPos(), true));
+                    }
+                }
             }
         }
     }
@@ -299,7 +306,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
     public <T> T readSetting(LaptopSetting<T> setting)
     {
         if (!DeviceRegistries.SETTINGS.containsKey(setting.getRegistryName()))
-            throw new RuntimeException("Setting " + setting.getRegistryName() + " is not registered! In order to write to a setting it needs to be registered!");
+            throw new RuntimeException("Setting " + setting.getRegistryName() + " is not registered! In order to read from a setting it needs to be registered!");
         return setting.contains(this.settings) ? setting.read(this.settings) : setting.getDefaultValue();
     }
 
