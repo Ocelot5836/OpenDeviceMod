@@ -29,19 +29,26 @@ public class ProcessSerializer
     @Nullable
     public static CompoundNBT write(DeviceProcess<?> process)
     {
-        ResourceLocation registryName = ProcessSerializer.getRegistryName(process);
+        try
+        {
+            ResourceLocation registryName = ProcessSerializer.getRegistryName(process);
 
-        if (registryName == null)
-        {
-            OpenDevices.LOGGER.warn("Could not save process with class '" + process.getClass() + "' as it does not exist. Skipping!");
+            if (registryName == null)
+            {
+                OpenDevices.LOGGER.warn("Could not save process with class '" + process.getClass() + "' as it does not exist. Skipping!");
+            }
+            else
+            {
+                CompoundNBT processNbt = new CompoundNBT();
+                processNbt.putString("processName", registryName.toString());
+                processNbt.putUniqueId("processId", process.getProcessId());
+                processNbt.put("data", process.serializeNBT());
+                return processNbt;
+            }
         }
-        else
+        catch (Exception e)
         {
-            CompoundNBT processNbt = new CompoundNBT();
-            processNbt.putString("processName", registryName.toString());
-            processNbt.putUniqueId("processId", process.getProcessId());
-            processNbt.put("data", process.save());
-            return processNbt;
+            OpenDevices.LOGGER.error("Could not write process '" + getRegistryName(process) + "' to NBT!", e);
         }
         return null;
     }
@@ -49,11 +56,13 @@ public class ProcessSerializer
     /**
      * Reads the specified process from NBT.
      *
-     * @param nbt The compound full of data
+     * @param deviceClass The class of the device reading the process
+     * @param device      The device reading the process
+     * @param nbt         The compound full of data
      * @return The process generated from that data
      */
     @Nullable
-    public static <T extends Device> DeviceProcess<T> read(CompoundNBT nbt)
+    public static <T extends Device> DeviceProcess<T> read(Class<T> deviceClass, T device, CompoundNBT nbt)
     {
         ResourceLocation processName = new ResourceLocation(nbt.getString("processName"));
         DeviceProcessRegistryEntry entry = DeviceRegistries.PROCESSES.getValue(processName);
@@ -65,8 +74,16 @@ public class ProcessSerializer
         }
 
         UUID processId = nbt.getUniqueId("processId");
-        CompoundNBT data = nbt.getCompound("data");
-        return entry.createProcess(processId, data);
+
+        try
+        {
+            return entry.createProcess(deviceClass, device, processId);
+        }
+        catch (Exception e)
+        {
+            OpenDevices.LOGGER.error("Could not read process '" + processName + "' from NBT!", e);
+        }
+        return null;
     }
 
     /**

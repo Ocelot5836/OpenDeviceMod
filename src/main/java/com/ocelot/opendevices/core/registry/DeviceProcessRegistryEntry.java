@@ -21,30 +21,15 @@ public class DeviceProcessRegistryEntry extends ForgeRegistryEntry<DeviceProcess
     }
 
     @Nullable
-    public <T extends Device> DeviceProcess<T> createProcess(UUID processId)
+    public <T extends Device> DeviceProcess<T> createProcess(Class<T> deviceClass, T device, UUID processId)
     {
         try
         {
-            return (DeviceProcess<T>) this.clazz.getConstructor(UUID.class).newInstance(processId);
+            return (DeviceProcess<T>) this.clazz.getConstructor(deviceClass, UUID.class).newInstance(device, processId);
         }
         catch (Exception e)
         {
-            OpenDevices.LOGGER.error("Could not create process: " + this.getRegistryName() + ". Verify there is a public constructor with a UUID and a CompoundNBT as an argument.", e);
-        }
-
-        return null;
-    }
-
-    @Nullable
-    public <T extends Device> DeviceProcess<T> createProcess(UUID processId, CompoundNBT nbt)
-    {
-        try
-        {
-            return (DeviceProcess<T>) this.clazz.getConstructor(UUID.class, CompoundNBT.class).newInstance(processId, nbt);
-        }
-        catch (Exception e)
-        {
-            OpenDevices.LOGGER.error("Could not create process: " + this.getRegistryName() + ". Verify there is a public constructor with a UUID as an argument.", e);
+            OpenDevices.LOGGER.error("Could not create process: " + this.getRegistryName() + ". Verify there is a public constructor with the target device and a UUID as an argument.", e);
         }
 
         return null;

@@ -11,6 +11,7 @@ import com.ocelot.opendevices.api.laptop.settings.LaptopSetting;
 import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.core.registry.DeviceProcessRegistryEntry;
 import com.ocelot.opendevices.core.task.ExecuteProcessTask;
+import com.ocelot.opendevices.core.task.InitProcessTask;
 import com.ocelot.opendevices.core.task.SyncProcessTask;
 import com.ocelot.opendevices.core.task.SyncSettingsTask;
 import com.ocelot.opendevices.init.DeviceBlocks;
@@ -37,11 +38,13 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
     private UUID user;
     private boolean open;
     private HashMap<UUID, DeviceProcess<Laptop>> processes;
+    private HashSet<UUID> startingProcesses;
     private Queue<Runnable> executionQueue;
 
     private UUID address;
     private CompoundNBT settings;
     private LaptopDesktop desktop;
+    private LaptopWindowManager windowManager;
     private LaptopTaskBar taskBar;
 
     //TODO make this a better system
@@ -56,11 +59,13 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
         this.user = null;
         this.open = false;
         this.processes = new HashMap<>();
+        this.startingProcesses = new HashSet<>();
         this.executionQueue = new ConcurrentLinkedQueue<>();
 
         this.address = UUID.randomUUID();
         this.settings = new CompoundNBT();
         this.desktop = new LaptopDesktop(this);
+        this.windowManager = new LaptopWindowManager(this);
         this.taskBar = new LaptopTaskBar(this);
     }
 
@@ -107,9 +112,10 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
                 runnable.run();
             }
 
-            this.processes.values().forEach(process -> process.update(this));
+            this.processes.values().stream().filter(process -> !this.startingProcesses.contains(process.getProcessId())).forEach(DeviceProcess::update);
 
             this.desktop.update();
+            this.windowManager.update();
         }
     }
 
@@ -127,7 +133,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
         return true;
     }
 
-    public boolean syncExecuteProcess(ResourceLocation processName, UUID processId)
+    public boolean syncExecuteProcess(ResourceLocation processName, UUID processId, boolean init)
     {
         DeviceProcessRegistryEntry entry = DeviceRegistries.PROCESSES.getValue(processName);
 
@@ -137,8 +143,42 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
             return false;
         }
 
-        this.processes.put(processId, entry.createProcess(processId));
-        return true;
+        DeviceProcess<Laptop> process = entry.createProcess(Laptop.class, this, processId);
+        if (process != null)
+        {
+            this.execute(() ->
+            {
+                this.processes.put(processId, process);
+                this.startingProcesses.add(processId);
+
+                if (init)
+                {
+                    if (this.isClient())
+                    {
+                        this.syncInitProcess(processId);
+                        TaskManager.sendToServer(new InitProcessTask(this.pos, processId), TaskManager.TaskReceiver.NONE);
+                    }
+                    else
+                    {
+                        TaskManager.sendToTracking(new InitProcessTask(this.pos, processId), this.world, this.pos, false);
+                    }
+                }
+            });
+            return true;
+        }
+        return false;
+    }
+
+    public void syncInitProcess(UUID processId)
+    {
+        this.startingProcesses.remove(processId);
+        if (!this.processes.containsKey(processId))
+        {
+            OpenDevices.LOGGER.warn("Could not initialize process with id '" + processId + "' as it does not exist!");
+            return;
+        }
+
+        this.processes.get(processId).init();
     }
 
     @Override
@@ -156,14 +196,11 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
 
         if (this.isClient())
         {
-            if (this.syncProcess(processId, data))
-            {
-                TaskManager.sendToServer(new SyncProcessTask(this.getPos(), processId, data), TaskManager.TaskReceiver.NEARBY);
-            }
+            TaskManager.sendToServer(new SyncProcessTask(this.getPos(), processId, data), TaskManager.TaskReceiver.NEARBY);
         }
         else
         {
-            TaskManager.sendToTracking(new SyncProcessTask(this.getPos(), processId, data), this.getWorld(), this.getPos());
+            TaskManager.sendToTracking(new SyncProcessTask(this.getPos(), processId, data), this.getWorld(), this.getPos(), false);
         }
     }
 
@@ -178,7 +215,10 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
         }
         else
         {
-            TaskManager.sendToTracking(new ExecuteProcessTask(this.getPos(), processName, processId), this.getWorld(), this.getPos());
+            if (this.syncExecuteProcess(processName, processId, false))
+            {
+                TaskManager.sendToTracking(new ExecuteProcessTask(this.getPos(), processName, processId), this.getWorld(), this.getPos(), false);
+            }
         }
 
         return processId;
@@ -212,10 +252,18 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
         nbt.putUniqueId("address", this.address);
         nbt.put("settings", this.settings);
         nbt.put("desktop", this.desktop.serializeNBT());
+        nbt.put("windowManager", this.windowManager.serializeNBT());
         nbt.put("taskBar", this.taskBar.serializeNBT());
 
         ListNBT processesNbt = new ListNBT();
-        this.processes.forEach((processId, process) -> processesNbt.add(ProcessSerializer.write(process)));
+        this.processes.forEach((processId, process) ->
+        {
+            CompoundNBT processNbt = ProcessSerializer.write(process);
+            if (processNbt != null)
+            {
+                processesNbt.add(processNbt);
+            }
+        });
         nbt.put("processes", processesNbt);
     }
 
@@ -225,15 +273,19 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
         this.address = nbt.getUniqueId("address");
         this.settings = nbt.getCompound("settings");
         this.desktop.deserializeNBT(nbt.getCompound("desktop"));
+        this.windowManager.deserializeNBT(nbt.getCompound("windowManager"));
         this.taskBar.deserializeNBT(nbt.getCompound("taskBar"));
 
         ListNBT processesNbt = nbt.getList("processes", Constants.NBT.TAG_COMPOUND);
         for (int i = 0; i < processesNbt.size(); i++)
         {
-            DeviceProcess<Laptop> process = ProcessSerializer.read(processesNbt.getCompound(i));
+            CompoundNBT processNbt = processesNbt.getCompound(i);
+            DeviceProcess<Laptop> process = ProcessSerializer.read(Laptop.class, this, processNbt);
             if (process != null)
             {
+                process.deserializeNBT(processNbt.getCompound("data"));
                 this.processes.put(process.getProcessId(), process);
+                process.init();//TODO this may cause problems
             }
         }
     }
@@ -272,7 +324,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
             }
             else
             {
-                TaskManager.sendToTracking(new SyncSettingsTask(this.pos, nbt), this.world, this.getPos());
+                TaskManager.sendToTracking(new SyncSettingsTask(this.pos, nbt), this.world, this.getPos(), false);
                 this.markDirty();
             }
         }
@@ -354,6 +406,12 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
     public LaptopDesktop getDesktop()
     {
         return desktop;
+    }
+
+    @Override
+    public LaptopWindowManager getWindowManager()
+    {
+        return windowManager;
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.ocelot.opendevices.api.device.Device;
 import com.ocelot.opendevices.api.laptop.desktop.Desktop;
 import com.ocelot.opendevices.api.laptop.settings.LaptopSetting;
 import com.ocelot.opendevices.api.laptop.taskbar.TaskBar;
+import com.ocelot.opendevices.api.laptop.window.WindowManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 
@@ -50,6 +51,11 @@ public interface Laptop extends Device, Executor
      * @return The laptop's desktop
      */
     Desktop getDesktop();
+
+    /**
+     * @return The laptop's window manager
+     */
+    WindowManager getWindowManager();
 
     /**
      * @return The laptop's task bar

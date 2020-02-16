@@ -23,7 +23,17 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
         this.laptop = laptop;
         this.processId = processId;
         this.id = UUID.randomUUID();
+        this.width = 200;
+        this.height = 100;
     }
+
+    public LaptopWindow(Laptop laptop, CompoundNBT nbt)
+    {
+        this.laptop = laptop;
+        this.deserializeNBT(nbt);
+    }
+
+    public void update() {}
 
     @Override
     public Laptop getLaptop()
@@ -67,15 +77,47 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
         return height;
     }
 
+    public void setX(float x)
+    {
+        this.x = x;
+    }
+
+    public void setY(float y)
+    {
+        this.y = y;
+    }
+
+    public void setWidth(int width)
+    {
+        this.width = width;
+    }
+
+    public void setHeight(int height)
+    {
+        this.height = height;
+    }
+
     @Override
     public CompoundNBT serializeNBT()
     {
-        return new CompoundNBT();
+        CompoundNBT nbt = new CompoundNBT();
+        nbt.putUniqueId("processId", this.processId);
+        nbt.putUniqueId("id", this.id);
+        nbt.putFloat("x", this.x);
+        nbt.putFloat("y", this.y);
+        nbt.putInt("width", this.width);
+        nbt.putInt("height", this.height);
+        return nbt;
     }
 
     @Override
     public void deserializeNBT(CompoundNBT nbt)
     {
-
+        this.processId = nbt.getUniqueId("processId");
+        this.id = nbt.getUniqueId("id");
+        this.x = nbt.getFloat("x");
+        this.y = nbt.getFloat("y");
+        this.width = nbt.getInt("width");
+        this.height = nbt.getInt("height");
     }
 }

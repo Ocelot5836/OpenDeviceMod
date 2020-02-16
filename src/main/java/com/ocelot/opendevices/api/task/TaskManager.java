@@ -20,7 +20,7 @@ import java.util.Map;
  * <p>The Task Manager handles all {@link Task} related information.<p>
  * <p>To register a task, use the {@link Task.Register} annotation on the task class and extend {@link Task}.<p>
  * <p>To send a task from the client to the server, see {@link #sendToServer(Task, TaskReceiver)}.<p>
- * <p>To send a task from the server to a client, see {@link #sendToTracking(Task, World, BlockPos)}<p>
+ * <p>To send a task from the server to a client, see {@link #sendToTracking(Task, World, BlockPos, boolean)}<p>
  *
  * @author Ocelot
  * @see Task
@@ -46,51 +46,52 @@ public final class TaskManager
         DeviceMessages.INSTANCE.send(PacketDistributor.SERVER.noArg(), new MessageRequest(task, receiver));
     }
 
-//    /**
-//     * Sends a task from the server to the client. In order to send a task to <b>ALL</b> clients, the player should be null or the receiver set to {@link TaskReceiver#ALL}.
-//     *
-//     * @param task     The task to send to the server
-//     * @param receiver The way the task will be handled when it is being sent to the client
-//     * @param player   The player to base the receiver around as the receiver.
-//     */
-//    public static void sendToPlayer(Task task, TaskReceiver receiver, @Nullable ServerPlayerEntity player)
-//    {
-//        if (getRegistryName(task.getClass()) == null)
-//            throw new RuntimeException("Unregistered Task: " + task.getClass().getName() + ". Use Task annotation to register a task.");
-//
-//        if (player == null || receiver == TaskReceiver.ALL)
-//        {
-//            DeviceMessages.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageRequest(task, TaskReceiver.ALL));
-//            return;
-//        }
-//
-//        switch (receiver)
-//        {
-//            case SENDER:
-//                DeviceMessages.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new MessageRequest(task, receiver));
-//                break;
-//            case NEARBY:
-//                DeviceMessages.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> player), new MessageRequest(task, receiver));
-//                break;
-//            case SENDER_AND_NEARBY:
-//                DeviceMessages.INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player), new MessageRequest(task, receiver));
-//                break;
-//        }
-//    }
+    //    /**
+    //     * Sends a task from the server to the client. In order to send a task to <b>ALL</b> clients, the player should be null or the receiver set to {@link TaskReceiver#ALL}.
+    //     *
+    //     * @param task     The task to send to the server
+    //     * @param receiver The way the task will be handled when it is being sent to the client
+    //     * @param player   The player to base the receiver around as the receiver.
+    //     */
+    //    public static void sendToPlayer(Task task, TaskReceiver receiver, @Nullable ServerPlayerEntity player)
+    //    {
+    //        if (getRegistryName(task.getClass()) == null)
+    //            throw new RuntimeException("Unregistered Task: " + task.getClass().getName() + ". Use Task annotation to register a task.");
+    //
+    //        if (player == null || receiver == TaskReceiver.ALL)
+    //        {
+    //            DeviceMessages.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageRequest(task, TaskReceiver.ALL));
+    //            return;
+    //        }
+    //
+    //        switch (receiver)
+    //        {
+    //            case SENDER:
+    //                DeviceMessages.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new MessageRequest(task, receiver));
+    //                break;
+    //            case NEARBY:
+    //                DeviceMessages.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> player), new MessageRequest(task, receiver));
+    //                break;
+    //            case SENDER_AND_NEARBY:
+    //                DeviceMessages.INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player), new MessageRequest(task, receiver));
+    //                break;
+    //        }
+    //    }
 
     /**
      * Sends a task from the server to all clients tracking the specified {@link Chunk}.
      *
-     * @param task  The task to send to the clients
-     * @param world The world to base the task from.
-     * @param pos   The pos to base the task from.
+     * @param task           The task to send to the clients
+     * @param world          The world to base the task from.
+     * @param pos            The pos to base the task from.
+     * @param returnToSender Whether or not to return the task to the server after execution
      */
-    public static void sendToTracking(Task task, World world, BlockPos pos)
+    public static void sendToTracking(Task task, World world, BlockPos pos, boolean returnToSender)
     {
         if (getRegistryName(task.getClass()) == null)
             throw new RuntimeException("Unregistered Task: " + task.getClass().getName() + ". Use Task annotation to register a task.");
 
-        DeviceMessages.INSTANCE.send(PacketDistributor.TRACKING_CHUNK.with(() -> world.getChunkAt(pos)), new MessageRequest(task, TaskReceiver.NONE));
+        DeviceMessages.INSTANCE.send(PacketDistributor.TRACKING_CHUNK.with(() -> world.getChunkAt(pos)), new MessageRequest(task, returnToSender ? TaskReceiver.SENDER : TaskReceiver.NONE));
     }
 
     /**

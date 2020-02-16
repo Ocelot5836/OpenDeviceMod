@@ -61,14 +61,14 @@ public class LaptopTaskBar implements TaskBar, INBTSerializable<CompoundNBT>
         for (int i = 0; i < windowOrderNBT.size(); i++)
         {
             UUID id = windowOrderNBT.getCompound(i).getUniqueId("id");
-            Window window = this.laptop.getDesktop().getWindow(id);
+            Window window = this.laptop.getWindowManager().getWindow(id);
             if (window != null)
             {
                 this.openedWindows.add(window);
             }
         }
 
-        this.openedWindows.addAll(Arrays.stream(this.laptop.getDesktop().getWindows()).filter(window -> !this.openedWindows.contains(window)).collect(Collectors.toList()));
+        this.openedWindows.addAll(Arrays.stream(this.laptop.getWindowManager().getWindows()).filter(window -> !this.openedWindows.contains(window)).collect(Collectors.toList()));
     }
 
     @Override

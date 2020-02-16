@@ -2,6 +2,7 @@ package com.ocelot.opendevices.api.device;
 
 import com.ocelot.opendevices.api.laptop.Laptop;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraftforge.common.util.INBTSerializable;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
@@ -12,12 +13,17 @@ import java.util.UUID;
  *
  * @author Ocelot
  */
-public interface DeviceProcess<T extends Device>
+public interface DeviceProcess<T extends Device> extends INBTSerializable<CompoundNBT>
 {
     /**
-     * Updates this process.
+     * Initializes this process for the specified device once it has started execution.
      */
-    void update(T device);
+    void init();
+
+    /**
+     * Updates this process for the specified device.
+     */
+    void update();
 
     /**
      * Called when this process is terminated by the device.
@@ -32,16 +38,14 @@ public interface DeviceProcess<T extends Device>
     boolean isTerminated();
 
     /**
+     * @return The device this process is running on
+     */
+    T getDevice();
+
+    /**
      * @return The id of this process
      */
     UUID getProcessId();
-
-    /**
-     * Writes any persistent data to file.
-     *
-     * @return The tag full of data
-     */
-    CompoundNBT save();
 
     /**
      * Writes any data that will be needed after calling {@link Laptop#syncProcess(UUID)}.

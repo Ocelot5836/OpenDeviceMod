@@ -105,7 +105,7 @@ public class LaptopWindowOld implements Window, INBTSerializable<CompoundNBT>
         }
         else
         {
-            TaskManager.sendToTracking(new MoveWindowTask(this.laptop.getPos(), this.getId(), xDirection, yDirection), this.laptop.getWorld(), this.laptop.getPos());
+            TaskManager.sendToTracking(new MoveWindowTask(this.laptop.getPos(), this.getId(), xDirection, yDirection), this.laptop.getWorld(), this.laptop.getPos(), false);
         }
     }
 
@@ -122,7 +122,7 @@ public class LaptopWindowOld implements Window, INBTSerializable<CompoundNBT>
         }
         else
         {
-            TaskManager.sendToTracking(new SetWindowPositionTask(this.laptop.getPos(), this.getId(), x, y), this.laptop.getWorld(), this.laptop.getPos());
+            TaskManager.sendToTracking(new SetWindowPositionTask(this.laptop.getPos(), this.getId(), x, y), this.laptop.getWorld(), this.laptop.getPos(), false);
         }
     }
 
@@ -139,7 +139,7 @@ public class LaptopWindowOld implements Window, INBTSerializable<CompoundNBT>
         }
         else
         {
-            TaskManager.sendToTracking(new SetWindowSizeTask(this.laptop.getPos(), this.getId(), width, height), this.laptop.getWorld(), this.laptop.getPos());
+            TaskManager.sendToTracking(new SetWindowSizeTask(this.laptop.getPos(), this.getId(), width, height), this.laptop.getWorld(), this.laptop.getPos(), false);
         }
     }
 

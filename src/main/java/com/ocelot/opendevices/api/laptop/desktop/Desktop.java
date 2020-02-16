@@ -16,23 +16,23 @@ import java.util.UUID;
  */
 public interface Desktop
 {
-    /**
-     * Opens the application with the specified information and no initialization data.
-     *
-     * @param registryName The registry name of the app
-     */
-    default void openApplication(ResourceLocation registryName)
-    {
-        this.openApplication(registryName, null);
-    }
-
-    /**
-     * Opens the application with the specified information and initialization data.
-     *
-     * @param registryName The registry name of the app
-     * @param initData     Additional data that will be processed on initialization
-     */
-    void openApplication(ResourceLocation registryName, @Nullable CompoundNBT initData);
+//    /**
+//     * Opens the application with the specified information and no initialization data.
+//     *
+//     * @param registryName The registry name of the app
+//     */
+//    default void openApplication(ResourceLocation registryName)
+//    {
+//        this.openApplication(registryName, null);
+//    }
+//
+//    /**
+//     * Opens the application with the specified information and initialization data.
+//     *
+//     * @param registryName The registry name of the app
+//     * @param initData     Additional data that will be processed on initialization
+//     */
+//    void openApplication(ResourceLocation registryName, @Nullable CompoundNBT initData);
 
 //    /**
 //     * Marks the window with the specified ID as changed and syncs its data.
@@ -40,63 +40,6 @@ public interface Desktop
 //     * @param windowId The id of the window to mark
 //     */
 //    void markDirty(UUID windowId);
-
-    /**
-     * Focuses the window with the specified ID and moves it to the front.
-     *
-     * @param windowId The id of the window to focus or null to unfocus
-     */
-    void focusWindow(@Nullable UUID windowId);
-
-    /**
-     * Closes all the windows that are currently open.
-     */
-    void closeAllWindows();
-
-    /**
-     * Closes the window with the specified id.
-     *
-     * @param windowId The id of the window to close
-     */
-    void closeWindow(UUID windowId);
-
-    /**
-     * Checks the opened windows for the window with the specified id.
-     *
-     * @param windowId The id of the window to fetch
-     * @return The window found or null if no window has that id
-     */
-    @Nullable
-    Window getWindow(UUID windowId);
-
-    /**
-     * @return All currently opened windows
-     */
-    Window[] getWindows();
-
-    /**
-     * @return The currently focused window or null if there is no window focused
-     */
-    @Nullable
-    Window getFocusedWindow();
-
-    /**
-     * @return The window rendering with the highest priority over others or null if there are no windows opened
-     */
-    @Nullable
-    Window getTopWindow();
-
-    /**
-     * @return The id of the currently focused window or null if there is no window focused
-     */
-    @Nullable
-    UUID getFocusedWindowId();
-
-    /**
-     * @return The id of the window rendering with the highest priority over others or null if there are no windows opened
-     */
-    @Nullable
-    UUID getTopWindowId();
 
     /**
      * @return The current desktop background

@@ -9,6 +9,7 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
+@Deprecated
 @Task.Register(OpenDevices.MOD_ID + ":open_application")
 public class OpenApplicationTask extends Task
 {

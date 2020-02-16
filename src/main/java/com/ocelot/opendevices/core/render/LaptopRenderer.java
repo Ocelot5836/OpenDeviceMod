@@ -69,6 +69,7 @@ public class LaptopRenderer extends AbstractGui
             fontRenderer.drawStringWithShadow(I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.dev_version", MOD_VERSION), posX + 5, posY + 5, laptop.readSetting(LaptopSettings.DESKTOP_TEXT_COLOR));
             fontRenderer.drawStringWithShadow(Minecraft.getDebugFPS() + " FPS", posX + 5, posY + 18, laptop.readSetting(LaptopSettings.DESKTOP_TEXT_COLOR));
             fontRenderer.drawStringWithShadow(laptop.getProcessIds().size() + " Processes Running", posX + 5, posY + 31, laptop.readSetting(LaptopSettings.DESKTOP_TEXT_COLOR));
+            fontRenderer.drawStringWithShadow(laptop.getWindowManager().getWindows().length + " Windows Opened", posX + 5, posY + 44, laptop.readSetting(LaptopSettings.DESKTOP_TEXT_COLOR));
         }
         else
         {
