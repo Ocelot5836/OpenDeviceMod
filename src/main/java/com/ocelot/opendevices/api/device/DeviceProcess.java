@@ -1,5 +1,8 @@
 package com.ocelot.opendevices.api.device;
 
+import com.ocelot.opendevices.api.laptop.Laptop;
+import net.minecraft.nbt.CompoundNBT;
+
 import java.util.UUID;
 
 /**
@@ -30,4 +33,30 @@ public interface DeviceProcess<T extends Device>
      * @return The id of this process
      */
     UUID getProcessId();
+
+    /**
+     * Writes any persistent data to file.
+     *
+     * @return The tag full of data
+     */
+    CompoundNBT save();
+
+    /**
+     * Writes any data that will be needed after calling {@link Laptop#syncProcess(UUID)}.
+     *
+     * @return The tag full of data
+     */
+    default CompoundNBT writeSyncNBT()
+    {
+        return new CompoundNBT();
+    }
+
+    /**
+     * Reads any data from the specified tag on the other logical side after {@link Laptop#syncProcess(UUID)} is called.
+     *
+     * @param nbt The tag to read from
+     */
+    default void readSyncNBT(CompoundNBT nbt)
+    {
+    }
 }

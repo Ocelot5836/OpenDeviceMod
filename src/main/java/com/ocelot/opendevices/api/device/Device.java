@@ -17,6 +17,13 @@ import java.util.UUID;
 public interface Device
 {
     /**
+     * Syncs the process with the specified id to the server and all clients.
+     *
+     * @param processId The if of the process to sync
+     */
+    void syncProcess(UUID processId);
+
+    /**
      * Crates and starts a new process.
      *
      * @param processId The id of the process to start

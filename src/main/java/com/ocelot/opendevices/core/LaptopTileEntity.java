@@ -10,6 +10,7 @@ import com.ocelot.opendevices.api.laptop.settings.LaptopSetting;
 import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.core.laptop.process.TestProcess;
 import com.ocelot.opendevices.core.task.ExecuteProcessTask;
+import com.ocelot.opendevices.core.task.SyncProcessTask;
 import com.ocelot.opendevices.core.task.SyncSettingsTask;
 import com.ocelot.opendevices.init.DeviceBlocks;
 import net.minecraft.entity.player.PlayerEntity;
@@ -109,11 +110,48 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
         }
     }
 
+    public void syncProcess(UUID processId, CompoundNBT data)
+    {
+        DeviceProcess<Laptop> process = this.getProcess(processId);
+
+        if (process == null)
+        {
+            OpenDevices.LOGGER.warn("Could not sync process with id '" + processId + "' for Laptop as it does not exist. Skipping!");
+            return;
+        }
+
+        process.readSyncNBT(data);
+    }
+
     public void syncExecuteProcess(ResourceLocation processName, UUID processId)
     {
         //TODO fetch process from a registry and create it
         DeviceProcess<Laptop> process = new TestProcess(processId);
         this.processes.put(processId, process);
+    }
+
+    @Override
+    public void syncProcess(UUID processId)
+    {
+        DeviceProcess<Laptop> process = this.getProcess(processId);
+
+        if (process == null)
+        {
+            OpenDevices.LOGGER.warn("Could not sync process with id '" + processId + "' for Laptop as it does not exist. Skipping!");
+            return;
+        }
+
+        CompoundNBT data = process.writeSyncNBT();
+
+        if (this.isClient())
+        {
+            this.syncProcess(processId, data);
+            TaskManager.sendToServer(new SyncProcessTask(this.getPos(), processId, data), TaskManager.TaskReceiver.NEARBY);
+        }
+        else
+        {
+            TaskManager.sendToTracking(new SyncProcessTask(this.getPos(), processId, data), this.getWorld(), this.getPos());
+        }
     }
 
     @Override
