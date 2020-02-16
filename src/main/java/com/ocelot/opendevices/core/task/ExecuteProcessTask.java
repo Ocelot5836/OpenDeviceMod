@@ -27,7 +27,7 @@ public class ExecuteProcessTask extends Task
     public ExecuteProcessTask(BlockPos pos, ResourceLocation processName, UUID processId)
     {
         this.pos = pos;
-        this.processName=processName;
+        this.processName = processName;
         this.processId = processId;
     }
 
@@ -48,8 +48,10 @@ public class ExecuteProcessTask extends Task
 
         if (world.getTileEntity(this.pos) instanceof LaptopTileEntity)
         {
-            ((LaptopTileEntity) Objects.requireNonNull(world.getTileEntity(this.pos))).syncExecuteProcess(this.processName, this.processId);
-            this.setSuccessful();
+            if (((LaptopTileEntity) Objects.requireNonNull(world.getTileEntity(this.pos))).syncExecuteProcess(this.processName, this.processId))
+            {
+                this.setSuccessful();
+            }
         }
     }
 

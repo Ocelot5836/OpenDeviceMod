@@ -19,6 +19,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
@@ -39,7 +40,7 @@ public class LaptopScreen extends Screen implements TooltipRenderer
     {
         super(new TranslationTextComponent("screen." + OpenDevices.MOD_ID + ".laptop"));
         this.laptop = laptop;
-        this.laptop.executeProcess(TextureManager.RESOURCE_LOCATION_EMPTY);
+        this.laptop.executeProcess(new ResourceLocation(OpenDevices.MOD_ID, "test"));
     }
 
     @Override

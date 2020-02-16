@@ -3,9 +3,12 @@ package com.ocelot.opendevices;
 import com.mrcrayfish.filters.Filters;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.DeviceRegistries;
+import com.ocelot.opendevices.api.device.Device;
+import com.ocelot.opendevices.api.device.DeviceProcess;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopManager;
 import com.ocelot.opendevices.api.laptop.settings.LaptopSetting;
 import com.ocelot.opendevices.api.task.Task;
+import com.ocelot.opendevices.core.registry.DeviceProcessRegistryEntry;
 import com.ocelot.opendevices.core.registry.TaskRegistryEntry;
 import com.ocelot.opendevices.core.render.LaptopTileEntityRenderer;
 import com.ocelot.opendevices.init.DeviceBlocks;
@@ -195,6 +198,36 @@ public class OpenDevices
                 catch (Exception e)
                 {
                     OpenDevices.LOGGER.error("Could not register task class " + className + ". Skipping!", e);
+                }
+            }
+        }
+
+        @SuppressWarnings("unchecked")
+        @SubscribeEvent
+        public static void registerProcesses(RegistryEvent.Register<DeviceProcessRegistryEntry> event)
+        {
+            Set<ModFileScanData.AnnotationData> annotations = OpenDevices.annotationScanData.stream().filter(it -> it.getTargetType() == ElementType.TYPE && it.getAnnotationType().equals(Type.getType(DeviceProcess.Register.class))).collect(Collectors.toSet());
+
+            for (ModFileScanData.AnnotationData data : annotations)
+            {
+                ResourceLocation registryName = new ResourceLocation((String) data.getAnnotationData().get("value"));
+
+                String className = data.getClassType().getClassName();
+                try
+                {
+                    Class<?> clazz = Class.forName(className);
+
+                    if (registryName.getPath().isEmpty())
+                        throw new IllegalArgumentException("Process: " + clazz + " does not have a valid registry name. Skipping!");
+
+                    if (!DeviceProcess.class.isAssignableFrom(clazz))
+                        throw new IllegalArgumentException("Process: " + clazz + " does not implement Task. Skipping!");
+
+                    event.getRegistry().register(new DeviceProcessRegistryEntry((Class<? extends DeviceProcess<?>>) clazz).setRegistryName(registryName));
+                }
+                catch (Exception e)
+                {
+                    OpenDevices.LOGGER.error("Could not register process class " + className + ". Skipping!", e);
                 }
             }
         }

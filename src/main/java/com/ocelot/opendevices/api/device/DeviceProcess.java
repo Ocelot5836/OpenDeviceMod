@@ -3,6 +3,8 @@ package com.ocelot.opendevices.api.device;
 import com.ocelot.opendevices.api.laptop.Laptop;
 import net.minecraft.nbt.CompoundNBT;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Target;
 import java.util.UUID;
 
 /**
@@ -58,5 +60,19 @@ public interface DeviceProcess<T extends Device>
      */
     default void readSyncNBT(CompoundNBT nbt)
     {
+    }
+
+    /**
+     * Registers a new type of process for a device.
+     *
+     * @author Ocelot
+     */
+    @Target(ElementType.TYPE)
+    @interface Register
+    {
+        /**
+         * @return The name of this content. Should be in the format of <code>modid:contentName</code>.
+         */
+        String value();
     }
 }

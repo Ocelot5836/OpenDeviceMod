@@ -5,7 +5,6 @@ import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.core.LaptopTileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -48,8 +47,10 @@ public class SyncProcessTask extends Task
 
         if (world.getTileEntity(this.pos) instanceof LaptopTileEntity)
         {
-            ((LaptopTileEntity) Objects.requireNonNull(world.getTileEntity(this.pos))).syncProcess(this.processId, this.data);
-            this.setSuccessful();
+            if (((LaptopTileEntity) Objects.requireNonNull(world.getTileEntity(this.pos))).syncProcess(this.processId, this.data))
+            {
+                this.setSuccessful();
+            }
         }
     }
 

@@ -1,11 +1,13 @@
 package com.ocelot.opendevices.core.laptop.process;
 
+import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.device.DeviceProcess;
 import com.ocelot.opendevices.api.laptop.Laptop;
 import net.minecraft.nbt.CompoundNBT;
 
 import java.util.UUID;
 
+@DeviceProcess.Register(OpenDevices.MOD_ID + ":test")
 public class TestProcess implements DeviceProcess<Laptop>
 {
     private UUID processId;
@@ -24,18 +26,11 @@ public class TestProcess implements DeviceProcess<Laptop>
 
     private void read(CompoundNBT nbt)
     {
-        this.a = nbt.getInt("a");
     }
 
     @Override
     public void update(Laptop laptop)
     {
-        if (!laptop.isClient())
-        {
-            this.a++;
-            laptop.syncProcess(this.processId);
-        }
-        System.out.println(this.a);
     }
 
     @Override
@@ -54,7 +49,6 @@ public class TestProcess implements DeviceProcess<Laptop>
     public CompoundNBT save()
     {
         CompoundNBT nbt = new CompoundNBT();
-        nbt.putInt("a", this.a);
         return nbt;
     }
 
