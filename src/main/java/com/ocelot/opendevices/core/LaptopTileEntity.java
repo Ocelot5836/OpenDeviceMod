@@ -199,7 +199,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
         }
         else
         {
-            TaskManager.sendToTracking(new SyncProcessTask(this.getPos(), processId, data), this.getWorld(), this.getPos(), false);
+            TaskManager.sendToTracking(new SyncProcessTask(this.getPos(), processId, data), this.getWorld(), this.getPos());
         }
     }
 
@@ -216,7 +216,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
         {
             if (this.syncExecuteProcess(processName, processId, true, false))
             {
-                TaskManager.sendToTracking(new ExecuteProcessTask(this.getPos(), processName, processId, null), this.getWorld(), this.getPos(), true);
+                TaskManager.sendToTracking(new ExecuteProcessTask(this.getPos(), processName, processId, null), this.getWorld(), this.getPos());
             }
         }
 
@@ -247,7 +247,6 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
     @Override
     public void save(CompoundNBT nbt)
     {
-        //TODO add process saving/loading
         nbt.putUniqueId("address", this.address);
         nbt.put("settings", this.settings);
         nbt.put("desktop", this.desktop.serializeNBT());
@@ -290,7 +289,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
 
                     if (this.syncExecuteProcess(processName, processId, true, false))
                     {
-                        this.execute(() -> TaskManager.sendToTracking(new ExecuteProcessTask(this.getPos(), processName, processId, processData), this.getWorld(), this.getPos(), true));
+                        this.execute(() -> TaskManager.sendToTracking(new ExecuteProcessTask(this.getPos(), processName, processId, processData), this.getWorld(), this.getPos()));
                     }
                 }
             }
@@ -300,6 +299,10 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
     public void syncSettings(CompoundNBT nbt)
     {
         this.settings.merge(nbt);
+        if (!this.isClient())
+        {
+            this.markDirty();
+        }
     }
 
     @Override
@@ -331,8 +334,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
             }
             else
             {
-                TaskManager.sendToTracking(new SyncSettingsTask(this.pos, nbt), this.world, this.getPos(), false);
-                this.markDirty();
+                TaskManager.sendToTracking(new SyncSettingsTask(this.pos, nbt), this.world, this.getPos());
             }
         }
     }

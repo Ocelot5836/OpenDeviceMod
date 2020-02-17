@@ -79,7 +79,7 @@ public class LaptopWindowManager implements WindowManager, INBTSerializable<Comp
         }
         else
         {
-            TaskManager.sendToTracking(new OpenWindowTask(this.laptop.getPos(), window.serializeNBT()), this.laptop.getWorld(), this.laptop.getPos(), false);
+            TaskManager.sendToTracking(new OpenWindowTask(this.laptop.getPos(), window.serializeNBT()), this.laptop.getWorld(), this.laptop.getPos());
         }
         return window.getId();
     }

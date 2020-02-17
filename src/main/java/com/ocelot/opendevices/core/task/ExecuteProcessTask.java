@@ -23,15 +23,14 @@ public class ExecuteProcessTask extends Task
 
     public ExecuteProcessTask()
     {
-        this(null, null, null, null);
+        this(null, null, null);
     }
 
-    public ExecuteProcessTask(BlockPos pos, ResourceLocation processName, UUID processId, CompoundNBT data)
+    public ExecuteProcessTask(BlockPos pos, ResourceLocation processName, UUID processId)
     {
         this.pos = pos;
         this.processName = processName;
         this.processId = processId;
-        this.data = data;
     }
 
     @Override

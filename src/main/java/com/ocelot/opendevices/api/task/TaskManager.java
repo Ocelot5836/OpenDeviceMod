@@ -100,14 +100,13 @@ public final class TaskManager
      * @param task           The task to send to the clients
      * @param world          The world to base the task from.
      * @param pos            The pos to base the task from.
-     * @param returnToSender Whether or not to return the task to the server after execution
      */
-    public static void sendToTracking(Task task, World world, BlockPos pos, boolean returnToSender)
+    public static void sendToTracking(Task task, World world, BlockPos pos)
     {
         if (getRegistryName(task.getClass()) == null)
             throw new RuntimeException("Unregistered Task: " + task.getClass().getName() + ". Use Task annotation to register a task.");
 
-        DeviceMessages.INSTANCE.send(PacketDistributor.TRACKING_CHUNK.with(() -> world.getChunkAt(pos)), new MessageRequest(task, returnToSender ? TaskReceiver.SENDER : TaskReceiver.NONE));
+        DeviceMessages.INSTANCE.send(PacketDistributor.TRACKING_CHUNK.with(() -> world.getChunkAt(pos)), new MessageRequest(task, TaskReceiver.NONE));
     }
 
     /**
