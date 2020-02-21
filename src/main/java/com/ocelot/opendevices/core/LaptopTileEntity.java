@@ -210,13 +210,13 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
 
         if (this.isClient())
         {
-            TaskManager.sendToServer(new ExecuteProcessTask(this.getPos(), processName, processId, null), TaskManager.TaskReceiver.SENDER_AND_NEARBY);
+            TaskManager.sendToServer(new ExecuteProcessTask(this.getPos(), processName, processId), TaskManager.TaskReceiver.SENDER_AND_NEARBY);
         }
         else
         {
             if (this.syncExecuteProcess(processName, processId, true, false))
             {
-                TaskManager.sendToTracking(new ExecuteProcessTask(this.getPos(), processName, processId, null), this.getWorld(), this.getPos());
+                TaskManager.sendToTracking(new ExecuteProcessTask(this.getPos(), processName, processId), this.getWorld(), this.getPos());
             }
         }
 
@@ -289,7 +289,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
 
                     if (this.syncExecuteProcess(processName, processId, true, false))
                     {
-                        this.execute(() -> TaskManager.sendToTracking(new ExecuteProcessTask(this.getPos(), processName, processId, processData), this.getWorld(), this.getPos()));
+                        this.execute(() -> TaskManager.sendToTracking(new ExecuteProcessTask(this.getPos(), processName, processId), this.getWorld(), this.getPos()));
                     }
                 }
             }
