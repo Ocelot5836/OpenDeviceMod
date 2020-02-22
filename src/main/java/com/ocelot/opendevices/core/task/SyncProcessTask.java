@@ -47,7 +47,8 @@ public class SyncProcessTask extends Task
 
         if (world.getTileEntity(this.pos) instanceof LaptopTileEntity)
         {
-            if (((LaptopTileEntity) Objects.requireNonNull(world.getTileEntity(this.pos))).syncProcess(this.processId, this.data))
+            LaptopTileEntity laptop = (LaptopTileEntity) Objects.requireNonNull(world.getTileEntity(this.pos));
+            if (laptop.syncProcess(this.processId, this.data))
             {
                 this.setSuccessful();
             }

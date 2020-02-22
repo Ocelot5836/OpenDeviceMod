@@ -38,7 +38,8 @@ public class CloseLaptopTask extends Task
 
         if (world.getTileEntity(this.pos) instanceof LaptopTileEntity)
         {
-            ((LaptopTileEntity) Objects.requireNonNull(world.getTileEntity(this.pos))).stopView(player);
+            LaptopTileEntity laptop = (LaptopTileEntity) Objects.requireNonNull(world.getTileEntity(this.pos));
+            laptop.stopView(player);
             this.setSuccessful();
         }
     }

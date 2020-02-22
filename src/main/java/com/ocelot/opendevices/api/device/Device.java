@@ -17,13 +17,6 @@ import java.util.UUID;
 public interface Device
 {
     /**
-     * Syncs the process with the specified id to the server and all clients.
-     *
-     * @param processId The if of the process to sync
-     */
-    void syncProcess(UUID processId);
-
-    /**
      * Crates and starts a new process.
      *
      * @param processId The id of the process to start
@@ -31,6 +24,13 @@ public interface Device
      * @throws IllegalArgumentException If the process registered under that id is either null or not for this device
      */
     UUID executeProcess(ResourceLocation processId);
+
+    /**
+     * Syncs the process with the specified id to the server and all clients.
+     *
+     * @param processId The if of the process to sync
+     */
+    void syncProcess(UUID processId);
 
     /**
      * @return The world the laptop is in

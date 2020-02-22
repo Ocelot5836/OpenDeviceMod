@@ -51,7 +51,8 @@ public class ExecuteProcessTask extends Task
             LaptopTileEntity laptop = (LaptopTileEntity) Objects.requireNonNull(world.getTileEntity(this.pos));
             if (laptop.syncExecuteProcess(this.processName, this.processId))
             {
-                laptop.syncInitProcess(this.processId);
+                if (!world.isRemote())
+                    laptop.initProcess(this.processId);
                 this.setSuccessful();
             }
         }

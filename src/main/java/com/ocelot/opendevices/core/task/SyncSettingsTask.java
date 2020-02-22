@@ -42,7 +42,8 @@ public class SyncSettingsTask extends Task
 
         if (world.getTileEntity(this.pos) instanceof LaptopTileEntity)
         {
-            ((LaptopTileEntity) Objects.requireNonNull(world.getTileEntity(this.pos))).syncSettings(this.nbt);
+            LaptopTileEntity laptop = (LaptopTileEntity) Objects.requireNonNull(world.getTileEntity(this.pos));
+            laptop.syncSettings(this.nbt);
             this.setSuccessful();
         }
     }

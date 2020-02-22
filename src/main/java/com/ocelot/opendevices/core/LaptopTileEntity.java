@@ -118,18 +118,16 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
         }
     }
 
-    public boolean syncProcess(UUID processId, CompoundNBT data)
+    public void initProcess(UUID processId)
     {
-        DeviceProcess<Laptop> process = this.getProcess(processId);
-
-        if (process == null)
+        this.startingProcesses.remove(processId);
+        if (!this.processes.containsKey(processId))
         {
-            OpenDevices.LOGGER.warn("Could not sync process with id '" + processId + "' for Laptop as it does not exist. Skipping!");
-            return false;
+            OpenDevices.LOGGER.warn("Could not initialize process with id '" + processId + "' as it does not exist!");
+            return;
         }
 
-        process.readSyncNBT(data);
-        return true;
+        this.execute(() -> this.processes.get(processId).init());
     }
 
     public boolean syncExecuteProcess(ResourceLocation processName, UUID processId)
@@ -165,16 +163,39 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
         return false;
     }
 
-    public void syncInitProcess(UUID processId)
+    public boolean syncProcess(UUID processId, CompoundNBT data)
     {
-        this.startingProcesses.remove(processId);
-        if (!this.processes.containsKey(processId))
+        DeviceProcess<Laptop> process = this.getProcess(processId);
+
+        if (process == null)
         {
-            OpenDevices.LOGGER.warn("Could not initialize process with id '" + processId + "' as it does not exist!");
-            return;
+            OpenDevices.LOGGER.warn("Could not sync process with id '" + processId + "' for Laptop as it does not exist. Skipping!");
+            return false;
         }
 
-        this.execute(() -> this.processes.get(processId).init());
+        process.readSyncNBT(data);
+        return true;
+    }
+
+    @Override
+    public UUID executeProcess(ResourceLocation processName)
+    {
+        UUID processId = UUID.randomUUID();
+
+        if (this.isClient())
+        {
+            TaskManager.sendToServer(new ExecuteProcessTask(this.getPos(), processName, processId), TaskManager.TaskReceiver.SENDER_AND_NEARBY);
+        }
+        else
+        {
+            if (this.syncExecuteProcess(processName, processId))
+            {
+                this.initProcess(processId);
+                TaskManager.sendToTracking(new ExecuteProcessTask(this.getPos(), processName, processId), this.getWorld(), this.getPos());
+            }
+        }
+
+        return processId;
     }
 
     @Override
@@ -198,26 +219,6 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
         {
             TaskManager.sendToTracking(new SyncProcessTask(this.getPos(), processId, data), this.getWorld(), this.getPos());
         }
-    }
-
-    @Override
-    public UUID executeProcess(ResourceLocation processName)
-    {
-        UUID processId = UUID.randomUUID();
-
-        if (this.isClient())
-        {
-            TaskManager.sendToServer(new ExecuteProcessTask(this.getPos(), processName, processId), TaskManager.TaskReceiver.SENDER_AND_NEARBY);
-        }
-        else
-        {
-            if (this.syncExecuteProcess(processName, processId))
-            {
-                TaskManager.sendToTracking(new ExecuteProcessTask(this.getPos(), processName, processId), this.getWorld(), this.getPos());
-            }
-        }
-
-        return processId;
     }
 
     @Override

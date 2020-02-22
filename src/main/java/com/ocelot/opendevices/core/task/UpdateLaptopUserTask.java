@@ -43,8 +43,11 @@ public class UpdateLaptopUserTask extends Task
 
         if (world.getTileEntity(this.pos) instanceof LaptopTileEntity && world.getPlayerByUuid(this.user) != null)
         {
-            ((LaptopTileEntity) Objects.requireNonNull(world.getTileEntity(this.pos))).view(world.getPlayerByUuid(this.user));
-            this.setSuccessful();
+            LaptopTileEntity laptop = (LaptopTileEntity) Objects.requireNonNull(world.getTileEntity(this.pos));
+            if (laptop.view(world.getPlayerByUuid(this.user)))
+            {
+                this.setSuccessful();
+            }
         }
     }
 
