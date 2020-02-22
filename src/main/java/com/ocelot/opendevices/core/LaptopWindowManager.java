@@ -5,7 +5,7 @@ import com.ocelot.opendevices.api.laptop.window.Window;
 import com.ocelot.opendevices.api.laptop.window.WindowManager;
 import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.core.laptop.window.LaptopWindow;
-import com.ocelot.opendevices.core.task.OpenWindowTask;
+import com.ocelot.opendevices.core.task.*;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraftforge.common.util.Constants;
@@ -13,8 +13,10 @@ import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.Set;
 import java.util.Stack;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class LaptopWindowManager implements WindowManager, INBTSerializable<CompoundNBT>
 {
@@ -55,7 +57,95 @@ public class LaptopWindowManager implements WindowManager, INBTSerializable<Comp
             return false;
         }
 
-        this.windows.push(window);
+        this.laptop.execute(() -> this.windows.push(window));
+        return true;
+    }
+
+    public boolean syncFocusWindow(UUID windowId)
+    {
+        if (this.focusedWindowId == windowId)
+            return false;
+
+        LaptopWindow window = this.getWindow(windowId);
+
+        if (windowId != null && window == null)
+        {
+            OpenDevices.LOGGER.warn("Could not focus window with id '" + windowId + "' as it does not exist. Skipping!");
+            return false;
+        }
+
+        this.laptop.execute(() ->
+        {
+            this.focusedWindowId = windowId;
+            if (window != null)
+            {
+                this.windows.removeElement(window);
+                this.windows.push(window);
+            }
+        });
+        return true;
+    }
+
+    public void syncCloseWindows(UUID... windowIds)
+    {
+        for (UUID windowId : windowIds)
+        {
+            LaptopWindow window = this.getWindow(windowId);
+            if (window == null)
+            {
+                OpenDevices.LOGGER.warn("Could not close window with id '" + windowId + "' as it does not exist. Skipping!");
+                continue;
+            }
+            if (this.focusedWindowId != null && window.getId() == windowId)
+                this.focusedWindowId = null;
+            this.windows.removeElement(window);
+        }
+    }
+
+    public boolean syncMoveWindow(UUID windowId, float xDirection, float yDirection)
+    {
+        LaptopWindow window = this.getWindow(windowId);
+
+        if (window == null)
+        {
+            OpenDevices.LOGGER.warn("Could not move window with id '" + windowId + "' as it does not exist. Skipping!");
+            return false;
+        }
+
+        window.setX(window.getX() + xDirection);
+        window.setY(window.getY() + yDirection);
+        return true;
+    }
+
+    public boolean syncSetWindowPosition(UUID windowId, float x, float y)
+    {
+        LaptopWindow window = this.getWindow(windowId);
+
+        if (window == null)
+        {
+            OpenDevices.LOGGER.warn("Could not set position of window with id '" + windowId + "' as it does not exist. Skipping!");
+            return false;
+        }
+
+        window.setX(x);
+        window.setLastX(x);
+        window.setY(y);
+        window.setLastY(y);
+        return true;
+    }
+
+    public boolean syncSetWindowSize(UUID windowId, int width, int height)
+    {
+        LaptopWindow window = this.getWindow(windowId);
+
+        if (window == null)
+        {
+            OpenDevices.LOGGER.warn("Could not set size of window with id '" + windowId + "' as it does not exist. Skipping!");
+            return false;
+        }
+
+        window.setWidth(width);
+        window.setHeight(height);
         return true;
     }
 
@@ -86,7 +176,21 @@ public class LaptopWindowManager implements WindowManager, INBTSerializable<Comp
     @Override
     public void focusWindow(@Nullable UUID windowId)
     {
+        this.syncFocusWindow(windowId);
+        if (this.laptop.isClient())
+        {
+            TaskManager.sendToServer(new FocusWindowTask(this.laptop.getPos(), windowId), TaskManager.TaskReceiver.NEARBY);
+        }
+        else
+        {
+            TaskManager.sendToTracking(new FocusWindowTask(this.laptop.getPos(), windowId), this.laptop.getWorld(), this.laptop.getPos());
+        }
+    }
 
+    @Override
+    public void closeProcessWindows(UUID processId)
+    {
+        this.closeWindows(this.windows.stream().filter(window -> window.getProcessId().equals(processId)).map(LaptopWindow::getProcessId).collect(Collectors.toSet()));
     }
 
     @Override
@@ -98,25 +202,57 @@ public class LaptopWindowManager implements WindowManager, INBTSerializable<Comp
     @Override
     public void closeWindows(UUID... windowIds)
     {
-
+        this.syncCloseWindows(windowIds);
+        if (this.laptop.isClient())
+        {
+            TaskManager.sendToServer(new CloseWindowTask(this.laptop.getPos(), windowIds), TaskManager.TaskReceiver.NEARBY);
+        }
+        else
+        {
+            TaskManager.sendToTracking(new CloseWindowTask(this.laptop.getPos(), windowIds), this.laptop.getWorld(), this.laptop.getPos());
+        }
     }
 
     @Override
-    public void moveWindow(UUID windowId, float dx, float dy)
+    public void moveWindow(UUID windowId, float xDirection, float yDirection)
     {
-        
+        this.syncMoveWindow(windowId, xDirection, yDirection);
+        if (this.laptop.isClient())
+        {
+            TaskManager.sendToServer(new MoveWindowTask(this.laptop.getPos(), windowId, xDirection, yDirection), TaskManager.TaskReceiver.NEARBY);
+        }
+        else
+        {
+            TaskManager.sendToTracking(new MoveWindowTask(this.laptop.getPos(), windowId, xDirection, yDirection), this.laptop.getWorld(), this.laptop.getPos());
+        }
     }
 
     @Override
     public void setWindowPosition(UUID windowId, float x, float y)
     {
-
+        this.syncSetWindowPosition(windowId, x, y);
+        if (this.laptop.isClient())
+        {
+            TaskManager.sendToServer(new SetWindowPositionTask(this.laptop.getPos(), windowId, x, y), TaskManager.TaskReceiver.NEARBY);
+        }
+        else
+        {
+            TaskManager.sendToTracking(new SetWindowPositionTask(this.laptop.getPos(), windowId, x, y), this.laptop.getWorld(), this.laptop.getPos());
+        }
     }
 
     @Override
     public void setWindowSize(UUID windowId, int width, int height)
     {
-
+        this.syncSetWindowSize(windowId, width, height);
+        if (this.laptop.isClient())
+        {
+            TaskManager.sendToServer(new SetWindowSizeTask(this.laptop.getPos(), windowId, width, height), TaskManager.TaskReceiver.NEARBY);
+        }
+        else
+        {
+            TaskManager.sendToTracking(new SetWindowSizeTask(this.laptop.getPos(), windowId, width, height), this.laptop.getWorld(), this.laptop.getPos());
+        }
     }
 
     @Nullable

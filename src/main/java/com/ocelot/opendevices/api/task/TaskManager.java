@@ -97,9 +97,9 @@ public final class TaskManager
     /**
      * Sends a task from the server to all clients tracking the specified {@link Chunk}.
      *
-     * @param task           The task to send to the clients
-     * @param world          The world to base the task from.
-     * @param pos            The pos to base the task from.
+     * @param task  The task to send to the clients
+     * @param world The world to base the task from.
+     * @param pos   The pos to base the task from.
      */
     public static void sendToTracking(Task task, World world, BlockPos pos)
     {
@@ -154,8 +154,30 @@ public final class TaskManager
      */
     public enum TaskReceiver
     {
-        NONE, SENDER, NEARBY, SENDER_AND_NEARBY, ALL;
+        /**
+         * The server does not send a response at all
+         */
+        NONE,
+        /**
+         * The server sends a response to the one who sent the message
+         */
+        SENDER,
+        /**
+         * The server sends a response to nearby players except for the one who sent the message
+         */
+        NEARBY,
+        /**
+         * The server sends a response to ALL nearby players, including the one who sent the message
+         */
+        SENDER_AND_NEARBY,
+        /**
+         * The server sends a response to ALL players
+         */
+        ALL;
 
+        /**
+         * @return Whether or not a response should be sent to the client that sent a request
+         */
         public boolean returnsToSender()
         {
             return this == SENDER || this == SENDER_AND_NEARBY || this == ALL;

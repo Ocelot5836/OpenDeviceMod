@@ -31,6 +31,13 @@ public interface WindowManager
     void focusWindow(@Nullable UUID windowId);
 
     /**
+     * Closes all the windows for the specified process.
+     *
+     * @param processId The id of the process to terminate the windows for
+     */
+    void closeProcessWindows(UUID processId);
+
+    /**
      * Closes the windows with the specified ids.
      *
      * @param windowIds The ids of the windows to close
@@ -47,11 +54,11 @@ public interface WindowManager
     /**
      * Moves the window with the specified id in the specified direction.
      *
-     * @param windowId The id of the window to move
-     * @param dx       The amount in the x direction to move
-     * @param dy       The amount in the y direction to move
+     * @param windowId   The id of the window to move
+     * @param xDirection The amount in the x direction to move
+     * @param yDirection The amount in the y direction to move
      */
-    void moveWindow(UUID windowId, float dx, float dy);
+    void moveWindow(UUID windowId, float xDirection, float yDirection);
 
     /**
      * Sets the position of the window with the specified id to the specified coordinates.

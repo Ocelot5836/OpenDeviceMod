@@ -8,6 +8,8 @@ import com.ocelot.opendevices.api.laptop.Laptop;
 import com.ocelot.opendevices.api.laptop.desktop.Desktop;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopBackground;
 import com.ocelot.opendevices.api.laptop.taskbar.TaskBar;
+import com.ocelot.opendevices.api.laptop.window.Window;
+import com.ocelot.opendevices.api.laptop.window.WindowManager;
 import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.api.util.TooltipRenderer;
 import net.minecraft.client.Minecraft;
@@ -47,6 +49,7 @@ public class LaptopRenderer extends AbstractGui
     {
         TextureManager textureManager = minecraft.getTextureManager();
         Desktop desktop = laptop.getDesktop();
+        WindowManager windowManager = laptop.getWindowManager();
         TaskBar taskBar = laptop.getTaskBar();
 
         /* Desktop Background */
@@ -76,14 +79,13 @@ public class LaptopRenderer extends AbstractGui
             fontRenderer.drawStringWithShadow(I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.version", MOD_VERSION), posX + 5, posY + 5, laptop.readSetting(LaptopSettings.DESKTOP_TEXT_COLOR));
         }
 
-        //        /* Applications */
-        //        Window[] windows = desktop.getWindows();
-        //        for (Window value : windows)
-        //        {
-        //            WindowClient window = (WindowClient) value;
-        //            window.setScreenPosition(posX, posY);
-        //            window.render(mouseX, mouseY, laptop.readSetting(LaptopSettings.WINDOW_COLOR), partialTicks);
-        //        }
+        /* Applications */
+        Window[] windows = windowManager.getWindows();
+        for (Window window : windows)
+        {
+            int borderColor = windowManager.getFocusedWindowId() != null && windowManager.getFocusedWindowId() == window.getId() ? laptop.readSetting(LaptopSettings.FOCUSED_WINDOW_COLOR) : laptop.readSetting(LaptopSettings.WINDOW_COLOR);
+            renderWindow(posX, posY, window, laptop.readSetting(LaptopSettings.WINDOW_COLOR), borderColor, partialTicks);
+        }
 
         /* Task bar */
         {
@@ -91,7 +93,7 @@ public class LaptopRenderer extends AbstractGui
             int color = laptop.readSetting(LaptopSettings.TASKBAR_COLOR);
             int height = taskBar.getHeight();
 
-            GlStateManager.color4f(((color >> 16) & 0xff) / 255f, ((color >> 8) & 0xff) / 255f, (color & 0xff) / 255f, 1);
+            RenderUtil.glColor(0xff000000 | color);
             {
                 /* Corners */
                 RenderUtil.drawRectWithTexture(posX, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - height, 0, 15, 1, 1, 1, 1);
@@ -157,5 +159,44 @@ public class LaptopRenderer extends AbstractGui
         //                window.renderOverlay(renderer, mouseX, mouseY, partialTicks);
         //            }
         //        }
+    }
+
+    /**
+     * Renders the specified window at the provided desktop coordinates.
+     *
+     * @param posX         The raw x position of the desktop
+     * @param posY         The raw y position of the desktop
+     * @param window       The window to render
+     * @param color        The color of the window
+     * @param borderColor  The color of the border of the window
+     * @param partialTicks The percentage time from last tick and this tick
+     */
+    public static void renderWindow(int posX, int posY, Window window, int color, int borderColor, float partialTicks)
+    {
+        Minecraft.getInstance().getTextureManager().bindTexture(DeviceConstants.WINDOW_LOCATION);
+        RenderUtil.glColor(0xff000000 | borderColor);
+
+        float windowX = window.getLastX() + (window.getX() - window.getLastX()) * partialTicks;
+        float windowY = window.getLastY() + (window.getY() - window.getLastY()) * partialTicks;
+        int windowWidth = window.getWidth();
+        int windowHeight = window.getHeight();
+
+        /* Corners */
+        RenderUtil.drawRectWithTexture(posX + windowX, posY + windowY, 0, 0, 1, 13, 1, 13);
+        RenderUtil.drawRectWithTexture(posX + windowX + windowWidth - 13, posY + windowY, 2, 0, 13, 13, 13, 13);
+        RenderUtil.drawRectWithTexture(posX + windowX + windowWidth - 1, posY + windowY + windowHeight - 1, 14, 14, 1, 1, 1, 1);
+        RenderUtil.drawRectWithTexture(posX + windowX, posY + windowY + windowHeight - 1, 0, 14, 1, 1, 1, 1);
+
+        /* Edges */
+        RenderUtil.drawRectWithTexture(posX + windowX + 1, posY + windowY, 1, 0, windowWidth - 14, 13, 1, 13);
+        RenderUtil.drawRectWithTexture(posX + windowX + windowWidth - 1, posY + windowY + 13, 14, 13, 1, windowHeight - 14, 1, 1);
+        RenderUtil.drawRectWithTexture(posX + windowX + 1, posY + windowY + windowHeight - 1, 1, 14, windowWidth - 2, 1, 13, 1);
+        RenderUtil.drawRectWithTexture(posX + windowX, posY + windowY + 13, 0, 13, 1, windowHeight - 14, 1, 1);
+
+        /* Center */
+        RenderUtil.glColor(0xff000000 | color);
+        RenderUtil.drawRectWithTexture(posX + windowX + 1, posY + windowY + 13, 1, 13, windowWidth - 2, windowHeight - 14, 13, 1);
+
+        GlStateManager.color4f(1, 1, 1, 1);
     }
 }

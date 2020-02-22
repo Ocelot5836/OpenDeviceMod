@@ -1,10 +1,12 @@
 package com.ocelot.opendevices.api.device;
 
+import io.netty.util.internal.UnstableApi;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.IWorld;
 
 import javax.annotation.Nullable;
+import javax.annotation.Tainted;
 import java.util.Collection;
 import java.util.UUID;
 
@@ -17,13 +19,20 @@ import java.util.UUID;
 public interface Device
 {
     /**
-     * Crates and starts a new process.
+     * Creates and starts a new process.
      *
      * @param processId The id of the process to start
      * @return The id assigned to the process
      * @throws IllegalArgumentException If the process registered under that id is either null or not for this device
      */
     UUID executeProcess(ResourceLocation processId);
+
+    /**
+     * Stops the process with the specified ID and closes all associated tasks.
+     *
+     * @param processId The id of the process to stop
+     */
+    void terminateProcess(UUID processId);
 
     /**
      * Syncs the process with the specified id to the server and all clients.

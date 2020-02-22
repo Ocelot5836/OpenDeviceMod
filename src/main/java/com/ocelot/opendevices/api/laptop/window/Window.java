@@ -60,6 +60,16 @@ public interface Window
     float getY();
 
     /**
+     * @return The last x position of this window
+     */
+    float getLastX();
+
+    /**
+     * @return The last y position of this window
+     */
+    float getLastY();
+
+    /**
      * @return The x size of this window including the borders
      */
     int getWidth();

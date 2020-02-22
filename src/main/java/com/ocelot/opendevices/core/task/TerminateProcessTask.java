@@ -3,7 +3,6 @@ package com.ocelot.opendevices.core.task;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.core.LaptopTileEntity;
-import com.ocelot.opendevices.core.LaptopWindowManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
@@ -12,49 +11,40 @@ import net.minecraft.world.World;
 import java.util.Objects;
 import java.util.UUID;
 
-@Task.Register(OpenDevices.MOD_ID + ":move_window")
-public class MoveWindowTask extends Task
+@Task.Register(OpenDevices.MOD_ID + ":terminate_process")
+public class TerminateProcessTask extends Task
 {
     private BlockPos pos;
-    private UUID windowId;
-    private float xDirection;
-    private float yDirection;
+    private UUID processId;
 
-    public MoveWindowTask()
+    public TerminateProcessTask()
     {
-        this(null, null, 0, 0);
+        this(null, null);
     }
 
-    public MoveWindowTask(BlockPos pos, UUID windowId, float xDirection, float yDirection)
+    public TerminateProcessTask(BlockPos pos, UUID processId)
     {
         this.pos = pos;
-        this.windowId = windowId;
-        this.xDirection = xDirection;
-        this.yDirection = yDirection;
+        this.processId = processId;
     }
 
     @Override
     public void prepareRequest(CompoundNBT nbt)
     {
         nbt.putLong("pos", this.pos.toLong());
-        nbt.putUniqueId("windowId", this.windowId);
-        nbt.putDouble("xDirection", this.xDirection);
-        nbt.putDouble("yDirection", this.yDirection);
+        nbt.putUniqueId("processId", this.processId);
     }
 
     @Override
     public void processRequest(CompoundNBT nbt, World world, PlayerEntity player)
     {
         this.pos = BlockPos.fromLong(nbt.getLong("pos"));
-        this.windowId = nbt.getUniqueId("windowId");
-        this.xDirection = nbt.getFloat("xDirection");
-        this.yDirection = nbt.getFloat("yDirection");
+        this.processId = nbt.getUniqueId("processId");
 
         if (world.getTileEntity(this.pos) instanceof LaptopTileEntity)
         {
             LaptopTileEntity laptop = (LaptopTileEntity) Objects.requireNonNull(world.getTileEntity(this.pos));
-            LaptopWindowManager windowManager = laptop.getWindowManager();
-            if (windowManager.syncMoveWindow(this.windowId, this.xDirection, this.yDirection))
+            if (laptop.syncTerminateProcess(this.processId))
             {
                 this.setSuccessful();
             }

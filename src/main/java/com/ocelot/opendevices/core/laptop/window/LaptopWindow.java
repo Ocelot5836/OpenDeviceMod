@@ -15,6 +15,8 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
 
     private float x;
     private float y;
+    private float lastX;
+    private float lastY;
     private int width;
     private int height;
 
@@ -33,7 +35,11 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
         this.deserializeNBT(nbt);
     }
 
-    public void update() {}
+    public void update()
+    {
+        this.lastX = this.x;
+        this.lastY = this.y;
+    }
 
     @Override
     public Laptop getLaptop()
@@ -66,6 +72,18 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
     }
 
     @Override
+    public float getLastX()
+    {
+        return lastX;
+    }
+
+    @Override
+    public float getLastY()
+    {
+        return lastY;
+    }
+
+    @Override
     public int getWidth()
     {
         return width;
@@ -85,6 +103,16 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
     public void setY(float y)
     {
         this.y = y;
+    }
+
+    public void setLastX(float lastX)
+    {
+        this.lastX = lastX;
+    }
+
+    public void setLastY(float lastY)
+    {
+        this.lastY = lastY;
     }
 
     public void setWidth(int width)

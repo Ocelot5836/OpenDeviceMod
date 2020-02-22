@@ -14,6 +14,7 @@ public class TestProcess implements DeviceProcess<Laptop>
     private Laptop laptop;
     private UUID processId;
     private WindowHandle window;
+    private WindowHandle window2;
     private int a;
 
     public TestProcess(Laptop laptop, UUID processId)
@@ -21,12 +22,14 @@ public class TestProcess implements DeviceProcess<Laptop>
         this.laptop = laptop;
         this.processId = processId;
         this.window = new WindowHandle(this.laptop, this.processId);
+        this.window2 = new WindowHandle(this.laptop, this.processId);
     }
 
     @Override
     public void init()
     {
         this.window.get();
+        this.window2.get();
     }
 
     @Override
@@ -57,6 +60,7 @@ public class TestProcess implements DeviceProcess<Laptop>
     {
         CompoundNBT nbt = new CompoundNBT();
         nbt.put("window", this.window.serializeNBT());
+        nbt.put("window2", this.window2.serializeNBT());
         return nbt;
     }
 
@@ -64,6 +68,7 @@ public class TestProcess implements DeviceProcess<Laptop>
     public void deserializeNBT(CompoundNBT nbt)
     {
         this.window.deserializeNBT(nbt.getCompound("window"));
+        this.window2.deserializeNBT(nbt.getCompound("window2"));
     }
 
     @Override

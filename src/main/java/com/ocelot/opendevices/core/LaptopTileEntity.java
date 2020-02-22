@@ -13,6 +13,7 @@ import com.ocelot.opendevices.core.registry.DeviceProcessRegistryEntry;
 import com.ocelot.opendevices.core.task.ExecuteProcessTask;
 import com.ocelot.opendevices.core.task.SyncProcessTask;
 import com.ocelot.opendevices.core.task.SyncSettingsTask;
+import com.ocelot.opendevices.core.task.TerminateProcessTask;
 import com.ocelot.opendevices.init.DeviceBlocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
@@ -154,6 +155,23 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
         return false;
     }
 
+    public boolean syncTerminateProcess(UUID processId)
+    {
+        DeviceProcess<Laptop> process = this.processes.get(processId);
+
+        if (process == null)
+        {
+            OpenDevices.LOGGER.warn("Could not terminate process with id '" + processId + "' for Laptop as it does not exist. Skipping!");
+            return false;
+        }
+
+        if (!this.isClient())
+            this.windowManager.closeProcessWindows(processId);
+        this.processes.remove(processId);
+
+        return true;
+    }
+
     public boolean syncProcess(UUID processId, CompoundNBT data)
     {
         DeviceProcess<Laptop> process = this.getProcess(processId);
@@ -187,6 +205,23 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
         }
 
         return processId;
+    }
+
+    // TODO has not been tested, needs validation!
+    @Override
+    public void terminateProcess(UUID processId)
+    {
+        if (this.isClient())
+        {
+            TaskManager.sendToServer(new TerminateProcessTask(this.getPos(), processId), TaskManager.TaskReceiver.SENDER_AND_NEARBY);
+        }
+        else
+        {
+            if (this.syncTerminateProcess(processId))
+            {
+                TaskManager.sendToTracking(new TerminateProcessTask(this.getPos(), processId), this.getWorld(), this.getPos());
+            }
+        }
     }
 
     @Override

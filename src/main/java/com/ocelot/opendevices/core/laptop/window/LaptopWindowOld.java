@@ -232,6 +232,18 @@ public class LaptopWindowOld implements Window, INBTSerializable<CompoundNBT>
     }
 
     @Override
+    public float getLastX()
+    {
+        return x;
+    }
+
+    @Override
+    public float getLastY()
+    {
+        return y;
+    }
+
+    @Override
     public int getWidth()
     {
         return width;
