@@ -16,6 +16,15 @@ import java.util.UUID;
 public interface DeviceProcess<T extends Device> extends INBTSerializable<CompoundNBT>
 {
     /**
+     * <p>Syncs this process's data with all clients using {@link #writeSyncNBT()} to write data for the client to read and {@link #readSyncNBT(CompoundNBT)} to read that data on the client side.</p>
+     * <p>Equivalent to <code>this.getDevice().syncProcess(this.getProcessId());</code></p>
+     */
+    default void synchronizeClients()
+    {
+        this.getDevice().syncProcess(this.getProcessId());
+    }
+
+    /**
      * Initializes this process for the specified device once it has started execution.
      */
     void init();
