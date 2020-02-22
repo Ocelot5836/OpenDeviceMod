@@ -18,7 +18,7 @@ version="0.1.0-pre" #mandatory
  # A display name for the mod
 displayName="Open Device Mod" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification <here>
-# updateJSONURL="http://myurl.me/" #optional
+updateJSONURL="https://raw.githubusercontent.com/Ocelot5836/storage/master/mods/device-mod/opendevices/update.json" #optional
 # A URL for the "homepage" for this mod, displayed in the mod UI
 displayURL="https://mrcrayfish.com/" #optional
 # A file name (in the root of the mod JAR) containing a logo for display
