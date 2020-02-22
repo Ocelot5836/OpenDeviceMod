@@ -1,0 +1,11 @@
+{
+    "name": "Template Test Entry",
+    "icon": "minecraft:paper",
+    "category": "test_category",
+    "pages": [
+        {
+            "type": "test_template",
+			"text": "Hello, World!"
+        }
+    ]
+}

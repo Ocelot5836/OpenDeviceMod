@@ -26,5 +26,8 @@
 	"screen.opendevices.laptop.version": "Alpha v%s",
 	"screen.opendevices.laptop.dev_version": "Developer Version - %s",
 
-	"gui.tag_filter.opendevices.devices.laptops": "Laptops"
+	"gui.tag_filter.opendevices.devices.laptops": "Laptops",
+
+	"book.opendevices.laptop.name": "Owner's Manual",
+	"book.opendevices.laptop.landing_text": "Everything you need to know about the Laptop... and other devices that may or may not be added..."
 }
