@@ -6,7 +6,6 @@ import com.ocelot.opendevices.api.laptop.window.WindowManager;
 import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.core.laptop.window.LaptopWindow;
 import com.ocelot.opendevices.core.task.OpenWindowTask;
-import com.ocelot.opendevices.core.task.SyncProcessTask;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraftforge.common.util.Constants;
@@ -72,14 +71,14 @@ public class LaptopWindowManager implements WindowManager, INBTSerializable<Comp
         LaptopWindow window = this.createWindow(processId);
         if (this.laptop.isClient())
         {
-            if (this.syncOpenWindow(window))
-            {
-                TaskManager.sendToServer(new OpenWindowTask(this.laptop.getPos(), window.serializeNBT()), TaskManager.TaskReceiver.NEARBY);
-            }
+            TaskManager.sendToServer(new OpenWindowTask(this.laptop.getPos(), window.serializeNBT()), TaskManager.TaskReceiver.SENDER_AND_NEARBY);
         }
         else
         {
-            TaskManager.sendToTracking(new OpenWindowTask(this.laptop.getPos(), window.serializeNBT()), this.laptop.getWorld(), this.laptop.getPos());
+            if (this.syncOpenWindow(window))
+            {
+                TaskManager.sendToTracking(new OpenWindowTask(this.laptop.getPos(), window.serializeNBT()), this.laptop.getWorld(), this.laptop.getPos());
+            }
         }
         return window.getId();
     }

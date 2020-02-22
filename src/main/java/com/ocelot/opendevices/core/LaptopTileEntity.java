@@ -272,25 +272,24 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
         this.windowManager.deserializeNBT(nbt.getCompound("windowManager"));
         this.taskBar.deserializeNBT(nbt.getCompound("taskBar"));
 
-        if (!this.isClient())
+        ListNBT processesNbt = nbt.getList("processes", Constants.NBT.TAG_COMPOUND);
+        for (int i = 0; i < processesNbt.size(); i++)
         {
-            ListNBT processesNbt = nbt.getList("processes", Constants.NBT.TAG_COMPOUND);
-            for (int i = 0; i < processesNbt.size(); i++)
+            CompoundNBT processNbt = processesNbt.getCompound(i);
+            DeviceProcess<Laptop> process = ProcessSerializer.read(Laptop.class, this, processNbt);
+            if (process != null)
             {
-                CompoundNBT processNbt = processesNbt.getCompound(i);
-                DeviceProcess<Laptop> process = ProcessSerializer.read(Laptop.class, this, processNbt);
-                if (process != null)
+                CompoundNBT processData = processNbt.getCompound("data");
+                ResourceLocation processName = ProcessSerializer.getRegistryName(process);
+                UUID processId = process.getProcessId();
+
+                if (this.syncExecuteProcess(processName, processId))
                 {
-                    CompoundNBT processData = processNbt.getCompound("data");
-                    ResourceLocation processName = ProcessSerializer.getRegistryName(process);
-                    UUID processId = process.getProcessId();
-
-                    //TODO reading from NBT
-
-                    //                    if (this.syncExecuteProcess(processName, processId, true, false))
-                    //                    {
-                    //                        this.execute(() -> TaskManager.sendToTracking(new ExecuteProcessTask(this.getPos(), processName, processId), this.getWorld(), this.getPos()));
-                    //                    }
+                    this.syncProcess(processId, processData);
+                    if (!this.isClient())
+                    {
+                        this.initProcess(processId);
+                    }
                 }
             }
         }
