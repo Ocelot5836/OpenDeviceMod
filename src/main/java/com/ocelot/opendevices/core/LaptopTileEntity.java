@@ -143,21 +143,12 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
         DeviceProcess<Laptop> process = entry.createProcess(Laptop.class, this, processId);
         if (process != null)
         {
-            OpenDevices.LOGGER.debug("Starting process '" + processName + "' for Laptop with id '" + processId + "'");
             this.processes.put(processId, process);
             if (!this.isClient())
+            {
+                OpenDevices.LOGGER.debug("Starting process '" + processName + "' for Laptop with id '" + processId + "'");
                 this.startingProcesses.add(processId);
-            //                if (returning)
-            //                {
-            //                    if (this.isClient())
-            //                    {
-            //                        TaskManager.sendToServer(new InitProcessTask(this.pos, processId), TaskManager.TaskReceiver.NONE);
-            //                    }
-            //                    else
-            //                    {
-            //                        this.syncInitProcess(processId);
-            //                    }
-            //                }
+            }
             return true;
         }
         return false;
