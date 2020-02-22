@@ -27,7 +27,6 @@ public class TestProcess implements DeviceProcess<Laptop>
     public void init()
     {
         this.window.get();
-        System.out.println("Initialized on client? " + this.laptop.isClient());
     }
 
     @Override

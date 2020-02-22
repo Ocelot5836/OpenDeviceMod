@@ -11,7 +11,6 @@ import com.ocelot.opendevices.api.laptop.settings.LaptopSetting;
 import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.core.registry.DeviceProcessRegistryEntry;
 import com.ocelot.opendevices.core.task.ExecuteProcessTask;
-import com.ocelot.opendevices.core.task.InitProcessTask;
 import com.ocelot.opendevices.core.task.SyncProcessTask;
 import com.ocelot.opendevices.core.task.SyncSettingsTask;
 import com.ocelot.opendevices.init.DeviceBlocks;
@@ -133,7 +132,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
         return true;
     }
 
-    public boolean syncExecuteProcess(ResourceLocation processName, UUID processId, boolean starting, boolean returning)
+    public boolean syncExecuteProcess(ResourceLocation processName, UUID processId)
     {
         DeviceProcessRegistryEntry entry = DeviceRegistries.PROCESSES.getValue(processName);
 
@@ -146,23 +145,21 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
         DeviceProcess<Laptop> process = entry.createProcess(Laptop.class, this, processId);
         if (process != null)
         {
-            this.execute(() ->
-            {
-                this.processes.put(processId, process);
-                if (starting)
-                    this.startingProcesses.add(processId);
-                if (returning)
-                {
-                    if (this.isClient())
-                    {
-                        TaskManager.sendToServer(new InitProcessTask(this.pos, processId), TaskManager.TaskReceiver.NONE);
-                    }
-                    else
-                    {
-                        this.syncInitProcess(processId);
-                    }
-                }
-            });
+            OpenDevices.LOGGER.debug("Starting process '" + processName + "' for Laptop with id '" + processId + "'");
+            this.processes.put(processId, process);
+            if (!this.isClient())
+                this.startingProcesses.add(processId);
+            //                if (returning)
+            //                {
+            //                    if (this.isClient())
+            //                    {
+            //                        TaskManager.sendToServer(new InitProcessTask(this.pos, processId), TaskManager.TaskReceiver.NONE);
+            //                    }
+            //                    else
+            //                    {
+            //                        this.syncInitProcess(processId);
+            //                    }
+            //                }
             return true;
         }
         return false;
@@ -177,7 +174,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
             return;
         }
 
-        this.processes.get(processId).init();
+        this.execute(() -> this.processes.get(processId).init());
     }
 
     @Override
@@ -214,7 +211,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
         }
         else
         {
-            if (this.syncExecuteProcess(processName, processId, true, false))
+            if (this.syncExecuteProcess(processName, processId))
             {
                 TaskManager.sendToTracking(new ExecuteProcessTask(this.getPos(), processName, processId), this.getWorld(), this.getPos());
             }
@@ -287,10 +284,12 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
                     ResourceLocation processName = ProcessSerializer.getRegistryName(process);
                     UUID processId = process.getProcessId();
 
-                    if (this.syncExecuteProcess(processName, processId, true, false))
-                    {
-                        this.execute(() -> TaskManager.sendToTracking(new ExecuteProcessTask(this.getPos(), processName, processId), this.getWorld(), this.getPos()));
-                    }
+                    //TODO reading from NBT
+
+                    //                    if (this.syncExecuteProcess(processName, processId, true, false))
+                    //                    {
+                    //                        this.execute(() -> TaskManager.sendToTracking(new ExecuteProcessTask(this.getPos(), processName, processId), this.getWorld(), this.getPos()));
+                    //                    }
                 }
             }
         }
