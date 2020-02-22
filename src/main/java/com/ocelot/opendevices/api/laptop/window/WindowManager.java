@@ -45,6 +45,33 @@ public interface WindowManager
     void closeWindows(UUID... windowIds);
 
     /**
+     * Moves the window with the specified id in the specified direction.
+     *
+     * @param windowId The id of the window to move
+     * @param dx       The amount in the x direction to move
+     * @param dy       The amount in the y direction to move
+     */
+    void moveWindow(UUID windowId, float dx, float dy);
+
+    /**
+     * Sets the position of the window with the specified id to the specified coordinates.
+     *
+     * @param windowId The id of the window to move
+     * @param x        The new x position of the window
+     * @param y        The new y position of the window
+     */
+    void setWindowPosition(UUID windowId, float x, float y);
+
+    /**
+     * Sets the size of the window with the specified id to the specified width and height.
+     *
+     * @param windowId The id of the window to change
+     * @param width    The new x size of the window
+     * @param height   The new y size of the window
+     */
+    void setWindowSize(UUID windowId, int width, int height);
+
+    /**
      * Checks the opened windows for the window with the specified id.
      *
      * @param windowId The id of the window to fetch

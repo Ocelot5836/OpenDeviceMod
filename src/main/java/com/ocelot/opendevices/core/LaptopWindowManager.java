@@ -101,6 +101,24 @@ public class LaptopWindowManager implements WindowManager, INBTSerializable<Comp
 
     }
 
+    @Override
+    public void moveWindow(UUID windowId, float dx, float dy)
+    {
+        
+    }
+
+    @Override
+    public void setWindowPosition(UUID windowId, float x, float y)
+    {
+
+    }
+
+    @Override
+    public void setWindowSize(UUID windowId, int width, int height)
+    {
+
+    }
+
     @Nullable
     @Override
     public LaptopWindow getWindow(UUID windowId)
