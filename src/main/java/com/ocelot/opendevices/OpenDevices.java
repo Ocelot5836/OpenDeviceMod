@@ -4,9 +4,12 @@ import com.mrcrayfish.filters.Filters;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.DeviceRegistries;
 import com.ocelot.opendevices.api.device.DeviceProcess;
+import com.ocelot.opendevices.api.device.ProcessInputRegistry;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopManager;
 import com.ocelot.opendevices.api.laptop.settings.LaptopSetting;
 import com.ocelot.opendevices.api.task.Task;
+import com.ocelot.opendevices.core.laptop.process.TestProcess;
+import com.ocelot.opendevices.core.laptop.process.TestProcessInputHandler;
 import com.ocelot.opendevices.core.registry.DeviceProcessRegistryEntry;
 import com.ocelot.opendevices.core.registry.TaskRegistryEntry;
 import com.ocelot.opendevices.core.render.LaptopTileEntityRenderer;
@@ -77,6 +80,8 @@ public class OpenDevices
 
     private void initClient(FMLClientSetupEvent event)
     {
+//        ProcessInputRegistry.bindInputHandler(TestProcess.class, new TestProcessInputHandler());
+
         if (ModList.get().isLoaded("filters"))
         {
             Filters.get().register(TAB, new ResourceLocation(MOD_ID, "devices/laptops"), new ItemStack(DeviceBlocks.RED_LAPTOP));

@@ -25,7 +25,7 @@ public interface ProcessInputHandler<D extends Device, T extends DeviceProcess<D
      * @param mods     The modifier key flags
      * @return Whether or not this event was consumed
      */
-    default boolean keyPressed(T process, @Nullable UUID windowId, int keyCode, int scanCode, int mods)
+    default boolean onKeyPressed(T process, @Nullable UUID windowId, int keyCode, int scanCode, int mods)
     {
         return false;
     }
@@ -40,7 +40,7 @@ public interface ProcessInputHandler<D extends Device, T extends DeviceProcess<D
      * @param mods     The modifier key flags
      * @return Whether or not this event was consumed
      */
-    default boolean keyReleased(T process, @Nullable UUID windowId, int keyCode, int scanCode, int mods)
+    default boolean onKeyReleased(T process, @Nullable UUID windowId, int keyCode, int scanCode, int mods)
     {
         return false;
     }
@@ -55,7 +55,7 @@ public interface ProcessInputHandler<D extends Device, T extends DeviceProcess<D
      * @param mouseButton The button pressed on the mouse
      * @return Whether or not this event was consumed
      */
-    default boolean mouseClicked(T process, @Nullable UUID windowId, double mouseX, double mouseY, int mouseButton)
+    default boolean onMousePressed(T process, @Nullable UUID windowId, double mouseX, double mouseY, int mouseButton)
     {
         return false;
     }
@@ -70,7 +70,7 @@ public interface ProcessInputHandler<D extends Device, T extends DeviceProcess<D
      * @param mouseButton The button released on the mouse
      * @return Whether or not this event was consumed
      */
-    default boolean mouseReleased(T process, @Nullable UUID windowId, double mouseX, double mouseY, int mouseButton)
+    default boolean onMouseReleased(T process, @Nullable UUID windowId, double mouseX, double mouseY, int mouseButton)
     {
         return false;
     }
@@ -85,7 +85,7 @@ public interface ProcessInputHandler<D extends Device, T extends DeviceProcess<D
      * @param amount   The amount the mouse wheel was scrolled
      * @return Whether or not this event was consumed
      */
-    default boolean mouseScrolled(T process, @Nullable UUID windowId, double mouseX, double mouseY, double amount)
+    default boolean onMouseScrolled(T process, @Nullable UUID windowId, double mouseX, double mouseY, double amount)
     {
         return false;
     }
@@ -98,7 +98,7 @@ public interface ProcessInputHandler<D extends Device, T extends DeviceProcess<D
      * @param mouseX   The x position of the mouse
      * @param mouseY   The y position of the mouse
      */
-    default void mouseMoved(T process, @Nullable UUID windowId, double mouseX, double mouseY)
+    default void onMouseMoved(T process, @Nullable UUID windowId, double mouseX, double mouseY)
     {
     }
 
@@ -114,7 +114,7 @@ public interface ProcessInputHandler<D extends Device, T extends DeviceProcess<D
      * @param deltaY      The amount in the y direction the mouse has moved
      * @return Whether or not this event was consumed
      */
-    default boolean mouseDragged(T process, @Nullable UUID windowId, double mouseX, double mouseY, int mouseButton, double deltaX, double deltaY)
+    default boolean onMouseDragged(T process, @Nullable UUID windowId, double mouseX, double mouseY, int mouseButton, double deltaX, double deltaY)
     {
         return false;
     }

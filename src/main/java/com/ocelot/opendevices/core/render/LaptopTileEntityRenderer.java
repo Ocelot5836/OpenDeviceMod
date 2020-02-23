@@ -31,34 +31,11 @@ public class LaptopTileEntityRenderer extends TileEntityRenderer<LaptopTileEntit
 
     private Random random;
     private Framebuffer framebuffer;
-    private int screenList;
 
     private LaptopTileEntityRenderer()
     {
         this.random = new Random();
         this.framebuffer = null;
-        this.screenList = -1;
-    }
-
-    private void createScreenList()
-    {
-        this.screenList = GlStateManager.genLists(1);
-        GlStateManager.newList(this.screenList, GL_COMPILE);
-        {
-            this.framebuffer.bindFramebufferTexture();
-
-            this.setLightmapDisabled(true);
-            Tessellator tessellator = Tessellator.getInstance();
-            BufferBuilder buffer = tessellator.getBuffer();
-            buffer.begin(GL_QUADS, DefaultVertexFormats.POSITION_TEX_NORMAL);
-            buffer.pos(0, 0, 0).tex(0, 0).normal(0, 0, 1).endVertex();
-            buffer.pos(DeviceConstants.LAPTOP_TE_SCREEN_WIDTH, 0, 0).tex(1, 0).normal(0, 0, 1).endVertex();
-            buffer.pos(DeviceConstants.LAPTOP_TE_SCREEN_WIDTH, DeviceConstants.LAPTOP_TE_SCREEN_HEIGHT, 0).tex(1, 1).normal(0, 0, 1).endVertex();
-            buffer.pos(0, DeviceConstants.LAPTOP_TE_SCREEN_HEIGHT, 0).tex(0, 1).normal(0, 0, 1).endVertex();
-            tessellator.draw();
-            this.setLightmapDisabled(false);
-        }
-        GlStateManager.endList();
     }
 
     public void delete()
@@ -69,11 +46,6 @@ public class LaptopTileEntityRenderer extends TileEntityRenderer<LaptopTileEntit
         {
             this.framebuffer.deleteFramebuffer();
             this.framebuffer = null;
-        }
-        if (this.screenList != -1)
-        {
-            GlStateManager.deleteLists(this.screenList, 1);
-            this.screenList = -1;
         }
     }
 
@@ -152,8 +124,6 @@ public class LaptopTileEntityRenderer extends TileEntityRenderer<LaptopTileEntit
                         LaptopRenderer.render(te, minecraft, minecraft.fontRenderer, 0, 0, -Integer.MAX_VALUE, -Integer.MAX_VALUE, partialTicks);
                     }
 
-                    glGenerateMipmap(GL_TEXTURE_2D);
-
                     GlStateManager.matrixMode(GL_PROJECTION);
                     GlStateManager.popMatrix();
                     GlStateManager.matrixMode(GL_MODELVIEW);
@@ -171,12 +141,18 @@ public class LaptopTileEntityRenderer extends TileEntityRenderer<LaptopTileEntit
                     GlStateManager.rotated(90 - te.getScreenAngle(partialTicks), 1, 0, 0);
                     GlStateManager.translated(2 * 0.0625, 2.75 * 0.0625, 0.125 * 0.0625);
 
-                    if (this.screenList == -1)
-                    {
-                        this.createScreenList();
-                    }
+                    this.framebuffer.bindFramebufferTexture();
 
-                    GlStateManager.callList(this.screenList);
+                    this.setLightmapDisabled(true);
+                    Tessellator tessellator = Tessellator.getInstance();
+                    BufferBuilder buffer = tessellator.getBuffer();
+                    buffer.begin(GL_QUADS, DefaultVertexFormats.POSITION_TEX_NORMAL);
+                    buffer.pos(0, 0, 0).tex(0, 0).normal(0, 0, 1).endVertex();
+                    buffer.pos(DeviceConstants.LAPTOP_TE_SCREEN_WIDTH, 0, 0).tex(1, 0).normal(0, 0, 1).endVertex();
+                    buffer.pos(DeviceConstants.LAPTOP_TE_SCREEN_WIDTH, DeviceConstants.LAPTOP_TE_SCREEN_HEIGHT, 0).tex(1, 1).normal(0, 0, 1).endVertex();
+                    buffer.pos(0, DeviceConstants.LAPTOP_TE_SCREEN_HEIGHT, 0).tex(0, 1).normal(0, 0, 1).endVertex();
+                    tessellator.draw();
+                    this.setLightmapDisabled(false);
                 }
                 GlStateManager.popMatrix();
             }

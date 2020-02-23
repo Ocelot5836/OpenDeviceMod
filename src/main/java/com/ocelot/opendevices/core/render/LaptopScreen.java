@@ -3,6 +3,10 @@ package com.ocelot.opendevices.core.render;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceConstants;
+import com.ocelot.opendevices.api.device.DeviceProcess;
+import com.ocelot.opendevices.api.device.ProcessInputHandler;
+import com.ocelot.opendevices.api.device.ProcessInputRegistry;
+import com.ocelot.opendevices.api.laptop.Computer;
 import com.ocelot.opendevices.api.laptop.window.Window;
 import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.api.util.RenderUtil;
@@ -50,6 +54,21 @@ public class LaptopScreen extends Screen implements TooltipRenderer
         this.posY = (height - DeviceConstants.LAPTOP_GUI_HEIGHT) / 2;
         this.draggingWindow = null;
         this.clickable = false;
+    }
+
+    private boolean isWithin(Window window, double mouseX, double mouseY)
+    {
+        return RenderUtil.isMouseInside(mouseX, mouseY, this.posX + DeviceConstants.LAPTOP_GUI_BORDER + window.getX(), this.posY + DeviceConstants.LAPTOP_GUI_BORDER + window.getY(), this.posX + DeviceConstants.LAPTOP_GUI_BORDER + window.getX() + window.getWidth(), this.posY + DeviceConstants.LAPTOP_GUI_BORDER + window.getY() + window.getHeight());
+    }
+
+    private boolean isWithinContent(Window window, double mouseX, double mouseY)
+    {
+        return RenderUtil.isMouseInside(mouseX, mouseY, this.posX + DeviceConstants.LAPTOP_GUI_BORDER + window.getX() + 1, this.posY + DeviceConstants.LAPTOP_GUI_BORDER + window.getY() + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + 1, this.posX + DeviceConstants.LAPTOP_GUI_BORDER + window.getX() + window.getWidth() - 1, this.posY + DeviceConstants.LAPTOP_GUI_BORDER + window.getY() + window.getHeight() - 1);
+    }
+
+    private boolean isWithinWindowBar(Window window, double mouseX, double mouseY)
+    {
+        return RenderUtil.isMouseInside(mouseX, mouseY, this.posX + DeviceConstants.LAPTOP_GUI_BORDER + window.getX(), this.posY + DeviceConstants.LAPTOP_GUI_BORDER + window.getY() + 1, this.posX + DeviceConstants.LAPTOP_GUI_BORDER + window.getX() + window.getWidth() - DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE - 1, this.posY + DeviceConstants.LAPTOP_GUI_BORDER + window.getY() + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT);
     }
 
     @Override
@@ -131,10 +150,18 @@ public class LaptopScreen extends Screen implements TooltipRenderer
         {
             LaptopWindowManager windowManager = this.laptop.getWindowManager();
             LaptopWindow focusedWindow = windowManager.getFocusedWindow();
-            //                    if (focusedWindow != null && focusedWindow.onKeyPressed(keyCode))
-            //                    {
-            //                        return true;
-            //                    }
+            if (focusedWindow != null)
+            {
+                DeviceProcess<Computer> focusedProcess = this.laptop.getProcess(focusedWindow.getProcessId());
+                if (focusedProcess != null)
+                {
+                    ProcessInputHandler<Computer, DeviceProcess<Computer>> inputHandler = ProcessInputRegistry.getInputHandler(focusedProcess);
+                    if (inputHandler != null && inputHandler.onKeyPressed(focusedProcess, focusedWindow.getId(), keyCode, scanCode, mods))
+                    {
+                        return true;
+                    }
+                }
+            }
         }
         InputMappings.Input mouseKey = InputMappings.getInputByCode(keyCode, scanCode);
         if (keyCode == GLFW.GLFW_KEY_ESCAPE || this.getMinecraft().gameSettings.keyBindInventory.isActiveAndMatches(mouseKey))
@@ -152,10 +179,18 @@ public class LaptopScreen extends Screen implements TooltipRenderer
         {
             LaptopWindowManager windowManager = this.laptop.getWindowManager();
             LaptopWindow focusedWindow = windowManager.getFocusedWindow();
-            //                    if (focusedWindow != null && focusedWindow.onKeyReleased(keyCode))
-            //                    {
-            //                        return true;
-            //                    }
+            if (focusedWindow != null)
+            {
+                DeviceProcess<Computer> focusedProcess = this.laptop.getProcess(focusedWindow.getProcessId());
+                if (focusedProcess != null)
+                {
+                    ProcessInputHandler<Computer, DeviceProcess<Computer>> inputHandler = ProcessInputRegistry.getInputHandler(focusedProcess);
+                    if (inputHandler != null && inputHandler.onKeyReleased(focusedProcess, focusedWindow.getId(), keyCode, scanCode, mods))
+                    {
+                        return true;
+                    }
+                }
+            }
         }
         return super.keyReleased(keyCode, scanCode, mods);
     }
@@ -193,14 +228,16 @@ public class LaptopScreen extends Screen implements TooltipRenderer
                     }
                     if (this.isWithinContent(window, mouseX, mouseY))
                     {
-                        //                        if (window.onMousePressed(mouseX, mouseY, mouseButton))
-                        //                        {
-                        //                            return true;
-                        //                        }
-                        //                        else
-                        //                        {
-                        //                            return super.mouseClicked(mouseX, mouseY, mouseButton);
-                        //                        }
+                        DeviceProcess<Computer> process = this.laptop.getProcess(window.getProcessId());
+                        if (process != null)
+                        {
+                            ProcessInputHandler<Computer, DeviceProcess<Computer>> inputHandler = ProcessInputRegistry.getInputHandler(process);
+                            if (inputHandler != null && inputHandler.onMousePressed(process, window.getId(), mouseX, mouseY, mouseButton))
+                            {
+                                return true;
+                            }
+                        }
+
                         return super.mouseClicked(mouseX, mouseY, mouseButton);
                     }
                     else if (this.isWithinWindowBar(window, mouseX, mouseY))
@@ -258,11 +295,20 @@ public class LaptopScreen extends Screen implements TooltipRenderer
         else if (this.clickable && windowManager.getFocusedWindow() != null)
         {
             this.clickable = false;
-            LaptopWindow window = windowManager.getFocusedWindow();
-            //                    if (this.isWithinContent(window, mouseX, mouseY) && window.onMouseReleased(mouseX, mouseY, mouseButton))
-            //                    {
-            //                        return true;
-            //                    }
+            LaptopWindow focusedWindow = windowManager.getFocusedWindow();
+
+            if (focusedWindow != null)
+            {
+                DeviceProcess<Computer> focusedProcess = this.laptop.getProcess(focusedWindow.getProcessId());
+                if (focusedProcess != null)
+                {
+                    ProcessInputHandler<Computer, DeviceProcess<Computer>> inputHandler = ProcessInputRegistry.getInputHandler(focusedProcess);
+                    if (inputHandler != null && inputHandler.onMouseReleased(focusedProcess, focusedWindow.getId(), mouseX, mouseY, mouseButton))
+                    {
+                        return true;
+                    }
+                }
+            }
         }
 
         return super.mouseReleased(mouseX, mouseY, mouseButton);
@@ -275,10 +321,19 @@ public class LaptopScreen extends Screen implements TooltipRenderer
         {
             LaptopWindowManager windowManager = this.laptop.getWindowManager();
             LaptopWindow focusedWindow = windowManager.getFocusedWindow();
-            //                    if (focusedWindow != null && focusedWindow.onMouseScrolled(mouseX, mouseY, amount))
-            //                    {
-            //                        return true;
-            //                    }
+
+            if (focusedWindow != null)
+            {
+                DeviceProcess<Computer> focusedProcess = this.laptop.getProcess(focusedWindow.getProcessId());
+                if (focusedProcess != null)
+                {
+                    ProcessInputHandler<Computer, DeviceProcess<Computer>> inputHandler = ProcessInputRegistry.getInputHandler(focusedProcess);
+                    if (inputHandler != null && inputHandler.onMouseScrolled(focusedProcess, focusedWindow.getId(), mouseX, mouseY, amount))
+                    {
+                        return true;
+                    }
+                }
+            }
         }
 
         return super.mouseScrolled(mouseX, mouseY, amount);
@@ -291,10 +346,19 @@ public class LaptopScreen extends Screen implements TooltipRenderer
         {
             LaptopWindowManager windowManager = this.laptop.getWindowManager();
             LaptopWindow focusedWindow = windowManager.getFocusedWindow();
-            //                    if (focusedWindow != null)
-            //                    {
-            //                        focusedWindow.onMouseMoved(mouseX, mouseY);
-            //                    }
+
+            if (focusedWindow != null)
+            {
+                DeviceProcess<Computer> focusedProcess = this.laptop.getProcess(focusedWindow.getProcessId());
+                if (focusedProcess != null)
+                {
+                    ProcessInputHandler<Computer, DeviceProcess<Computer>> inputHandler = ProcessInputRegistry.getInputHandler(focusedProcess);
+                    if (inputHandler != null)
+                    {
+                        inputHandler.onMouseMoved(focusedProcess, focusedWindow.getId(), mouseX, mouseY);
+                    }
+                }
+            }
         }
     }
 
@@ -310,10 +374,19 @@ public class LaptopScreen extends Screen implements TooltipRenderer
         else if (windowManager.getFocusedWindow() != null)
         {
             LaptopWindow focusedWindow = windowManager.getFocusedWindow();
-            //                    if (this.isWithinContent(focusedWindow, mouseX, mouseY) && focusedWindow.onMouseDragged(mouseX, mouseY, mouseButton, deltaX, deltaY))
-            //                    {
-            //                        return true;
-            //                    }
+
+            if (focusedWindow != null)
+            {
+                DeviceProcess<Computer> focusedProcess = this.laptop.getProcess(focusedWindow.getProcessId());
+                if (focusedProcess != null)
+                {
+                    ProcessInputHandler<Computer, DeviceProcess<Computer>> inputHandler = ProcessInputRegistry.getInputHandler(focusedProcess);
+                    if (inputHandler != null && inputHandler.onMouseDragged(focusedProcess, focusedWindow.getId(), mouseX, mouseY, mouseButton, deltaX, deltaY))
+                    {
+                        return true;
+                    }
+                }
+            }
         }
 
         return super.mouseDragged(mouseX, mouseY, mouseButton, deltaX, deltaY);
@@ -332,21 +405,6 @@ public class LaptopScreen extends Screen implements TooltipRenderer
         {
             TaskManager.sendToServer(new CloseLaptopTask(this.laptop.getPos()), TaskManager.TaskReceiver.NONE);
         }
-    }
-
-    public boolean isWithin(Window window, double mouseX, double mouseY)
-    {
-        return RenderUtil.isMouseInside(mouseX, mouseY, this.posX + DeviceConstants.LAPTOP_GUI_BORDER + window.getX(), this.posY + DeviceConstants.LAPTOP_GUI_BORDER + window.getY(), this.posX + DeviceConstants.LAPTOP_GUI_BORDER + window.getX() + window.getWidth(), this.posY + DeviceConstants.LAPTOP_GUI_BORDER + window.getY() + window.getHeight());
-    }
-
-    public boolean isWithinContent(Window window, double mouseX, double mouseY)
-    {
-        return RenderUtil.isMouseInside(mouseX, mouseY, this.posX + DeviceConstants.LAPTOP_GUI_BORDER + window.getX() + 1, this.posY + DeviceConstants.LAPTOP_GUI_BORDER + window.getY() + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + 1, this.posX + DeviceConstants.LAPTOP_GUI_BORDER + window.getX() + window.getWidth() - 1, this.posY + DeviceConstants.LAPTOP_GUI_BORDER + window.getY() + window.getHeight() - 1);
-    }
-
-    public boolean isWithinWindowBar(Window window, double mouseX, double mouseY)
-    {
-        return RenderUtil.isMouseInside(mouseX, mouseY, this.posX + DeviceConstants.LAPTOP_GUI_BORDER + window.getX(), this.posY + DeviceConstants.LAPTOP_GUI_BORDER + window.getY() + 1, this.posX + DeviceConstants.LAPTOP_GUI_BORDER + window.getX() + window.getWidth() - DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE - 1, this.posY + DeviceConstants.LAPTOP_GUI_BORDER + window.getY() + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT);
     }
 
     public static boolean isMouseOver(Window window, float screenX, float screenY, double mouseX, double mouseY, float partialTicks)
