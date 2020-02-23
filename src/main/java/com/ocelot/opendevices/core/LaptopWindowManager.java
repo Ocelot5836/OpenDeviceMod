@@ -369,6 +369,15 @@ public class LaptopWindowManager implements WindowManager, INBTSerializable<Comp
         this.windows.forEach(window -> windowsNbt.add(window.serializeNBT()));
         nbt.put("windows", windowsNbt);
 
+        ListNBT closingWindowsNbt = new ListNBT();
+        this.closingWindows.forEach(windowId ->
+        {
+            CompoundNBT windowIdNbt = new CompoundNBT();
+            windowIdNbt.putUniqueId("windowId", windowId);
+            closingWindowsNbt.add(windowIdNbt);
+        });
+        nbt.put("closingWindows", closingWindowsNbt);
+
         if (this.focusedWindowId != null)
         {
             nbt.putUniqueId("focusedWindowId", this.focusedWindowId);
@@ -380,6 +389,8 @@ public class LaptopWindowManager implements WindowManager, INBTSerializable<Comp
     public void deserializeNBT(CompoundNBT nbt)
     {
         this.windows.clear();
+        this.closingWindows.clear();
+
         ListNBT windowsNbt = nbt.getList("windows", Constants.NBT.TAG_COMPOUND);
         for (int i = 0; i < windowsNbt.size(); i++)
         {
@@ -387,6 +398,13 @@ public class LaptopWindowManager implements WindowManager, INBTSerializable<Comp
             this.checkBounds(window);
             this.windows.push(window);
         }
+
+        ListNBT closingWindowsNbt = nbt.getList("closingWindows", Constants.NBT.TAG_COMPOUND);
+        for (int i = 0; i < closingWindowsNbt.size(); i++)
+        {
+            this.closingWindows.add(closingWindowsNbt.getCompound(i).getUniqueId("windowId"));
+        }
+
         this.focusedWindowId = nbt.hasUniqueId("focusedWindowId") ? nbt.getUniqueId("focusedWindowId") : null;
     }
 }
