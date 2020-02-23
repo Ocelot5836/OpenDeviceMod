@@ -1,13 +1,13 @@
 package com.ocelot.opendevices.api.laptop.taskbar;
 
-import com.ocelot.opendevices.api.laptop.Laptop;
+import com.ocelot.opendevices.api.laptop.Computer;
 import com.ocelot.opendevices.api.laptop.window.Window;
 
 /**
- * <p>Represents the most abstract form of a task bar for the {@link Laptop}. Displays information such as tray items, pinned apps, etc.</p>
+ * <p>Represents the most abstract form of a task bar for the {@link Computer}. Displays information such as tray items, pinned apps, etc.</p>
  *
  * @author Ocelot
- * @see Laptop
+ * @see Computer
  */
 public interface TaskBar
 {

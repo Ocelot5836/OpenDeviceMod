@@ -6,7 +6,7 @@ import com.ocelot.opendevices.api.DeviceRegistries;
 import com.ocelot.opendevices.api.device.DeviceProcess;
 import com.ocelot.opendevices.api.device.DeviceTileEntity;
 import com.ocelot.opendevices.api.device.ProcessSerializer;
-import com.ocelot.opendevices.api.laptop.Laptop;
+import com.ocelot.opendevices.api.laptop.Computer;
 import com.ocelot.opendevices.api.laptop.settings.LaptopSetting;
 import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.core.registry.DeviceProcessRegistryEntry;
@@ -31,13 +31,13 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITickableTileEntity
+public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITickableTileEntity
 {
     private static final AxisAlignedBB RENDER_AABB = VoxelShapes.fullCube().getBoundingBox();
 
     private UUID user;
     private boolean open;
-    private HashMap<UUID, DeviceProcess<Laptop>> processes;
+    private HashMap<UUID, DeviceProcess<Computer>> processes;
     private HashSet<UUID> startingProcesses;
     private Queue<Runnable> executionQueue;
 
@@ -148,7 +148,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
             return false;
         }
 
-        DeviceProcess<Laptop> process = entry.createProcess(Laptop.class, this, processId);
+        DeviceProcess<Computer> process = entry.createProcess(Computer.class, this, processId);
         if (process != null)
         {
             this.processes.put(processId, process);
@@ -164,7 +164,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
 
     public boolean syncTerminateProcess(UUID processId)
     {
-        DeviceProcess<Laptop> process = this.processes.get(processId);
+        DeviceProcess<Computer> process = this.processes.get(processId);
 
         if (process == null)
         {
@@ -180,7 +180,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
 
     public boolean syncProcess(UUID processId, CompoundNBT data)
     {
-        DeviceProcess<Laptop> process = this.getProcess(processId);
+        DeviceProcess<Computer> process = this.getProcess(processId);
 
         if (process == null)
         {
@@ -233,7 +233,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
     @Override
     public void syncProcess(UUID processId)
     {
-        DeviceProcess<Laptop> process = this.getProcess(processId);
+        DeviceProcess<Computer> process = this.getProcess(processId);
 
         if (process == null)
         {
@@ -308,7 +308,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
         for (int i = 0; i < processesNbt.size(); i++)
         {
             CompoundNBT processNbt = processesNbt.getCompound(i);
-            DeviceProcess<Laptop> process = ProcessSerializer.read(Laptop.class, this, processNbt);
+            DeviceProcess<Computer> process = ProcessSerializer.read(Computer.class, this, processNbt);
             if (process != null)
             {
                 CompoundNBT processData = processNbt.getCompound("data");
@@ -437,7 +437,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
     }
 
     @Override
-    public DeviceProcess<Laptop> getProcess(UUID id)
+    public DeviceProcess<Computer> getProcess(UUID id)
     {
         return processes.get(id);
     }

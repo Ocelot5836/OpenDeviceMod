@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.LaptopSettings;
-import com.ocelot.opendevices.api.laptop.Laptop;
+import com.ocelot.opendevices.api.laptop.Computer;
 import com.ocelot.opendevices.api.laptop.desktop.Desktop;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopBackground;
 import com.ocelot.opendevices.api.laptop.taskbar.TaskBar;
@@ -47,12 +47,12 @@ public class LaptopRenderer extends AbstractGui
         }
     }
 
-    public static void render(Laptop laptop, Minecraft minecraft, FontRenderer fontRenderer, int posX, int posY, int mouseX, int mouseY, float partialTicks)
+    public static void render(Computer computer, Minecraft minecraft, FontRenderer fontRenderer, int posX, int posY, int mouseX, int mouseY, float partialTicks)
     {
         TextureManager textureManager = minecraft.getTextureManager();
-        Desktop desktop = laptop.getDesktop();
-        WindowManager windowManager = laptop.getWindowManager();
-        TaskBar taskBar = laptop.getTaskBar();
+        Desktop desktop = computer.getDesktop();
+        WindowManager windowManager = computer.getWindowManager();
+        TaskBar taskBar = computer.getTaskBar();
 
         /* Desktop Background */
         {
@@ -71,29 +71,29 @@ public class LaptopRenderer extends AbstractGui
         /* Version Text */
         if (DeviceConstants.DEVELOPER_MODE)
         {
-            fontRenderer.drawStringWithShadow(I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.dev_version", MOD_VERSION), posX + 5, posY + 5, laptop.readSetting(LaptopSettings.DESKTOP_TEXT_COLOR));
-            fontRenderer.drawStringWithShadow(Minecraft.getDebugFPS() + " FPS", posX + 5, posY + 18, laptop.readSetting(LaptopSettings.DESKTOP_TEXT_COLOR));
-            fontRenderer.drawStringWithShadow(laptop.getProcessIds().size() + " Processes Running", posX + 5, posY + 31, laptop.readSetting(LaptopSettings.DESKTOP_TEXT_COLOR));
-            fontRenderer.drawStringWithShadow(laptop.getWindowManager().getWindows().length + " Windows Opened", posX + 5, posY + 44, laptop.readSetting(LaptopSettings.DESKTOP_TEXT_COLOR));
+            fontRenderer.drawStringWithShadow(I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.dev_version", MOD_VERSION), posX + 5, posY + 5, computer.readSetting(LaptopSettings.DESKTOP_TEXT_COLOR));
+            fontRenderer.drawStringWithShadow(Minecraft.getDebugFPS() + " FPS", posX + 5, posY + 18, computer.readSetting(LaptopSettings.DESKTOP_TEXT_COLOR));
+            fontRenderer.drawStringWithShadow(computer.getProcessIds().size() + " Processes Running", posX + 5, posY + 31, computer.readSetting(LaptopSettings.DESKTOP_TEXT_COLOR));
+            fontRenderer.drawStringWithShadow(computer.getWindowManager().getWindows().length + " Windows Opened", posX + 5, posY + 44, computer.readSetting(LaptopSettings.DESKTOP_TEXT_COLOR));
         }
         else
         {
-            fontRenderer.drawStringWithShadow(I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.version", MOD_VERSION), posX + 5, posY + 5, laptop.readSetting(LaptopSettings.DESKTOP_TEXT_COLOR));
+            fontRenderer.drawStringWithShadow(I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.version", MOD_VERSION), posX + 5, posY + 5, computer.readSetting(LaptopSettings.DESKTOP_TEXT_COLOR));
         }
 
         /* Applications */
         Window[] windows = windowManager.getWindows();
         for (Window window : windows)
         {
-            int borderColor = windowManager.getFocusedWindowId() != null && windowManager.getFocusedWindowId() == window.getId() ? laptop.readSetting(LaptopSettings.FOCUSED_WINDOW_COLOR) : laptop.readSetting(LaptopSettings.WINDOW_COLOR);
-            renderWindow(posX, posY, window, laptop.readSetting(LaptopSettings.WINDOW_COLOR), borderColor, partialTicks);
-            renderCloseButton(posX, posY, mouseX, mouseY, window, !windowManager.isCloseRequested(window.getId()), laptop.readSetting(LaptopSettings.WINDOW_BUTTON_COLOR), partialTicks);
+            int borderColor = windowManager.getFocusedWindowId() != null && windowManager.getFocusedWindowId() == window.getId() ? computer.readSetting(LaptopSettings.FOCUSED_WINDOW_COLOR) : computer.readSetting(LaptopSettings.WINDOW_COLOR);
+            renderWindow(posX, posY, window, computer.readSetting(LaptopSettings.WINDOW_COLOR), borderColor, partialTicks);
+            renderCloseButton(posX, posY, mouseX, mouseY, window, !windowManager.isCloseRequested(window.getId()), computer.readSetting(LaptopSettings.WINDOW_BUTTON_COLOR), partialTicks);
         }
 
         /* Task bar */
         {
             textureManager.bindTexture(DeviceConstants.WINDOW_LOCATION);
-            int color = laptop.readSetting(LaptopSettings.TASKBAR_COLOR);
+            int color = computer.readSetting(LaptopSettings.TASKBAR_COLOR);
             int height = taskBar.getHeight();
 
             RenderUtil.glColor(0xff000000 | color);
@@ -132,10 +132,10 @@ public class LaptopRenderer extends AbstractGui
         }
     }
 
-    public static void renderOverlay(TooltipRenderer renderer, Laptop laptop, Minecraft minecraft, FontRenderer fontRenderer, int posX, int posY, int mouseX, int mouseY, float partialTicks)
+    public static void renderOverlay(TooltipRenderer renderer, Computer computer, Minecraft minecraft, FontRenderer fontRenderer, int posX, int posY, int mouseX, int mouseY, float partialTicks)
     {
-        WindowManager windowManager = laptop.getWindowManager();
-        TaskBar taskBar = laptop.getTaskBar();
+        WindowManager windowManager = computer.getWindowManager();
+        TaskBar taskBar = computer.getTaskBar();
 
         /* Task bar */
         {

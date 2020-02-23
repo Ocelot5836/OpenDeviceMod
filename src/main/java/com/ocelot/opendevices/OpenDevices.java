@@ -3,7 +3,6 @@ package com.ocelot.opendevices;
 import com.mrcrayfish.filters.Filters;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.DeviceRegistries;
-import com.ocelot.opendevices.api.device.Device;
 import com.ocelot.opendevices.api.device.DeviceProcess;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopManager;
 import com.ocelot.opendevices.api.laptop.settings.LaptopSetting;
@@ -78,8 +77,6 @@ public class OpenDevices
 
     private void initClient(FMLClientSetupEvent event)
     {
-        MinecraftForge.EVENT_BUS.register(LaptopTileEntityRenderer.INSTANCE);
-
         if (ModList.get().isLoaded("filters"))
         {
             Filters.get().register(TAB, new ResourceLocation(MOD_ID, "devices/laptops"), new ItemStack(DeviceBlocks.RED_LAPTOP));

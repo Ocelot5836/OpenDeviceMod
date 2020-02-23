@@ -1,13 +1,13 @@
 package com.ocelot.opendevices.api.laptop.window;
 
-import com.ocelot.opendevices.api.laptop.Laptop;
+import com.ocelot.opendevices.api.laptop.Computer;
 import com.ocelot.opendevices.api.laptop.desktop.Desktop;
 
 import java.util.UUID;
 
 /**
  * <p>The most abstract form of a Window. This contains all the required functionality for the API.</p>
- * <p>A window is a box that can display onto a {@link Laptop}. The window has the ability to be moved and render it's content.</p>
+ * <p>A window is a box that can display onto a {@link Computer}. The window has the ability to be moved and render it's content.</p>
  *
  * @author Ocelot
  * @see Desktop
@@ -27,7 +27,7 @@ public interface Window
     /**
      * @return The laptop this window is opened inside of
      */
-    Laptop getLaptop();
+    Computer getComputer();
 
     /**
      * @return The id of the running this window

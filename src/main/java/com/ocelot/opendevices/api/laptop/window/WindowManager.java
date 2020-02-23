@@ -1,16 +1,16 @@
 package com.ocelot.opendevices.api.laptop.window;
 
-import com.ocelot.opendevices.api.laptop.Laptop;
+import com.ocelot.opendevices.api.laptop.Computer;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.UUID;
 
 /**
- * <p>Handles {@link Window} management for the {@link Laptop}.</p>
+ * <p>Handles {@link Window} management for the {@link Computer}.</p>
  *
  * @author Ocelot
- * @see Laptop
+ * @see Computer
  */
 public interface WindowManager
 {

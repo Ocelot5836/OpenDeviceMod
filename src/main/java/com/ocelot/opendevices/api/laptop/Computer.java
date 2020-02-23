@@ -16,7 +16,7 @@ import java.util.concurrent.Executor;
  *
  * @author Ocelot
  */
-public interface Laptop extends Device, Executor
+public interface Computer extends Device, Executor
 {
     /**
      * Writes the specified setting value to NBT.

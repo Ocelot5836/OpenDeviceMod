@@ -1,6 +1,6 @@
 package com.ocelot.opendevices.api.laptop.settings;
 
-import com.ocelot.opendevices.api.laptop.Laptop;
+import com.ocelot.opendevices.api.laptop.Computer;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
@@ -9,7 +9,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 
 /**
- * <p>An abstract setting that can be set on the {@link Laptop}.</p>
+ * <p>An abstract setting that can be set on the {@link Computer}.</p>
  *
  * @param <T> The type of data the setting handles
  * @author Ocelot
@@ -34,7 +34,7 @@ public interface LaptopSetting<T> extends IForgeRegistryEntry<LaptopSetting<?>>
     void write(T value, CompoundNBT nbt);
 
     /**
-     * Checks to see if this setting is on the {@link com.ocelot.opendevices.api.laptop.Laptop}.
+     * Checks to see if this setting is on the {@link Computer}.
      *
      * @param nbt The nbt to check
      * @return Whether or not the setting was found on the Laptop.

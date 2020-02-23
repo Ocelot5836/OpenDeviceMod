@@ -1,6 +1,6 @@
 package com.ocelot.opendevices.api.device;
 
-import com.ocelot.opendevices.api.laptop.Laptop;
+import com.ocelot.opendevices.api.laptop.Computer;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.INBTSerializable;
 
@@ -57,7 +57,7 @@ public interface DeviceProcess<T extends Device> extends INBTSerializable<Compou
     UUID getProcessId();
 
     /**
-     * Writes any data that will be needed after calling {@link Laptop#syncProcess(UUID)}.
+     * Writes any data that will be needed after calling {@link Computer#syncProcess(UUID)}.
      *
      * @return The tag full of data
      */
@@ -67,7 +67,7 @@ public interface DeviceProcess<T extends Device> extends INBTSerializable<Compou
     }
 
     /**
-     * Reads any data from the specified tag on the other logical side after {@link Laptop#syncProcess(UUID)} is called.
+     * Reads any data from the specified tag on the other logical side after {@link Computer#syncProcess(UUID)} is called.
      *
      * @param nbt The tag to read from
      */

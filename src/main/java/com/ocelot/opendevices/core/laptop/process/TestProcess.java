@@ -2,26 +2,26 @@ package com.ocelot.opendevices.core.laptop.process;
 
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.device.DeviceProcess;
-import com.ocelot.opendevices.api.laptop.Laptop;
+import com.ocelot.opendevices.api.laptop.Computer;
 import com.ocelot.opendevices.api.laptop.window.WindowHandle;
 import net.minecraft.nbt.CompoundNBT;
 
 import java.util.UUID;
 
 @DeviceProcess.Register(OpenDevices.MOD_ID + ":test")
-public class TestProcess implements DeviceProcess<Laptop>
+public class TestProcess implements DeviceProcess<Computer>
 {
-    private Laptop laptop;
+    private Computer computer;
     private UUID processId;
     private WindowHandle window;
     private WindowHandle window2;
 
-    public TestProcess(Laptop laptop, UUID processId)
+    public TestProcess(Computer computer, UUID processId)
     {
-        this.laptop = laptop;
+        this.computer = computer;
         this.processId = processId;
-        this.window = new WindowHandle(this.laptop, this.processId);
-        this.window2 = new WindowHandle(this.laptop, this.processId);
+        this.window = new WindowHandle(this.computer, this.processId);
+        this.window2 = new WindowHandle(this.computer, this.processId);
     }
 
     @Override
@@ -38,7 +38,7 @@ public class TestProcess implements DeviceProcess<Laptop>
     {
         if (this.window2.exists() && this.window2.isCloseRequested())
         {
-            this.laptop.getWindowManager().closeWindows(this.window2.get());
+            this.computer.getWindowManager().closeWindows(this.window2.get());
         }
     }
 
@@ -49,9 +49,9 @@ public class TestProcess implements DeviceProcess<Laptop>
     }
 
     @Override
-    public Laptop getDevice()
+    public Computer getDevice()
     {
-        return laptop;
+        return computer;
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.ocelot.opendevices.core.laptop.window;
 
-import com.ocelot.opendevices.api.laptop.Laptop;
+import com.ocelot.opendevices.api.laptop.Computer;
 import com.ocelot.opendevices.api.laptop.window.Window;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.INBTSerializable;
@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
 {
-    private Laptop laptop;
+    private Computer computer;
     private UUID processId;
     private UUID id;
 
@@ -20,18 +20,18 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
     private int width;
     private int height;
 
-    public LaptopWindow(Laptop laptop, UUID processId)
+    public LaptopWindow(Computer computer, UUID processId)
     {
-        this.laptop = laptop;
+        this.computer = computer;
         this.processId = processId;
         this.id = UUID.randomUUID();
         this.width = 200;
         this.height = 100;
     }
 
-    public LaptopWindow(Laptop laptop, CompoundNBT nbt)
+    public LaptopWindow(Computer computer, CompoundNBT nbt)
     {
-        this.laptop = laptop;
+        this.computer = computer;
         this.deserializeNBT(nbt);
     }
 
@@ -42,9 +42,9 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
     }
 
     @Override
-    public Laptop getLaptop()
+    public Computer getComputer()
     {
-        return laptop;
+        return computer;
     }
 
     @Override

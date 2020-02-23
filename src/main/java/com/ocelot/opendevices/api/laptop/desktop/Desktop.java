@@ -1,18 +1,15 @@
 package com.ocelot.opendevices.api.laptop.desktop;
 
-import com.ocelot.opendevices.api.laptop.Laptop;
+import com.ocelot.opendevices.api.laptop.Computer;
 import com.ocelot.opendevices.api.laptop.window.Window;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nullable;
-import java.util.UUID;
 
 /**
- * <p>Represents the most abstract form of a desktop for the {@link Laptop}. Manages the {@link DesktopBackground}, desktop icons, and {@link Window}s.</p>
+ * <p>Represents the most abstract form of a desktop for the {@link Computer}. Manages the {@link DesktopBackground}, desktop icons, and {@link Window}s.</p>
  *
  * @author Ocelot
- * @see Laptop
+ * @see Computer
  */
 public interface Desktop
 {
