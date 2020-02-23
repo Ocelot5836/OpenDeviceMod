@@ -1,21 +1,18 @@
 package com.ocelot.opendevices.api.device;
 
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
 
 /**
- * <p>Allows the listening of input events for processes. This also allows the listening of window inputs which can be used in any way.</p>
+ * <p>Allows the listening of input events for processes. This also allows the listening of window inputs which can be used in any way. Should only be bound on the client side!</p>
  *
  * @param <D> The device the process is being used for
  * @param <T> The type of process this input handler uses
  * @author Ocelot
  * @see DeviceProcess
  */
-@OnlyIn(Dist.CLIENT)
 public interface ProcessInputHandler<D extends Device, T extends DeviceProcess<D>>
 {
     /**
