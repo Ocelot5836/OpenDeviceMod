@@ -177,10 +177,11 @@ public class LaptopScreen extends Screen implements TooltipRenderer
                         break;
 
                     LaptopWindow window = windows[windows.length - i - 1];
-                    //                    if (window.pressButtons(mouseX, mouseY))
-                    //                    {
-                    //                        return true;
-                    //                    }
+                    if (isMouseOver(window, this.posX + DeviceConstants.LAPTOP_GUI_BORDER, this.posY + DeviceConstants.LAPTOP_GUI_BORDER, mouseX, mouseY, Minecraft.getInstance().getRenderPartialTicks()))
+                    {
+                        windowManager.closeWindows(window.getId());
+                        return true;
+                    }
                     if (this.isWithin(window, mouseX, mouseY))
                     {
                         windowManager.focusWindow(window.getId());
@@ -342,5 +343,12 @@ public class LaptopScreen extends Screen implements TooltipRenderer
     public boolean isWithinWindowBar(Window window, double mouseX, double mouseY)
     {
         return RenderUtil.isMouseInside(mouseX, mouseY, this.posX + DeviceConstants.LAPTOP_GUI_BORDER + window.getX(), this.posY + DeviceConstants.LAPTOP_GUI_BORDER + window.getY() + 1, this.posX + DeviceConstants.LAPTOP_GUI_BORDER + window.getX() + window.getWidth() - DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE - 1, this.posY + DeviceConstants.LAPTOP_GUI_BORDER + window.getY() + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT);
+    }
+
+    public static boolean isMouseOver(Window window, float screenX, float screenY, double mouseX, double mouseY, float partialTicks)
+    {
+        float windowX = window.getLastX() + (window.getX() - window.getLastX()) * partialTicks + window.getWidth() - DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE - 1;
+        float windowY = window.getLastY() + (window.getY() - window.getLastY()) * partialTicks + 1;
+        return RenderUtil.isMouseInside(mouseX, mouseY, screenX + windowX, screenY + windowY, screenX + windowX + DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE, screenY + windowY + DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE);
     }
 }

@@ -112,7 +112,11 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
                 runnable.run();
             }
 
-            this.processes.values().stream().filter(process -> !this.startingProcesses.contains(process.getProcessId())).forEach(DeviceProcess::update);
+            if (!this.processes.isEmpty())
+            {
+                this.processes.values().stream().filter(process -> !this.startingProcesses.contains(process.getProcessId())).forEach(DeviceProcess::update);
+                this.processes.values().stream().filter(DeviceProcess::isTerminated).forEach(process -> this.execute(() -> this.syncTerminateProcess(process.getProcessId())));
+            }
 
             this.desktop.update();
             this.windowManager.update();

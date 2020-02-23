@@ -145,6 +145,8 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
         this.id = nbt.getUniqueId("id");
         this.x = nbt.getFloat("x");
         this.y = nbt.getFloat("y");
+        this.lastX = this.x;
+        this.lastY = this.y;
         this.width = nbt.getInt("width");
         this.height = nbt.getInt("height");
     }

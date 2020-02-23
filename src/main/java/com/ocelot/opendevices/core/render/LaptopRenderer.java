@@ -85,6 +85,7 @@ public class LaptopRenderer extends AbstractGui
         {
             int borderColor = windowManager.getFocusedWindowId() != null && windowManager.getFocusedWindowId() == window.getId() ? laptop.readSetting(LaptopSettings.FOCUSED_WINDOW_COLOR) : laptop.readSetting(LaptopSettings.WINDOW_COLOR);
             renderWindow(posX, posY, window, laptop.readSetting(LaptopSettings.WINDOW_COLOR), borderColor, partialTicks);
+            renderCloseButton(posX, posY, mouseX, mouseY, window, laptop.readSetting(LaptopSettings.WINDOW_BUTTON_COLOR), partialTicks);
         }
 
         /* Task bar */
@@ -161,17 +162,28 @@ public class LaptopRenderer extends AbstractGui
         //        }
     }
 
-    /**
-     * Renders the specified window at the provided desktop coordinates.
-     *
-     * @param posX         The raw x position of the desktop
-     * @param posY         The raw y position of the desktop
-     * @param window       The window to render
-     * @param color        The color of the window
-     * @param borderColor  The color of the border of the window
-     * @param partialTicks The percentage time from last tick and this tick
-     */
-    public static void renderWindow(int posX, int posY, Window window, int color, int borderColor, float partialTicks)
+    private static void renderCloseButton(float posX, float posY, int mouseX, int mouseY, Window window, int color, float partialTicks)
+    {
+        Minecraft minecraft = Minecraft.getInstance();
+        minecraft.getTextureManager().bindTexture(DeviceConstants.WINDOW_LOCATION);
+        GlStateManager.color4f(((color >> 16) & 0xff) / 255f, ((color >> 8) & 0xff) / 255f, (color & 0xff) / 255f, 1);
+
+        float windowX = window.getLastX() + (window.getX() - window.getLastX()) * partialTicks + window.getWidth() - DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE - 1;
+        float windowY = window.getLastY() + (window.getY() - window.getLastY()) * partialTicks + 1;
+
+        GlStateManager.enableBlend();
+        GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+
+        GlStateManager.pushMatrix();
+        {
+            GlStateManager.translatef(windowX, windowY, 0);
+            RenderUtil.drawRectWithTexture(posX, posY, 26 + (LaptopScreen.isMouseOver(window, posX, posY, mouseX, mouseY, partialTicks) ? 2 : 1) * DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE, 0, DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE, DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE, DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE, DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE);
+        }
+        GlStateManager.popMatrix();
+    }
+
+    private static void renderWindow(int posX, int posY, Window window, int color, int borderColor, float partialTicks)
     {
         Minecraft.getInstance().getTextureManager().bindTexture(DeviceConstants.WINDOW_LOCATION);
         RenderUtil.glColor(0xff000000 | borderColor);

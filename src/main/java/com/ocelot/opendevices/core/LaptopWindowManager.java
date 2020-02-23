@@ -1,6 +1,7 @@
 package com.ocelot.opendevices.core;
 
 import com.ocelot.opendevices.OpenDevices;
+import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.laptop.window.Window;
 import com.ocelot.opendevices.api.laptop.window.WindowManager;
 import com.ocelot.opendevices.api.task.TaskManager;
@@ -13,7 +14,6 @@ import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
-import java.util.Set;
 import java.util.Stack;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -31,6 +31,18 @@ public class LaptopWindowManager implements WindowManager, INBTSerializable<Comp
         this.focusedWindowId = null;
     }
 
+    private void checkBounds(LaptopWindow window)
+    {
+        if (window.getX() < 0)
+            window.setX(0);
+        if (window.getX() + window.getWidth() >= DeviceConstants.LAPTOP_SCREEN_WIDTH)
+            window.setX(DeviceConstants.LAPTOP_SCREEN_WIDTH - window.getWidth());
+        if (window.getY() < 0)
+            window.setY(0);
+        if (window.getY() + window.getHeight() >= DeviceConstants.LAPTOP_SCREEN_HEIGHT)
+            window.setY(DeviceConstants.LAPTOP_SCREEN_HEIGHT - window.getHeight());
+    }
+
     private LaptopWindow createWindow(UUID processId)
     {
         return new LaptopWindow(this.laptop, processId);
@@ -43,10 +55,7 @@ public class LaptopWindowManager implements WindowManager, INBTSerializable<Comp
 
     public void update()
     {
-        for (LaptopWindow window : this.windows)
-        {
-            window.update();
-        }
+        this.windows.forEach(LaptopWindow::update);
     }
 
     public boolean syncOpenWindow(LaptopWindow window)
@@ -114,6 +123,7 @@ public class LaptopWindowManager implements WindowManager, INBTSerializable<Comp
 
         window.setX(window.getX() + xDirection);
         window.setY(window.getY() + yDirection);
+        this.checkBounds(window);
         return true;
     }
 
@@ -128,9 +138,10 @@ public class LaptopWindowManager implements WindowManager, INBTSerializable<Comp
         }
 
         window.setX(x);
-        window.setLastX(x);
         window.setY(y);
+        window.setLastX(x);
         window.setLastY(y);
+        this.checkBounds(window);
         return true;
     }
 
@@ -320,7 +331,9 @@ public class LaptopWindowManager implements WindowManager, INBTSerializable<Comp
         ListNBT windowsNbt = nbt.getList("windows", Constants.NBT.TAG_COMPOUND);
         for (int i = 0; i < windowsNbt.size(); i++)
         {
-            this.windows.push(this.createWindow(windowsNbt.getCompound(i)));
+            LaptopWindow window = this.createWindow(windowsNbt.getCompound(i));
+            this.checkBounds(window);
+            this.windows.push(window);
         }
         this.focusedWindowId = nbt.hasUniqueId("focusedWindowId") ? nbt.getUniqueId("focusedWindowId") : null;
     }
