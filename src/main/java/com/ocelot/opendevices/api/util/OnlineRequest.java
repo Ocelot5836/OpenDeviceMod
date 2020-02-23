@@ -1,7 +1,6 @@
 package com.ocelot.opendevices.api.util;
 
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.api.handler.Callback;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -12,13 +11,14 @@ import java.io.InputStream;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.function.Consumer;
 
 /**
- * <p>An asynchronous way to make requests to the internet using {@link #make(String, Callback)}.</p>
+ * <p>An asynchronous way to make requests to the internet using {@link #make(String, Consumer)}.</p>
  * <p>An alternate option is to use {@link #make(String)} which returns a {@link Future}. In order to wait until the data is downloaded, use <code>result = make(url).get()</code></p>
  *
  * @author Ocelot
- * @see Callback
+ * @see Consumer
  * @see Future
  */
 public class OnlineRequest
@@ -50,9 +50,9 @@ public class OnlineRequest
      * @param url     the URL to make a request to
      * @param handler the response handler for the request
      */
-    public static void make(String url, Callback<InputStream> handler)
+    public static void make(String url, Consumer<InputStream> handler)
     {
-        POOL.execute(() -> handler.handle(request(url)));
+        POOL.execute(() -> handler.accept(request(url)));
     }
 
     /**
