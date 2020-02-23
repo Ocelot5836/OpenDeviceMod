@@ -9,7 +9,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 
 /**
- * <p>An abstract setting that can be set on the {@link Laptop}.</>
+ * <p>An abstract setting that can be set on the {@link Laptop}.</p>
  *
  * @param <T> The type of data the setting handles
  * @author Ocelot

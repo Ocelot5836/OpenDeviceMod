@@ -18,13 +18,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * <p>The Task Manager handles all {@link Task} related information.<p>
- * <p>To register a task, use the {@link Task.Register} annotation on the task class and extend {@link Task}.<p>
- * <p>To send a task from the client to the server, see {@link #sendToServer(Task, TaskReceiver)}.<p>
- * <p>To send a task from the server to a client, see {@link #sendToTracking(Task, World, BlockPos, boolean)}<p>
+ * <p>The Task Manager handles all {@link Task} related information.</p>
+ * <p>To register a task, use the {@link Task.Register} annotation on the task class and extend {@link Task}.</p>
+ * <p>To send a task from the client to the server, see {@link #sendToServer(Task, TaskReceiver)}.</p>
+ * <p>To send a task from the server to a client, see {@link #sendToTracking(Task, World, BlockPos)}</p>
  *
  * @author Ocelot
  * @see Task
+ * @see TaskReceiver
  */
 public final class TaskManager
 {

@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * <p>Manages all the backgrounds for the {@link Desktop}.<p/>
+ * <p>Manages all the backgrounds for the {@link Desktop}.</p>
  *
  * @author Ocelot
  * @see Desktop

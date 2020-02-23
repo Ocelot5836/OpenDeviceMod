@@ -59,6 +59,7 @@ public class ProcessSerializer
      * @param deviceClass The class of the device reading the process
      * @param device      The device reading the process
      * @param nbt         The compound full of data
+     * @param <T>         The type of device the process is being read for
      * @return The process generated from that data
      */
     @Nullable
@@ -90,6 +91,7 @@ public class ProcessSerializer
      * Checks the registry for a registry name under the specified process.
      *
      * @param process The process to get the registry name of
+     * @param <T>     The type of device the process is being read for
      * @return The registry name of that task or null if the process is not registered
      */
     @Nullable

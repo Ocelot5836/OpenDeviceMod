@@ -8,7 +8,7 @@ import net.minecraftforge.registries.ForgeRegistryEntry;
 import java.util.function.Function;
 
 /**
- * <p>Represents a {@link LaptopSetting} for the type {@link INBTSerializable<CompoundNBT>}. Can be used to read/write any serializable NBT to/from the system settings.</p>
+ * <p>Represents a {@link LaptopSetting} for the type {@link INBTSerializable}. Can be used to read/write any serializable NBT to/from the system settings.</p>
  *
  * @author Ocelot
  * @see LaptopSetting
