@@ -15,6 +15,8 @@ import com.ocelot.opendevices.api.util.TooltipRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.texture.AtlasTexture;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraftforge.api.distmarker.Dist;
@@ -113,44 +115,44 @@ public class LaptopRenderer extends AbstractGui
             }
             GlStateManager.color4f(1, 1, 1, 1);
 
-            //            {
-            //                int size = taskBar.isEnlarged() ? 16 : 8;
-            //                int i = 0;
-            //
-            //                for (Window value : taskBar.getDisplayedWindows())
-            //                {
-            //                    WindowClient window = (WindowClient) value;
-            //                    TextureAtlasSprite icon = ApplicationManager.getAppIcon(window.getContentId());
-            //                    textureManager.bindTexture(ApplicationManager.LOCATION_APP_ICON_TEXTURE);
-            //                    RenderUtil.drawRectWithTexture(posX + 4 + (size + 4) * i, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4, size, size, icon);
-            //                    i++;
-            //                }
-            //            }
+            {
+                int size = taskBar.isEnlarged() ? 16 : 8;
+                int i = 0;
+
+                for (Window window : taskBar.getDisplayedWindows())
+                {
+                    // TextureAtlasSprite icon = ApplicationManager.getAppIcon(window.getContentId());
+                    // textureManager.bindTexture(ApplicationManager.LOCATION_APP_ICON_TEXTURE);
+                    TextureAtlasSprite icon = Minecraft.getInstance().getTextureMap().getAtlasSprite("minecraft:item/paper");
+                    textureManager.bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
+                    RenderUtil.drawRectWithTexture(posX + 4 + (size + 4) * i, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4, size, size, icon);
+                    i++;
+                }
+            }
         }
     }
 
     public static void renderOverlay(TooltipRenderer renderer, Laptop laptop, Minecraft minecraft, FontRenderer fontRenderer, int posX, int posY, int mouseX, int mouseY, float partialTicks)
     {
-        Desktop desktop = laptop.getDesktop();
+        WindowManager windowManager = laptop.getWindowManager();
         TaskBar taskBar = laptop.getTaskBar();
 
-        //        /* Task bar */
-        //        {
-        //            int size = taskBar.isEnlarged() ? 16 : 8;
-        //            int i = 0;
-        //
-        //            for (Window value : taskBar.getDisplayedWindows())
-        //            {
-        //                WindowClient window = (WindowClient) value;
-        //                if (!StringUtils.isEmpty(window.getContent().getTitle()) && RenderUtil.isMouseInside(mouseX, mouseY, posX + 4 + (size + 4) * i, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4, posX + 4 + (size + 4) * i + size, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4 + size))
-        //                {
-        //                    renderer.renderTooltip(window.getContent().getTitle(), mouseX, mouseY);
-        //                    return;
-        //                }
-        //                i++;
-        //            }
-        //        }
-        //
+        /* Task bar */
+        {
+            int size = taskBar.isEnlarged() ? 16 : 8;
+            int i = 0;
+
+            for (Window window : taskBar.getDisplayedWindows())
+            {
+                if (!StringUtils.isEmpty(String.valueOf(window.getId())) && RenderUtil.isMouseInside(mouseX, mouseY, posX + 4 + (size + 4) * i, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4, posX + 4 + (size + 4) * i + size, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4 + size))
+                {
+                    renderer.renderTooltip(String.valueOf(window.getId()), mouseX, mouseY);
+                    return;
+                }
+                i++;
+            }
+        }
+
         //        /* Applications */
         //        {
         //            for (Window value : desktop.getWindows())

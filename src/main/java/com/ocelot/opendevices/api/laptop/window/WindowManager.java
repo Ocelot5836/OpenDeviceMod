@@ -15,7 +15,7 @@ import java.util.UUID;
 public interface WindowManager
 {
     /**
-     * Opens a new window under the specified process.
+     * Opens a new window under the specified process. Must be called at the beginning of a tick!
      *
      * @param processId The process opening the window
      * @return The id of the window created or null if there was an error
@@ -31,21 +31,42 @@ public interface WindowManager
     void focusWindow(@Nullable UUID windowId);
 
     /**
-     * Closes all the windows for the specified process.
+     * Requests to close all the windows for the specified process.
+     *
+     * @param processId The id of the process to terminate the windows for
+     */
+    void requestCloseProcessWindows(UUID processId);
+
+    /**
+     * Requests to close the windows with the specified ids.
+     *
+     * @param windowIds The ids of the windows to close
+     */
+    void requestCloseWindows(Collection<UUID> windowIds);
+
+    /**
+     * Requests to close the windows with the specified ids.
+     *
+     * @param windowIds The ids of the windows to close
+     */
+    void requestCloseWindows(UUID... windowIds);
+
+    /**
+     * Closes all the windows for the specified process. Must be called at the beginning of a tick!
      *
      * @param processId The id of the process to terminate the windows for
      */
     void closeProcessWindows(UUID processId);
 
     /**
-     * Closes the windows with the specified ids.
+     * Closes the windows with the specified ids. Must be called at the beginning of a tick!
      *
      * @param windowIds The ids of the windows to close
      */
     void closeWindows(Collection<UUID> windowIds);
 
     /**
-     * Closes the windows with the specified ids.
+     * Closes the windows with the specified ids. Must be called at the beginning of a tick!
      *
      * @param windowIds The ids of the windows to close
      */
@@ -115,4 +136,12 @@ public interface WindowManager
      */
     @Nullable
     UUID getTopWindowId();
+
+    /**
+     * Checks whether or not a window is attempting to close.
+     *
+     * @param windowId The id of the window to check
+     * @return Whether or not the window is attempting to close or false if there is no window
+     */
+    boolean isCloseRequested(@Nullable UUID windowId);
 }

@@ -115,7 +115,10 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
             if (!this.processes.isEmpty())
             {
                 this.processes.values().stream().filter(process -> !this.startingProcesses.contains(process.getProcessId())).forEach(DeviceProcess::update);
-                this.processes.values().stream().filter(DeviceProcess::isTerminated).forEach(process -> this.execute(() -> this.syncTerminateProcess(process.getProcessId())));
+                if (!this.isClient())
+                {
+                    this.processes.values().stream().filter(DeviceProcess::isTerminated).forEach(process -> this.execute(() -> this.terminateProcess(process.getProcessId())));
+                }
             }
 
             this.desktop.update();
@@ -169,8 +172,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Laptop, ITicka
             return false;
         }
 
-        if (!this.isClient())
-            this.windowManager.closeProcessWindows(processId);
+        this.windowManager.closeProcessWindows(processId);
         this.processes.remove(processId);
 
         return true;

@@ -14,22 +14,23 @@ public class TestProcess implements DeviceProcess<Laptop>
     private Laptop laptop;
     private UUID processId;
     private WindowHandle window;
-    //    private WindowHandle window2;
-    private int a;
+    private WindowHandle window2;
 
     public TestProcess(Laptop laptop, UUID processId)
     {
         this.laptop = laptop;
         this.processId = processId;
         this.window = new WindowHandle(this.laptop, this.processId);
-        //        this.window2 = new WindowHandle(this.laptop, this.processId);
+        this.window2 = new WindowHandle(this.laptop, this.processId);
     }
 
     @Override
     public void init()
     {
         this.window.get();
-        //        this.window2.get();
+        this.window.center();
+        this.window2.get();
+        this.window2.center();
     }
 
     @Override
@@ -40,7 +41,7 @@ public class TestProcess implements DeviceProcess<Laptop>
     @Override
     public boolean isTerminated()
     {
-        return false;
+        return this.window.isCloseRequested() && this.window2.isCloseRequested();
     }
 
     @Override
@@ -60,7 +61,7 @@ public class TestProcess implements DeviceProcess<Laptop>
     {
         CompoundNBT nbt = new CompoundNBT();
         nbt.put("window", this.window.serializeNBT());
-        //        nbt.put("window2", this.window2.serializeNBT());
+        nbt.put("window2", this.window2.serializeNBT());
         return nbt;
     }
 
@@ -68,7 +69,7 @@ public class TestProcess implements DeviceProcess<Laptop>
     public void deserializeNBT(CompoundNBT nbt)
     {
         this.window.deserializeNBT(nbt.getCompound("window"));
-        //        this.window2.deserializeNBT(nbt.getCompound("window2"));
+        this.window2.deserializeNBT(nbt.getCompound("window2"));
     }
 
     @Override

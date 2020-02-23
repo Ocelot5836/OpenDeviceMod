@@ -150,4 +150,10 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
         this.width = nbt.getInt("width");
         this.height = nbt.getInt("height");
     }
+
+    @Override
+    public String toString()
+    {
+        return "LaptopWindow{processId=" + this.processId + ",id=" + this.id + "}";
+    }
 }

@@ -13,21 +13,21 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.Stack;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class LaptopWindowManager implements WindowManager, INBTSerializable<CompoundNBT>
 {
     private LaptopTileEntity laptop;
     private Stack<LaptopWindow> windows;
+    private Set<UUID> closingWindows;
     private UUID focusedWindowId;
 
     public LaptopWindowManager(LaptopTileEntity laptop)
     {
         this.laptop = laptop;
         this.windows = new Stack<>();
+        this.closingWindows = new HashSet<>();
         this.focusedWindowId = null;
     }
 
@@ -66,13 +66,14 @@ public class LaptopWindowManager implements WindowManager, INBTSerializable<Comp
             return false;
         }
 
-        this.laptop.execute(() -> this.windows.push(window));
+        this.windows.push(window);
+        this.laptop.getTaskBar().addWindow(window);
         return true;
     }
 
     public boolean syncFocusWindow(UUID windowId)
     {
-        if (this.focusedWindowId == windowId)
+        if ((this.focusedWindowId == null && windowId == null) || (this.focusedWindowId != null && this.focusedWindowId.equals(windowId)))
             return false;
 
         LaptopWindow window = this.getWindow(windowId);
@@ -95,6 +96,20 @@ public class LaptopWindowManager implements WindowManager, INBTSerializable<Comp
         return true;
     }
 
+    public void syncRequestCloseWindows(UUID... windowIds)
+    {
+        for (UUID windowId : windowIds)
+        {
+            LaptopWindow window = this.getWindow(windowId);
+            if (window == null)
+            {
+                OpenDevices.LOGGER.warn("Could not request close window with id '" + windowId + "' as it does not exist. Skipping!");
+                continue;
+            }
+            this.closingWindows.add(windowId);
+        }
+    }
+
     public void syncCloseWindows(UUID... windowIds)
     {
         for (UUID windowId : windowIds)
@@ -108,6 +123,8 @@ public class LaptopWindowManager implements WindowManager, INBTSerializable<Comp
             if (this.focusedWindowId != null && window.getId() == windowId)
                 this.focusedWindowId = null;
             this.windows.removeElement(window);
+            this.closingWindows.remove(windowId);
+            this.laptop.getTaskBar().removeWindow(window);
         }
     }
 
@@ -170,38 +187,67 @@ public class LaptopWindowManager implements WindowManager, INBTSerializable<Comp
         }
 
         LaptopWindow window = this.createWindow(processId);
-        if (this.laptop.isClient())
+        if (this.syncOpenWindow(window))
         {
-            TaskManager.sendToServer(new OpenWindowTask(this.laptop.getPos(), window.serializeNBT()), TaskManager.TaskReceiver.SENDER_AND_NEARBY);
-        }
-        else
-        {
-            if (this.syncOpenWindow(window))
+            if (this.laptop.isClient())
+            {
+                TaskManager.sendToServer(new OpenWindowTask(this.laptop.getPos(), window.serializeNBT()), TaskManager.TaskReceiver.NEARBY);
+            }
+            else
             {
                 TaskManager.sendToTracking(new OpenWindowTask(this.laptop.getPos(), window.serializeNBT()), this.laptop.getWorld(), this.laptop.getPos());
             }
+            return window.getId();
         }
-        return window.getId();
+        return null;
     }
 
     @Override
     public void focusWindow(@Nullable UUID windowId)
     {
-        this.syncFocusWindow(windowId);
+        if (this.syncFocusWindow(windowId))
+        {
+            if (this.laptop.isClient())
+            {
+                TaskManager.sendToServer(new FocusWindowTask(this.laptop.getPos(), windowId), TaskManager.TaskReceiver.NEARBY);
+            }
+            else
+            {
+                TaskManager.sendToTracking(new FocusWindowTask(this.laptop.getPos(), windowId), this.laptop.getWorld(), this.laptop.getPos());
+            }
+        }
+    }
+
+    @Override
+    public void requestCloseProcessWindows(UUID processId)
+    {
+        this.requestCloseWindows(this.windows.stream().filter(window -> window.getProcessId().equals(processId)).map(LaptopWindow::getId).collect(Collectors.toSet()));
+    }
+
+    @Override
+    public void requestCloseWindows(Collection<UUID> windowIds)
+    {
+        this.requestCloseWindows(windowIds.toArray(new UUID[0]));
+    }
+
+    @Override
+    public void requestCloseWindows(UUID... windowIds)
+    {
+        this.syncRequestCloseWindows(windowIds);
         if (this.laptop.isClient())
         {
-            TaskManager.sendToServer(new FocusWindowTask(this.laptop.getPos(), windowId), TaskManager.TaskReceiver.NEARBY);
+            TaskManager.sendToServer(new RequestCloseWindowTask(this.laptop.getPos(), windowIds), TaskManager.TaskReceiver.NEARBY);
         }
         else
         {
-            TaskManager.sendToTracking(new FocusWindowTask(this.laptop.getPos(), windowId), this.laptop.getWorld(), this.laptop.getPos());
+            TaskManager.sendToTracking(new RequestCloseWindowTask(this.laptop.getPos(), windowIds), this.laptop.getWorld(), this.laptop.getPos());
         }
     }
 
     @Override
     public void closeProcessWindows(UUID processId)
     {
-        this.closeWindows(this.windows.stream().filter(window -> window.getProcessId().equals(processId)).map(LaptopWindow::getProcessId).collect(Collectors.toSet()));
+        this.closeWindows(this.windows.stream().filter(window -> window.getProcessId().equals(processId)).map(LaptopWindow::getId).collect(Collectors.toSet()));
     }
 
     @Override
@@ -306,6 +352,12 @@ public class LaptopWindowManager implements WindowManager, INBTSerializable<Comp
     public UUID getTopWindowId()
     {
         return !this.windows.isEmpty() ? this.windows.lastElement().getId() : null;
+    }
+
+    @Override
+    public boolean isCloseRequested(@Nullable UUID windowId)
+    {
+        return windowId == null || this.closingWindows.contains(windowId);
     }
 
     @Override
