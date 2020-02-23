@@ -1,6 +1,6 @@
 package com.ocelot.opendevices.network.handler;
 
-import com.ocelot.opendevices.network.MessageClientResponse;
+import com.ocelot.opendevices.network.MessageResponse;
 import com.ocelot.opendevices.network.MessageOpenGui;
 import com.ocelot.opendevices.network.MessageRequest;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -13,7 +13,7 @@ public interface MessageHandler
 
     void handleRequestMessage(MessageRequest msg, Supplier<NetworkEvent.Context> ctx);
 
-    void handleResponseMessage(MessageClientResponse msg, Supplier<NetworkEvent.Context> ctx);
+    void handleResponseMessage(MessageResponse msg, Supplier<NetworkEvent.Context> ctx);
 
     enum GuiType
     {

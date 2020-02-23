@@ -3,7 +3,7 @@ package com.ocelot.opendevices.network.handler;
 import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.init.DeviceMessages;
-import com.ocelot.opendevices.network.MessageClientResponse;
+import com.ocelot.opendevices.network.MessageResponse;
 import com.ocelot.opendevices.network.MessageOpenGui;
 import com.ocelot.opendevices.network.MessageRequest;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -43,16 +43,16 @@ public class ServerMessageHandler implements MessageHandler
                 switch (msg.getReceiver())
                 {
                     case ALL:
-                        DeviceMessages.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageClientResponse(request, nbt));
+                        DeviceMessages.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageResponse(request, nbt));
                         break;
                     case SENDER:
-                        DeviceMessages.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new MessageClientResponse(request, nbt));
+                        DeviceMessages.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new MessageResponse(request, nbt));
                         break;
                     case NEARBY:
-                        DeviceMessages.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> player), new MessageClientResponse(request, nbt));
+                        DeviceMessages.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> player), new MessageResponse(request, nbt));
                         break;
                     case SENDER_AND_NEARBY:
-                        DeviceMessages.INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player), new MessageClientResponse(request, nbt));
+                        DeviceMessages.INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player), new MessageResponse(request, nbt));
                         break;
                 }
             }
@@ -61,7 +61,7 @@ public class ServerMessageHandler implements MessageHandler
     }
 
     @Override
-    public void handleResponseMessage(MessageClientResponse msg, Supplier<NetworkEvent.Context> ctx)
+    public void handleResponseMessage(MessageResponse msg, Supplier<NetworkEvent.Context> ctx)
     {
         ctx.get().enqueueWork(() ->
         {

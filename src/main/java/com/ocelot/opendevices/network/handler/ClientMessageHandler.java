@@ -5,7 +5,7 @@ import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.core.LaptopTileEntity;
 import com.ocelot.opendevices.core.render.LaptopScreen;
 import com.ocelot.opendevices.init.DeviceMessages;
-import com.ocelot.opendevices.network.MessageClientResponse;
+import com.ocelot.opendevices.network.MessageResponse;
 import com.ocelot.opendevices.network.MessageOpenGui;
 import com.ocelot.opendevices.network.MessageRequest;
 import net.minecraft.client.Minecraft;
@@ -61,13 +61,13 @@ public class ClientMessageHandler implements MessageHandler
 
             request.processRequest(nbt, player.world, player);
             if (msg.getReceiver().returnsToSender())
-                DeviceMessages.INSTANCE.send(PacketDistributor.SERVER.noArg(), new MessageClientResponse(request, nbt));
+                DeviceMessages.INSTANCE.send(PacketDistributor.SERVER.noArg(), new MessageResponse(request, nbt));
         });
         ctx.get().setPacketHandled(true);
     }
 
     @Override
-    public void handleResponseMessage(MessageClientResponse msg, Supplier<NetworkEvent.Context> ctx)
+    public void handleResponseMessage(MessageResponse msg, Supplier<NetworkEvent.Context> ctx)
     {
         Minecraft minecraft = Minecraft.getInstance();
 

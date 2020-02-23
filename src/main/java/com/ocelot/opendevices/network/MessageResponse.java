@@ -6,34 +6,37 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 
-public class MessageClientResponse
+public class MessageResponse
 {
     private Task request;
     private CompoundNBT nbt;
 
-    public MessageClientResponse(Task request, CompoundNBT nbt)
+    public MessageResponse(Task request, CompoundNBT nbt)
     {
         this.request = request;
         this.nbt = nbt;
     }
 
-    public static void encode(MessageClientResponse msg, PacketBuffer buf)
+    public static void encode(MessageResponse msg, PacketBuffer buf)
     {
-        buf.writeResourceLocation(TaskManager.getRegistryName(msg.request.getClass()));
+        ResourceLocation registryName = TaskManager.getRegistryName(msg.request.getClass());
+        if (registryName == null)
+            throw new NullPointerException("Could not encode task class: " + msg.request.getClass() + " as it is not registered!");
+        buf.writeResourceLocation(registryName);
         msg.request.prepareResponse(msg.nbt);
         buf.writeBoolean(msg.request.isSucessful());
         buf.writeCompoundTag(msg.nbt);
     }
 
-    public static MessageClientResponse decode(PacketBuffer buf)
+    public static MessageResponse decode(PacketBuffer buf)
     {
         ResourceLocation registryName = buf.readResourceLocation();
         Task task = TaskManager.createTask(registryName);
         if (task == null)
             throw new NullPointerException("Could not decode task: " + registryName + " as it was null!");
-        if(buf.readBoolean())
+        if (buf.readBoolean())
             task.setSuccessful();
-        return new MessageClientResponse(task, buf.readCompoundTag());
+        return new MessageResponse(task, buf.readCompoundTag());
     }
 
     public Task getRequest()
