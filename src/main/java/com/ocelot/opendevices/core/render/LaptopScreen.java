@@ -179,7 +179,10 @@ public class LaptopScreen extends Screen implements TooltipRenderer
                     LaptopWindow window = windows[windows.length - i - 1];
                     if (isMouseOver(window, this.posX + DeviceConstants.LAPTOP_GUI_BORDER, this.posY + DeviceConstants.LAPTOP_GUI_BORDER, mouseX, mouseY, Minecraft.getInstance().getRenderPartialTicks()))
                     {
-                        windowManager.requestCloseWindows(window.getId());
+                        if (!windowManager.isCloseRequested(window.getId()))
+                        {
+                            windowManager.requestCloseWindows(window.getId());
+                        }
                         return true;
                     }
                     if (this.isWithin(window, mouseX, mouseY))
