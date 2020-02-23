@@ -36,12 +36,16 @@ public class TestProcess implements DeviceProcess<Laptop>
     @Override
     public void update()
     {
+        if (this.window2.exists() && this.window2.isCloseRequested())
+        {
+            this.laptop.getWindowManager().closeWindows(this.window2.get());
+        }
     }
 
     @Override
     public boolean isTerminated()
     {
-        return this.window.isCloseRequested() && this.window2.isCloseRequested();
+        return this.window.isCloseRequested();
     }
 
     @Override

@@ -54,7 +54,7 @@ public class WindowHandle implements INBTSerializable<CompoundNBT>
     /**
      * Sets the size of the window with the specified id to the specified values.
      *
-     * @param width The new x size of the window
+     * @param width  The new x size of the window
      * @param height The new y size of the window
      */
     public void setSize(int width, int height)
@@ -113,6 +113,18 @@ public class WindowHandle implements INBTSerializable<CompoundNBT>
     public boolean isCloseRequested()
     {
         return this.laptop.getWindowManager().isCloseRequested(this.windowId);
+    }
+
+    /**
+     * @return Whether or not this window exists
+     */
+    public boolean exists()
+    {
+        if(this.windowId == null)
+            return false;
+        WindowManager windowManager = this.laptop.getWindowManager();
+        Window window = windowManager.getWindow(this.windowId);
+        return window != null;
     }
 
     /**

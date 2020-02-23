@@ -22,6 +22,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.Collections;
 
@@ -32,7 +33,7 @@ public class LaptopScreen extends Screen implements TooltipRenderer
     private int posX;
     private int posY;
     private boolean clickable;
-    private Window draggingWindow;
+    private Window draggingWindow; // TODO make the dragging window move based on the mouse position and not how it moves
 
     public LaptopScreen(LaptopTileEntity laptop)
     {
@@ -124,7 +125,7 @@ public class LaptopScreen extends Screen implements TooltipRenderer
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int p_keyPressed_3_)
+    public boolean keyPressed(int keyCode, int scanCode, int mods)
     {
         if (this.draggingWindow == null)
         {
@@ -136,12 +137,12 @@ public class LaptopScreen extends Screen implements TooltipRenderer
             //                    }
         }
         InputMappings.Input mouseKey = InputMappings.getInputByCode(keyCode, scanCode);
-        if (keyCode == 256 || this.getMinecraft().gameSettings.keyBindInventory.isActiveAndMatches(mouseKey))
+        if (keyCode == GLFW.GLFW_KEY_ESCAPE || this.getMinecraft().gameSettings.keyBindInventory.isActiveAndMatches(mouseKey))
         {
             this.getMinecraft().player.closeScreen();
             return true;
         }
-        return super.keyPressed(keyCode, scanCode, p_keyPressed_3_);
+        return super.keyPressed(keyCode, scanCode, mods);
     }
 
     @Override

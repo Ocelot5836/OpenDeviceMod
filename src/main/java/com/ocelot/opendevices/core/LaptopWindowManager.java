@@ -273,7 +273,7 @@ public class LaptopWindowManager implements WindowManager, INBTSerializable<Comp
     @Override
     public void moveWindow(UUID windowId, float xDirection, float yDirection)
     {
-        this.syncMoveWindow(windowId, xDirection, yDirection);
+        if(this.syncMoveWindow(windowId, xDirection, yDirection)){
         if (this.laptop.isClient())
         {
             TaskManager.sendToServer(new MoveWindowTask(this.laptop.getPos(), windowId, xDirection, yDirection), TaskManager.TaskReceiver.NEARBY);
@@ -281,13 +281,13 @@ public class LaptopWindowManager implements WindowManager, INBTSerializable<Comp
         else
         {
             TaskManager.sendToTracking(new MoveWindowTask(this.laptop.getPos(), windowId, xDirection, yDirection), this.laptop.getWorld(), this.laptop.getPos());
-        }
+        }}
     }
 
     @Override
     public void setWindowPosition(UUID windowId, float x, float y)
     {
-        this.syncSetWindowPosition(windowId, x, y);
+       if( this.syncSetWindowPosition(windowId, x, y)){
         if (this.laptop.isClient())
         {
             TaskManager.sendToServer(new SetWindowPositionTask(this.laptop.getPos(), windowId, x, y), TaskManager.TaskReceiver.NEARBY);
@@ -295,13 +295,13 @@ public class LaptopWindowManager implements WindowManager, INBTSerializable<Comp
         else
         {
             TaskManager.sendToTracking(new SetWindowPositionTask(this.laptop.getPos(), windowId, x, y), this.laptop.getWorld(), this.laptop.getPos());
-        }
+        }}
     }
 
     @Override
     public void setWindowSize(UUID windowId, int width, int height)
     {
-        this.syncSetWindowSize(windowId, width, height);
+        if(this.syncSetWindowSize(windowId, width, height)){
         if (this.laptop.isClient())
         {
             TaskManager.sendToServer(new SetWindowSizeTask(this.laptop.getPos(), windowId, width, height), TaskManager.TaskReceiver.NEARBY);
@@ -309,7 +309,7 @@ public class LaptopWindowManager implements WindowManager, INBTSerializable<Comp
         else
         {
             TaskManager.sendToTracking(new SetWindowSizeTask(this.laptop.getPos(), windowId, width, height), this.laptop.getWorld(), this.laptop.getPos());
-        }
+        }}
     }
 
     @Nullable
