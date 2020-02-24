@@ -6,6 +6,7 @@ import com.ocelot.opendevices.api.laptop.Computer;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.INBTSerializable;
 
+import javax.annotation.Nullable;
 import java.util.UUID;
 
 /**
@@ -28,6 +29,48 @@ public class WindowHandle implements INBTSerializable<CompoundNBT>
     }
 
     /**
+     * Creates a new window if there is not one.
+     */
+    public void create()
+    {
+        WindowManager windowManager = this.computer.getWindowManager();
+        Window window = windowManager.getWindow(this.windowId);
+
+        if (window == null)
+        {
+            this.windowId = null;
+        }
+        else
+        {
+            return;
+        }
+
+        this.windowId = windowManager.openWindow(this.processId);
+    }
+
+    /**
+     * Closes this window if there is one. Does not request close!
+     */
+    public void close()
+    {
+        if (this.windowId != null)
+        {
+            WindowManager windowManager = this.computer.getWindowManager();
+            windowManager.closeWindows(this.windowId);
+            this.windowId = null;
+        }
+    }
+
+    /**
+     * @return The id of this window or null if there is no window
+     */
+    @Nullable
+    public UUID getWindowId()
+    {
+        return windowId;
+    }
+
+    /**
      * Centers this window on the desktop of the laptop.
      */
     public void center()
@@ -44,10 +87,9 @@ public class WindowHandle implements INBTSerializable<CompoundNBT>
     public void setPosition(float x, float y)
     {
         WindowManager windowManager = this.computer.getWindowManager();
-        UUID windowId = this.get();
-        if (windowId != null)
+        if (this.windowId != null)
         {
-            windowManager.setWindowPosition(windowId, x, y);
+            windowManager.setWindowPosition(this.windowId, x, y);
         }
     }
 
@@ -60,10 +102,9 @@ public class WindowHandle implements INBTSerializable<CompoundNBT>
     public void setSize(int width, int height)
     {
         WindowManager windowManager = this.computer.getWindowManager();
-        UUID windowId = this.get();
-        if (windowId != null)
+        if (this.windowId != null)
         {
-            windowManager.setWindowSize(windowId, width, height);
+            windowManager.setWindowSize(this.windowId, width, height);
         }
     }
 
@@ -73,7 +114,7 @@ public class WindowHandle implements INBTSerializable<CompoundNBT>
     public float getX()
     {
         WindowManager windowManager = this.computer.getWindowManager();
-        Window window = windowManager.getWindow(this.get());
+        Window window = windowManager.getWindow(this.windowId);
         return window == null ? -1 : window.getX();
     }
 
@@ -83,7 +124,7 @@ public class WindowHandle implements INBTSerializable<CompoundNBT>
     public float getY()
     {
         WindowManager windowManager = this.computer.getWindowManager();
-        Window window = windowManager.getWindow(this.get());
+        Window window = windowManager.getWindow(this.windowId);
         return window == null ? -1 : window.getY();
     }
 
@@ -93,7 +134,7 @@ public class WindowHandle implements INBTSerializable<CompoundNBT>
     public float getWidth()
     {
         WindowManager windowManager = this.computer.getWindowManager();
-        Window window = windowManager.getWindow(this.get());
+        Window window = windowManager.getWindow(this.windowId);
         return window == null ? -1 : window.getWidth();
     }
 
@@ -103,7 +144,7 @@ public class WindowHandle implements INBTSerializable<CompoundNBT>
     public float getHeight()
     {
         WindowManager windowManager = this.computer.getWindowManager();
-        Window window = windowManager.getWindow(this.get());
+        Window window = windowManager.getWindow(this.windowId);
         return window == null ? -1 : window.getHeight();
     }
 
@@ -120,27 +161,11 @@ public class WindowHandle implements INBTSerializable<CompoundNBT>
      */
     public boolean exists()
     {
-        if(this.windowId == null)
+        if (this.windowId == null)
             return false;
         WindowManager windowManager = this.computer.getWindowManager();
         Window window = windowManager.getWindow(this.windowId);
         return window != null;
-    }
-
-    /**
-     * @return The id of the window bound to this handle or a new window if there is none
-     */
-    public UUID get()
-    {
-        WindowManager windowManager = this.computer.getWindowManager();
-        Window window = windowManager.getWindow(this.windowId);
-
-        if (window == null)
-            this.windowId = null;
-        if (this.windowId != null)
-            return this.windowId;
-
-        return this.windowId = windowManager.openWindow(this.processId);
     }
 
     @Override

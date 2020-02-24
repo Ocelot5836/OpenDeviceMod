@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public class ProcessInputRegistry
 {
-    private static final Map<Class<DeviceProcess<? extends Device>>, ProcessInputHandler<?, ?>> REGISTRY = new HashMap<>();
+    private static final Map<Class<? extends DeviceProcess<? extends Device>>, ProcessInputHandler<?, ?>> REGISTRY = new HashMap<>();
 
     /**
      * Binds an input handler to the specified process class.
@@ -24,7 +24,7 @@ public class ProcessInputRegistry
      * @param inputHandler The input handler to attach to the process
      * @param <D>          The type of device the process is using
      */
-    public static <D extends Device> void bindInputHandler(Class<DeviceProcess<? extends Device>> processClass, ProcessInputHandler<D, DeviceProcess<D>> inputHandler)
+    public static <D extends Device> void bindInputHandler(Class<? extends DeviceProcess<? extends Device>> processClass, ProcessInputHandler<D, ? extends DeviceProcess<D>> inputHandler)
     {
         if (REGISTRY.containsKey(processClass))
         {

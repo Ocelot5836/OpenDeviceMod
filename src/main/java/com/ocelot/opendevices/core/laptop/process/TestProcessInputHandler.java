@@ -4,6 +4,7 @@ import com.ocelot.opendevices.api.device.ProcessInputHandler;
 import com.ocelot.opendevices.api.laptop.Computer;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 import java.util.UUID;
 
 public class TestProcessInputHandler implements ProcessInputHandler<Computer, TestProcess>
@@ -47,6 +48,5 @@ public class TestProcessInputHandler implements ProcessInputHandler<Computer, Te
     @Override
     public void onMouseMoved(TestProcess process, @Nullable UUID windowId, double mouseX, double mouseY)
     {
-
     }
 }

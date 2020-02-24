@@ -27,10 +27,11 @@ public class TestProcess implements DeviceProcess<Computer>
     @Override
     public void init()
     {
-        this.window.get();
+        this.window.create();
         this.window.center();
-        this.window2.get();
+        this.window2.create();
         this.window2.center();
+        this.synchronizeClients();
     }
 
     @Override
@@ -38,8 +39,18 @@ public class TestProcess implements DeviceProcess<Computer>
     {
         if (this.window2.exists() && this.window2.isCloseRequested())
         {
-            this.computer.getWindowManager().closeWindows(this.window2.get());
+            this.window2.close();
         }
+    }
+
+    public WindowHandle getWindow()
+    {
+        return window;
+    }
+
+    public WindowHandle getWindow2()
+    {
+        return window2;
     }
 
     @Override

@@ -297,7 +297,7 @@ public class LaptopScreen extends Screen implements TooltipRenderer
             this.clickable = false;
             LaptopWindow focusedWindow = windowManager.getFocusedWindow();
 
-            if (focusedWindow != null)
+            if (focusedWindow != null && this.isWithinContent(focusedWindow, mouseX, mouseY))
             {
                 DeviceProcess<Computer> focusedProcess = this.laptop.getProcess(focusedWindow.getProcessId());
                 if (focusedProcess != null)
@@ -322,7 +322,7 @@ public class LaptopScreen extends Screen implements TooltipRenderer
             LaptopWindowManager windowManager = this.laptop.getWindowManager();
             LaptopWindow focusedWindow = windowManager.getFocusedWindow();
 
-            if (focusedWindow != null)
+            if (focusedWindow != null && this.isWithinContent(focusedWindow, mouseX, mouseY))
             {
                 DeviceProcess<Computer> focusedProcess = this.laptop.getProcess(focusedWindow.getProcessId());
                 if (focusedProcess != null)
@@ -347,7 +347,7 @@ public class LaptopScreen extends Screen implements TooltipRenderer
             LaptopWindowManager windowManager = this.laptop.getWindowManager();
             LaptopWindow focusedWindow = windowManager.getFocusedWindow();
 
-            if (focusedWindow != null)
+            if (focusedWindow != null && this.isWithinContent(focusedWindow, mouseX, mouseY))
             {
                 DeviceProcess<Computer> focusedProcess = this.laptop.getProcess(focusedWindow.getProcessId());
                 if (focusedProcess != null)
@@ -375,7 +375,7 @@ public class LaptopScreen extends Screen implements TooltipRenderer
         {
             LaptopWindow focusedWindow = windowManager.getFocusedWindow();
 
-            if (focusedWindow != null)
+            if (focusedWindow != null && this.isWithinContent(focusedWindow, mouseX, mouseY))
             {
                 DeviceProcess<Computer> focusedProcess = this.laptop.getProcess(focusedWindow.getProcessId());
                 if (focusedProcess != null)

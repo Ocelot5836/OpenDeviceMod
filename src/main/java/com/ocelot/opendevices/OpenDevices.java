@@ -80,7 +80,7 @@ public class OpenDevices
 
     private void initClient(FMLClientSetupEvent event)
     {
-//        ProcessInputRegistry.bindInputHandler(TestProcess.class, new TestProcessInputHandler());
+        ProcessInputRegistry.bindInputHandler(TestProcess.class, new TestProcessInputHandler());
 
         if (ModList.get().isLoaded("filters"))
         {
