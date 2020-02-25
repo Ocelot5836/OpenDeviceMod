@@ -1,0 +1,21 @@
+{
+    "parent": "block/thin_block",
+    "textures": {
+        "texture": "opendevices:item/solid_state_drive"
+    },
+    "elements": [
+        {
+            "name": "Cube",
+            "from": [ 3.00, 0.00, 2.00 ], 
+            "to": [ 13.00, 2.00, 14.00 ], 
+            "faces": {
+                "north": { "texture": "#texture", "uv": [ 2.50, 0.00, 13.00, 2.50 ], "rotation": 180 },
+                "east": { "texture": "#texture", "uv": [ 12.50, 2.00, 15.00, 14.00 ], "rotation": 90 },
+                "south": { "texture": "#texture", "uv": [ 2.50, 13.50, 13.00, 16.00 ] },
+                "west": { "texture": "#texture", "uv": [ 0.50, 2.00, 3.00, 14.00 ], "rotation": 270 },
+                "up": { "texture": "#texture", "uv": [ 2.50, 2.00, 13.00, 14.00 ] },
+                "down": { "texture": "#texture", "uv": [ 2.50, 2.00, 13.00, 14.00 ], "rotation": 180 }
+            }
+        }
+    ]
+}

@@ -1,0 +1,6 @@
+{
+    "parent": "opendevices:item/circuit_board",
+    "textures": {
+        "circuit_board": "opendevices:item/green_circuit_board"
+    }
+}
