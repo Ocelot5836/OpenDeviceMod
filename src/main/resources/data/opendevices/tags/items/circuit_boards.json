@@ -1,0 +1,8 @@
+{
+    "replace": false,
+    "values": [
+        "opendevices:green_circuit_board",
+        "opendevices:blue_circuit_board",
+        "opendevices:red_circuit_board"
+    ]
+}

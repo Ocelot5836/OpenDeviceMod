@@ -1,0 +1,19 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "result": {
+        "item": "opendevices:wheel"
+    },
+    "pattern": [
+        "P P",
+        "PIP",
+        "P P"
+    ],
+    "key": {
+        "P": {
+            "item": "opendevices:plastic"
+        },
+        "I": {
+            "tag": "forge:storage_blocks/iron"
+        }
+    }
+}

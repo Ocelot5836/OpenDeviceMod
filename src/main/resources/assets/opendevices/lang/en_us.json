@@ -1,6 +1,8 @@
 {
 	"itemGroup.opendevices": "Open Devices Mod",
-	
+
+	"block.opendevices.plastic_block": "Block of Plastic",
+
 	"block.opendevices.white_laptop": "White Laptop",
 	"block.opendevices.orange_laptop": "Orange Laptop",
 	"block.opendevices.magenta_laptop": "Magenta Laptop",
@@ -20,6 +22,28 @@
 
 	"block.opendevices.laptop.using": "Someone is using the Laptop!",
 	"block.opendevices.laptop.using.specific": "%s is using the Laptop!",
+
+	"item.opendevices.unrefined_plastic": "Raw Plastic",
+	"item.opendevices.plastic": "Plastic",
+	"item.opendevices.plastic_frame": "Plastic Frame",
+	"item.opendevices.battery": "Battery",
+	"item.opendevices.screen": "Screen",
+
+	"item.opendevices.wheel": "Wheel",
+	"item.opendevices.small_electric_motor": "Small Electric Motor",
+	"item.opendevices.carriage": "Carriage",
+
+	"item.opendevices.flash_chip": "Flash Chip",
+	"item.opendevices.controller_chip": "Controller Chip",
+
+	"item.opendevices.hard_drive": "Hard Drive",
+	"item.opendevices.solid_state_drive": "Solid State Drive",
+	"item.opendevices.floppy_drive": "Floppy Drive",
+
+	"item.opendevices.fiberglass_panel": "Fiberglass Panel",
+	"item.opendevices.green_circuit_board": "Circuit Board",
+	"item.opendevices.blue_circuit_board": "Improved Circuit Board",
+	"item.opendevices.red_circuit_board": "Ultimate Circuit Board",
 
 	"screen.opendevices.laptop": "Laptop",
 	"screen.opendevices.laptop.unknown_version": "Unknown",

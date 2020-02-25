@@ -1,0 +1,25 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "result": {
+        "item": "opendevices:carriage"
+    },
+    "pattern": [
+        "PCP",
+        "III",
+        "SSS"
+    ],
+    "key": {
+        "I": {
+            "tag": "forge:ingots/iron"
+        },
+        "P": {
+            "item": "opendevices:plastic"
+        },
+        "C": {
+            "item": "minecraft:minecart"
+        },
+        "S": {
+            "tag": "forge:string"
+        }
+    }
+}

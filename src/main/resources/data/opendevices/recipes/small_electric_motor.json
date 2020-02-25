@@ -1,0 +1,25 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "result": {
+        "item": "opendevices:small_electric_motor"
+    },
+    "pattern": [
+        "GIG",
+        "PIP",
+        "PRP"
+    ],
+    "key": {
+        "I": {
+            "tag": "forge:ingots/iron"
+        },
+        "G": {
+            "tag": "forge:nuggets/gold"
+        },
+        "P": {
+            "item": "opendevices:plastic"
+        },
+        "R": {
+            "tag": "forge:dusts/redstone"
+        }
+    }
+}

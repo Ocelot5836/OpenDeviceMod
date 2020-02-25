@@ -1,10 +1,13 @@
 package com.ocelot.opendevices.init;
 
 import com.ocelot.opendevices.OpenDevices;
+import com.ocelot.opendevices.block.DeviceBlock;
 import com.ocelot.opendevices.block.LaptopBlock;
 import com.ocelot.opendevices.core.LaptopTileEntity;
 import com.ocelot.opendevices.core.render.LaptopTileEntityRenderer;
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
+import net.minecraft.block.material.MaterialColor;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
@@ -25,6 +28,8 @@ public class DeviceBlocks
 {
     private static final Set<Block> BLOCKS = new HashSet<>();
     private static final Set<TileEntityType<?>> TILE_ENTITIES = new HashSet<>();
+
+    public static final Block PLASTIC_BLOCK = register(new DeviceBlock("plastic_block", Block.Properties.create(Material.ROCK, MaterialColor.STONE)), new Item.Properties().group(OpenDevices.TAB));
 
     public static final Block WHITE_LAPTOP = new LaptopBlock(DyeColor.WHITE);
     public static final Block ORANGE_LAPTOP = new LaptopBlock(DyeColor.ORANGE);
@@ -53,7 +58,7 @@ public class DeviceBlocks
 
     public static Block register(Block block, Item.Properties itemProperties)
     {
-        return register(block, createDefaultBlockItem(block, itemProperties));
+        return register(block, new BlockItem(block, itemProperties));
     }
 
     public static Block register(Block block, Item item)
@@ -75,11 +80,6 @@ public class DeviceBlocks
         TileEntityType<T> type = TileEntityType.Builder.create(factory, validBlocks).build(null);
         TILE_ENTITIES.add(type.setRegistryName(new ResourceLocation(OpenDevices.MOD_ID, name)));
         return type;
-    }
-
-    public static Item createDefaultBlockItem(Block block, Item.Properties itemProperties)
-    {
-        return new BlockItem(block, itemProperties).setRegistryName(Objects.requireNonNull(block.getRegistryName()));
     }
 
     public static Block[] getBlocks()

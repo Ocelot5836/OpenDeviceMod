@@ -1,0 +1,31 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "result": {
+        "item": "opendevices:screen"
+    },
+    "pattern": [
+        "RGB",
+        "PPP",
+        "CDC"
+    ],
+    "key": {
+        "R": {
+            "tag": "forge:glass_panes/red"
+        },
+        "G": {
+            "tag": "forge:glass_panes/green"
+        },
+        "B": {
+            "tag": "forge:glass_panes/blue"
+        },
+        "P": {
+            "tag": "forge:gems/prismarine"
+        },
+        "C": {
+            "tag": "opendevices:circuit_boards"
+        },
+        "D": {
+            "tag": "forge:dusts/redstone"
+        }
+    }
+}

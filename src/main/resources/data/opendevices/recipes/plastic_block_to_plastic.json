@@ -1,0 +1,12 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "result": {
+        "item": "opendevices:plastic",
+		"count": 4
+    },
+    "ingredients": [
+        {
+            "item": "opendevices:plastic_block"
+        }
+    ]
+}

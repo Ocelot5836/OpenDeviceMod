@@ -1,0 +1,19 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "result": {
+        "item": "opendevices:fiberglass_panel"
+    },
+    "pattern": [
+        "PGP",
+        "PGP",
+        "PGP"
+    ],
+    "key": {
+        "P": {
+            "item": "opendevices:plastic"
+        },
+		"G": {
+			"tag": "forge:glass_panes"
+		}
+    }
+}

@@ -1,0 +1,16 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "result": {
+        "item": "opendevices:plastic_frame"
+    },
+    "pattern": [
+        "PPP",
+        "PPP",
+        "PPP"
+    ],
+    "key": {
+        "P": {
+            "item": "opendevices:plastic"
+        }
+    }
+}

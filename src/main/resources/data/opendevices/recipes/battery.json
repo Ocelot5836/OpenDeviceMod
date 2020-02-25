@@ -1,0 +1,22 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "result": {
+        "item": "opendevices:battery"
+    },
+    "pattern": [
+        "III",
+        "IRI",
+        "IBI"
+    ],
+    "key": {
+        "I": {
+            "tag": "forge:ingots/iron"
+        },
+        "R": {
+            "tag": "forge:storage_blocks/redstone"
+        },
+        "B": {
+            "item": "minecraft:blaze_powder"
+        }
+    }
+}

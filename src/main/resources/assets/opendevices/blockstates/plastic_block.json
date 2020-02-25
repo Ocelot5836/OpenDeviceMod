@@ -1,0 +1,5 @@
+{
+	"variants": {
+		"": { "model": "opendevices:block/plastic_block" }
+	}
+}
