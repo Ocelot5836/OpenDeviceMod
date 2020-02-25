@@ -21,8 +21,8 @@ public enum DeviceMaterials
     // TODO add colors to drives
     HARD_DRIVE("hard_drive"),
     SOLID_STATE_DRIVE("solid_state_drive"),
-    FLOPPY_DRIVE("floppy_drive"),
-    FLASH_DRIVE("flash_drive"),
+    FLOPPY_DRIVE("floppy_drive"), // Placeholder
+    FLASH_DRIVE("flash_drive"), // Placeholder
 
     FIBERGLASS_PANEL("fiberglass_panel"),
     GREEN_CIRCUIT_BOARD("green_circuit_board"),

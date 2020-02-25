@@ -1,7 +1,8 @@
 {
     "__comment": "Model generated using MrCrayfish's Model Creator (https://mrcrayfish.com/tools?id=mc)",
     "textures": {
-        "0": "opendevices:item/screen"
+        "front": "opendevices:item/screen",
+        "back": "opendevices:item/screen_back"
     },
     "display": {
         "gui": {
@@ -15,7 +16,7 @@
             "scale": [ 0.8, 0.8, 0.8 ]
         },
         "fixed": {
-            "rotation": [ 0, 0, 0 ],
+            "rotation": [ 0, 180, 0 ],
             "translation": [ 0, 0, 0 ],
             "scale": [ 0.5, 0.5, 0.5 ]
         },
@@ -36,12 +37,12 @@
             "from": [ 0.50, 0.00, 7.50 ], 
             "to": [ 15.50, 9.50, 8.50 ], 
             "faces": {
-                "north": { "texture": "#0", "uv": [ 15.50, 3.00, 0.50, 12.50 ] },
-                "east": { "texture": "#0", "uv": [ 15.00, 3.00, 15.50, 12.50 ] },
-                "south": { "texture": "#0", "uv": [ 0.50, 3.00, 15.50, 12.50 ] },
-                "west": { "texture": "#0", "uv": [ 0.50, 3.00, 1.00, 12.50 ] },
-                "up": { "texture": "#0", "uv": [ 0.50, 3.00, 15.50, 3.50 ] },
-                "down": { "texture": "#0", "uv": [ 0.50, 12.00, 15.50, 12.50 ] }
+                "north": { "texture": "#back", "uv": [ 15.50, 3.00, 0.50, 12.50 ] },
+                "east": { "texture": "#front", "uv": [ 15.00, 3.00, 15.50, 12.50 ] },
+                "south": { "texture": "#front", "uv": [ 0.50, 3.00, 15.50, 12.50 ] },
+                "west": { "texture": "#front", "uv": [ 0.50, 3.00, 1.00, 12.50 ] },
+                "up": { "texture": "#front", "uv": [ 0.50, 3.00, 15.50, 3.50 ] },
+                "down": { "texture": "#front", "uv": [ 0.50, 12.00, 15.50, 12.50 ] }
             }
         }
     ]
