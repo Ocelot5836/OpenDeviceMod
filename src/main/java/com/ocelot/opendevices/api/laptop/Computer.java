@@ -1,6 +1,7 @@
 package com.ocelot.opendevices.api.laptop;
 
 import com.ocelot.opendevices.api.device.Device;
+import com.ocelot.opendevices.api.device.DeviceProcess;
 import com.ocelot.opendevices.api.laptop.desktop.Desktop;
 import com.ocelot.opendevices.api.laptop.settings.LaptopSetting;
 import com.ocelot.opendevices.api.laptop.taskbar.TaskBar;
@@ -9,6 +10,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.Nullable;
+import java.util.UUID;
 import java.util.concurrent.Executor;
 
 /**
@@ -61,4 +63,7 @@ public interface Computer extends Device, Executor
      * @return The laptop's task bar
      */
     TaskBar getTaskBar();
+
+    @Nullable
+    DeviceProcess<Computer> getProcess(UUID id);
 }

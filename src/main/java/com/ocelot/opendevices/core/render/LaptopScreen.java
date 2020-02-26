@@ -56,20 +56,20 @@ public class LaptopScreen extends Screen implements TooltipRenderer
         this.clickable = false;
     }
 
-    private boolean isWithin(Window window, double mouseX, double mouseY)
-    {
-        return RenderUtil.isMouseInside(mouseX, mouseY, this.posX + DeviceConstants.LAPTOP_GUI_BORDER + window.getX(), this.posY + DeviceConstants.LAPTOP_GUI_BORDER + window.getY(), this.posX + DeviceConstants.LAPTOP_GUI_BORDER + window.getX() + window.getWidth(), this.posY + DeviceConstants.LAPTOP_GUI_BORDER + window.getY() + window.getHeight());
-    }
-
-    private boolean isWithinContent(Window window, double mouseX, double mouseY)
-    {
-        return RenderUtil.isMouseInside(mouseX, mouseY, this.posX + DeviceConstants.LAPTOP_GUI_BORDER + window.getX() + 1, this.posY + DeviceConstants.LAPTOP_GUI_BORDER + window.getY() + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + 1, this.posX + DeviceConstants.LAPTOP_GUI_BORDER + window.getX() + window.getWidth() - 1, this.posY + DeviceConstants.LAPTOP_GUI_BORDER + window.getY() + window.getHeight() - 1);
-    }
-
-    private boolean isWithinWindowBar(Window window, double mouseX, double mouseY)
-    {
-        return RenderUtil.isMouseInside(mouseX, mouseY, this.posX + DeviceConstants.LAPTOP_GUI_BORDER + window.getX(), this.posY + DeviceConstants.LAPTOP_GUI_BORDER + window.getY() + 1, this.posX + DeviceConstants.LAPTOP_GUI_BORDER + window.getX() + window.getWidth() - DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE - 1, this.posY + DeviceConstants.LAPTOP_GUI_BORDER + window.getY() + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT);
-    }
+    //    private boolean isWithin(Window window, double mouseX, double mouseY)
+    //    {
+    //        return RenderUtil.isMouseInside(mouseX, mouseY, this.posX + DeviceConstants.LAPTOP_GUI_BORDER + window.getX(), this.posY + DeviceConstants.LAPTOP_GUI_BORDER + window.getY(), this.posX + DeviceConstants.LAPTOP_GUI_BORDER + window.getX() + window.getWidth(), this.posY + DeviceConstants.LAPTOP_GUI_BORDER + window.getY() + window.getHeight());
+    //    }
+    //
+    //    private boolean isWithinContent(Window window, double mouseX, double mouseY)
+    //    {
+    //        return RenderUtil.isMouseInside(mouseX, mouseY, this.posX + DeviceConstants.LAPTOP_GUI_BORDER + window.getX() + 1, this.posY + DeviceConstants.LAPTOP_GUI_BORDER + window.getY() + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + 1, this.posX + DeviceConstants.LAPTOP_GUI_BORDER + window.getX() + window.getWidth() - 1, this.posY + DeviceConstants.LAPTOP_GUI_BORDER + window.getY() + window.getHeight() - 1);
+    //    }
+    //
+    //    private boolean isWithinWindowBar(Window window, double mouseX, double mouseY)
+    //    {
+    //        return RenderUtil.isMouseInside(mouseX, mouseY, this.posX + DeviceConstants.LAPTOP_GUI_BORDER + window.getX(), this.posY + DeviceConstants.LAPTOP_GUI_BORDER + window.getY() + 1, this.posX + DeviceConstants.LAPTOP_GUI_BORDER + window.getX() + window.getWidth() - DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE - 1, this.posY + DeviceConstants.LAPTOP_GUI_BORDER + window.getY() + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT);
+    //    }
 
     @Override
     public void tick()
@@ -117,12 +117,12 @@ public class LaptopScreen extends Screen implements TooltipRenderer
         RenderUtil.framebufferScale = 0;
 
         /* Renders the Content */
-        LaptopRenderer.render(this.laptop, minecraft, fontRenderer, this.posX + DeviceConstants.LAPTOP_GUI_BORDER, this.posY + DeviceConstants.LAPTOP_GUI_BORDER, mouseX, mouseY, partialTicks);
+        LaptopRenderer.render(this.laptop, minecraft, fontRenderer, this.posX + DeviceConstants.LAPTOP_GUI_BORDER, this.posY + DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_SCREEN_WIDTH, DeviceConstants.LAPTOP_SCREEN_HEIGHT, mouseX, mouseY, partialTicks);
 
         super.render(mouseX, mouseY, partialTicks);
 
         /* Render the Tooltips */
-        LaptopRenderer.renderOverlay(this, this.laptop, minecraft, fontRenderer, this.posX + DeviceConstants.LAPTOP_GUI_BORDER, this.posY + DeviceConstants.LAPTOP_GUI_BORDER, mouseX, mouseY, partialTicks);
+        LaptopRenderer.renderOverlay(this, this.laptop, this.posX + DeviceConstants.LAPTOP_GUI_BORDER, this.posY + DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_SCREEN_WIDTH, DeviceConstants.LAPTOP_SCREEN_HEIGHT, mouseX, mouseY, partialTicks);
     }
 
     @Override
@@ -213,7 +213,7 @@ public class LaptopScreen extends Screen implements TooltipRenderer
                         break;
 
                     LaptopWindow window = windows[windows.length - i - 1];
-                    if (isMouseOver(window, this.posX + DeviceConstants.LAPTOP_GUI_BORDER, this.posY + DeviceConstants.LAPTOP_GUI_BORDER, mouseX, mouseY, Minecraft.getInstance().getRenderPartialTicks()))
+                    if (window.isWithinButton(mouseX - (this.posX + DeviceConstants.LAPTOP_GUI_BORDER), mouseY - (this.posY + DeviceConstants.LAPTOP_GUI_BORDER), Minecraft.getInstance().getRenderPartialTicks()))
                     {
                         if (!windowManager.isCloseRequested(window.getId()))
                         {
@@ -221,12 +221,12 @@ public class LaptopScreen extends Screen implements TooltipRenderer
                         }
                         return true;
                     }
-                    if (this.isWithin(window, mouseX, mouseY))
+                    if (window.isWithin(mouseX - (this.posX + DeviceConstants.LAPTOP_GUI_BORDER), mouseY - (this.posY + DeviceConstants.LAPTOP_GUI_BORDER), Minecraft.getInstance().getRenderPartialTicks()))
                     {
                         windowManager.focusWindow(window.getId());
                         loseFocus = false;
                     }
-                    if (this.isWithinContent(window, mouseX, mouseY))
+                    if (window.isWithinContent(mouseX - (this.posX + DeviceConstants.LAPTOP_GUI_BORDER), mouseY - (this.posY + DeviceConstants.LAPTOP_GUI_BORDER), Minecraft.getInstance().getRenderPartialTicks()))
                     {
                         DeviceProcess<Computer> process = this.laptop.getProcess(window.getProcessId());
                         if (process != null)
@@ -240,7 +240,7 @@ public class LaptopScreen extends Screen implements TooltipRenderer
 
                         return super.mouseClicked(mouseX, mouseY, mouseButton);
                     }
-                    else if (this.isWithinWindowBar(window, mouseX, mouseY))
+                    else if (window.isWithinWindowBar(mouseX - (this.posX + DeviceConstants.LAPTOP_GUI_BORDER), mouseY - (this.posY + DeviceConstants.LAPTOP_GUI_BORDER), Minecraft.getInstance().getRenderPartialTicks()))
                     {
                         this.draggingWindow = window;
                         return true;
@@ -262,7 +262,7 @@ public class LaptopScreen extends Screen implements TooltipRenderer
             Window hoveredWindow = null;
             for (Window window : taskBar.getDisplayedWindows())
             {
-                if (RenderUtil.isMouseInside(mouseX, mouseY, this.posX + DeviceConstants.LAPTOP_GUI_BORDER + 4 + (size + 4) * i, this.posY + DeviceConstants.LAPTOP_GUI_BORDER + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4, this.posX + DeviceConstants.LAPTOP_GUI_BORDER + 4 + (size + 4) * i + size, this.posY + DeviceConstants.LAPTOP_GUI_BORDER + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4 + size))
+                if (RenderUtil.isMouseInside(mouseX - (this.posX + DeviceConstants.LAPTOP_GUI_BORDER), mouseY - (this.posY + DeviceConstants.LAPTOP_GUI_BORDER), this.posX + DeviceConstants.LAPTOP_GUI_BORDER + 4 + (size + 4) * i, this.posY + DeviceConstants.LAPTOP_GUI_BORDER + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4, this.posX + DeviceConstants.LAPTOP_GUI_BORDER + 4 + (size + 4) * i + size, this.posY + DeviceConstants.LAPTOP_GUI_BORDER + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4 + size))
                 {
                     hoveredWindow = window;
                     break;
@@ -297,7 +297,7 @@ public class LaptopScreen extends Screen implements TooltipRenderer
             this.clickable = false;
             LaptopWindow focusedWindow = windowManager.getFocusedWindow();
 
-            if (focusedWindow != null && this.isWithinContent(focusedWindow, mouseX, mouseY))
+            if (focusedWindow != null && focusedWindow.isWithinContent(mouseX, mouseY, Minecraft.getInstance().getRenderPartialTicks()))
             {
                 DeviceProcess<Computer> focusedProcess = this.laptop.getProcess(focusedWindow.getProcessId());
                 if (focusedProcess != null)
@@ -322,7 +322,7 @@ public class LaptopScreen extends Screen implements TooltipRenderer
             LaptopWindowManager windowManager = this.laptop.getWindowManager();
             LaptopWindow focusedWindow = windowManager.getFocusedWindow();
 
-            if (focusedWindow != null && this.isWithinContent(focusedWindow, mouseX, mouseY))
+            if (focusedWindow != null && focusedWindow.isWithinContent(mouseX, mouseY, Minecraft.getInstance().getRenderPartialTicks()))
             {
                 DeviceProcess<Computer> focusedProcess = this.laptop.getProcess(focusedWindow.getProcessId());
                 if (focusedProcess != null)
@@ -347,7 +347,7 @@ public class LaptopScreen extends Screen implements TooltipRenderer
             LaptopWindowManager windowManager = this.laptop.getWindowManager();
             LaptopWindow focusedWindow = windowManager.getFocusedWindow();
 
-            if (focusedWindow != null && this.isWithinContent(focusedWindow, mouseX, mouseY))
+            if (focusedWindow != null && focusedWindow.isWithinContent(mouseX, mouseY, Minecraft.getInstance().getRenderPartialTicks()))
             {
                 DeviceProcess<Computer> focusedProcess = this.laptop.getProcess(focusedWindow.getProcessId());
                 if (focusedProcess != null)
@@ -375,7 +375,7 @@ public class LaptopScreen extends Screen implements TooltipRenderer
         {
             LaptopWindow focusedWindow = windowManager.getFocusedWindow();
 
-            if (focusedWindow != null && this.isWithinContent(focusedWindow, mouseX, mouseY))
+            if (focusedWindow != null && focusedWindow.isWithinContent(mouseX, mouseY, Minecraft.getInstance().getRenderPartialTicks()))
             {
                 DeviceProcess<Computer> focusedProcess = this.laptop.getProcess(focusedWindow.getProcessId());
                 if (focusedProcess != null)
@@ -405,12 +405,5 @@ public class LaptopScreen extends Screen implements TooltipRenderer
         {
             TaskManager.sendToServer(new CloseLaptopTask(this.laptop.getPos()), TaskManager.TaskReceiver.NONE);
         }
-    }
-
-    public static boolean isMouseOver(Window window, float screenX, float screenY, double mouseX, double mouseY, float partialTicks)
-    {
-        float windowX = window.getLastX() + (window.getX() - window.getLastX()) * partialTicks + window.getWidth() - DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE - 1;
-        float windowY = window.getLastY() + (window.getY() - window.getLastY()) * partialTicks + 1;
-        return RenderUtil.isMouseInside(mouseX, mouseY, screenX + windowX, screenY + windowY, screenX + windowX + DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE, screenY + windowY + DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE);
     }
 }

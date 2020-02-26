@@ -10,6 +10,7 @@ import com.ocelot.opendevices.api.laptop.settings.LaptopSetting;
 import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.core.laptop.process.TestProcess;
 import com.ocelot.opendevices.core.laptop.process.TestProcessInputHandler;
+import com.ocelot.opendevices.core.laptop.process.TestProcessRenderer;
 import com.ocelot.opendevices.core.registry.DeviceProcessRegistryEntry;
 import com.ocelot.opendevices.core.registry.TaskRegistryEntry;
 import com.ocelot.opendevices.core.render.LaptopTileEntityRenderer;
@@ -81,6 +82,7 @@ public class OpenDevices
     private void initClient(FMLClientSetupEvent event)
     {
         ProcessInputRegistry.bindInputHandler(TestProcess.class, new TestProcessInputHandler());
+        ProcessInputRegistry.bindWindowRenderer(TestProcess.class, new TestProcessRenderer());
 
         if (ModList.get().isLoaded("filters"))
         {
