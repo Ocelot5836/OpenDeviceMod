@@ -50,14 +50,6 @@ public interface TooltipRenderer
     }
 
     /**
-     * Collects the tooltip information from the specified {@link ItemStack}.
-     *
-     * @param stack The stack to get the tooltip information from
-     * @return The lines of tooltip information
-     */
-    List<String> getTooltipFromItem(ItemStack stack);
-
-    /**
      * Renders a tooltip using the specified string.
      *
      * @param tooltip The string to render on the tooltip
@@ -103,4 +95,12 @@ public interface TooltipRenderer
      * @param posY          The y position to render the tooltip at
      */
     void renderComponentHoverEffect(@Nullable ITextComponent textComponent, int posX, int posY);
+
+    /**
+     * Collects the tooltip information from the specified {@link ItemStack}.
+     *
+     * @param stack The stack to get the tooltip information from
+     * @return The lines of tooltip information
+     */
+    List<String> getTooltipFromItem(ItemStack stack);
 }

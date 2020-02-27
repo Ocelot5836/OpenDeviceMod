@@ -1,12 +1,10 @@
 package com.ocelot.opendevices.api.device;
 
-import io.netty.util.internal.UnstableApi;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.IWorld;
 
 import javax.annotation.Nullable;
-import javax.annotation.Tainted;
 import java.util.Collection;
 import java.util.UUID;
 
@@ -23,7 +21,8 @@ public interface Device
      *
      * @param processId The id of the process to start
      * @return The id assigned to the process
-     * @throws IllegalArgumentException If the process registered under that id is either null or not for this device
+     * @throws IllegalArgumentException      If the process registered under that id is either null or not for this device
+     * @throws UnsupportedOperationException If this devices does not support processes. Can be checked by using {@link #supportsProcesses()}
      */
     UUID executeProcess(ResourceLocation processId);
 
@@ -31,6 +30,7 @@ public interface Device
      * Stops the process with the specified ID and closes all associated tasks.
      *
      * @param processId The id of the process to stop
+     * @throws UnsupportedOperationException If this devices does not support processes. Can be checked by using {@link #supportsProcesses()}
      */
     void terminateProcess(UUID processId);
 
@@ -38,6 +38,7 @@ public interface Device
      * Syncs the process with the specified id to the server and all clients.
      *
      * @param processId The if of the process to sync
+     * @throws UnsupportedOperationException If this devices does not support processes. Can be checked by using {@link #supportsProcesses()}
      */
     void syncProcess(UUID processId);
 
@@ -47,12 +48,13 @@ public interface Device
     IWorld getWorld();
 
     /**
-     * @return The unique address id of this device used for communication
+     * @return The unique address id of this device. Used for communication between devices
      */
     UUID getAddress();
 
     /**
      * @return The processes that are currently being executed
+     * @throws UnsupportedOperationException If this devices does not support processes. Can be checked by using {@link #supportsProcesses()}
      */
     Collection<UUID> getProcessIds();
 
@@ -61,6 +63,7 @@ public interface Device
      *
      * @param id The id of the process to fetch
      * @return The process found or null if there is no process with that id
+     * @throws UnsupportedOperationException If this devices does not support processes. Can be checked by using {@link #supportsProcesses()}
      */
     @Nullable
     DeviceProcess<? extends Device> getProcess(UUID id);
@@ -72,4 +75,9 @@ public interface Device
     {
         return this.getWorld() != null && this.getWorld().isRemote();
     }
+
+    /**
+     * @return Whether or not this device is capable or executing processes.
+     */
+    boolean supportsProcesses();
 }

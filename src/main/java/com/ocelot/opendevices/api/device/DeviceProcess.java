@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 import java.util.UUID;
 
 /**
- * <p>A process is a continuous task that is being executed by a {@link Device}.</p>
+ * <p>A process is a continuous task that is executed by a {@link Device}.</p>
  *
  * @author Ocelot
  */

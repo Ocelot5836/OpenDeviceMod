@@ -4,6 +4,9 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.LaptopSettings;
+import com.ocelot.opendevices.api.device.DeviceProcess;
+import com.ocelot.opendevices.api.device.ProcessInputRegistry;
+import com.ocelot.opendevices.api.device.ProcessWindowRenderer;
 import com.ocelot.opendevices.api.laptop.Computer;
 import com.ocelot.opendevices.api.laptop.desktop.Desktop;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopBackground;
@@ -47,7 +50,7 @@ public class LaptopRenderer extends AbstractGui
         }
     }
 
-    public static void render(Computer computer, Minecraft minecraft, FontRenderer fontRenderer, int posX, int posY, int mouseX, int mouseY, float partialTicks)
+    public static void render(Computer computer, Minecraft minecraft, FontRenderer fontRenderer, int posX, int posY, int screenWidth, int screenHeight, int mouseX, int mouseY, float partialTicks)
     {
         TextureManager textureManager = minecraft.getTextureManager();
         Desktop desktop = computer.getDesktop();
@@ -59,8 +62,8 @@ public class LaptopRenderer extends AbstractGui
             DesktopBackground desktopBackground = desktop.getBackground();
             if (!desktopBackground.isOnline() && desktopBackground.getLocation() != null)
             {
-                minecraft.getTextureManager().bindTexture(desktopBackground.getLocation());
-                RenderUtil.drawRectWithTexture(posX, posY, desktopBackground.getU(), desktopBackground.getV(), DeviceConstants.LAPTOP_SCREEN_WIDTH, DeviceConstants.LAPTOP_SCREEN_HEIGHT, desktopBackground.getWidth(), desktopBackground.getHeight(), desktopBackground.getImageWidth(), desktopBackground.getImageHeight());
+                textureManager.bindTexture(desktopBackground.getLocation());
+                RenderUtil.drawRectWithTexture(posX, posY, desktopBackground.getU(), desktopBackground.getV(), screenWidth, screenHeight, desktopBackground.getWidth(), desktopBackground.getHeight(), desktopBackground.getImageWidth(), desktopBackground.getImageHeight());
             }
             //            else if (desktopBackground.getUrl() != null)
             //            {
@@ -88,6 +91,16 @@ public class LaptopRenderer extends AbstractGui
             int borderColor = windowManager.getFocusedWindowId() != null && windowManager.getFocusedWindowId() == window.getId() ? computer.readSetting(LaptopSettings.FOCUSED_WINDOW_COLOR) : computer.readSetting(LaptopSettings.WINDOW_COLOR);
             renderWindow(posX, posY, window, computer.readSetting(LaptopSettings.WINDOW_COLOR), borderColor, partialTicks);
             renderCloseButton(posX, posY, mouseX, mouseY, window, !windowManager.isCloseRequested(window.getId()), computer.readSetting(LaptopSettings.WINDOW_BUTTON_COLOR), partialTicks);
+
+            DeviceProcess<Computer> process = computer.getProcess(window.getProcessId());
+            if (process != null)
+            {
+                ProcessWindowRenderer<Computer, DeviceProcess<Computer>> renderer = ProcessInputRegistry.getWindowRenderer(process);
+                if (renderer != null)
+                {
+                    renderer.render(process, window, posX, posY, mouseX, mouseY, partialTicks);
+                }
+            }
         }
 
         /* Task bar */
@@ -99,19 +112,19 @@ public class LaptopRenderer extends AbstractGui
             RenderUtil.glColor(0xff000000 | color);
             {
                 /* Corners */
-                RenderUtil.drawRectWithTexture(posX, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - height, 0, 15, 1, 1, 1, 1);
-                RenderUtil.drawRectWithTexture(posX, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - 1, 0, 17, 1, 1, 1, 1);
-                RenderUtil.drawRectWithTexture(posX + DeviceConstants.LAPTOP_SCREEN_WIDTH - 1, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - height, 2, 15, 1, 1, 1, 1);
-                RenderUtil.drawRectWithTexture(posX + DeviceConstants.LAPTOP_SCREEN_WIDTH - 1, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - 1, 2, 17, 1, 1, 1, 1);
+                RenderUtil.drawRectWithTexture(posX, posY + screenHeight - height, 0, 15, 1, 1, 1, 1);
+                RenderUtil.drawRectWithTexture(posX, posY + screenHeight - 1, 0, 17, 1, 1, 1, 1);
+                RenderUtil.drawRectWithTexture(posX + screenWidth - 1, posY + screenHeight - height, 2, 15, 1, 1, 1, 1);
+                RenderUtil.drawRectWithTexture(posX + screenWidth - 1, posY + screenHeight - 1, 2, 17, 1, 1, 1, 1);
 
                 /* Edges */
-                RenderUtil.drawRectWithTexture(posX, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - height + 1, 0, 16, 1, height - 2, 1, 1);
-                RenderUtil.drawRectWithTexture(posX + 1, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - height, 1, 15, DeviceConstants.LAPTOP_SCREEN_WIDTH - 2, 1, 1, 1);
-                RenderUtil.drawRectWithTexture(posX + DeviceConstants.LAPTOP_SCREEN_WIDTH - 1, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - height + 1, 2, 16, 1, height - 2, 1, 1);
-                RenderUtil.drawRectWithTexture(posX + 1, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - 1, 1, 17, DeviceConstants.LAPTOP_SCREEN_WIDTH - 2, 1, 1, 1);
+                RenderUtil.drawRectWithTexture(posX, posY + screenHeight - height + 1, 0, 16, 1, height - 2, 1, 1);
+                RenderUtil.drawRectWithTexture(posX + 1, posY + screenHeight - height, 1, 15, screenWidth - 2, 1, 1, 1);
+                RenderUtil.drawRectWithTexture(posX + screenWidth - 1, posY + screenHeight - height + 1, 2, 16, 1, height - 2, 1, 1);
+                RenderUtil.drawRectWithTexture(posX + 1, posY + screenHeight - 1, 1, 17, screenWidth - 2, 1, 1, 1);
 
                 /* Center */
-                RenderUtil.drawRectWithTexture(posX + 1, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - height + 1, 1, 16, DeviceConstants.LAPTOP_SCREEN_WIDTH - 2, height - 2, 1, 1);
+                RenderUtil.drawRectWithTexture(posX + 1, posY + screenHeight - height + 1, 1, 16, screenWidth - 2, height - 2, 1, 1);
             }
             GlStateManager.color4f(1, 1, 1, 1);
 
@@ -125,14 +138,14 @@ public class LaptopRenderer extends AbstractGui
                     // textureManager.bindTexture(ApplicationManager.LOCATION_APP_ICON_TEXTURE);
                     TextureAtlasSprite icon = Minecraft.getInstance().getTextureMap().getAtlasSprite("minecraft:item/paper");
                     textureManager.bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
-                    RenderUtil.drawRectWithTexture(posX + 4 + (size + 4) * i, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4, size, size, icon);
+                    RenderUtil.drawRectWithTexture(posX + 4 + (size + 4) * i, posY + screenHeight - taskBar.getHeight() + 4, size, size, icon);
                     i++;
                 }
             }
         }
     }
 
-    public static void renderOverlay(TooltipRenderer renderer, Computer computer, Minecraft minecraft, FontRenderer fontRenderer, int posX, int posY, int mouseX, int mouseY, float partialTicks)
+    public static void renderOverlay(TooltipRenderer renderer, Computer computer, int posX, int posY, int screenWidth, int screenHeight, int mouseX, int mouseY, float partialTicks)
     {
         WindowManager windowManager = computer.getWindowManager();
         TaskBar taskBar = computer.getTaskBar();
@@ -144,24 +157,31 @@ public class LaptopRenderer extends AbstractGui
 
             for (Window window : taskBar.getDisplayedWindows())
             {
-                if (!StringUtils.isEmpty(String.valueOf(window.getId())) && RenderUtil.isMouseInside(mouseX, mouseY, posX + 4 + (size + 4) * i, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4, posX + 4 + (size + 4) * i + size, posY + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4 + size))
+                String title = String.valueOf(window.getId());
+                if (!StringUtils.isEmpty(title) && RenderUtil.isMouseInside(mouseX, mouseY, posX + 4 + (size + 4) * i, posY + screenHeight - taskBar.getHeight() + 4, posX + 4 + (size + 4) * i + size, posY + screenHeight - taskBar.getHeight() + 4 + size))
                 {
-                    renderer.renderTooltip(String.valueOf(window.getId()), mouseX, mouseY);
+                    renderer.renderTooltip(title, mouseX, mouseY);
                     return;
                 }
                 i++;
             }
         }
 
-        //        /* Applications */
-        //        {
-        //            for (Window value : desktop.getWindows())
-        //            {
-        //                WindowClient window = (WindowClient) value;
-        //                window.setScreenPosition(posX, posY);
-        //                window.renderOverlay(renderer, mouseX, mouseY, partialTicks);
-        //            }
-        //        }
+        /* Applications */
+        {
+            for (Window window : windowManager.getWindows())
+            {
+                DeviceProcess<Computer> process = computer.getProcess(window.getProcessId());
+                if (process != null)
+                {
+                    ProcessWindowRenderer<Computer, DeviceProcess<Computer>> windowRenderer = ProcessInputRegistry.getWindowRenderer(process);
+                    if (windowRenderer != null)
+                    {
+                        windowRenderer.renderOverlay(renderer, process, window, posX, posY, mouseX, mouseY, partialTicks);
+                    }
+                }
+            }
+        }
     }
 
     private static void renderCloseButton(float posX, float posY, int mouseX, int mouseY, Window window, boolean enabled, int color, float partialTicks)
@@ -170,19 +190,14 @@ public class LaptopRenderer extends AbstractGui
         minecraft.getTextureManager().bindTexture(DeviceConstants.WINDOW_LOCATION);
         GlStateManager.color4f(((color >> 16) & 0xff) / 255f, ((color >> 8) & 0xff) / 255f, (color & 0xff) / 255f, 1);
 
-        float windowX = window.getLastX() + (window.getX() - window.getLastX()) * partialTicks + window.getWidth() - DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE - 1;
-        float windowY = window.getLastY() + (window.getY() - window.getLastY()) * partialTicks + 1;
+        float windowX = window.getInterpolatedX(partialTicks) + window.getWidth() - DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE - 1;
+        float windowY = window.getInterpolatedY(partialTicks) + 1;
 
         GlStateManager.enableBlend();
         GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 
-        GlStateManager.pushMatrix();
-        {
-            GlStateManager.translatef(windowX, windowY, 0);
-            RenderUtil.drawRectWithTexture(posX, posY, 26 + (!enabled ? 0 : LaptopScreen.isMouseOver(window, posX, posY, mouseX, mouseY, partialTicks) ? 2 : 1) * DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE, 0, DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE, DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE, DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE, DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE);
-        }
-        GlStateManager.popMatrix();
+        RenderUtil.drawRectWithTexture(windowX + posX, windowY + posY, 26 + (!enabled ? 0 : window.isWithinButton(mouseX - posX, mouseY - posY, partialTicks) ? 2 : 1) * DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE, 0, DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE, DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE, DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE, DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE);
     }
 
     private static void renderWindow(int posX, int posY, Window window, int color, int borderColor, float partialTicks)
@@ -190,8 +205,8 @@ public class LaptopRenderer extends AbstractGui
         Minecraft.getInstance().getTextureManager().bindTexture(DeviceConstants.WINDOW_LOCATION);
         RenderUtil.glColor(0xff000000 | borderColor);
 
-        float windowX = window.getLastX() + (window.getX() - window.getLastX()) * partialTicks;
-        float windowY = window.getLastY() + (window.getY() - window.getLastY()) * partialTicks;
+        float windowX = window.getInterpolatedX(partialTicks);
+        float windowY = window.getInterpolatedY(partialTicks);
         int windowWidth = window.getWidth();
         int windowHeight = window.getHeight();
 

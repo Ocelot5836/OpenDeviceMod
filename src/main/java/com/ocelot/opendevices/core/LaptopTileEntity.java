@@ -443,6 +443,12 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
     }
 
     @Override
+    public boolean supportsProcesses()
+    {
+        return true;
+    }
+
+    @Override
     public LaptopDesktop getDesktop()
     {
         return desktop;
