@@ -35,7 +35,7 @@ public class DeviceProcessRegistryEntry extends ForgeRegistryEntry<DeviceProcess
         return null;
     }
 
-    public Class<? extends DeviceProcess<?>> getTaskClass()
+    public Class<? extends DeviceProcess<?>> getClazz()
     {
         return clazz;
     }

@@ -31,7 +31,7 @@ public class ProcessSerializer
     {
         try
         {
-            ResourceLocation registryName = ProcessSerializer.getRegistryName(process);
+            ResourceLocation registryName = DeviceRegistries.getProcessRegistryName(process);
 
             if (registryName == null)
             {
@@ -48,7 +48,7 @@ public class ProcessSerializer
         }
         catch (Exception e)
         {
-            OpenDevices.LOGGER.error("Could not write process '" + getRegistryName(process) + "' to NBT!", e);
+            OpenDevices.LOGGER.error("Could not write process '" + DeviceRegistries.getProcessRegistryName(process) + "' to NBT!", e);
         }
         return null;
     }
@@ -85,28 +85,5 @@ public class ProcessSerializer
             OpenDevices.LOGGER.error("Could not read process '" + processName + "' from NBT!", e);
         }
         return null;
-    }
-
-    /**
-     * Checks the registry for a registry name under the specified process.
-     *
-     * @param process The process to get the registry name of
-     * @param <T>     The type of device the process is being read for
-     * @return The registry name of that task or null if the process is not registered
-     */
-    @Nullable
-    public static <T extends Device> ResourceLocation getRegistryName(DeviceProcess<?> process)
-    {
-        if (DeviceRegistries.PROCESSES.isEmpty())
-            return null;
-
-        if (REGISTRY_CACHE.isEmpty())
-        {
-            for (Map.Entry<ResourceLocation, DeviceProcessRegistryEntry> entry : DeviceRegistries.PROCESSES.getEntries())
-            {
-                REGISTRY_CACHE.put(entry.getValue().getTaskClass(), entry.getKey());
-            }
-        }
-        return REGISTRY_CACHE.get(process.getClass());
     }
 }

@@ -1,5 +1,6 @@
 package com.ocelot.opendevices.network;
 
+import com.ocelot.opendevices.api.DeviceRegistries;
 import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.api.task.TaskManager;
 import net.minecraft.nbt.CompoundNBT;
@@ -19,7 +20,7 @@ public class MessageResponse
 
     public static void encode(MessageResponse msg, PacketBuffer buf)
     {
-        ResourceLocation registryName = TaskManager.getRegistryName(msg.request.getClass());
+        ResourceLocation registryName = DeviceRegistries.getTaskRegistryName(msg.request.getClass());
         if (registryName == null)
             throw new NullPointerException("Could not encode task class: " + msg.request.getClass() + " as it is not registered!");
         buf.writeResourceLocation(registryName);

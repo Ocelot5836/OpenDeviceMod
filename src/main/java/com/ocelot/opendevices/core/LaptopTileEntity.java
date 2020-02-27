@@ -312,7 +312,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
             if (process != null)
             {
                 CompoundNBT processData = processNbt.getCompound("data");
-                ResourceLocation processName = ProcessSerializer.getRegistryName(process);
+                ResourceLocation processName = DeviceRegistries.getProcessRegistryName(process);
                 UUID processId = process.getProcessId();
 
                 if (this.syncExecuteProcess(processName, processId))

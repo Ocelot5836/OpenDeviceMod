@@ -167,6 +167,9 @@ public class OpenDevices
                     Field field = clazz.getField(fieldName);
                     LaptopSetting<?> setting = (LaptopSetting<?>) field.get(null);
 
+                    if (registryName.getPath().isEmpty())
+                        throw new IllegalArgumentException("Setting: " + clazz + " does not have a valid registry name. Skipping!");
+
                     event.getRegistry().register(setting.setRegistryName(registryName));
                 }
                 catch (Exception e)

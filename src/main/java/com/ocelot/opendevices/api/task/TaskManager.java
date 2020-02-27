@@ -42,7 +42,7 @@ public final class TaskManager
     @OnlyIn(Dist.CLIENT)
     public static void sendToServer(Task task, TaskReceiver receiver)
     {
-        if (getRegistryName(task.getClass()) == null)
+        if (DeviceRegistries.getTaskRegistryName(task.getClass()) == null)
             throw new RuntimeException("Unregistered Task: " + task.getClass().getName() + ". Use Task annotation to register a task.");
 
         DeviceMessages.INSTANCE.send(PacketDistributor.SERVER.noArg(), new MessageRequest(task, receiver));
@@ -89,7 +89,7 @@ public final class TaskManager
      */
     public static void sendToClient(Task task, ServerPlayerEntity player, boolean returnToSender)
     {
-        if (getRegistryName(task.getClass()) == null)
+        if (DeviceRegistries.getTaskRegistryName(task.getClass()) == null)
             throw new RuntimeException("Unregistered Task: " + task.getClass().getName() + ". Use Task annotation to register a task.");
 
         DeviceMessages.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new MessageRequest(task, returnToSender ? TaskReceiver.SENDER : TaskReceiver.NONE));
@@ -104,7 +104,7 @@ public final class TaskManager
      */
     public static void sendToTracking(Task task, World world, BlockPos pos)
     {
-        if (getRegistryName(task.getClass()) == null)
+        if (DeviceRegistries.getTaskRegistryName(task.getClass()) == null)
             throw new RuntimeException("Unregistered Task: " + task.getClass().getName() + ". Use Task annotation to register a task.");
 
         DeviceMessages.INSTANCE.send(PacketDistributor.TRACKING_CHUNK.with(() -> world.getChunkAt(pos)), new MessageRequest(task, TaskReceiver.NONE));
@@ -124,28 +124,6 @@ public final class TaskManager
             throw new RuntimeException("Unregistered Task: " + registryName + ". Use Task annotation to register a task.");
 
         return entry.createTask();
-    }
-
-    /**
-     * Checks the registry for a registry name under the specified task class.
-     *
-     * @param clazz The class to get the registry name of
-     * @return The registry name of that task or null if the task is not registered
-     */
-    @Nullable
-    public static ResourceLocation getRegistryName(Class<? extends Task> clazz)
-    {
-        if (DeviceRegistries.TASKS.isEmpty())
-            return null;
-
-        if (REGISTRY_CACHE.isEmpty())
-        {
-            for (Map.Entry<ResourceLocation, TaskRegistryEntry> entry : DeviceRegistries.TASKS.getEntries())
-            {
-                REGISTRY_CACHE.put(entry.getValue().getTaskClass(), entry.getKey());
-            }
-        }
-        return REGISTRY_CACHE.get(clazz);
     }
 
     /**

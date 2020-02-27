@@ -30,7 +30,7 @@ public class TaskRegistryEntry extends ForgeRegistryEntry<TaskRegistryEntry>
         return null;
     }
 
-    public Class<? extends Task> getTaskClass()
+    public Class<? extends Task> getClazz()
     {
         return clazz;
     }
