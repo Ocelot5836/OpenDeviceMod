@@ -1,0 +1,17 @@
+{
+    "name": "Small Electric Motor",
+    "icon": "opendevices:small_electric_motor",
+    "category": "materials_category",
+	"read_by_default": true,
+    "pages": [
+        {
+            "type": "text",
+            "text": "Electric motors are used for small, slow-moving components on a device."
+        },
+		{
+			"type": "crafting",
+			"recipe": "opendevices:small_electric_motor",
+			"title": "Recipe"
+		}
+    ]
+}

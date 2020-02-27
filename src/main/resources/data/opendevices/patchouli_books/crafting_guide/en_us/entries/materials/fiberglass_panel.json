@@ -1,0 +1,17 @@
+{
+    "name": "Fiberglass Panel",
+    "icon": "opendevices:fiberglass_panel",
+    "category": "materials_category",
+	"read_by_default": true,
+    "pages": [
+        {
+            "type": "text",
+            "text": "Fiberglass is the base material for all circuit boards. Fiberglass panels can be crafted to then be turned into circuit boards which are required for any type of advanced technology."
+        },
+        {
+            "type": "crafting",
+            "recipe": "opendevices:fiberglass_panel",
+			"title": "Recipe"
+        }
+    ]
+}

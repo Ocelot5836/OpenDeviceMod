@@ -1,0 +1,17 @@
+{
+    "name": "Screen",
+    "icon": "opendevices:screen",
+    "category": "components_category",
+	"read_by_default": true,
+    "pages": [
+        {
+            "type": "text",
+            "text": "Screens are used to show a graphical view of what a device is processing. Circuit boards are required to make a screen. Screens can be inserted into any device that can show an interface."
+        },
+		{
+			"type": "crafting",
+			"recipe": "opendevices:screen",
+			"title": "Recipe"
+		}
+    ]
+}

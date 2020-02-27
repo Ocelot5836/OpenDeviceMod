@@ -1,0 +1,17 @@
+{
+    "name": "Carriage",
+    "icon": "opendevices:carriage",
+    "category": "materials_category",
+	"read_by_default": true,
+    "pages": [
+        {
+            "type": "text",
+            "text": "Carriages are used for small devices that need to move a point back and forth."
+        },
+		{
+			"type": "crafting",
+			"recipe": "opendevices:carriage",
+			"title": "Recipe"
+		}
+    ]
+}

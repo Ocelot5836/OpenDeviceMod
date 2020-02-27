@@ -1,0 +1,27 @@
+{
+    "name": "Plastics",
+    "icon": "opendevices:plastic",
+    "category": "materials_category",
+	"read_by_default": true,
+    "pages": [
+        {
+            "type": "text",
+            "text": "Plastic is a cheap material used from components to device coverings. Plastic Frames can be made from plastic to be used as a light, yet sturdy panel for devices. Plastic blocks can also make a great (not really) block for building!"
+        },
+		{
+			"type": "crafting",
+			"recipe": "opendevices:unrefined_plastic",
+			"text": "Raw plastic needs to be melted down into a ball before it can be useful for devices."
+		},
+		{
+			"type": "smelting",
+			"recipe": "opendevices:plastic",
+			"text": "Raw plastic can be refined into regular plastic, a material used for many devices."
+		},
+		{
+			"type": "crafting",
+			"recipe": "opendevices:plastic_frame",
+			"recipe2": "opendevices:plastic_block"
+		}
+    ]
+}

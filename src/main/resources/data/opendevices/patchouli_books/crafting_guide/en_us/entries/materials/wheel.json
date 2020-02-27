@@ -1,0 +1,17 @@
+{
+    "name": "Wheel",
+    "icon": "opendevices:wheel",
+    "category": "materials_category",
+	"read_by_default": true,
+    "pages": [
+        {
+            "type": "text",
+            "text": "Wheels are used as... wheels. What else are wheels even used for? I don't really know what you expected to get from reading this description..."
+        },
+		{
+			"type": "crafting",
+			"recipe": "opendevices:wheel",
+			"title": "Recipe"
+		}
+    ]
+}

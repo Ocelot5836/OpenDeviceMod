@@ -13,7 +13,7 @@
             "item": "opendevices:plastic"
         },
         "I": {
-            "tag": "forge:storage_blocks/iron"
+            "tag": "forge:ingots/iron"
         }
     }
 }

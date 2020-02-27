@@ -1,0 +1,9 @@
+{
+	"name": "item.opendevices:crafting_guide.title",
+	"landing_text": "item.opendevices:crafting_guide.landing",
+	"version": 1,
+	"creative_tab": "opendevices",
+	"book_texture": "patchouli:textures/gui/book_cyan.png",
+	"model": "patchouli:book_cyan",
+	"i18n": true
+}

@@ -4,12 +4,13 @@
         "item": "opendevices:plastic_block"
     },
     "pattern": [
-        "PP",
-        "PP"
+        " P ",
+        "P P",
+        " P "
     ],
     "key": {
         "P": {
-            "item": "opendevices:plastic"
+            "item": "opendevices:plastic_frame"
         }
     }
 }

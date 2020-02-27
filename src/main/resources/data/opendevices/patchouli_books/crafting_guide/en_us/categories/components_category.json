@@ -1,0 +1,5 @@
+{
+	"name": "Crafting Components",
+	"description": "Components can be crafted to assemble devices. Parts can also be removed, upgraded, and then re-added into a device to extend their capabilities.",
+	"icon": "opendevices:green_circuit_board"
+}
