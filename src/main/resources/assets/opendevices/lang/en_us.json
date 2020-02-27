@@ -52,7 +52,7 @@
 
 	"gui.tag_filter.opendevices.devices.laptops": "Laptops",
 
-	"item.opendevices:crafting_guide.title": "Crafting Guide",
+	"item.opendevices:crafting_guide.title": "Assembly Guide",
 	"item.opendevices:crafting_guide.landing": "Everything you need to know about creating components and assembling your first devices.",
 	"item.opendevices:laptop_manual.title": "Owner's Manual",
 	"item.opendevices:laptop_manual.landing": "Everything you need to know about the Laptop from recipes to usages."

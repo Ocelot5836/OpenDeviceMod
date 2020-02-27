@@ -11,12 +11,12 @@
 		{
 			"type": "crafting",
 			"recipe": "opendevices:unrefined_plastic",
-			"text": "Raw plastic needs to be melted down into a ball before it can be useful for devices."
+			"text": "Raw plastic needs to be melted down into a ball before it can be useful for crafting."
 		},
 		{
 			"type": "smelting",
 			"recipe": "opendevices:plastic",
-			"text": "Raw plastic can be refined into regular plastic, a material used for many devices."
+			"text": "Raw plastic can be refined into regular plastic, a commonly used material."
 		},
 		{
 			"type": "crafting",

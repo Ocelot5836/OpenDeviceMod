@@ -6,7 +6,7 @@
     "pages": [
         {
             "type": "text",
-            "text": "Batteries are used to add a buffer to most devices or allows the usage of handheld devices. Not all devices require batteries."
+            "text": "Batteries are used to add a buffer or handheld usage to devices, but not all require or even support batteries."
         },
 		{
 			"type": "crafting",
