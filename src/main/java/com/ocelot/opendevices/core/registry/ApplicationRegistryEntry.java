@@ -1,19 +1,19 @@
 package com.ocelot.opendevices.core.registry;
 
+import com.ocelot.opendevices.api.laptop.application.Application;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
 public class ApplicationRegistryEntry extends ForgeRegistryEntry<ApplicationRegistryEntry>
 {
-    private String className;
+    private Class<? extends Application> clazz;
 
-    public ApplicationRegistryEntry(String className)
+    public ApplicationRegistryEntry(Class<? extends Application> clazz)
     {
-        this.className = className;
+        this.clazz = clazz;
     }
 
-    public String getApplicationClassName()
+    public Class<? extends Application> getClazz()
     {
-        return className;
+        return clazz;
     }
-
 }

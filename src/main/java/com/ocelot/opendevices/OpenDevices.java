@@ -5,12 +5,14 @@ import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.DeviceRegistries;
 import com.ocelot.opendevices.api.device.DeviceProcess;
 import com.ocelot.opendevices.api.device.ProcessInputRegistry;
+import com.ocelot.opendevices.api.laptop.application.Application;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopManager;
 import com.ocelot.opendevices.api.laptop.settings.LaptopSetting;
 import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.core.laptop.process.TestProcess;
 import com.ocelot.opendevices.core.laptop.process.TestProcessInputHandler;
 import com.ocelot.opendevices.core.laptop.process.TestProcessRenderer;
+import com.ocelot.opendevices.core.registry.ApplicationRegistryEntry;
 import com.ocelot.opendevices.core.registry.DeviceProcessRegistryEntry;
 import com.ocelot.opendevices.core.registry.TaskRegistryEntry;
 import com.ocelot.opendevices.core.render.LaptopTileEntityRenderer;
@@ -127,28 +129,34 @@ public class OpenDevices
             event.getRegistry().registerAll(DeviceBlocks.getTileEntities());
         }
 
-        //        @SubscribeEvent
-        //        public static void registerApplications(RegistryEvent.Register<ApplicationRegistryEntry> event)
-        //        {
-        //            Set<ModFileScanData.AnnotationData> annotations = OpenDevices.annotationScanData.stream().filter(it -> it.getTargetType() == ElementType.TYPE && it.getAnnotationType().equals(Type.getType(Application.Register.class))).collect(Collectors.toSet());
-        //            for (ModFileScanData.AnnotationData data : annotations)
-        //            {
-        //                ResourceLocation registryName = new ResourceLocation((String) data.getAnnotationData().get("value"));
-        //
-        //                String className = data.getClassType().getClassName();
-        //                try
-        //                {
-        //                    if (registryName.getPath().isEmpty())
-        //                        throw new IllegalArgumentException("Application: " + registryName + " does not have a valid registry name. Skipping!");
-        //
-        //                    event.getRegistry().register(new ApplicationRegistryEntry(className).setRegistryName(registryName));
-        //                }
-        //                catch (Exception e)
-        //                {
-        //                    OpenDevices.LOGGER.error("Could not register application class " + className + ". Skipping!", e);
-        //                }
-        //            }
-        //        }
+        @SuppressWarnings("unchecked")
+        @SubscribeEvent
+        public static void registerApplications(RegistryEvent.Register<ApplicationRegistryEntry> event)
+        {
+            Set<ModFileScanData.AnnotationData> annotations = OpenDevices.annotationScanData.stream().filter(it -> it.getTargetType() == ElementType.TYPE && it.getAnnotationType().equals(Type.getType(Application.Registry.class))).collect(Collectors.toSet());
+            for (ModFileScanData.AnnotationData data : annotations)
+            {
+                ResourceLocation registryName = new ResourceLocation((String) data.getAnnotationData().get("value"));
+
+                String className = data.getClassType().getClassName();
+                try
+                {
+                    Class<?> clazz = Class.forName(className);
+
+                    if (registryName.getPath().isEmpty())
+                        throw new IllegalArgumentException("Application: " + registryName + " does not have a valid registry name. Skipping!");
+
+                    if (!Application.class.isAssignableFrom(clazz))
+                        throw new IllegalArgumentException("Task: " + clazz + " does not extend Task. Skipping!");
+
+                    event.getRegistry().register(new ApplicationRegistryEntry((Class<? extends Application>) clazz).setRegistryName(registryName));
+                }
+                catch (Exception e)
+                {
+                    OpenDevices.LOGGER.error("Could not register application class " + className + ". Skipping!", e);
+                }
+            }
+        }
 
         @SubscribeEvent
         public static void registerSettings(RegistryEvent.Register<LaptopSetting<?>> event)

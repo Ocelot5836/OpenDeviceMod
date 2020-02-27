@@ -31,11 +31,13 @@ public class DeviceRegistries
     public static IForgeRegistry<DeviceProcessRegistryEntry> PROCESSES = null;
     public static IForgeRegistry<ComponentRegistryEntry> COMPONENTS = null;
 
+    private static final RegistryCache<ApplicationRegistryEntry, Class<? extends Application>> APPLICATIONS_CACHE;
     private static final RegistryCache<TaskRegistryEntry, Class<? extends Task>> TASKS_CACHE;
     private static final RegistryCache<DeviceProcessRegistryEntry, Class<? extends DeviceProcess<?>>> PROCESSES_CACHE;
 
     static
     {
+        APPLICATIONS_CACHE = new RegistryCache<>(() -> APPLICATIONS.getEntries(), ApplicationRegistryEntry::getClazz);
         TASKS_CACHE = new RegistryCache<>(() -> TASKS.getEntries(), TaskRegistryEntry::getClazz);
         PROCESSES_CACHE = new RegistryCache<>(() -> PROCESSES.getEntries(), DeviceProcessRegistryEntry::getClazz);
     }
@@ -59,6 +61,18 @@ public class DeviceRegistries
         TASKS = RegistryManager.ACTIVE.getRegistry(TaskRegistryEntry.class);
         PROCESSES = RegistryManager.ACTIVE.getRegistry(DeviceProcessRegistryEntry.class);
         COMPONENTS = RegistryManager.ACTIVE.getRegistry(ComponentRegistryEntry.class);
+    }
+
+    /**
+     * Checks the cached registry values for the specified value.
+     *
+     * @param value The value to check
+     * @return The registry name of null if the value is not registered
+     */
+    @Nullable
+    public static ResourceLocation getApplicationRegistryName(Class<? extends Application> value)
+    {
+        return APPLICATIONS_CACHE.getRegistryName(value);
     }
 
     /**
