@@ -33,11 +33,7 @@ public interface Application
      * @see Computer
      */
     @Target(ElementType.TYPE)
-    @interface Registry
+    @interface Register
     {
-        /**
-         * @return The name of this content. Should be in the format of <code>modid:contentName</code>.
-         */
-        String value();
     }
 }

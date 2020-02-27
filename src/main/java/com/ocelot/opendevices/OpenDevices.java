@@ -44,6 +44,8 @@ import org.objectweb.asm.Type;
 import java.lang.annotation.ElementType;
 import java.lang.reflect.Field;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -129,35 +131,6 @@ public class OpenDevices
             event.getRegistry().registerAll(DeviceBlocks.getTileEntities());
         }
 
-        @SuppressWarnings("unchecked")
-        @SubscribeEvent
-        public static void registerApplications(RegistryEvent.Register<ApplicationRegistryEntry> event)
-        {
-            Set<ModFileScanData.AnnotationData> annotations = OpenDevices.annotationScanData.stream().filter(it -> it.getTargetType() == ElementType.TYPE && it.getAnnotationType().equals(Type.getType(Application.Registry.class))).collect(Collectors.toSet());
-            for (ModFileScanData.AnnotationData data : annotations)
-            {
-                ResourceLocation registryName = new ResourceLocation((String) data.getAnnotationData().get("value"));
-
-                String className = data.getClassType().getClassName();
-                try
-                {
-                    Class<?> clazz = Class.forName(className);
-
-                    if (registryName.getPath().isEmpty())
-                        throw new IllegalArgumentException("Application: " + registryName + " does not have a valid registry name. Skipping!");
-
-                    if (!Application.class.isAssignableFrom(clazz))
-                        throw new IllegalArgumentException("Task: " + clazz + " does not extend Task. Skipping!");
-
-                    event.getRegistry().register(new ApplicationRegistryEntry((Class<? extends Application>) clazz).setRegistryName(registryName));
-                }
-                catch (Exception e)
-                {
-                    OpenDevices.LOGGER.error("Could not register application class " + className + ". Skipping!", e);
-                }
-            }
-        }
-
         @SubscribeEvent
         public static void registerSettings(RegistryEvent.Register<LaptopSetting<?>> event)
         {
@@ -236,13 +209,46 @@ public class OpenDevices
                         throw new IllegalArgumentException("Process: " + clazz + " does not have a valid registry name. Skipping!");
 
                     if (!DeviceProcess.class.isAssignableFrom(clazz))
-                        throw new IllegalArgumentException("Process: " + clazz + " does not implement Task. Skipping!");
+                        throw new IllegalArgumentException("Process: " + clazz + " does not implement DeviceProcess. Skipping!");
 
                     event.getRegistry().register(new DeviceProcessRegistryEntry((Class<? extends DeviceProcess<?>>) clazz).setRegistryName(registryName));
                 }
                 catch (Exception e)
                 {
                     OpenDevices.LOGGER.error("Could not register process class " + className + ". Skipping!", e);
+                }
+            }
+        }
+
+        @SuppressWarnings("unchecked")
+        @SubscribeEvent
+        public static void registerApplications(RegistryEvent.Register<ApplicationRegistryEntry> event)
+        {
+            Map<String, ModFileScanData.AnnotationData> processClasses = new HashMap<>();
+            Set<ModFileScanData.AnnotationData> annotations = OpenDevices.annotationScanData.stream().filter(it -> it.getTargetType() == ElementType.TYPE && it.getAnnotationType().equals(Type.getType(Application.Register.class))).collect(Collectors.toSet());
+            OpenDevices.annotationScanData.stream().filter(it -> it.getTargetType() == ElementType.TYPE && it.getAnnotationType().equals(Type.getType(DeviceProcess.Register.class))).collect(Collectors.toSet()).forEach(data -> processClasses.put(data.getClassType().getClassName(), data));
+
+            for (ModFileScanData.AnnotationData data : annotations)
+            {
+                String className = data.getClassType().getClassName();
+
+                if (!processClasses.containsKey(className))
+                    throw new IllegalArgumentException("Application: " + className + " does not implement DeviceProcess. Skipping!");
+
+                ResourceLocation registryName = new ResourceLocation((String) processClasses.get(className).getAnnotationData().get("value"));
+
+                try
+                {
+                    Class<?> clazz = Class.forName(className);
+
+                    if (!Application.class.isAssignableFrom(clazz))
+                        throw new IllegalArgumentException("Application: " + clazz + " does not implement Application. Skipping!");
+
+                    event.getRegistry().register(new ApplicationRegistryEntry((Class<? extends Application>) clazz).setRegistryName(registryName));
+                }
+                catch (Exception e)
+                {
+                    OpenDevices.LOGGER.error("Could not register application class " + className + ". Skipping!", e);
                 }
             }
         }
