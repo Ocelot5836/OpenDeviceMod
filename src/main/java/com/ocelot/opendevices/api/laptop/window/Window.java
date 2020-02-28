@@ -4,7 +4,9 @@ import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.laptop.Computer;
 import com.ocelot.opendevices.api.laptop.desktop.Desktop;
 import com.ocelot.opendevices.api.util.RenderUtil;
+import net.minecraft.util.text.ITextComponent;
 
+import javax.annotation.Nullable;
 import java.util.UUID;
 
 /**
@@ -16,16 +18,6 @@ import java.util.UUID;
  */
 public interface Window
 {
-    //    /**
-    //     * Centers this window on the desktop of the laptop.
-    //     *
-    //     * @deprecated Setters aren't going to exist anymore
-    //     */
-    //    default void center()
-    //    {
-    //        this.setPosition((DeviceConstants.LAPTOP_SCREEN_WIDTH - this.getWidth()) / 2f, (DeviceConstants.LAPTOP_SCREEN_HEIGHT - this.getLaptop().getTaskBar().getHeight() - (this.getHeight() + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + 2)) / 2f);
-    //    }
-
     /**
      * @return The laptop this window is opened inside of
      */
@@ -41,10 +33,10 @@ public interface Window
      */
     UUID getId();
 
-    //    /**
-    //     * @return The title of the window
-    //     */
-    //    ITextComponent getTitle();
+    /**
+     * @return The title of the window
+     */
+    String getTitle();
 
     /**
      * @return The x position of this window

@@ -32,11 +32,13 @@ public class TestProcess implements DeviceProcess<Computer>, Application
         if (this.window.create())
         {
             this.window.center();
+            this.window.setTitle("Main Dik");
         }
 
         if (this.window2.create())
         {
             this.window2.center();
+            this.window2.setTitle("Second Dik superlongtitlethatneedstobetrimmedtofitthewidth");
         }
 
         this.synchronizeClients();

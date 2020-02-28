@@ -112,6 +112,20 @@ public class WindowHandle implements INBTSerializable<CompoundNBT>
     }
 
     /**
+     * Sets the title of the window with the specified id to the specified title.
+     *
+     * @param title The new title of the window
+     */
+    public void setTitle(String title)
+    {
+        WindowManager windowManager = this.computer.getWindowManager();
+        if (this.windowId != null)
+        {
+            windowManager.setWindowTitle(this.windowId, title);
+        }
+    }
+
+    /**
      * @return The x position of the window or -1 if there is no window
      */
     public float getX()

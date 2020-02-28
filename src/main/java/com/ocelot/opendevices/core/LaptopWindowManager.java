@@ -177,6 +177,20 @@ public class LaptopWindowManager implements WindowManager, INBTSerializable<Comp
         return true;
     }
 
+    public boolean syncSetWindowTitle(UUID windowId, String title)
+    {
+        LaptopWindow window = this.getWindow(windowId);
+
+        if (window == null)
+        {
+            OpenDevices.LOGGER.warn("Could not set title of window with id '" + windowId + "' as it does not exist. Skipping!");
+            return false;
+        }
+
+        window.setTitle(title);
+        return true;
+    }
+
     @Override
     public UUID openWindow(UUID processId)
     {
@@ -273,43 +287,65 @@ public class LaptopWindowManager implements WindowManager, INBTSerializable<Comp
     @Override
     public void moveWindow(UUID windowId, float xDirection, float yDirection)
     {
-        if(this.syncMoveWindow(windowId, xDirection, yDirection)){
-        if (this.laptop.isClient())
+        if (this.syncMoveWindow(windowId, xDirection, yDirection))
         {
-            TaskManager.sendToServer(new MoveWindowTask(this.laptop.getPos(), windowId, xDirection, yDirection), TaskManager.TaskReceiver.NEARBY);
+            if (this.laptop.isClient())
+            {
+                TaskManager.sendToServer(new MoveWindowTask(this.laptop.getPos(), windowId, xDirection, yDirection), TaskManager.TaskReceiver.NEARBY);
+            }
+            else
+            {
+                TaskManager.sendToTracking(new MoveWindowTask(this.laptop.getPos(), windowId, xDirection, yDirection), this.laptop.getWorld(), this.laptop.getPos());
+            }
         }
-        else
-        {
-            TaskManager.sendToTracking(new MoveWindowTask(this.laptop.getPos(), windowId, xDirection, yDirection), this.laptop.getWorld(), this.laptop.getPos());
-        }}
     }
 
     @Override
     public void setWindowPosition(UUID windowId, float x, float y)
     {
-       if( this.syncSetWindowPosition(windowId, x, y)){
-        if (this.laptop.isClient())
+        if (this.syncSetWindowPosition(windowId, x, y))
         {
-            TaskManager.sendToServer(new SetWindowPositionTask(this.laptop.getPos(), windowId, x, y), TaskManager.TaskReceiver.NEARBY);
+            if (this.laptop.isClient())
+            {
+                TaskManager.sendToServer(new SetWindowPositionTask(this.laptop.getPos(), windowId, x, y), TaskManager.TaskReceiver.NEARBY);
+            }
+            else
+            {
+                TaskManager.sendToTracking(new SetWindowPositionTask(this.laptop.getPos(), windowId, x, y), this.laptop.getWorld(), this.laptop.getPos());
+            }
         }
-        else
-        {
-            TaskManager.sendToTracking(new SetWindowPositionTask(this.laptop.getPos(), windowId, x, y), this.laptop.getWorld(), this.laptop.getPos());
-        }}
     }
 
     @Override
     public void setWindowSize(UUID windowId, int width, int height)
     {
-        if(this.syncSetWindowSize(windowId, width, height)){
-        if (this.laptop.isClient())
+        if (this.syncSetWindowSize(windowId, width, height))
         {
-            TaskManager.sendToServer(new SetWindowSizeTask(this.laptop.getPos(), windowId, width, height), TaskManager.TaskReceiver.NEARBY);
+            if (this.laptop.isClient())
+            {
+                TaskManager.sendToServer(new SetWindowSizeTask(this.laptop.getPos(), windowId, width, height), TaskManager.TaskReceiver.NEARBY);
+            }
+            else
+            {
+                TaskManager.sendToTracking(new SetWindowSizeTask(this.laptop.getPos(), windowId, width, height), this.laptop.getWorld(), this.laptop.getPos());
+            }
         }
-        else
+    }
+
+    @Override
+    public void setWindowTitle(UUID windowId, String title)
+    {
+        if (this.syncSetWindowTitle(windowId, title))
         {
-            TaskManager.sendToTracking(new SetWindowSizeTask(this.laptop.getPos(), windowId, width, height), this.laptop.getWorld(), this.laptop.getPos());
-        }}
+            if (this.laptop.isClient())
+            {
+                TaskManager.sendToServer(new SetWindowTitleTask(this.laptop.getPos(), windowId, title), TaskManager.TaskReceiver.NEARBY);
+            }
+            else
+            {
+                TaskManager.sendToTracking(new SetWindowTitleTask(this.laptop.getPos(), windowId, title), this.laptop.getWorld(), this.laptop.getPos());
+            }
+        }
     }
 
     @Nullable

@@ -91,6 +91,7 @@ public class LaptopRenderer extends AbstractGui
             int borderColor = window.getId().equals(windowManager.getFocusedWindowId()) ? computer.readSetting(LaptopSettings.FOCUSED_WINDOW_COLOR) : computer.readSetting(LaptopSettings.WINDOW_COLOR);
             renderWindow(posX, posY, window, computer.readSetting(LaptopSettings.WINDOW_COLOR), borderColor, partialTicks);
             renderCloseButton(posX, posY, mouseX, mouseY, window, !windowManager.isCloseRequested(window.getId()), computer.readSetting(LaptopSettings.WINDOW_BUTTON_COLOR), partialTicks);
+            RenderUtil.drawStringClipped(fontRenderer, window.getTitle(), posX + window.getInterpolatedX(partialTicks) + 3, posY + window.getInterpolatedY(partialTicks) + 3, window.getWidth() - DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE - 6, computer.readSetting(LaptopSettings.DESKTOP_TEXT_COLOR), false);
 
             DeviceProcess<Computer> process = computer.getProcess(window.getProcessId());
             if (process != null)
@@ -157,7 +158,7 @@ public class LaptopRenderer extends AbstractGui
 
             for (Window window : taskBar.getDisplayedWindows())
             {
-                String title = String.valueOf(window.getId());
+                String title = window.getTitle();
                 if (!StringUtils.isEmpty(title) && RenderUtil.isMouseInside(mouseX, mouseY, posX + 4 + (size + 4) * i, posY + screenHeight - taskBar.getHeight() + 4, posX + 4 + (size + 4) * i + size, posY + screenHeight - taskBar.getHeight() + 4 + size))
                 {
                     renderer.renderTooltip(title, mouseX, mouseY);

@@ -1,9 +1,12 @@
 package com.ocelot.opendevices.core.laptop.window;
 
+import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.laptop.Computer;
 import com.ocelot.opendevices.api.laptop.window.Window;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.util.INBTSerializable;
+import org.apache.commons.codec.binary.Base64;
 
 import java.util.UUID;
 
@@ -13,6 +16,7 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
     private UUID processId;
     private UUID id;
 
+    private String title;
     private float x;
     private float y;
     private float lastX;
@@ -25,8 +29,9 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
         this.computer = computer;
         this.processId = processId;
         this.id = UUID.randomUUID();
-        this.width = 200;
-        this.height = 100;
+        this.title = String.valueOf(this.id);
+        this.width = DeviceConstants.LAPTOP_DEFAULT_APPLICATION_WIDTH;
+        this.height = DeviceConstants.LAPTOP_DEFAULT_APPLICATION_HEIGHT;
     }
 
     public LaptopWindow(Computer computer, CompoundNBT nbt)
@@ -57,6 +62,12 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
     public UUID getId()
     {
         return id;
+    }
+
+    @Override
+    public String getTitle()
+    {
+        return title;
     }
 
     @Override
@@ -95,6 +106,11 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
         return height;
     }
 
+    public void setTitle(String title)
+    {
+        this.title = title;
+    }
+
     public void setX(float x)
     {
         this.x = x;
@@ -131,10 +147,12 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
         CompoundNBT nbt = new CompoundNBT();
         nbt.putUniqueId("processId", this.processId);
         nbt.putUniqueId("id", this.id);
+        nbt.putString("title", this.title);
         nbt.putFloat("x", this.x);
         nbt.putFloat("y", this.y);
         nbt.putInt("width", this.width);
         nbt.putInt("height", this.height);
+
         return nbt;
     }
 
@@ -143,6 +161,7 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
     {
         this.processId = nbt.getUniqueId("processId");
         this.id = nbt.getUniqueId("id");
+        this.title = nbt.getString("title");
         this.x = nbt.getFloat("x");
         this.y = nbt.getFloat("y");
         this.lastX = this.x;
@@ -154,6 +173,6 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
     @Override
     public String toString()
     {
-        return "LaptopWindow{processId=" + this.processId + ",id=" + this.id + "}";
+        return "LaptopWindow{processId=" + this.processId + ",id=" + this.id + ",title=" + this.title + "}";
     }
 }

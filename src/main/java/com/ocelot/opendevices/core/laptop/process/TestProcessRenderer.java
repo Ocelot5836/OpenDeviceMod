@@ -17,9 +17,5 @@ public class TestProcessRenderer implements ProcessWindowRenderer<Computer, Test
     public void renderOverlay(TooltipRenderer renderer, TestProcess process, Window window, int posX, int posY, int mouseX, int mouseY, float partialTicks)
     {
         Computer computer = process.getDevice();
-        if (window.getId().equals(computer.getWindowManager().getFocusedWindowId()) && window.isWithinContent(mouseX - posX, mouseY - posY, partialTicks))
-        {
-            renderer.renderTooltip("dik", mouseX, mouseY);
-        }
     }
 }
