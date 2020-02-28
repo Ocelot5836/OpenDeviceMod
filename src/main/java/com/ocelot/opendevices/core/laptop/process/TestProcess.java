@@ -8,6 +8,7 @@ import com.ocelot.opendevices.api.laptop.application.Application;
 import com.ocelot.opendevices.api.laptop.window.WindowHandle;
 import net.minecraft.nbt.CompoundNBT;
 
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -110,5 +111,12 @@ public class TestProcess implements DeviceProcess<Computer>, Application
     public void readSyncNBT(CompoundNBT nbt)
     {
         this.deserializeNBT(nbt);
+    }
+
+    @Nullable
+    @Override
+    public UUID getLayout(UUID windowId)
+    {
+        return null;
     }
 }
