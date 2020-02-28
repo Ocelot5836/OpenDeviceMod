@@ -11,6 +11,9 @@ import com.ocelot.opendevices.core.registry.ComponentRegistryEntry;
 import com.ocelot.opendevices.core.registry.DeviceProcessRegistryEntry;
 import com.ocelot.opendevices.core.registry.TaskRegistryEntry;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import net.minecraftforge.registries.RegistryBuilder;
@@ -23,6 +26,7 @@ import javax.annotation.Nullable;
  *
  * @author Ocelot
  */
+@Mod.EventBusSubscriber(modid = OpenDevices.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class DeviceRegistries
 {
     public static IForgeRegistry<LaptopSetting<?>> SETTINGS = null;
@@ -44,11 +48,9 @@ public class DeviceRegistries
 
     private DeviceRegistries() {}
 
-    /**
-     * This should never be used by the consumer. Core use only!
-     */
     @SuppressWarnings("unchecked")
-    public static void register()
+    @SubscribeEvent
+    public static void registerRegistries(RegistryEvent.NewRegistry event)
     {
         makeRegistry("settings", LaptopSetting.class).create();
         makeRegistry("tasks", TaskRegistryEntry.class).create();

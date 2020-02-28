@@ -1,9 +1,7 @@
 package com.ocelot.opendevices.api.laptop.application;
 
-import com.ocelot.opendevices.api.DeviceRegistries;
 import com.ocelot.opendevices.api.device.DeviceProcess;
 import com.ocelot.opendevices.api.laptop.Computer;
-import net.minecraft.util.ResourceLocation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
@@ -17,13 +15,11 @@ import java.lang.annotation.Target;
 public interface Application
 {
     /**
-     * @return The information associated with this application
+     * @return The {@link AppInfo} associated with this application or {@link AppInfo#EMPTY} if there is no info about this app
      */
     default AppInfo getInfo()
     {
-        ResourceLocation registryName = DeviceRegistries.getApplicationRegistryName(this.getClass());
-        // TODO load info from /data/opendevices/...
-        return AppInfo.EMPTY;
+        return ApplicationManager.getAppInfo(this.getClass());
     }
 
     /**

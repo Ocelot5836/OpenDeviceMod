@@ -2,7 +2,6 @@ package com.ocelot.opendevices;
 
 import com.mrcrayfish.filters.Filters;
 import com.ocelot.opendevices.api.DeviceConstants;
-import com.ocelot.opendevices.api.DeviceRegistries;
 import com.ocelot.opendevices.api.device.DeviceProcess;
 import com.ocelot.opendevices.api.device.ProcessInputRegistry;
 import com.ocelot.opendevices.api.laptop.application.Application;
@@ -106,12 +105,6 @@ public class OpenDevices
     @Mod.EventBusSubscriber(modid = OpenDevices.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
     public static class RegistryEvents
     {
-        @SubscribeEvent
-        public static void registerRegistries(RegistryEvent.NewRegistry event)
-        {
-            DeviceRegistries.register();
-        }
-
         @SubscribeEvent
         public static void registerItems(RegistryEvent.Register<Item> event)
         {

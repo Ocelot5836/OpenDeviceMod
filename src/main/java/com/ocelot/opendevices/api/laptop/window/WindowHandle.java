@@ -3,6 +3,8 @@ package com.ocelot.opendevices.api.laptop.window;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.device.DeviceProcess;
 import com.ocelot.opendevices.api.laptop.Computer;
+import com.ocelot.opendevices.api.laptop.taskbar.TaskBar;
+import com.ocelot.opendevices.api.task.Task;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.INBTSerializable;
 
@@ -18,13 +20,15 @@ import java.util.UUID;
  */
 public class WindowHandle implements INBTSerializable<CompoundNBT>
 {
-    private Computer computer;
+    private WindowManager windowManager;
+    private TaskBar taskBar;
     private UUID processId;
     private UUID windowId;
 
-    public WindowHandle(Computer computer, UUID processId)
+    public WindowHandle(WindowManager windowManager, TaskBar taskBar, UUID processId)
     {
-        this.computer = computer;
+        this.windowManager = windowManager;
+        this.taskBar = taskBar;
         this.processId = processId;
     }
 
@@ -35,8 +39,7 @@ public class WindowHandle implements INBTSerializable<CompoundNBT>
      */
     public boolean create()
     {
-        WindowManager windowManager = this.computer.getWindowManager();
-        Window window = windowManager.getWindow(this.windowId);
+        Window window = this.windowManager.getWindow(this.windowId);
 
         if (window == null)
         {
@@ -47,7 +50,7 @@ public class WindowHandle implements INBTSerializable<CompoundNBT>
             return false;
         }
 
-        this.windowId = windowManager.openWindow(this.processId);
+        this.windowId = this.windowManager.openWindow(this.processId);
         return true;
     }
 
@@ -58,8 +61,7 @@ public class WindowHandle implements INBTSerializable<CompoundNBT>
     {
         if (this.windowId != null)
         {
-            WindowManager windowManager = this.computer.getWindowManager();
-            windowManager.closeWindows(this.windowId);
+            this.windowManager.closeWindows(this.windowId);
             this.windowId = null;
         }
     }
@@ -78,7 +80,7 @@ public class WindowHandle implements INBTSerializable<CompoundNBT>
      */
     public void center()
     {
-        this.setPosition((DeviceConstants.LAPTOP_SCREEN_WIDTH - this.getWidth()) / 2f, (DeviceConstants.LAPTOP_SCREEN_HEIGHT - this.computer.getTaskBar().getHeight() - (this.getHeight() + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + 2)) / 2f);
+        this.setPosition((DeviceConstants.LAPTOP_SCREEN_WIDTH - this.getWidth()) / 2f, (DeviceConstants.LAPTOP_SCREEN_HEIGHT - this.taskBar.getHeight() - (this.getHeight() + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + 2)) / 2f);
     }
 
     /**
@@ -89,10 +91,9 @@ public class WindowHandle implements INBTSerializable<CompoundNBT>
      */
     public void setPosition(float x, float y)
     {
-        WindowManager windowManager = this.computer.getWindowManager();
         if (this.windowId != null)
         {
-            windowManager.setWindowPosition(this.windowId, x, y);
+            this.windowManager.setWindowPosition(this.windowId, x, y);
         }
     }
 
@@ -104,10 +105,9 @@ public class WindowHandle implements INBTSerializable<CompoundNBT>
      */
     public void setSize(int width, int height)
     {
-        WindowManager windowManager = this.computer.getWindowManager();
         if (this.windowId != null)
         {
-            windowManager.setWindowSize(this.windowId, width, height);
+            this.windowManager.setWindowSize(this.windowId, width, height);
         }
     }
 
@@ -118,10 +118,9 @@ public class WindowHandle implements INBTSerializable<CompoundNBT>
      */
     public void setTitle(String title)
     {
-        WindowManager windowManager = this.computer.getWindowManager();
         if (this.windowId != null)
         {
-            windowManager.setWindowTitle(this.windowId, title);
+            this.windowManager.setWindowTitle(this.windowId, title);
         }
     }
 
@@ -130,8 +129,7 @@ public class WindowHandle implements INBTSerializable<CompoundNBT>
      */
     public float getX()
     {
-        WindowManager windowManager = this.computer.getWindowManager();
-        Window window = windowManager.getWindow(this.windowId);
+        Window window = this.windowManager.getWindow(this.windowId);
         return window == null ? -1 : window.getX();
     }
 
@@ -140,8 +138,7 @@ public class WindowHandle implements INBTSerializable<CompoundNBT>
      */
     public float getY()
     {
-        WindowManager windowManager = this.computer.getWindowManager();
-        Window window = windowManager.getWindow(this.windowId);
+        Window window = this.windowManager.getWindow(this.windowId);
         return window == null ? -1 : window.getY();
     }
 
@@ -150,8 +147,7 @@ public class WindowHandle implements INBTSerializable<CompoundNBT>
      */
     public float getWidth()
     {
-        WindowManager windowManager = this.computer.getWindowManager();
-        Window window = windowManager.getWindow(this.windowId);
+        Window window = this.windowManager.getWindow(this.windowId);
         return window == null ? -1 : window.getWidth();
     }
 
@@ -160,8 +156,7 @@ public class WindowHandle implements INBTSerializable<CompoundNBT>
      */
     public float getHeight()
     {
-        WindowManager windowManager = this.computer.getWindowManager();
-        Window window = windowManager.getWindow(this.windowId);
+        Window window = this.windowManager.getWindow(this.windowId);
         return window == null ? -1 : window.getHeight();
     }
 
@@ -170,7 +165,7 @@ public class WindowHandle implements INBTSerializable<CompoundNBT>
      */
     public boolean isCloseRequested()
     {
-        return this.computer.getWindowManager().isCloseRequested(this.windowId);
+        return this.windowManager.isCloseRequested(this.windowId);
     }
 
     /**
@@ -180,9 +175,7 @@ public class WindowHandle implements INBTSerializable<CompoundNBT>
     {
         if (this.windowId == null)
             return false;
-        WindowManager windowManager = this.computer.getWindowManager();
-        Window window = windowManager.getWindow(this.windowId);
-        return window != null;
+        return this.windowManager.getWindow(this.windowId) != null;
     }
 
     @Override

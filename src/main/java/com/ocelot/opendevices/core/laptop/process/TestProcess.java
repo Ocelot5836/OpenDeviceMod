@@ -3,10 +3,12 @@ package com.ocelot.opendevices.core.laptop.process;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.device.DeviceProcess;
 import com.ocelot.opendevices.api.laptop.Computer;
+import com.ocelot.opendevices.api.laptop.application.AppInfo;
 import com.ocelot.opendevices.api.laptop.application.Application;
 import com.ocelot.opendevices.api.laptop.window.WindowHandle;
 import net.minecraft.nbt.CompoundNBT;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 @Application.Register
@@ -22,23 +24,24 @@ public class TestProcess implements DeviceProcess<Computer>, Application
     {
         this.computer = computer;
         this.processId = processId;
-        this.window = new WindowHandle(this.computer, this.processId);
-        this.window2 = new WindowHandle(this.computer, this.processId);
+        this.window = new WindowHandle(this.computer.getWindowManager(), this.computer.getTaskBar(), this.processId);
+        this.window2 = new WindowHandle(this.computer.getWindowManager(), this.computer.getTaskBar(), this.processId);
     }
 
     @Override
     public void init()
     {
+        AppInfo info = this.getInfo();
         if (this.window.create())
         {
             this.window.center();
-            this.window.setTitle("Main Dik");
+            this.window.setTitle(info.getName() + " v" + info.getVersion());
         }
 
         if (this.window2.create())
         {
             this.window2.center();
-            this.window2.setTitle("Second Dik superlongtitlethatneedstobetrimmedtofitthewidth");
+            this.window2.setTitle("Authors: " + Arrays.toString(info.getAuthors()));
         }
 
         this.synchronizeClients();
