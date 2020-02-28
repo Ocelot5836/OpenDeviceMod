@@ -13,16 +13,12 @@ public class TestProcessRenderer implements ProcessWindowRenderer<Computer, Test
     @Override
     public void render(TestProcess process, Window window, int posX, int posY, int mouseX, int mouseY, float partialTicks)
     {
-        if (window.getId().equals(process.getWindow().getWindowId()))
-        {
-            AbstractGui.fill((int) (posX + window.getInterpolatedX(partialTicks)), (int) (posY + window.getInterpolatedY(partialTicks)), mouseX, mouseY, 0xffff00ff);
-        }
     }
 
     @Override
     public void renderOverlay(TooltipRenderer renderer, TestProcess process, Window window, int posX, int posY, int mouseX, int mouseY, float partialTicks)
     {
-        if (window.getId().equals(process.getWindow2().getWindowId()) && window.isWithinContent(mouseX - posX, mouseY - posY, partialTicks))
+        if (window.isWithinContent(mouseX - posX, mouseY - posY, partialTicks))
         {
             renderer.renderTooltip("dik", mouseX, mouseY);
         }

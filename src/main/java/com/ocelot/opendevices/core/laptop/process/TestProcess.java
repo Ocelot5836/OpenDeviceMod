@@ -29,10 +29,16 @@ public class TestProcess implements DeviceProcess<Computer>, Application
     @Override
     public void init()
     {
-        this.window.create();
-        this.window.center();
-        this.window2.create();
-        this.window2.center();
+        if (this.window.create())
+        {
+            this.window.center();
+        }
+
+        if (this.window2.create())
+        {
+            this.window2.center();
+        }
+
         this.synchronizeClients();
     }
 
