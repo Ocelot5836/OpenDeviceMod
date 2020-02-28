@@ -3,13 +3,15 @@ package com.ocelot.opendevices.core.laptop.process;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.device.DeviceProcess;
 import com.ocelot.opendevices.api.laptop.Computer;
+import com.ocelot.opendevices.api.laptop.application.Application;
 import com.ocelot.opendevices.api.laptop.window.WindowHandle;
 import net.minecraft.nbt.CompoundNBT;
 
 import java.util.UUID;
 
+@Application.Register
 @DeviceProcess.Register(OpenDevices.MOD_ID + ":test")
-public class TestProcess implements DeviceProcess<Computer>
+public class TestProcess implements DeviceProcess<Computer>, Application
 {
     private Computer computer;
     private UUID processId;
@@ -27,10 +29,18 @@ public class TestProcess implements DeviceProcess<Computer>
     @Override
     public void init()
     {
-        this.window.create();
-        this.window.center();
-        this.window2.create();
-        this.window2.center();
+        if (this.window.create())
+        {
+            this.window.center();
+            this.window.setTitle("Main Dik");
+        }
+
+        if (this.window2.create())
+        {
+            this.window2.center();
+            this.window2.setTitle("Second Dik superlongtitlethatneedstobetrimmedtofitthewidth");
+        }
+
         this.synchronizeClients();
     }
 

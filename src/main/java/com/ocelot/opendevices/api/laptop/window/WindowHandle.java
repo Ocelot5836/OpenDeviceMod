@@ -30,8 +30,10 @@ public class WindowHandle implements INBTSerializable<CompoundNBT>
 
     /**
      * Creates a new window if there is not one.
+     *
+     * @return Whether or not a new window was actually created
      */
-    public void create()
+    public boolean create()
     {
         WindowManager windowManager = this.computer.getWindowManager();
         Window window = windowManager.getWindow(this.windowId);
@@ -42,10 +44,11 @@ public class WindowHandle implements INBTSerializable<CompoundNBT>
         }
         else
         {
-            return;
+            return false;
         }
 
         this.windowId = windowManager.openWindow(this.processId);
+        return true;
     }
 
     /**
@@ -105,6 +108,20 @@ public class WindowHandle implements INBTSerializable<CompoundNBT>
         if (this.windowId != null)
         {
             windowManager.setWindowSize(this.windowId, width, height);
+        }
+    }
+
+    /**
+     * Sets the title of the window with the specified id to the specified title.
+     *
+     * @param title The new title of the window
+     */
+    public void setTitle(String title)
+    {
+        WindowManager windowManager = this.computer.getWindowManager();
+        if (this.windowId != null)
+        {
+            windowManager.setWindowTitle(this.windowId, title);
         }
     }
 

@@ -1,6 +1,7 @@
 package com.ocelot.opendevices.api.laptop.window;
 
 import com.ocelot.opendevices.api.laptop.Computer;
+import net.minecraft.util.text.ITextComponent;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -98,6 +99,14 @@ public interface WindowManager
      * @param height   The new y size of the window
      */
     void setWindowSize(UUID windowId, int width, int height);
+
+    /**
+     * Sets the title of the window with the specified id to the specified text.
+     *
+     * @param windowId The id of the window to change
+     * @param title    The new title of the window
+     */
+    void setWindowTitle(UUID windowId, String title);
 
     /**
      * Checks the opened windows for the window with the specified id.

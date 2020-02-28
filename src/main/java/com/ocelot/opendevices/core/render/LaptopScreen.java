@@ -43,7 +43,10 @@ public class LaptopScreen extends Screen implements TooltipRenderer
     {
         super(new TranslationTextComponent("screen." + OpenDevices.MOD_ID + ".laptop"));
         this.laptop = laptop;
-        this.laptop.executeProcess(new ResourceLocation(OpenDevices.MOD_ID, "test"));
+        if (this.laptop.getProcessIds().isEmpty())
+        {
+            this.laptop.executeProcess(new ResourceLocation(OpenDevices.MOD_ID, "test"));
+        }
     }
 
     @Override
@@ -55,21 +58,6 @@ public class LaptopScreen extends Screen implements TooltipRenderer
         this.draggingWindow = null;
         this.clickable = false;
     }
-
-    //    private boolean isWithin(Window window, double mouseX, double mouseY)
-    //    {
-    //        return RenderUtil.isMouseInside(mouseX, mouseY, this.posX + DeviceConstants.LAPTOP_GUI_BORDER + window.getX(), this.posY + DeviceConstants.LAPTOP_GUI_BORDER + window.getY(), this.posX + DeviceConstants.LAPTOP_GUI_BORDER + window.getX() + window.getWidth(), this.posY + DeviceConstants.LAPTOP_GUI_BORDER + window.getY() + window.getHeight());
-    //    }
-    //
-    //    private boolean isWithinContent(Window window, double mouseX, double mouseY)
-    //    {
-    //        return RenderUtil.isMouseInside(mouseX, mouseY, this.posX + DeviceConstants.LAPTOP_GUI_BORDER + window.getX() + 1, this.posY + DeviceConstants.LAPTOP_GUI_BORDER + window.getY() + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + 1, this.posX + DeviceConstants.LAPTOP_GUI_BORDER + window.getX() + window.getWidth() - 1, this.posY + DeviceConstants.LAPTOP_GUI_BORDER + window.getY() + window.getHeight() - 1);
-    //    }
-    //
-    //    private boolean isWithinWindowBar(Window window, double mouseX, double mouseY)
-    //    {
-    //        return RenderUtil.isMouseInside(mouseX, mouseY, this.posX + DeviceConstants.LAPTOP_GUI_BORDER + window.getX(), this.posY + DeviceConstants.LAPTOP_GUI_BORDER + window.getY() + 1, this.posX + DeviceConstants.LAPTOP_GUI_BORDER + window.getX() + window.getWidth() - DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE - 1, this.posY + DeviceConstants.LAPTOP_GUI_BORDER + window.getY() + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT);
-    //    }
 
     @Override
     public void tick()
@@ -262,7 +250,7 @@ public class LaptopScreen extends Screen implements TooltipRenderer
             Window hoveredWindow = null;
             for (Window window : taskBar.getDisplayedWindows())
             {
-                if (RenderUtil.isMouseInside(mouseX - (this.posX + DeviceConstants.LAPTOP_GUI_BORDER), mouseY - (this.posY + DeviceConstants.LAPTOP_GUI_BORDER), this.posX + DeviceConstants.LAPTOP_GUI_BORDER + 4 + (size + 4) * i, this.posY + DeviceConstants.LAPTOP_GUI_BORDER + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4, this.posX + DeviceConstants.LAPTOP_GUI_BORDER + 4 + (size + 4) * i + size, this.posY + DeviceConstants.LAPTOP_GUI_BORDER + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4 + size))
+                if (RenderUtil.isMouseInside(mouseX - (this.posX + DeviceConstants.LAPTOP_GUI_BORDER), mouseY - (this.posY + DeviceConstants.LAPTOP_GUI_BORDER), 4 + (size + 4) * i, DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4, 4 + (size + 4) * i + size, DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4 + size))
                 {
                     hoveredWindow = window;
                     break;

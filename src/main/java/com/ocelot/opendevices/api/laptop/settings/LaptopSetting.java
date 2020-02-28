@@ -47,12 +47,14 @@ public interface LaptopSetting<T> extends IForgeRegistryEntry<LaptopSetting<?>>
     T getDefaultValue();
 
     /**
-     * Registers a new type of setting for the Laptop.
+     * Registers a new type of setting for the {@link Computer}.
      *
      * @author Ocelot
+     * @see Computer
      */
     @Target(ElementType.FIELD)
-    @interface Register {
+    @interface Register
+    {
         /**
          * @return The name of this content. Should be in the format of <code>modid:contentName</code>.
          */

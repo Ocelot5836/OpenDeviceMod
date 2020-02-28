@@ -5,12 +5,14 @@ import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.DeviceRegistries;
 import com.ocelot.opendevices.api.device.DeviceProcess;
 import com.ocelot.opendevices.api.device.ProcessInputRegistry;
+import com.ocelot.opendevices.api.laptop.application.Application;
 import com.ocelot.opendevices.api.laptop.desktop.DesktopManager;
 import com.ocelot.opendevices.api.laptop.settings.LaptopSetting;
 import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.core.laptop.process.TestProcess;
 import com.ocelot.opendevices.core.laptop.process.TestProcessInputHandler;
 import com.ocelot.opendevices.core.laptop.process.TestProcessRenderer;
+import com.ocelot.opendevices.core.registry.ApplicationRegistryEntry;
 import com.ocelot.opendevices.core.registry.DeviceProcessRegistryEntry;
 import com.ocelot.opendevices.core.registry.TaskRegistryEntry;
 import com.ocelot.opendevices.core.render.LaptopTileEntityRenderer;
@@ -42,6 +44,8 @@ import org.objectweb.asm.Type;
 import java.lang.annotation.ElementType;
 import java.lang.reflect.Field;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -127,29 +131,6 @@ public class OpenDevices
             event.getRegistry().registerAll(DeviceBlocks.getTileEntities());
         }
 
-        //        @SubscribeEvent
-        //        public static void registerApplications(RegistryEvent.Register<ApplicationRegistryEntry> event)
-        //        {
-        //            Set<ModFileScanData.AnnotationData> annotations = OpenDevices.annotationScanData.stream().filter(it -> it.getTargetType() == ElementType.TYPE && it.getAnnotationType().equals(Type.getType(Application.Register.class))).collect(Collectors.toSet());
-        //            for (ModFileScanData.AnnotationData data : annotations)
-        //            {
-        //                ResourceLocation registryName = new ResourceLocation((String) data.getAnnotationData().get("value"));
-        //
-        //                String className = data.getClassType().getClassName();
-        //                try
-        //                {
-        //                    if (registryName.getPath().isEmpty())
-        //                        throw new IllegalArgumentException("Application: " + registryName + " does not have a valid registry name. Skipping!");
-        //
-        //                    event.getRegistry().register(new ApplicationRegistryEntry(className).setRegistryName(registryName));
-        //                }
-        //                catch (Exception e)
-        //                {
-        //                    OpenDevices.LOGGER.error("Could not register application class " + className + ". Skipping!", e);
-        //                }
-        //            }
-        //        }
-
         @SubscribeEvent
         public static void registerSettings(RegistryEvent.Register<LaptopSetting<?>> event)
         {
@@ -166,6 +147,9 @@ public class OpenDevices
                     Class<?> clazz = Class.forName(className);
                     Field field = clazz.getField(fieldName);
                     LaptopSetting<?> setting = (LaptopSetting<?>) field.get(null);
+
+                    if (registryName.getPath().isEmpty())
+                        throw new IllegalArgumentException("Setting: " + clazz + " does not have a valid registry name. Skipping!");
 
                     event.getRegistry().register(setting.setRegistryName(registryName));
                 }
@@ -225,13 +209,46 @@ public class OpenDevices
                         throw new IllegalArgumentException("Process: " + clazz + " does not have a valid registry name. Skipping!");
 
                     if (!DeviceProcess.class.isAssignableFrom(clazz))
-                        throw new IllegalArgumentException("Process: " + clazz + " does not implement Task. Skipping!");
+                        throw new IllegalArgumentException("Process: " + clazz + " does not implement DeviceProcess. Skipping!");
 
                     event.getRegistry().register(new DeviceProcessRegistryEntry((Class<? extends DeviceProcess<?>>) clazz).setRegistryName(registryName));
                 }
                 catch (Exception e)
                 {
                     OpenDevices.LOGGER.error("Could not register process class " + className + ". Skipping!", e);
+                }
+            }
+        }
+
+        @SuppressWarnings("unchecked")
+        @SubscribeEvent
+        public static void registerApplications(RegistryEvent.Register<ApplicationRegistryEntry> event)
+        {
+            Map<String, ModFileScanData.AnnotationData> processClasses = new HashMap<>();
+            Set<ModFileScanData.AnnotationData> annotations = OpenDevices.annotationScanData.stream().filter(it -> it.getTargetType() == ElementType.TYPE && it.getAnnotationType().equals(Type.getType(Application.Register.class))).collect(Collectors.toSet());
+            OpenDevices.annotationScanData.stream().filter(it -> it.getTargetType() == ElementType.TYPE && it.getAnnotationType().equals(Type.getType(DeviceProcess.Register.class))).collect(Collectors.toSet()).forEach(data -> processClasses.put(data.getClassType().getClassName(), data));
+
+            for (ModFileScanData.AnnotationData data : annotations)
+            {
+                String className = data.getClassType().getClassName();
+
+                if (!processClasses.containsKey(className))
+                    throw new IllegalArgumentException("Application: " + className + " does not implement DeviceProcess. Skipping!");
+
+                ResourceLocation registryName = new ResourceLocation((String) processClasses.get(className).getAnnotationData().get("value"));
+
+                try
+                {
+                    Class<?> clazz = Class.forName(className);
+
+                    if (!Application.class.isAssignableFrom(clazz))
+                        throw new IllegalArgumentException("Application: " + clazz + " does not implement Application. Skipping!");
+
+                    event.getRegistry().register(new ApplicationRegistryEntry((Class<? extends Application>) clazz).setRegistryName(registryName));
+                }
+                catch (Exception e)
+                {
+                    OpenDevices.LOGGER.error("Could not register application class " + className + ". Skipping!", e);
                 }
             }
         }

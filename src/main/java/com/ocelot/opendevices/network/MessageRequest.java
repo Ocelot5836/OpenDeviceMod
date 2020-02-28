@@ -1,5 +1,6 @@
 package com.ocelot.opendevices.network;
 
+import com.ocelot.opendevices.api.DeviceRegistries;
 import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.api.task.TaskManager;
 import net.minecraft.nbt.CompoundNBT;
@@ -28,7 +29,7 @@ public class MessageRequest
 
     public static void encode(MessageRequest msg, PacketBuffer buf)
     {
-        buf.writeResourceLocation(Objects.requireNonNull(TaskManager.getRegistryName(msg.request.getClass())));
+        buf.writeResourceLocation(Objects.requireNonNull(DeviceRegistries.getTaskRegistryName(msg.request.getClass())));
         msg.request.prepareRequest(msg.nbt);
         buf.writeBoolean(msg.request.isSucessful());
         buf.writeCompoundTag(msg.nbt);

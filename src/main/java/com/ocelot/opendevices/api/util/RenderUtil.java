@@ -251,12 +251,7 @@ public class RenderUtil
 
     public static String clipStringToWidth(FontRenderer fontRenderer, String text, int width)
     {
-        String clipped = text;
-        if (fontRenderer.getStringWidth(clipped) > width)
-        {
-            clipped = fontRenderer.trimStringToWidth(clipped, width - fontRenderer.getStringWidth("...")) + "...";
-        }
-        return clipped;
+        return fontRenderer.getStringWidth(text) > width ? fontRenderer.trimStringToWidth(text, width - fontRenderer.getStringWidth("...")) + "..." : text;
     }
 
     public static boolean isMouseInside(double mouseX, double mouseY, double x1, double y1, double x2, double y2)

@@ -1,5 +1,6 @@
 package com.ocelot.opendevices.network.handler;
 
+import com.ocelot.opendevices.api.DeviceRegistries;
 import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.core.LaptopTileEntity;
@@ -56,7 +57,7 @@ public class ClientMessageHandler implements MessageHandler
             Task request = msg.getRequest();
             CompoundNBT nbt = msg.getNbt();
 
-            if (TaskManager.getRegistryName(request.getClass()) == null)
+            if (DeviceRegistries.getTaskRegistryName(request.getClass()) == null)
                 throw new RuntimeException("Unregistered Task: " + request.getClass().getName() + ". Use Task annotation to register a task.");
 
             request.processRequest(nbt, player.world, player);
@@ -75,7 +76,7 @@ public class ClientMessageHandler implements MessageHandler
         {
             Task request = msg.getRequest();
 
-            if (TaskManager.getRegistryName(request.getClass()) == null)
+            if (DeviceRegistries.getTaskRegistryName(request.getClass()) == null)
                 throw new RuntimeException("Unregistered Task: " + request.getClass().getName() + ". Use Task annotation to register a task.");
 
             request.processResponse(msg.getNbt(), minecraft.world, minecraft.player);
