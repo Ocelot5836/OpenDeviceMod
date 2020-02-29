@@ -1,7 +1,8 @@
-package com.ocelot.opendevices.api.device;
+package com.ocelot.opendevices.api.device.process;
 
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceRegistries;
+import com.ocelot.opendevices.api.device.Device;
 import com.ocelot.opendevices.core.registry.DeviceProcessRegistryEntry;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;

@@ -1,7 +1,7 @@
 package com.ocelot.opendevices.api.computer;
 
 import com.ocelot.opendevices.api.device.Device;
-import com.ocelot.opendevices.api.device.DeviceProcess;
+import com.ocelot.opendevices.api.device.process.DeviceProcess;
 import com.ocelot.opendevices.api.computer.desktop.Desktop;
 import com.ocelot.opendevices.api.computer.settings.LaptopSetting;
 import com.ocelot.opendevices.api.computer.taskbar.TaskBar;
@@ -11,7 +11,6 @@ import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
-import java.util.concurrent.Executor;
 
 /**
  * <p>The most abstract form of a Laptop. This contains all the required functionality for the API.</p>
@@ -39,6 +38,7 @@ public interface Computer extends Device
     <T> T readSetting(LaptopSetting<T> setting);
 
     /**
+     * TODO remove once a device manager is added to find devices by address
      * @return The user currently using the laptop or null if no player is using the laptop
      */
     @Nullable

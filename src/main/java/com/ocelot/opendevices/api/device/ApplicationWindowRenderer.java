@@ -2,8 +2,11 @@ package com.ocelot.opendevices.api.device;
 
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.component.Layout;
+import com.ocelot.opendevices.api.computer.Computer;
 import com.ocelot.opendevices.api.computer.application.Application;
 import com.ocelot.opendevices.api.computer.window.Window;
+import com.ocelot.opendevices.api.device.process.DeviceProcess;
+import com.ocelot.opendevices.api.device.process.ProcessWindowRenderer;
 import com.ocelot.opendevices.api.util.TooltipRenderer;
 
 /**
@@ -16,7 +19,7 @@ import com.ocelot.opendevices.api.util.TooltipRenderer;
  * @see Application
  * @see DeviceProcess
  */
-public class ApplicationWindowRenderer<D extends Device, T extends DeviceProcess<D> & Application> implements ProcessWindowRenderer<D, T>
+public class ApplicationWindowRenderer<D extends Computer, T extends DeviceProcess<D> & Application> implements ProcessWindowRenderer<D, T>
 {
     @Override
     public void render(T application, Window window, int posX, int posY, int mouseX, int mouseY, float partialTicks)
@@ -33,12 +36,15 @@ public class ApplicationWindowRenderer<D extends Device, T extends DeviceProcess
     @Override
     public void renderOverlay(TooltipRenderer renderer, T application, Window window, int posX, int posY, int mouseX, int mouseY, float partialTicks)
     {
-        Layout layout = application.getLayout(window.getId());
-        if (layout != null)
+        if (window.getId().equals(application.getDevice().getWindowManager().getTopWindowId()))
         {
-            float contentX = window.getInterpolatedX(partialTicks) + 1;
-            float contentY = window.getInterpolatedY(partialTicks) + 1 + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT;
-            layout.renderOverlay(renderer, posX + contentX, posY + contentY, mouseX, mouseY, partialTicks);
+            Layout layout = application.getLayout(window.getId());
+            if (layout != null)
+            {
+                float contentX = window.getInterpolatedX(partialTicks) + 1;
+                float contentY = window.getInterpolatedY(partialTicks) + 1 + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT;
+                layout.renderOverlay(renderer, posX + contentX, posY + contentY, mouseX, mouseY, partialTicks);
+            }
         }
     }
 }

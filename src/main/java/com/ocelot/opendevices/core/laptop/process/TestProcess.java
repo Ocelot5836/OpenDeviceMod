@@ -7,14 +7,13 @@ import com.ocelot.opendevices.api.computer.Computer;
 import com.ocelot.opendevices.api.computer.application.AppInfo;
 import com.ocelot.opendevices.api.computer.application.Application;
 import com.ocelot.opendevices.api.computer.window.WindowHandle;
-import com.ocelot.opendevices.api.device.DeviceProcess;
+import com.ocelot.opendevices.api.device.process.DeviceProcess;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.UUID;
-import java.util.function.Function;
 
 @Application.Register
 @DeviceProcess.Register(OpenDevices.MOD_ID + ":test")

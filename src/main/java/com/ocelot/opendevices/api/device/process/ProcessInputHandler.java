@@ -1,10 +1,10 @@
-package com.ocelot.opendevices.api.device;
+package com.ocelot.opendevices.api.device.process;
 
 import com.ocelot.opendevices.api.computer.window.Window;
+import com.ocelot.opendevices.api.device.Device;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nullable;
-import java.util.UUID;
 
 /**
  * <p>Allows the listening of input events for processes. This also allows the listening of window inputs which can be used in any way. Should only be bound on the client side!</p>

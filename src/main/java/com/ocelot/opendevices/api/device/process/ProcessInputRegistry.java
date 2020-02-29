@@ -1,6 +1,7 @@
-package com.ocelot.opendevices.api.device;
+package com.ocelot.opendevices.api.device.process;
 
 import com.ocelot.opendevices.OpenDevices;
+import com.ocelot.opendevices.api.device.Device;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;

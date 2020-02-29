@@ -2,9 +2,7 @@ package com.ocelot.opendevices.core.registry;
 
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.device.Device;
-import com.ocelot.opendevices.api.device.DeviceProcess;
-import com.ocelot.opendevices.api.task.Task;
-import net.minecraft.nbt.CompoundNBT;
+import com.ocelot.opendevices.api.device.process.DeviceProcess;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nullable;

@@ -1,6 +1,7 @@
-package com.ocelot.opendevices.api.device;
+package com.ocelot.opendevices.api.device.process;
 
 import com.ocelot.opendevices.api.computer.Computer;
+import com.ocelot.opendevices.api.device.Device;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.INBTSerializable;
 

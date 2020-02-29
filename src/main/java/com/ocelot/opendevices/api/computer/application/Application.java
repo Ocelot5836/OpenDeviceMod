@@ -2,7 +2,7 @@ package com.ocelot.opendevices.api.computer.application;
 
 import com.ocelot.opendevices.api.component.Layout;
 import com.ocelot.opendevices.api.computer.Computer;
-import com.ocelot.opendevices.api.device.DeviceProcess;
+import com.ocelot.opendevices.api.device.process.DeviceProcess;
 
 import javax.annotation.Nullable;
 import java.lang.annotation.ElementType;

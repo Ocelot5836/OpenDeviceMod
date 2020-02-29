@@ -1,5 +1,6 @@
 package com.ocelot.opendevices.api.device;
 
+import com.ocelot.opendevices.api.device.process.DeviceProcess;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.IWorld;

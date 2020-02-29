@@ -1,6 +1,7 @@
-package com.ocelot.opendevices.api.device;
+package com.ocelot.opendevices.api.device.process;
 
 import com.ocelot.opendevices.api.computer.window.Window;
+import com.ocelot.opendevices.api.device.Device;
 import com.ocelot.opendevices.api.util.TooltipRenderer;
 
 /**
