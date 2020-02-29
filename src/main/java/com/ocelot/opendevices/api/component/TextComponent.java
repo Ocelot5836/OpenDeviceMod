@@ -1,8 +1,8 @@
 package com.ocelot.opendevices.api.component;
 
 import com.ocelot.opendevices.api.DeviceConstants;
-import com.ocelot.opendevices.api.handler.ComponentClickListener;
 import com.ocelot.opendevices.api.computer.Computer;
+import com.ocelot.opendevices.api.handler.ComponentClickListener;
 import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.api.util.TooltipRenderer;
 import net.minecraft.client.Minecraft;
@@ -156,7 +156,7 @@ public class TextComponent extends AbstractGui implements Component
     }
 
     @Override
-    public void render(int posX, int posY, int mouseX, int mouseY, float partialTicks)
+    public void render(float posX, float posY, int mouseX, int mouseY, float partialTicks)
     {
         for (int i = 0; i < this.lines.size(); i++)
         {
@@ -167,14 +167,15 @@ public class TextComponent extends AbstractGui implements Component
     }
 
     @Override
-    public void renderOverlay(TooltipRenderer renderer, int posX, int posY, int mouseX, int mouseY, float partialTicks)
+    public void renderOverlay(TooltipRenderer renderer, float posX, float posY, int mouseX, int mouseY, float partialTicks)
     {
-        if (this.isHovered(mouseX, mouseY))
+        System.out.println(this.isHovered(mouseX - posX, mouseY - posY));
+        if (this.isHovered(mouseX - posX, mouseY - posY))
         {
             if (this.lastTooltip == Long.MAX_VALUE)
                 this.lastTooltip = System.currentTimeMillis();
             if (System.currentTimeMillis() - this.lastTooltip >= this.tooltipDelay)
-                renderer.renderComponentHoverEffect(this.getHoveredText(mouseX, mouseY), mouseX, mouseY);
+                renderer.renderComponentHoverEffect(this.getHoveredText(mouseX - posX, mouseY - posY), mouseX, mouseY);
         }
         else
         {

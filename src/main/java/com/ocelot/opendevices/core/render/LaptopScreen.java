@@ -144,7 +144,7 @@ public class LaptopScreen extends Screen implements TooltipRenderer
                 if (focusedProcess != null)
                 {
                     ProcessInputHandler<Computer, DeviceProcess<Computer>> inputHandler = ProcessInputRegistry.getInputHandler(focusedProcess);
-                    if (inputHandler != null && inputHandler.onKeyPressed(focusedProcess, focusedWindow.getId(), keyCode, scanCode, mods))
+                    if (inputHandler != null && inputHandler.onKeyPressed(focusedProcess, focusedWindow, keyCode, scanCode, mods))
                     {
                         return true;
                     }
@@ -173,7 +173,7 @@ public class LaptopScreen extends Screen implements TooltipRenderer
                 if (focusedProcess != null)
                 {
                     ProcessInputHandler<Computer, DeviceProcess<Computer>> inputHandler = ProcessInputRegistry.getInputHandler(focusedProcess);
-                    if (inputHandler != null && inputHandler.onKeyReleased(focusedProcess, focusedWindow.getId(), keyCode, scanCode, mods))
+                    if (inputHandler != null && inputHandler.onKeyReleased(focusedProcess, focusedWindow, keyCode, scanCode, mods))
                     {
                         return true;
                     }
@@ -220,7 +220,7 @@ public class LaptopScreen extends Screen implements TooltipRenderer
                         if (process != null)
                         {
                             ProcessInputHandler<Computer, DeviceProcess<Computer>> inputHandler = ProcessInputRegistry.getInputHandler(process);
-                            if (inputHandler != null && inputHandler.onMousePressed(process, window.getId(), mouseX, mouseY, mouseButton))
+                            if (inputHandler != null && inputHandler.onMousePressed(process, window, mouseX, mouseY, mouseButton))
                             {
                                 return true;
                             }
@@ -291,7 +291,7 @@ public class LaptopScreen extends Screen implements TooltipRenderer
                 if (focusedProcess != null)
                 {
                     ProcessInputHandler<Computer, DeviceProcess<Computer>> inputHandler = ProcessInputRegistry.getInputHandler(focusedProcess);
-                    if (inputHandler != null && inputHandler.onMouseReleased(focusedProcess, focusedWindow.getId(), mouseX, mouseY, mouseButton))
+                    if (inputHandler != null && inputHandler.onMouseReleased(focusedProcess, focusedWindow, mouseX, mouseY, mouseButton))
                     {
                         return true;
                     }
@@ -316,7 +316,7 @@ public class LaptopScreen extends Screen implements TooltipRenderer
                 if (focusedProcess != null)
                 {
                     ProcessInputHandler<Computer, DeviceProcess<Computer>> inputHandler = ProcessInputRegistry.getInputHandler(focusedProcess);
-                    if (inputHandler != null && inputHandler.onMouseScrolled(focusedProcess, focusedWindow.getId(), mouseX, mouseY, amount))
+                    if (inputHandler != null && inputHandler.onMouseScrolled(focusedProcess, focusedWindow, mouseX, mouseY, amount))
                     {
                         return true;
                     }
@@ -343,7 +343,7 @@ public class LaptopScreen extends Screen implements TooltipRenderer
                     ProcessInputHandler<Computer, DeviceProcess<Computer>> inputHandler = ProcessInputRegistry.getInputHandler(focusedProcess);
                     if (inputHandler != null)
                     {
-                        inputHandler.onMouseMoved(focusedProcess, focusedWindow.getId(), mouseX, mouseY);
+                        inputHandler.onMouseMoved(focusedProcess, focusedWindow, mouseX, mouseY);
                     }
                 }
             }
@@ -369,7 +369,7 @@ public class LaptopScreen extends Screen implements TooltipRenderer
                 if (focusedProcess != null)
                 {
                     ProcessInputHandler<Computer, DeviceProcess<Computer>> inputHandler = ProcessInputRegistry.getInputHandler(focusedProcess);
-                    if (inputHandler != null && inputHandler.onMouseDragged(focusedProcess, focusedWindow.getId(), mouseX, mouseY, mouseButton, deltaX, deltaY))
+                    if (inputHandler != null && inputHandler.onMouseDragged(focusedProcess, focusedWindow, mouseX, mouseY, mouseButton, deltaX, deltaY))
                     {
                         return true;
                     }

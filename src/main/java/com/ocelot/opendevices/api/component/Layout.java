@@ -1,6 +1,5 @@
 package com.ocelot.opendevices.api.component;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.util.RenderUtil;
@@ -93,24 +92,21 @@ public class Layout extends AbstractGui implements Component
     }
 
     @Override
-    public void render(int posX, int posY, int mouseX, int mouseY, float partialTicks)
+    public void render(float posX, float posY, int mouseX, int mouseY, float partialTicks)
     {
-        RenderUtil.pushScissor(this.getX(), this.getY(), this.getWidth(), this.getHeight());
-        GlStateManager.pushMatrix();
-        GlStateManager.translatef(this.getX(), this.getY(), 0f);
+        RenderUtil.pushScissor(posX + this.getX(), posY + this.getY(), this.getWidth(), this.getHeight());
         this.components.forEach(component ->
         {
             if (component.getX() + component.getWidth() >= this.x && component.getX() < this.x + this.width && component.getY() + component.getHeight() >= this.y && component.getY() < this.y + this.height)
             {
-                component.render(posX, posY, mouseX, mouseY, partialTicks);
+                component.render(this.getX() + posX, this.getY() + posY, (int) mouseX, mouseY, partialTicks);
             }
         });
-        GlStateManager.popMatrix();
         RenderUtil.popScissor();
     }
 
     @Override
-    public void renderOverlay(TooltipRenderer renderer, int posX, int posY, int mouseX, int mouseY, float partialTicks)
+    public void renderOverlay(TooltipRenderer renderer, float posX, float posY, int mouseX, int mouseY, float partialTicks)
     {
         if (this.isHovered(mouseX, mouseY))
         {
@@ -118,7 +114,7 @@ public class Layout extends AbstractGui implements Component
             {
                 if (component.getX() + component.getWidth() >= this.x && component.getX() < this.x + this.width && component.getY() + component.getHeight() >= this.y && component.getY() < this.y + this.height)
                 {
-                    component.renderOverlay(renderer, posX, posY, mouseX, mouseY, partialTicks);
+                    component.renderOverlay(renderer, this.getX() + posX, this.getY() + posY, mouseX, mouseY, partialTicks);
                 }
             });
         }
@@ -131,7 +127,7 @@ public class Layout extends AbstractGui implements Component
         {
             for (Component component : this.components)
             {
-                if (component.onMousePressed(mouseX, mouseY, mouseButton))
+                if (component.onMousePressed(mouseX - this.x, mouseY - this.y, mouseButton))
                 {
                     return true;
                 }
@@ -145,7 +141,7 @@ public class Layout extends AbstractGui implements Component
     {
         for (Component component : this.components)
         {
-            if (component.onMouseReleased(mouseX, mouseY, mouseButton))
+            if (component.onMouseReleased(mouseX - this.x, mouseY - this.y, mouseButton))
             {
                 return true;
             }
@@ -158,7 +154,7 @@ public class Layout extends AbstractGui implements Component
     {
         for (Component component : this.components)
         {
-            if (component.onMouseScrolled(mouseX, mouseY, amount))
+            if (component.onMouseScrolled(mouseX - this.x, mouseY - this.y, amount))
             {
                 return true;
             }
@@ -169,7 +165,7 @@ public class Layout extends AbstractGui implements Component
     @Override
     public void onMouseMoved(double mouseX, double mouseY)
     {
-        this.components.forEach(component -> component.onMouseMoved(mouseX, mouseY));
+        this.components.forEach(component -> component.onMouseMoved(mouseX - this.x, mouseY - this.y));
     }
 
     @Override
@@ -177,7 +173,7 @@ public class Layout extends AbstractGui implements Component
     {
         for (Component component : this.components)
         {
-            if (component.onMouseDragged(mouseX, mouseY, mouseButton, deltaX, deltaY))
+            if (component.onMouseDragged(mouseX - this.x, mouseY - this.y, mouseButton, deltaX, deltaY))
             {
                 return true;
             }

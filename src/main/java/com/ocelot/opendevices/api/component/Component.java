@@ -24,25 +24,25 @@ public interface Component extends INBTSerializable<CompoundNBT>
     /**
      * Renders the contents of this component.
      *
-     * @param posX         The x position of the desktop
-     * @param posY         The y position of the desktop
+     * @param posX         The x position of the window
+     * @param posY         The y position of the window
      * @param mouseX       The x position of the mouse
      * @param mouseY       The y position of the mouse
      * @param partialTicks The percentage from last tick and this tick
      */
-    void render(int posX, int posY, int mouseX, int mouseY, float partialTicks);
+    void render(float posX, float posY, int mouseX, int mouseY, float partialTicks);
 
     /**
      * Renders the overlay contents of this component.
      *
      * @param renderer     The rendering instance used for rendering tooltips
-     * @param posX         The x position of the desktop
-     * @param posY         The y position of the desktop
+     * @param posX         The x position of the window
+     * @param posY         The y position of the window
      * @param mouseX       The x position of the mouse
      * @param mouseY       The y position of the mouse
      * @param partialTicks The percentage from last tick and this tick
      */
-    void renderOverlay(TooltipRenderer renderer, int posX, int posY, int mouseX, int mouseY, float partialTicks);
+    void renderOverlay(TooltipRenderer renderer, float posX, float posY, int mouseX, int mouseY, float partialTicks);
 
     /**
      * Called when a key is pressed on the keyboard.

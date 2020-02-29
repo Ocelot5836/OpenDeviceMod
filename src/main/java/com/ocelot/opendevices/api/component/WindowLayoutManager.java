@@ -3,13 +3,18 @@ package com.ocelot.opendevices.api.component;
 import com.ocelot.opendevices.api.computer.window.Window;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraftforge.fml.DistExecutor;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Executor;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * <p>Manages the binding and unbinding of {@link Layout} for {@link Window}. Not required to be used but helps manage layouts.</p>
@@ -22,23 +27,25 @@ public class WindowLayoutManager implements INBTSerializable<ListNBT>
 {
     private Executor executor;
     private Runnable markDirty;
-    private Map<Integer, Layout> layouts;
     private Map<UUID, Integer> currentLayouts;
+    @OnlyIn(Dist.CLIENT)
+    private Supplier<Function<Integer, Layout>> layoutProvider;
 
-    public WindowLayoutManager(Executor executor, Runnable markDirty)
+    public WindowLayoutManager(Executor executor, Runnable markDirty, Supplier<Function<Integer, Layout>> layoutProvider)
     {
         this.executor = executor;
         this.markDirty = markDirty;
-        this.layouts = new HashMap<>();
         this.currentLayouts = new HashMap<>();
+        DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> this.layoutProvider = layoutProvider);
     }
 
+    @OnlyIn(Dist.CLIENT)
     @Nullable
     private Layout getLayout(int layoutId)
     {
         if (layoutId == -1)
             return null;
-        return this.layouts.get(layoutId);
+        return this.layoutProvider.get().apply(layoutId);
     }
 
     private void setLayout(UUID windowId, int layoutId)
@@ -47,34 +54,28 @@ public class WindowLayoutManager implements INBTSerializable<ListNBT>
         if (previousLayoutId == layoutId)
             return;
 
-        Layout previousLayout = this.getLayout(previousLayoutId);
-        Layout layout = this.getLayout(layoutId);
-
-        if (previousLayout != null)
-            previousLayout.onLayoutUnload();
-        if (layout != null)
+        DistExecutor.runWhenOn(Dist.CLIENT, () -> () ->
         {
-            this.currentLayouts.put(windowId, layoutId);
-            layout.onLayoutLoad();
-        }
-        else
+            Layout previousLayout = this.getLayout(previousLayoutId);
+            if (previousLayout != null)
+                previousLayout.onLayoutUnload();
+        });
+
+        if (layoutId == -1)
         {
             this.currentLayouts.remove(windowId);
         }
+        else
+        {
+            this.currentLayouts.put(windowId, layoutId);
+            DistExecutor.runWhenOn(Dist.CLIENT, () -> () ->
+            {
+                Layout layout = this.getLayout(layoutId);
+                if (layout != null)
+                    layout.onLayoutLoad();
+            });
+        }
         this.markDirty.run();
-    }
-
-    /**
-     * Binds the specified layout to the specified id. Used for {@link #setCurrentLayout(UUID, int)} and {@link #setCurrentLayout(UUID, int, boolean)}.
-     *
-     * @param id     The id to use when setting the layout
-     * @param layout THe layout to bind to the id
-     */
-    public void addLayout(int id, Layout layout)
-    {
-        if (this.layouts.containsKey(id))
-            throw new IllegalArgumentException("Layout with id '" + id + "' already exists!");
-        this.layouts.put(id, layout);
     }
 
     /**
@@ -113,6 +114,7 @@ public class WindowLayoutManager implements INBTSerializable<ListNBT>
      * @param windowId The id of the window to check
      * @return The layout found or null if the window has no bound layout
      */
+    @OnlyIn(Dist.CLIENT)
     @Nullable
     public Layout getCurrentLayout(UUID windowId)
     {

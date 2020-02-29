@@ -2,27 +2,28 @@ package com.ocelot.opendevices.core.laptop.process;
 
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.component.Layout;
-import com.ocelot.opendevices.api.component.TextComponent;
 import com.ocelot.opendevices.api.component.WindowLayoutManager;
 import com.ocelot.opendevices.api.computer.Computer;
 import com.ocelot.opendevices.api.computer.application.AppInfo;
 import com.ocelot.opendevices.api.computer.application.Application;
 import com.ocelot.opendevices.api.computer.window.WindowHandle;
 import com.ocelot.opendevices.api.device.DeviceProcess;
-import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.UUID;
+import java.util.function.Function;
 
 @Application.Register
 @DeviceProcess.Register(OpenDevices.MOD_ID + ":test")
 public class TestProcess implements DeviceProcess<Computer>, Application
 {
     public static final int TEST_LAYOUT = 0;
+    public static final int TEST_LAYOUT2 = 1;
+
+    private static final Function<Integer, Layout> LAYOUT_SUPPLIER = new TestProcessLayoutSupplier();
 
     private Computer computer;
     private UUID processId;
@@ -34,13 +35,9 @@ public class TestProcess implements DeviceProcess<Computer>, Application
     {
         this.computer = computer;
         this.processId = processId;
-        this.layoutManager = new WindowLayoutManager(this.computer, this::synchronizeClients);
+        this.layoutManager = new WindowLayoutManager(this.computer, this::synchronizeClients, () -> LAYOUT_SUPPLIER);
         this.window = new WindowHandle(this.computer.getWindowManager(), this.computer.getTaskBar(), this.processId);
         this.window2 = new WindowHandle(this.computer.getWindowManager(), this.computer.getTaskBar(), this.processId);
-
-        Layout testLayout = new Layout();
-        testLayout.addComponent(new TextComponent(0, 0, Minecraft.DEFAULT_FONT_RENDERER_NAME, new StringTextComponent("dik"))); // TODO cannot access client classes from server! Add a layout provider or smth that allows the returning of created layouts for the client but not on the server.
-        this.layoutManager.addLayout(TEST_LAYOUT, new Layout());
     }
 
     @Override
@@ -49,12 +46,14 @@ public class TestProcess implements DeviceProcess<Computer>, Application
         AppInfo info = this.getInfo();
         if (this.window.create())
         {
+            this.layoutManager.setCurrentLayout(this.window.getWindowId(), TEST_LAYOUT);
             this.window.center();
             this.window.setTitle(info.getName() + " v" + info.getVersion());
         }
 
         if (this.window2.create())
         {
+            this.layoutManager.setCurrentLayout(this.window2.getWindowId(), TEST_LAYOUT2);
             this.window2.center();
             this.window2.setTitle("Authors: " + Arrays.toString(info.getAuthors()));
         }
