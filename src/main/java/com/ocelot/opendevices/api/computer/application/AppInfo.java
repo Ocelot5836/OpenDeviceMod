@@ -1,6 +1,6 @@
 package com.ocelot.opendevices.api.computer.application;
 
-import com.ocelot.opendevices.core.laptop.application.ApplicationInfo;
+import com.ocelot.opendevices.core.computer.application.ApplicationInfo;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 

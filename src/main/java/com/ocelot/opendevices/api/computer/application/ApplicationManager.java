@@ -3,7 +3,7 @@ package com.ocelot.opendevices.api.computer.application;
 import com.google.gson.*;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceRegistries;
-import com.ocelot.opendevices.core.laptop.application.ApplicationInfo;
+import com.ocelot.opendevices.core.computer.application.ApplicationInfo;
 import com.ocelot.opendevices.core.registry.ApplicationRegistryEntry;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;

@@ -14,7 +14,7 @@ import com.ocelot.opendevices.api.util.TooltipRenderer;
 import com.ocelot.opendevices.core.LaptopTaskBar;
 import com.ocelot.opendevices.core.LaptopTileEntity;
 import com.ocelot.opendevices.core.LaptopWindowManager;
-import com.ocelot.opendevices.core.laptop.window.LaptopWindow;
+import com.ocelot.opendevices.core.computer.window.LaptopWindow;
 import com.ocelot.opendevices.core.task.CloseLaptopTask;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
