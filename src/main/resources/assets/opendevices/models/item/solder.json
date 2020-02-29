@@ -2,8 +2,7 @@
 	"credit": "Made with Blockbench",
 	"textures": {
 		"0": "block/iron_block",
-		"1": "block/coal_block",
-		"particle": "block/iron_block"
+		"1": "block/coal_block"
 	},
 	"display": {
 		"thirdperson_righthand": {
