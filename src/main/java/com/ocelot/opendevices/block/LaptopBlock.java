@@ -7,7 +7,6 @@ import com.ocelot.opendevices.core.LaptopTileEntity;
 import com.ocelot.opendevices.core.task.UpdateLaptopUserTask;
 import com.ocelot.opendevices.init.DeviceBlocks;
 import com.ocelot.opendevices.init.DeviceMessages;
-import com.ocelot.opendevices.item.DeviceBlockItem;
 import com.ocelot.opendevices.network.MessageOpenGui;
 import com.ocelot.opendevices.network.handler.MessageHandler;
 import net.minecraft.block.Block;
@@ -16,14 +15,14 @@ import net.minecraft.block.IWaterLoggable;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.DyeColor;
+import net.minecraft.item.Item;
 import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
-import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.shapes.IBooleanFunction;
@@ -48,7 +47,7 @@ public class LaptopBlock extends DeviceBlock implements IWaterLoggable
     {
         super(color.getTranslationKey() + "_laptop", Block.Properties.create(Material.MISCELLANEOUS, color));
         this.setDefaultState(this.getStateContainer().getBaseState().with(HORIZONTAL_FACING, Direction.NORTH).with(SCREEN, false).with(WATERLOGGED, false));
-        DeviceBlocks.register(this, new DeviceBlockItem(this));
+        DeviceBlocks.register(this, new BlockItem(this, new Item.Properties().maxStackSize(1).group(OpenDevices.TAB)));
         this.color = color;
     }
 
