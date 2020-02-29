@@ -35,7 +35,7 @@ public interface Device
     void terminateProcess(UUID processId);
 
     /**
-     * Syncs the process with the specified id to the server and all clients.
+     * Syncs the process with the specified id to the server and all clients. Does not sync the side called as it it assumed to already be in sync.
      *
      * @param processId The if of the process to sync
      * @throws UnsupportedOperationException If this devices does not support processes. Can be checked by using {@link #supportsProcesses()}

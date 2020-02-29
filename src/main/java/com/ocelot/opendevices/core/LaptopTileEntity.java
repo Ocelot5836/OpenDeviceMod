@@ -241,15 +241,13 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
             return;
         }
 
-        CompoundNBT data = process.writeSyncNBT();
-
         if (this.isClient())
         {
-            TaskManager.sendToServer(new SyncProcessTask(this.getPos(), processId, data), TaskManager.TaskReceiver.NEARBY);
+            TaskManager.sendToServer(new SyncProcessTask(this.getPos(), processId, process.writeSyncNBT()), TaskManager.TaskReceiver.NEARBY);
         }
         else
         {
-            TaskManager.sendToTracking(new SyncProcessTask(this.getPos(), processId, data), this.getWorld(), this.getPos());
+            TaskManager.sendToTracking(new SyncProcessTask(this.getPos(), processId, process.writeSyncNBT()), this.getWorld(), this.getPos());
         }
     }
 
