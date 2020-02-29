@@ -1,4 +1,4 @@
-package com.ocelot.opendevices.core.laptop.application;
+package com.ocelot.opendevices.core.computer.application;
 
 import com.ocelot.opendevices.api.computer.application.AppInfo;
 

@@ -1,4 +1,4 @@
-package com.ocelot.opendevices.core.laptop.process;
+package com.ocelot.opendevices.core.computer.process;
 
 import com.ocelot.opendevices.api.computer.Computer;
 import com.ocelot.opendevices.api.computer.window.Window;

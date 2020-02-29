@@ -1,11 +1,10 @@
-package com.ocelot.opendevices.core.laptop.process;
+package com.ocelot.opendevices.core.computer.process;
 
 import com.ocelot.opendevices.api.component.Layout;
 import com.ocelot.opendevices.api.component.TextComponent;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.StringTextComponent;
 
 import java.util.function.Function;
 
