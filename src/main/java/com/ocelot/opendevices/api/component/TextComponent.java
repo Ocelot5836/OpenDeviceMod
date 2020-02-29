@@ -169,7 +169,6 @@ public class TextComponent extends AbstractGui implements Component
     @Override
     public void renderOverlay(TooltipRenderer renderer, float posX, float posY, int mouseX, int mouseY, float partialTicks)
     {
-        System.out.println(this.isHovered(mouseX - posX, mouseY - posY));
         if (this.isHovered(mouseX - posX, mouseY - posY))
         {
             if (this.lastTooltip == Long.MAX_VALUE)

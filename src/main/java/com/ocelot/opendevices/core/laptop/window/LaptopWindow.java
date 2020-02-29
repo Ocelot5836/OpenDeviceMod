@@ -1,9 +1,11 @@
 package com.ocelot.opendevices.core.laptop.window;
 
+import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.computer.Computer;
 import com.ocelot.opendevices.api.computer.window.Window;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import java.util.UUID;
@@ -28,8 +30,8 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
         this.processId = processId;
         this.id = UUID.randomUUID();
         this.title = String.valueOf(this.id);
-        this.width = DeviceConstants.LAPTOP_DEFAULT_APPLICATION_WIDTH;
-        this.height = DeviceConstants.LAPTOP_DEFAULT_APPLICATION_HEIGHT;
+        this.width = DeviceConstants.LAPTOP_DEFAULT_APPLICATION_WIDTH + 2;
+        this.height = DeviceConstants.LAPTOP_DEFAULT_APPLICATION_HEIGHT + 2 + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT;
     }
 
     public LaptopWindow(Computer computer, CompoundNBT nbt)
@@ -131,12 +133,22 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
 
     public void setWidth(int width)
     {
-        this.width = width;
+        this.width = MathHelper.clamp(width + 2, DeviceConstants.LAPTOP_MIN_APPLICATION_WIDTH, DeviceConstants.LAPTOP_MAX_APPLICATION_WIDTH + 2);
+
+        if (width < DeviceConstants.LAPTOP_MIN_APPLICATION_WIDTH || width > DeviceConstants.LAPTOP_MAX_APPLICATION_WIDTH)
+        {
+            OpenDevices.LOGGER.warn("Windows must be between " + DeviceConstants.LAPTOP_MIN_APPLICATION_WIDTH + "x" + DeviceConstants.LAPTOP_MIN_APPLICATION_HEIGHT + " and " + DeviceConstants.LAPTOP_MAX_APPLICATION_WIDTH + "x" + DeviceConstants.LAPTOP_MAX_APPLICATION_HEIGHT + ". Clamping size to screen.");
+        }
     }
 
     public void setHeight(int height)
     {
-        this.height = height;
+        this.height = MathHelper.clamp(height + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + 2, DeviceConstants.LAPTOP_MIN_APPLICATION_HEIGHT, DeviceConstants.LAPTOP_MAX_APPLICATION_HEIGHT + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + 2);
+
+        if (height > DeviceConstants.LAPTOP_MAX_APPLICATION_HEIGHT || height < DeviceConstants.LAPTOP_MIN_APPLICATION_HEIGHT)
+        {
+            OpenDevices.LOGGER.warn("Windows must be between " + DeviceConstants.LAPTOP_MIN_APPLICATION_WIDTH + "x" + DeviceConstants.LAPTOP_MIN_APPLICATION_HEIGHT + " and " + DeviceConstants.LAPTOP_MAX_APPLICATION_WIDTH + "x" + DeviceConstants.LAPTOP_MAX_APPLICATION_HEIGHT + ". Clamping size to screen.");
+        }
     }
 
     @Override

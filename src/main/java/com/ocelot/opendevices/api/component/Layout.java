@@ -99,7 +99,7 @@ public class Layout extends AbstractGui implements Component
         {
             if (component.getX() + component.getWidth() >= this.x && component.getX() < this.x + this.width && component.getY() + component.getHeight() >= this.y && component.getY() < this.y + this.height)
             {
-                component.render(this.getX() + posX, this.getY() + posY, (int) mouseX, mouseY, partialTicks);
+                component.render(this.getX() + posX, this.getY() + posY, mouseX, mouseY, partialTicks);
             }
         });
         RenderUtil.popScissor();
@@ -108,7 +108,7 @@ public class Layout extends AbstractGui implements Component
     @Override
     public void renderOverlay(TooltipRenderer renderer, float posX, float posY, int mouseX, int mouseY, float partialTicks)
     {
-        if (this.isHovered(mouseX, mouseY))
+        if (this.isHovered(mouseX - (int) posX, mouseY - (int) posY))
         {
             this.components.forEach(component ->
             {

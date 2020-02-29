@@ -7,6 +7,7 @@ import net.minecraft.world.IWorld;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.UUID;
+import java.util.concurrent.Executor;
 
 /**
  * <p>A device is a {@link TileEntity} that has the capability to interact with the Device API.</p>
@@ -14,8 +15,14 @@ import java.util.UUID;
  *
  * @author Ocelot
  */
-public interface Device
+public interface Device extends Executor
 {
+    @Override
+    default void execute(Runnable command)
+    {
+        throw new UnsupportedOperationException("This device does not support command execution");
+    }
+
     /**
      * Creates and starts a new process.
      *
@@ -77,7 +84,12 @@ public interface Device
     }
 
     /**
-     * @return Whether or not this device is capable or executing processes.
+     * @return Whether or not this device is capable of executing tasks by using {@link #execute(Runnable)}.
+     */
+    boolean supportsExecution();
+
+    /**
+     * @return Whether or not this device is capable of containing processes.
      */
     boolean supportsProcesses();
 }

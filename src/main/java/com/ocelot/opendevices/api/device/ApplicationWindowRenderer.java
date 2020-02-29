@@ -25,7 +25,7 @@ public class ApplicationWindowRenderer<D extends Device, T extends DeviceProcess
         if (layout != null)
         {
             float contentX = window.getInterpolatedX(partialTicks) + 1;
-            float contentY = window.getInterpolatedY(partialTicks) + 2 + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT;
+            float contentY = window.getInterpolatedY(partialTicks) + 1 + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT;
             layout.render(posX + contentX, posY + contentY, mouseX, mouseY, partialTicks);
         }
     }
@@ -37,7 +37,7 @@ public class ApplicationWindowRenderer<D extends Device, T extends DeviceProcess
         if (layout != null)
         {
             float contentX = window.getInterpolatedX(partialTicks) + 1;
-            float contentY = window.getInterpolatedY(partialTicks) + 2 + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT;
+            float contentY = window.getInterpolatedY(partialTicks) + 1 + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT;
             layout.renderOverlay(renderer, posX + contentX, posY + contentY, mouseX, mouseY, partialTicks);
         }
     }

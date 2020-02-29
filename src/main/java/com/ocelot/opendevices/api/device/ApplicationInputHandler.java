@@ -1,8 +1,10 @@
 package com.ocelot.opendevices.api.device;
 
+import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.component.Layout;
 import com.ocelot.opendevices.api.computer.application.Application;
 import com.ocelot.opendevices.api.computer.window.Window;
+import net.minecraft.client.Minecraft;
 
 import javax.annotation.Nullable;
 
@@ -45,8 +47,10 @@ public class ApplicationInputHandler<D extends Device, T extends DeviceProcess<D
     {
         if (window != null)
         {
+            float windowX = window.getInterpolatedX(Minecraft.getInstance().getRenderPartialTicks()) + 1;
+            float windowY = window.getInterpolatedY(Minecraft.getInstance().getRenderPartialTicks()) + 1 + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT;
             Layout layout = process.getLayout(window.getId());
-            return layout != null && layout.onMousePressed(mouseX, mouseY, mouseButton);
+            return layout != null && layout.onMousePressed(mouseX - windowX, mouseY - windowY, mouseButton);
         }
         return false;
     }
@@ -56,8 +60,10 @@ public class ApplicationInputHandler<D extends Device, T extends DeviceProcess<D
     {
         if (window != null)
         {
+            float windowX = window.getInterpolatedX(Minecraft.getInstance().getRenderPartialTicks()) + 1;
+            float windowY = window.getInterpolatedY(Minecraft.getInstance().getRenderPartialTicks()) + 1 + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT;
             Layout layout = process.getLayout(window.getId());
-            return layout != null && layout.onMouseReleased(mouseX, mouseY, mouseButton);
+            return layout != null && layout.onMouseReleased(mouseX - windowX, mouseY - windowY, mouseButton);
         }
         return false;
     }
@@ -67,8 +73,10 @@ public class ApplicationInputHandler<D extends Device, T extends DeviceProcess<D
     {
         if (window != null)
         {
+            float windowX = window.getInterpolatedX(Minecraft.getInstance().getRenderPartialTicks()) + 1;
+            float windowY = window.getInterpolatedY(Minecraft.getInstance().getRenderPartialTicks()) + 1 + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT;
             Layout layout = process.getLayout(window.getId());
-            return layout != null && layout.onMouseScrolled(mouseX, mouseY, amount);
+            return layout != null && layout.onMouseScrolled(mouseX - windowX, mouseY - windowY, amount);
         }
         return false;
     }
@@ -78,10 +86,12 @@ public class ApplicationInputHandler<D extends Device, T extends DeviceProcess<D
     {
         if (window != null)
         {
+            float windowX = window.getInterpolatedX(Minecraft.getInstance().getRenderPartialTicks()) + 1;
+            float windowY = window.getInterpolatedY(Minecraft.getInstance().getRenderPartialTicks()) + 1 + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT;
             Layout layout = process.getLayout(window.getId());
             if (layout != null)
             {
-                layout.onMouseMoved(mouseX, mouseY);
+                layout.onMouseMoved(mouseX - windowX, mouseY - windowY);
             }
         }
     }
@@ -91,8 +101,10 @@ public class ApplicationInputHandler<D extends Device, T extends DeviceProcess<D
     {
         if (window != null)
         {
+            float windowX = window.getInterpolatedX(Minecraft.getInstance().getRenderPartialTicks()) + 1;
+            float windowY = window.getInterpolatedY(Minecraft.getInstance().getRenderPartialTicks()) + 1 + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT;
             Layout layout = process.getLayout(window.getId());
-            return layout != null && layout.onMouseDragged(mouseX, mouseY, mouseButton, deltaX, deltaY);
+            return layout != null && layout.onMouseDragged(mouseX - windowX, mouseY - windowY, mouseButton, deltaX, deltaY);
         }
         return false;
     }

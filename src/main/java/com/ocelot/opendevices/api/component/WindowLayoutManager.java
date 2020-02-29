@@ -30,13 +30,19 @@ public class WindowLayoutManager implements INBTSerializable<ListNBT>
     private Map<UUID, Integer> currentLayouts;
     @OnlyIn(Dist.CLIENT)
     private Supplier<Function<Integer, Layout>> layoutProvider;
+    @OnlyIn(Dist.CLIENT)
+    private Map<Integer, Layout> cachedLayouts;
 
     public WindowLayoutManager(Executor executor, Runnable markDirty, Supplier<Function<Integer, Layout>> layoutProvider)
     {
         this.executor = executor;
         this.markDirty = markDirty;
         this.currentLayouts = new HashMap<>();
-        DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> this.layoutProvider = layoutProvider);
+        DistExecutor.runWhenOn(Dist.CLIENT, () -> () ->
+        {
+            this.layoutProvider = layoutProvider;
+            this.cachedLayouts = new HashMap<>();
+        });
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -45,10 +51,10 @@ public class WindowLayoutManager implements INBTSerializable<ListNBT>
     {
         if (layoutId == -1)
             return null;
-        return this.layoutProvider.get().apply(layoutId);
+        return this.cachedLayouts.get(layoutId);
     }
 
-    private void setLayout(UUID windowId, int layoutId)
+    private void setLayout(UUID windowId, int layoutId, boolean markDirty)
     {
         int previousLayoutId = this.currentLayouts.getOrDefault(windowId, -1);
         if (previousLayoutId == layoutId)
@@ -64,6 +70,7 @@ public class WindowLayoutManager implements INBTSerializable<ListNBT>
         if (layoutId == -1)
         {
             this.currentLayouts.remove(windowId);
+            DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> this.cachedLayouts.remove(layoutId));
         }
         else
         {
@@ -73,9 +80,11 @@ public class WindowLayoutManager implements INBTSerializable<ListNBT>
                 Layout layout = this.getLayout(layoutId);
                 if (layout != null)
                     layout.onLayoutLoad();
+                this.cachedLayouts.put(layoutId, this.layoutProvider.get().apply(layoutId));
             });
         }
-        this.markDirty.run();
+        if (markDirty)
+            this.markDirty.run();
     }
 
     /**
@@ -100,11 +109,11 @@ public class WindowLayoutManager implements INBTSerializable<ListNBT>
     {
         if (executeNow)
         {
-            this.setLayout(windowId, layoutId);
+            this.setLayout(windowId, layoutId, true);
         }
         else
         {
-            this.executor.execute(() -> this.setLayout(windowId, layoutId));
+            this.executor.execute(() -> this.setLayout(windowId, layoutId, true));
         }
     }
 
@@ -118,7 +127,7 @@ public class WindowLayoutManager implements INBTSerializable<ListNBT>
     @Nullable
     public Layout getCurrentLayout(UUID windowId)
     {
-        return this.getLayout(this.currentLayouts.get(windowId));
+        return this.getLayout(this.currentLayouts.getOrDefault(windowId, -1));
     }
 
     @Override
@@ -141,7 +150,7 @@ public class WindowLayoutManager implements INBTSerializable<ListNBT>
         for (int i = 0; i < nbt.size(); i++)
         {
             CompoundNBT layoutNbt = nbt.getCompound(i);
-            this.currentLayouts.put(layoutNbt.getUniqueId("windowId"), layoutNbt.getInt("layoutId"));
+            this.setLayout(layoutNbt.getUniqueId("windowId"), layoutNbt.getInt("layoutId"), false);
         }
     }
 }

@@ -23,8 +23,6 @@ public class TestProcess implements DeviceProcess<Computer>, Application
     public static final int TEST_LAYOUT = 0;
     public static final int TEST_LAYOUT2 = 1;
 
-    private static final Function<Integer, Layout> LAYOUT_SUPPLIER = new TestProcessLayoutSupplier();
-
     private Computer computer;
     private UUID processId;
     private WindowLayoutManager layoutManager;
@@ -35,7 +33,7 @@ public class TestProcess implements DeviceProcess<Computer>, Application
     {
         this.computer = computer;
         this.processId = processId;
-        this.layoutManager = new WindowLayoutManager(this.computer, this::synchronizeClients, () -> LAYOUT_SUPPLIER);
+        this.layoutManager = new WindowLayoutManager(this.computer, this::synchronizeClients, TestProcessLayoutSupplier::new);
         this.window = new WindowHandle(this.computer.getWindowManager(), this.computer.getTaskBar(), this.processId);
         this.window2 = new WindowHandle(this.computer.getWindowManager(), this.computer.getTaskBar(), this.processId);
     }

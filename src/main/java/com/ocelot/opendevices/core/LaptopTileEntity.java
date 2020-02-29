@@ -441,6 +441,12 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
     }
 
     @Override
+    public boolean supportsExecution()
+    {
+        return true;
+    }
+
+    @Override
     public boolean supportsProcesses()
     {
         return true;
