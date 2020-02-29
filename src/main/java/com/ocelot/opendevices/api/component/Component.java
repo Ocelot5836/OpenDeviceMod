@@ -1,17 +1,16 @@
 package com.ocelot.opendevices.api.component;
 
-import com.ocelot.opendevices.api.laptop.window.Window;
 import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.api.util.TooltipRenderer;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.INBTSerializable;
+import org.lwjgl.glfw.GLFW;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 
 /**
- * TODO update methods
- * <p>Components are the building blocks of the rendering API in windows by default. Everything supported in the default API must implement this class in order to be used.</p>
+ * <p>Components are the building blocks of the rendering API in windows by default. These don't have to be used but they allow an in-built application engine.</p>
  *
  * @author Ocelot
  */
@@ -23,53 +22,92 @@ public interface Component extends INBTSerializable<CompoundNBT>
     void update();
 
     /**
-     * Renders the actual component to the screen.
+     * Renders the contents of this component.
      *
+     * @param posX         The x position of the desktop
+     * @param posY         The y position of the desktop
      * @param mouseX       The x position of the mouse
      * @param mouseY       The y position of the mouse
-     * @param partialTicks The percentage from last update and this update
+     * @param partialTicks The percentage from last tick and this tick
      */
-    void render(int mouseX, int mouseY, float partialTicks);
+    void render(int posX, int posY, int mouseX, int mouseY, float partialTicks);
 
     /**
-     * Renders overlaying component data to the screen.
+     * Renders the overlay contents of this component.
      *
-     * @param renderer     The renderer the tooltips are being drawn into
+     * @param renderer     The rendering instance used for rendering tooltips
+     * @param posX         The x position of the desktop
+     * @param posY         The y position of the desktop
      * @param mouseX       The x position of the mouse
      * @param mouseY       The y position of the mouse
-     * @param partialTicks The percentage from last update and this update
+     * @param partialTicks The percentage from last tick and this tick
      */
-    void renderOverlay(TooltipRenderer renderer, int mouseX, int mouseY, float partialTicks);
+    void renderOverlay(TooltipRenderer renderer, int posX, int posY, int mouseX, int mouseY, float partialTicks);
 
     /**
-     * Called when the mouse is pressed.
+     * Called when a key is pressed on the keyboard.
+     *
+     * @param keyCode  The id of the key released or {@link GLFW#GLFW_KEY_UNKNOWN} if the key does not have a key token
+     * @param scanCode A unique id for each key regardless of key tokens, but is platform-specific
+     * @param mods     The modifier key flags
+     * @return Whether or not this event was consumed
+     */
+    default boolean onKeyPressed(int keyCode, int scanCode, int mods)
+    {
+        return false;
+    }
+
+    /**
+     * Called when a key is released on the keyboard.
+     *
+     * @param keyCode  The id of the key released or {@link GLFW#GLFW_KEY_UNKNOWN} if the key does not have a key token
+     * @param scanCode A unique id for each key regardless of key tokens, but is platform-specific
+     * @param mods     The modifier key flags
+     * @return Whether or not this event was consumed
+     */
+    default boolean onKeyReleased(int keyCode, int scanCode, int mods)
+    {
+        return false;
+    }
+
+    /**
+     * Called when a button is pressed on the mouse.
      *
      * @param mouseX      The x position of the mouse
      * @param mouseY      The y position of the mouse
-     * @param mouseButton The button pressed
-     * @return Whether or not the action was handled
+     * @param mouseButton The button pressed on the mouse
+     * @return Whether or not this event was consumed
      */
-    boolean onMousePressed(double mouseX, double mouseY, int mouseButton);
+    default boolean onMousePressed(double mouseX, double mouseY, int mouseButton)
+    {
+        return false;
+    }
 
     /**
-     * Called when the mouse is released.
+     * Called when a button is released on the mouse.
      *
      * @param mouseX      The x position of the mouse
      * @param mouseY      The y position of the mouse
-     * @param mouseButton The button released
-     * @return Whether or not the action was handled
+     * @param mouseButton The button pressed on the mouse
+     * @return Whether or not this event was consumed
      */
-    boolean onMouseReleased(double mouseX, double mouseY, int mouseButton);
+    default boolean onMouseReleased(double mouseX, double mouseY, int mouseButton)
+    {
+        return false;
+    }
 
     /**
-     * Called when the mouse wheel is scrolled.
+     * Called when the mouse wheel of the mouse is scrolled.
      *
      * @param mouseX The x position of the mouse
      * @param mouseY The y position of the mouse
-     * @param amount The amount scrolled
-     * @return Whether or not the action was handled
+     * @param amount The amount the mouse wheel was scrolled
+     * @return Whether or not this event was consumed
      */
-    boolean onMouseScrolled(double mouseX, double mouseY, double amount);
+    default boolean onMouseScrolled(double mouseX, double mouseY, double amount)
+    {
+        return false;
+    }
 
     /**
      * Called when the mouse is moved.
@@ -77,60 +115,59 @@ public interface Component extends INBTSerializable<CompoundNBT>
      * @param mouseX The x position of the mouse
      * @param mouseY The y position of the mouse
      */
-    void onMouseMoved(double mouseX, double mouseY);
+    default void onMouseMoved(double mouseX, double mouseY)
+    {
+    }
 
     /**
-     * Called when the mouse is moved while being pressed.
+     * Called when the mouse is moved while a button is held.
      *
      * @param mouseX      The x position of the mouse
      * @param mouseY      The y position of the mouse
-     * @param mouseButton The button being held
-     * @param deltaX      The x speed of the mouse
-     * @param deltaY      The y speed of the mouse
-     * @return Whether or not the action was handled
+     * @param mouseButton The button pressed on the mouse while moving
+     * @param deltaX      The amount in the x direction the mouse has moved
+     * @param deltaY      The amount in the y direction the mouse has moved
+     * @return Whether or not this event was consumed
      */
-    boolean onMouseDragged(double mouseX, double mouseY, int mouseButton, double deltaX, double deltaY);
+    default boolean onMouseDragged(double mouseX, double mouseY, int mouseButton, double deltaX, double deltaY)
+    {
+        return false;
+    }
 
     /**
-     * Called when a key is pressed.
-     *
-     * @param keyCode The id of the key pressed
-     * @return Whether or not the action was handled
+     * Called when the layout becomes focused.
      */
-    boolean onKeyPressed(int keyCode);
+    default void onGainFocus()
+    {
+    }
 
     /**
-     * Called when a key is released.
-     *
-     * @param keyCode The id of the key released
-     * @return Whether or not the action was handled
+     * Called when the layout loses focused.
      */
-    boolean onKeyReleased(int keyCode);
-
-    /**
-     * Called when the layout is now focused.
-     */
-    void onGainFocus();
-
-    /**
-     * Called when the layout is no longer focused.
-     */
-    void onLostFocus();
+    default void onLostFocus()
+    {
+    }
 
     /**
      * Called when the layout is closed.
      */
-    void onClose();
+    default void onClose()
+    {
+    }
 
     /**
      * Called right after the layout holding this component is set to the current one.
      */
-    void onLayoutLoad();
+    default void onLayoutLoad()
+    {
+    }
 
     /**
      * Called right before the layout holding this component is changed to a new one.
      */
-    void onLayoutUnload();
+    default void onLayoutUnload()
+    {
+    }
 
     /**
      * Checks to see if this component is hovered or not.
@@ -141,34 +178,18 @@ public interface Component extends INBTSerializable<CompoundNBT>
      */
     default boolean isHovered(double mouseX, double mouseY)
     {
-        return RenderUtil.isMouseInside(mouseX, mouseY, this.getX(), this.getY(), this.getMaxX(), this.getMaxY());
+        return RenderUtil.isMouseInside(mouseX, mouseY, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight());
     }
 
     /**
-     * @return The left x position of this component
+     * @return The x position of this component
      */
-    int getX();
+    float getX();
 
     /**
-     * @return The top y position of this component
+     * @return The y position of this component
      */
-    int getY();
-
-    /**
-     * @return The right x position of this component
-     */
-    default int getMaxX()
-    {
-        return this.getX() + this.getWidth();
-    }
-
-    /**
-     * @return The bottom y position of this component
-     */
-    default int getMaxY()
-    {
-        return this.getY() + this.getHeight();
-    }
+    float getY();
 
     /**
      * @return The x size of this component
@@ -179,32 +200,4 @@ public interface Component extends INBTSerializable<CompoundNBT>
      * @return The y size of this component
      */
     int getHeight();
-
-    /**
-     * @return The window this component is in. This reference is null during class construction
-     * @deprecated Find a way to not require the window instance. Components don't need to be in windows!
-     */
-    Window getWindow();
-
-    /**
-     * Sets the window instance for this component
-     *
-     * @param window The new window
-     */
-    void setWindow(Window window);
-
-    /**
-     * Registers a new component.
-     *
-     * @author Ocelot
-     * @see Component
-     */
-    @Target(ElementType.TYPE)
-    @interface Register
-    {
-        /**
-         * @return The name of this component. Should be in the format of <code>modid:componentName</code>
-         */
-        String value();
-    }
 }

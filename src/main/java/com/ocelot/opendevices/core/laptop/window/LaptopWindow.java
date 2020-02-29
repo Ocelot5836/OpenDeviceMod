@@ -1,12 +1,10 @@
 package com.ocelot.opendevices.core.laptop.window;
 
 import com.ocelot.opendevices.api.DeviceConstants;
-import com.ocelot.opendevices.api.laptop.Computer;
-import com.ocelot.opendevices.api.laptop.window.Window;
+import com.ocelot.opendevices.api.computer.Computer;
+import com.ocelot.opendevices.api.computer.window.Window;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.util.INBTSerializable;
-import org.apache.commons.codec.binary.Base64;
 
 import java.util.UUID;
 

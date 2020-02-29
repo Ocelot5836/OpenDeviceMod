@@ -1,9 +1,9 @@
 package com.ocelot.opendevices.core;
 
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.api.laptop.desktop.Desktop;
-import com.ocelot.opendevices.api.laptop.desktop.DesktopBackground;
-import com.ocelot.opendevices.api.laptop.desktop.DesktopManager;
+import com.ocelot.opendevices.api.computer.desktop.Desktop;
+import com.ocelot.opendevices.api.computer.desktop.DesktopBackground;
+import com.ocelot.opendevices.api.computer.desktop.DesktopManager;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.INBTSerializable;
 

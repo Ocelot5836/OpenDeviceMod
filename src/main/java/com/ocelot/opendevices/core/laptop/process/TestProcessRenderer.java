@@ -1,8 +1,8 @@
 package com.ocelot.opendevices.core.laptop.process;
 
 import com.ocelot.opendevices.api.device.ProcessWindowRenderer;
-import com.ocelot.opendevices.api.laptop.Computer;
-import com.ocelot.opendevices.api.laptop.window.Window;
+import com.ocelot.opendevices.api.computer.Computer;
+import com.ocelot.opendevices.api.computer.window.Window;
 import com.ocelot.opendevices.api.util.TooltipRenderer;
 
 public class TestProcessRenderer implements ProcessWindowRenderer<Computer, TestProcess>

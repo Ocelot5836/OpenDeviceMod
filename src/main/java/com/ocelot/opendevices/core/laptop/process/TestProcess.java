@@ -1,11 +1,13 @@
 package com.ocelot.opendevices.core.laptop.process;
 
 import com.ocelot.opendevices.OpenDevices;
+import com.ocelot.opendevices.api.component.Layout;
+import com.ocelot.opendevices.api.component.WindowLayoutManager;
 import com.ocelot.opendevices.api.device.DeviceProcess;
-import com.ocelot.opendevices.api.laptop.Computer;
-import com.ocelot.opendevices.api.laptop.application.AppInfo;
-import com.ocelot.opendevices.api.laptop.application.Application;
-import com.ocelot.opendevices.api.laptop.window.WindowHandle;
+import com.ocelot.opendevices.api.computer.Computer;
+import com.ocelot.opendevices.api.computer.application.AppInfo;
+import com.ocelot.opendevices.api.computer.application.Application;
+import com.ocelot.opendevices.api.computer.window.WindowHandle;
 import net.minecraft.nbt.CompoundNBT;
 
 import javax.annotation.Nullable;
@@ -18,6 +20,7 @@ public class TestProcess implements DeviceProcess<Computer>, Application
 {
     private Computer computer;
     private UUID processId;
+    private WindowLayoutManager layoutManager;
     private WindowHandle window;
     private WindowHandle window2;
 
@@ -25,6 +28,7 @@ public class TestProcess implements DeviceProcess<Computer>, Application
     {
         this.computer = computer;
         this.processId = processId;
+        this.layoutManager = new WindowLayoutManager(this.computer);
         this.window = new WindowHandle(this.computer.getWindowManager(), this.computer.getTaskBar(), this.processId);
         this.window2 = new WindowHandle(this.computer.getWindowManager(), this.computer.getTaskBar(), this.processId);
     }
@@ -115,8 +119,8 @@ public class TestProcess implements DeviceProcess<Computer>, Application
 
     @Nullable
     @Override
-    public UUID getLayout(UUID windowId)
+    public Layout getLayout(UUID windowId)
     {
-        return null;
+        return this.layoutManager.getLayout(windowId);
     }
 }

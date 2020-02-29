@@ -4,9 +4,9 @@ import com.mrcrayfish.filters.Filters;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.device.DeviceProcess;
 import com.ocelot.opendevices.api.device.ProcessInputRegistry;
-import com.ocelot.opendevices.api.laptop.application.Application;
-import com.ocelot.opendevices.api.laptop.desktop.DesktopManager;
-import com.ocelot.opendevices.api.laptop.settings.LaptopSetting;
+import com.ocelot.opendevices.api.computer.application.Application;
+import com.ocelot.opendevices.api.computer.desktop.DesktopManager;
+import com.ocelot.opendevices.api.computer.settings.LaptopSetting;
 import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.core.laptop.process.TestProcess;
 import com.ocelot.opendevices.core.laptop.process.TestProcessInputHandler;
@@ -245,29 +245,5 @@ public class OpenDevices
                 }
             }
         }
-
-        //        @SubscribeEvent
-        //        public static void registerComponents(RegistryEvent.Register<ComponentRegistryEntry> event)
-        //        {
-        //            Set<ModFileScanData.AnnotationData> annotations = OpenDevices.annotationScanData.stream().filter(it -> it.getTargetType() == ElementType.TYPE && it.getAnnotationType().equals(Type.getType(Component.Register.class))).collect(Collectors.toSet());
-        //
-        //            for (ModFileScanData.AnnotationData data : annotations)
-        //            {
-        //                ResourceLocation registryName = new ResourceLocation((String) data.getAnnotationData().get("value"));
-        //
-        //                String className = data.getClassType().getClassName();
-        //                try
-        //                {
-        //                    if (registryName.getPath().isEmpty())
-        //                        throw new IllegalArgumentException("Component: " + registryName + " does not have a valid registry name. Skipping!");
-        //
-        //                    event.getRegistry().register(new ComponentRegistryEntry(className).setRegistryName(registryName));
-        //                }
-        //                catch (Exception e)
-        //                {
-        //                    OpenDevices.LOGGER.error("Could not register component class: " + className + ". Skipping!", e);
-        //                }
-        //            }
-        //        }
     }
 }

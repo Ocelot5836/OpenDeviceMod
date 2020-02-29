@@ -2,8 +2,8 @@ package com.ocelot.opendevices.core;
 
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceConstants;
-import com.ocelot.opendevices.api.laptop.window.Window;
-import com.ocelot.opendevices.api.laptop.window.WindowManager;
+import com.ocelot.opendevices.api.computer.window.Window;
+import com.ocelot.opendevices.api.computer.window.WindowManager;
 import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.core.laptop.window.LaptopWindow;
 import com.ocelot.opendevices.core.task.*;
