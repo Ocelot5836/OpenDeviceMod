@@ -15,8 +15,8 @@ public enum DeviceMaterials
     SMALL_ELECTRIC_MOTOR("small_electric_motor"),
     CARRIAGE("carriage"),
 
-    FLASH_CHIP("flash_chip"),
-    CONTROLLER_CHIP("controller_chip"),
+//    FLASH_CHIP("flash_chip"),
+//    CONTROLLER_CHIP("controller_chip"),
 
     // TODO add colors to drives
     HARD_DRIVE("hard_drive"),
