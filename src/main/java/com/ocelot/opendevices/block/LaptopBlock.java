@@ -17,6 +17,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.DyeColor;
+import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
@@ -39,14 +40,14 @@ import java.util.Objects;
 public class LaptopBlock extends DeviceBlock implements IWaterLoggable
 {
     public static final VoxelShape[] SHAPES = createShapes();
-    public static final EnumProperty<Type> TYPE = EnumProperty.create("type", Type.class);
+    public static final BooleanProperty SCREEN = BooleanProperty.create("screen");
 
     private DyeColor color;
 
     public LaptopBlock(DyeColor color)
     {
         super(color.getTranslationKey() + "_laptop", Block.Properties.create(Material.MISCELLANEOUS, color));
-        this.setDefaultState(this.getStateContainer().getBaseState().with(HORIZONTAL_FACING, Direction.NORTH).with(TYPE, Type.BASE).with(WATERLOGGED, false));
+        this.setDefaultState(this.getStateContainer().getBaseState().with(HORIZONTAL_FACING, Direction.NORTH).with(SCREEN, false).with(WATERLOGGED, false));
         DeviceBlocks.register(this, new DeviceBlockItem(this));
         this.color = color;
     }
@@ -117,24 +118,12 @@ public class LaptopBlock extends DeviceBlock implements IWaterLoggable
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder)
     {
-        builder.add(HORIZONTAL_FACING, TYPE, WATERLOGGED);
+        builder.add(HORIZONTAL_FACING, SCREEN, WATERLOGGED);
     }
 
     public DyeColor getColor()
     {
         return color;
-    }
-
-    public enum Type implements IStringSerializable
-    {
-        BASE, SCREEN;
-
-        @Override
-        public String getName()
-        {
-            return name().toLowerCase();
-        }
-
     }
 
     public static VoxelShape getShape(Direction direction, boolean open)
