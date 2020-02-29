@@ -50,7 +50,7 @@ public class LaptopTileEntityRenderer extends TileEntityRenderer<LaptopTileEntit
     {
         Minecraft minecraft = Minecraft.getInstance();
         BlockState state = te.getBlockState();
-        BlockState screenState = state.getBlock().getDefaultState().with(LaptopBlock.TYPE, LaptopBlock.Type.SCREEN);
+        BlockState screenState = state.getBlock().getDefaultState().with(LaptopBlock.SCREEN, true);
         BlockPos pos = te.getPos();
 
         this.bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
