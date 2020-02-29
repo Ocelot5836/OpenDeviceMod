@@ -21,20 +21,16 @@ import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.client.model.data.EmptyModelData;
 
-import java.util.Random;
-
 import static org.lwjgl.opengl.GL30.*;
 
 public class LaptopTileEntityRenderer extends TileEntityRenderer<LaptopTileEntity>
 {
     public static final LaptopTileEntityRenderer INSTANCE = new LaptopTileEntityRenderer();
 
-    private Random random;
     private Framebuffer framebuffer;
 
     private LaptopTileEntityRenderer()
     {
-        this.random = new Random();
         this.framebuffer = null;
     }
 
@@ -81,7 +77,7 @@ public class LaptopTileEntityRenderer extends TileEntityRenderer<LaptopTileEntit
 
                 BlockRendererDispatcher blockrendererdispatcher = minecraft.getBlockRendererDispatcher();
                 IBakedModel ibakedmodel = blockrendererdispatcher.getBlockModelShapes().getModel(screenState);
-                blockrendererdispatcher.getBlockModelRenderer().renderModel(minecraft.world, ibakedmodel, screenState, pos, buffer, false, this.random, 0, EmptyModelData.INSTANCE);
+                blockrendererdispatcher.getBlockModelRenderer().renderModel(minecraft.world, ibakedmodel, screenState, pos, buffer, false, this.getWorld().getRandom(), 0, EmptyModelData.INSTANCE);
 
                 buffer.setTranslation(0.0D, 0.0D, 0.0D);
                 tessellator.draw();

@@ -1,5 +1,6 @@
 package com.ocelot.opendevices.api.device;
 
+import com.ocelot.opendevices.api.device.process.DeviceProcess;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.IWorld;
@@ -7,6 +8,7 @@ import net.minecraft.world.IWorld;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.UUID;
+import java.util.concurrent.Executor;
 
 /**
  * <p>A device is a {@link TileEntity} that has the capability to interact with the Device API.</p>
@@ -14,8 +16,14 @@ import java.util.UUID;
  *
  * @author Ocelot
  */
-public interface Device
+public interface Device extends Executor
 {
+    @Override
+    default void execute(Runnable command)
+    {
+        throw new UnsupportedOperationException("This device does not support command execution");
+    }
+
     /**
      * Creates and starts a new process.
      *
@@ -35,7 +43,7 @@ public interface Device
     void terminateProcess(UUID processId);
 
     /**
-     * Syncs the process with the specified id to the server and all clients.
+     * Syncs the process with the specified id to the server and all clients. Does not sync the side called as it it assumed to already be in sync.
      *
      * @param processId The if of the process to sync
      * @throws UnsupportedOperationException If this devices does not support processes. Can be checked by using {@link #supportsProcesses()}
@@ -77,7 +85,12 @@ public interface Device
     }
 
     /**
-     * @return Whether or not this device is capable or executing processes.
+     * @return Whether or not this device is capable of executing tasks by using {@link #execute(Runnable)}.
+     */
+    boolean supportsExecution();
+
+    /**
+     * @return Whether or not this device is capable of containing processes.
      */
     boolean supportsProcesses();
 }

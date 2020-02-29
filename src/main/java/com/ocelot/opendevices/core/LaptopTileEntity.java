@@ -3,11 +3,11 @@ package com.ocelot.opendevices.core;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.DeviceRegistries;
-import com.ocelot.opendevices.api.device.DeviceProcess;
+import com.ocelot.opendevices.api.device.process.DeviceProcess;
 import com.ocelot.opendevices.api.device.DeviceTileEntity;
-import com.ocelot.opendevices.api.device.ProcessSerializer;
-import com.ocelot.opendevices.api.laptop.Computer;
-import com.ocelot.opendevices.api.laptop.settings.LaptopSetting;
+import com.ocelot.opendevices.api.device.process.ProcessSerializer;
+import com.ocelot.opendevices.api.computer.Computer;
+import com.ocelot.opendevices.api.computer.settings.LaptopSetting;
 import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.core.registry.DeviceProcessRegistryEntry;
 import com.ocelot.opendevices.core.task.ExecuteProcessTask;
@@ -241,15 +241,13 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
             return;
         }
 
-        CompoundNBT data = process.writeSyncNBT();
-
         if (this.isClient())
         {
-            TaskManager.sendToServer(new SyncProcessTask(this.getPos(), processId, data), TaskManager.TaskReceiver.NEARBY);
+            TaskManager.sendToServer(new SyncProcessTask(this.getPos(), processId, process.writeSyncNBT()), TaskManager.TaskReceiver.NEARBY);
         }
         else
         {
-            TaskManager.sendToTracking(new SyncProcessTask(this.getPos(), processId, data), this.getWorld(), this.getPos());
+            TaskManager.sendToTracking(new SyncProcessTask(this.getPos(), processId, process.writeSyncNBT()), this.getWorld(), this.getPos());
         }
     }
 
@@ -440,6 +438,12 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
     public DeviceProcess<Computer> getProcess(UUID id)
     {
         return processes.get(id);
+    }
+
+    @Override
+    public boolean supportsExecution()
+    {
+        return true;
     }
 
     @Override

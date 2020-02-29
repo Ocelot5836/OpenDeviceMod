@@ -1,10 +1,10 @@
 package com.ocelot.opendevices.api;
 
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.api.laptop.settings.BooleanLaptopSetting;
-import com.ocelot.opendevices.api.laptop.settings.DoubleLaptopSetting;
-import com.ocelot.opendevices.api.laptop.settings.IntegerLaptopSetting;
-import com.ocelot.opendevices.api.laptop.settings.LaptopSetting;
+import com.ocelot.opendevices.api.computer.settings.BooleanLaptopSetting;
+import com.ocelot.opendevices.api.computer.settings.DoubleLaptopSetting;
+import com.ocelot.opendevices.api.computer.settings.IntegerLaptopSetting;
+import com.ocelot.opendevices.api.computer.settings.LaptopSetting;
 
 /**
  * <p>Contains settings that are used by the base mod content.</p>

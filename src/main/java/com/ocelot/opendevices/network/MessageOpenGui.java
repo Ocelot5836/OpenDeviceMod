@@ -18,13 +18,13 @@ public class MessageOpenGui
 
     public static void encode(MessageOpenGui msg, PacketBuffer buf)
     {
-        buf.writeInt(msg.type.ordinal());
+        buf.writeVarInt(msg.type.ordinal());
         buf.writeBlockPos(msg.pos);
     }
 
     public static MessageOpenGui decode(PacketBuffer buf)
     {
-        return new MessageOpenGui(MessageHandler.GuiType.values()[buf.readInt() % MessageHandler.GuiType.values().length], buf.readBlockPos());
+        return new MessageOpenGui(MessageHandler.GuiType.values()[buf.readVarInt() % MessageHandler.GuiType.values().length], buf.readBlockPos());
     }
 
     public MessageHandler.GuiType getType()

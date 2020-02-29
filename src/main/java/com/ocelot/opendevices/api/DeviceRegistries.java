@@ -1,16 +1,18 @@
 package com.ocelot.opendevices.api;
 
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.api.device.DeviceProcess;
-import com.ocelot.opendevices.api.laptop.application.Application;
-import com.ocelot.opendevices.api.laptop.settings.LaptopSetting;
+import com.ocelot.opendevices.api.device.process.DeviceProcess;
+import com.ocelot.opendevices.api.computer.application.Application;
+import com.ocelot.opendevices.api.computer.settings.LaptopSetting;
 import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.core.RegistryCache;
 import com.ocelot.opendevices.core.registry.ApplicationRegistryEntry;
-import com.ocelot.opendevices.core.registry.ComponentRegistryEntry;
 import com.ocelot.opendevices.core.registry.DeviceProcessRegistryEntry;
 import com.ocelot.opendevices.core.registry.TaskRegistryEntry;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import net.minecraftforge.registries.RegistryBuilder;
@@ -23,13 +25,13 @@ import javax.annotation.Nullable;
  *
  * @author Ocelot
  */
+@Mod.EventBusSubscriber(modid = OpenDevices.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class DeviceRegistries
 {
     public static IForgeRegistry<LaptopSetting<?>> SETTINGS = null;
     public static IForgeRegistry<TaskRegistryEntry> TASKS = null;
     public static IForgeRegistry<DeviceProcessRegistryEntry> PROCESSES = null;
     public static IForgeRegistry<ApplicationRegistryEntry> APPLICATIONS = null;
-    public static IForgeRegistry<ComponentRegistryEntry> COMPONENTS = null;
 
     private static final RegistryCache<TaskRegistryEntry, Class<? extends Task>> TASKS_CACHE;
     private static final RegistryCache<DeviceProcessRegistryEntry, Class<? extends DeviceProcess<?>>> PROCESSES_CACHE;
@@ -44,23 +46,19 @@ public class DeviceRegistries
 
     private DeviceRegistries() {}
 
-    /**
-     * This should never be used by the consumer. Core use only!
-     */
     @SuppressWarnings("unchecked")
-    public static void register()
+    @SubscribeEvent
+    public static void registerRegistries(RegistryEvent.NewRegistry event)
     {
         makeRegistry("settings", LaptopSetting.class).create();
         makeRegistry("tasks", TaskRegistryEntry.class).create();
         makeRegistry("processes", DeviceProcessRegistryEntry.class).create();
         makeRegistry("applications", ApplicationRegistryEntry.class).create();
-        makeRegistry("components", ComponentRegistryEntry.class).create();
 
         SETTINGS = RegistryManager.ACTIVE.getRegistry(LaptopSetting.class);
         TASKS = RegistryManager.ACTIVE.getRegistry(TaskRegistryEntry.class);
         PROCESSES = RegistryManager.ACTIVE.getRegistry(DeviceProcessRegistryEntry.class);
         APPLICATIONS = RegistryManager.ACTIVE.getRegistry(ApplicationRegistryEntry.class);
-        COMPONENTS = RegistryManager.ACTIVE.getRegistry(ComponentRegistryEntry.class);
     }
 
     /**
