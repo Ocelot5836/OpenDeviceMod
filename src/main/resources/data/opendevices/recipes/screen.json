@@ -22,7 +22,7 @@
             "tag": "forge:gems/prismarine"
         },
         "C": {
-            "tag": "opendevices:circuit_boards"
+            "item": "opendevices:green_circuit_board"
         },
         "D": {
             "tag": "forge:dusts/redstone"

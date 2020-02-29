@@ -1,0 +1,17 @@
+{
+    "name": "Improved Circuit Board",
+    "icon": "opendevices:blue_circuit_board",
+    "category": "materials_category",
+	"read_by_default": true,
+    "pages": [
+        {
+            "type": "text",
+            "text": "Improved Circuit boards are a more powerful circuit board that can be used to expand the capabilities of components into another age of capability. They can be upgraded into a higher tier for certain better components."
+        },
+		{
+			"type": "crafting",
+			"recipe": "opendevices:blue_circuit_board",
+			"title": "Recipe"
+		}
+    ]
+}

@@ -1,0 +1,17 @@
+{
+    "name": "Ultimate Circuit Board",
+    "icon": "opendevices:red_circuit_board",
+    "category": "materials_category",
+	"read_by_default": true,
+    "pages": [
+        {
+            "type": "text",
+            "text": "Ultimate Circuit boards are the most powerful circuit board that can be created and expands the capabilities of components to their absolute limit."
+        },
+		{
+			"type": "crafting",
+			"recipe": "opendevices:red_circuit_board",
+			"title": "Recipe"
+		}
+    ]
+}

@@ -1,0 +1,17 @@
+{
+    "name": "Circuit Board",
+    "icon": "opendevices:green_circuit_board",
+    "category": "materials_category",
+	"read_by_default": true,
+    "pages": [
+        {
+            "type": "text",
+            "text": "Circuit boards are the base for all electronic components. They can be upgraded into higher tiers for certain better components."
+        },
+		{
+			"type": "crafting",
+			"recipe": "opendevices:green_circuit_board",
+			"title": "Recipe"
+		}
+    ]
+}

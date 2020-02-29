@@ -1,0 +1,21 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "result": {
+        "item": "opendevices:red_circuit_board"
+    },
+    "pattern": [
+        "ODO",
+        "OFO"
+    ],
+    "key": {
+        "O": {
+            "tag": "forge:obsidian"
+        },
+        "D": {
+            "tag": "forge:gems/diamond"
+        },
+        "F": {
+            "item": "opendevices:blue_circuit_board"
+        }
+    }
+}

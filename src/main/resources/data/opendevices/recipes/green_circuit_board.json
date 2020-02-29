@@ -1,0 +1,21 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "result": {
+        "item": "opendevices:green_circuit_board"
+    },
+    "pattern": [
+        "GGG",
+        "IFI"
+    ],
+    "key": {
+        "G": {
+            "tag": "forge:nuggets/gold"
+        },
+        "I": {
+            "tag": "forge:ingots/iron"
+        },
+        "F": {
+            "item": "opendevices:fiberglass_panel"
+        }
+    }
+}

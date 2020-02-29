@@ -29,6 +29,10 @@ public class DeviceItems
 
     public static final Item SOLDER_IRON = register(new ModItem("solder_iron", new Item.Properties().maxDamage(500).group(OpenDevices.TAB)));
     public static final Item SOLDER = register(new ModItem("solder", new Item.Properties().group(OpenDevices.TAB)));
+
+    public static final Item FLASH_CHIP = register(new ComponentItem("flash_chip", new Item.Properties().group(OpenDevices.TAB)));
+    public static final Item CONTROLLER_CHIP = register(new ComponentItem("controller_chip", new Item.Properties().group(OpenDevices.TAB)));
+
     public static Item register(Item item)
     {
         Validate.notNull(item.getRegistryName(), "Item %s does not have a registry name", item.getClass());
