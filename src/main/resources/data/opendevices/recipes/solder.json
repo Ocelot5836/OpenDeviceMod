@@ -1,0 +1,20 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "result": {
+        "item": "opendevices:solder",
+		"count": 4
+    },
+    "pattern": [
+        "PPP",
+        "III",
+        "PPP"
+    ],
+    "key": {
+        "I": {
+            "tag": "forge:nuggets/iron"
+        },
+        "P": {
+            "item": "opendevices:plastic"
+        }
+    }
+}

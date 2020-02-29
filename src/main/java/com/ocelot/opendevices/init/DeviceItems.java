@@ -1,7 +1,10 @@
 package com.ocelot.opendevices.init;
 
+import com.ocelot.opendevices.OpenDevices;
+import com.ocelot.opendevices.item.ComponentItem;
 import com.ocelot.opendevices.item.ModItem;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
 import org.apache.commons.lang3.Validate;
 
 import java.util.HashMap;
@@ -24,6 +27,8 @@ public class DeviceItems
         }
     }
 
+    public static final Item SOLDER_IRON = register(new ModItem("solder_iron", new Item.Properties().maxDamage(500).group(OpenDevices.TAB)));
+    public static final Item SOLDER = register(new ModItem("solder", new Item.Properties().group(OpenDevices.TAB)));
     public static Item register(Item item)
     {
         Validate.notNull(item.getRegistryName(), "Item %s does not have a registry name", item.getClass());

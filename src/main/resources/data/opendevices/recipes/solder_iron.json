@@ -1,0 +1,19 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "result": {
+        "item": "opendevices:solder_iron"
+    },
+    "pattern": [
+        "I",
+        "I",
+        "P"
+    ],
+    "key": {
+        "I": {
+            "tag": "forge:ingots/iron"
+        },
+        "P": {
+            "item": "opendevices:plastic"
+        }
+    }
+}
