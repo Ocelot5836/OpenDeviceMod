@@ -27,7 +27,7 @@ public class DeviceItems
         }
     }
 
-    public static final Item SOLDER_IRON = register(new ModItem("solder_iron", new Item.Properties().maxDamage(500).group(OpenDevices.TAB)));
+    public static final Item SOLDER_IRON = register(new ModItem("solder_iron", new Item.Properties().maxDamage(64).group(OpenDevices.TAB)));
     public static final Item SOLDER = register(new ModItem("solder", new Item.Properties().group(OpenDevices.TAB)));
 
     public static final Item FLASH_CHIP = register(new ComponentItem("flash_chip", new Item.Properties().group(OpenDevices.TAB)));

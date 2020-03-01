@@ -1,6 +1,7 @@
 {
 	"itemGroup.opendevices": "Open Devices Mod",
 
+	"block.opendevices.component_builder": "Component Builder",
 	"block.opendevices.plastic_block": "Block of Plastic",
 
 	"block.opendevices.white_laptop": "White Laptop",
@@ -52,6 +53,8 @@
 	"screen.opendevices.laptop.unknown_version": "Unknown",
 	"screen.opendevices.laptop.version": "Alpha v%s",
 	"screen.opendevices.laptop.dev_version": "Developer Version - %s",
+
+	"container.opendevices.component_builder": "Component Builder",
 
 	"gui.tag_filter.opendevices.devices.laptops": "Laptops",
 

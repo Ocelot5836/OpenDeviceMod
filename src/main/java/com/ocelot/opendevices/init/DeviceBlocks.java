@@ -1,6 +1,7 @@
 package com.ocelot.opendevices.init;
 
 import com.ocelot.opendevices.OpenDevices;
+import com.ocelot.opendevices.block.ComponentBuilderBlock;
 import com.ocelot.opendevices.block.DeviceBlock;
 import com.ocelot.opendevices.block.LaptopBlock;
 import com.ocelot.opendevices.core.LaptopTileEntity;
@@ -30,6 +31,7 @@ public class DeviceBlocks
     private static final Set<TileEntityType<?>> TILE_ENTITIES = new HashSet<>();
 
     public static final Block PLASTIC_BLOCK = register(new DeviceBlock("plastic_block", Block.Properties.create(Material.ROCK, MaterialColor.STONE)), new Item.Properties().group(OpenDevices.TAB));
+    public static final Block COMPONENT_BUILDER = register(new ComponentBuilderBlock("component_builder"));
 
     public static final Block WHITE_LAPTOP = new LaptopBlock(DyeColor.WHITE);
     public static final Block ORANGE_LAPTOP = new LaptopBlock(DyeColor.ORANGE);

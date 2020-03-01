@@ -2,11 +2,11 @@ package com.ocelot.opendevices;
 
 import com.mrcrayfish.filters.Filters;
 import com.ocelot.opendevices.api.DeviceConstants;
-import com.ocelot.opendevices.api.device.process.DeviceProcess;
-import com.ocelot.opendevices.api.device.process.ProcessInputRegistry;
 import com.ocelot.opendevices.api.computer.application.Application;
 import com.ocelot.opendevices.api.computer.desktop.DesktopManager;
 import com.ocelot.opendevices.api.computer.settings.LaptopSetting;
+import com.ocelot.opendevices.api.device.process.DeviceProcess;
+import com.ocelot.opendevices.api.device.process.ProcessInputRegistry;
 import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.core.computer.process.TestProcess;
 import com.ocelot.opendevices.core.computer.process.TestProcessInputHandler;
@@ -15,10 +15,9 @@ import com.ocelot.opendevices.core.registry.ApplicationRegistryEntry;
 import com.ocelot.opendevices.core.registry.DeviceProcessRegistryEntry;
 import com.ocelot.opendevices.core.registry.TaskRegistryEntry;
 import com.ocelot.opendevices.core.render.LaptopTileEntityRenderer;
-import com.ocelot.opendevices.init.DeviceBlocks;
-import com.ocelot.opendevices.init.DeviceItems;
-import com.ocelot.opendevices.init.DeviceMessages;
+import com.ocelot.opendevices.init.*;
 import net.minecraft.block.Block;
+import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -105,6 +104,13 @@ public class OpenDevices
     @Mod.EventBusSubscriber(modid = OpenDevices.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
     public static class RegistryEvents
     {
+        @SubscribeEvent
+        public static void registerContainerTypes(RegistryEvent.Register<ContainerType<?>> event)
+        {
+            event.getRegistry().registerAll(DeviceContainers.getContainerTypes());
+            DistExecutor.runWhenOn(Dist.CLIENT, () -> DeviceScreens::register);
+        }
+
         @SubscribeEvent
         public static void registerItems(RegistryEvent.Register<Item> event)
         {
