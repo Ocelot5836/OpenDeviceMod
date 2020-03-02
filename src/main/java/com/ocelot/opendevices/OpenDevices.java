@@ -24,6 +24,7 @@ import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
@@ -108,6 +109,12 @@ public class OpenDevices
     @Mod.EventBusSubscriber(modid = OpenDevices.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
     public static class RegistryEvents
     {
+        @SubscribeEvent
+        public static void registerRecipeSerializers(RegistryEvent.Register<IRecipeSerializer<?>> event)
+        {
+            event.getRegistry().registerAll(DeviceRecipes.getRecipeSerializers());
+        }
+
         @SubscribeEvent
         public static void registerContainerTypes(RegistryEvent.Register<ContainerType<?>> event)
         {

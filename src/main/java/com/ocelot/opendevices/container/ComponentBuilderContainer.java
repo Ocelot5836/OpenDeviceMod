@@ -1,17 +1,24 @@
 package com.ocelot.opendevices.container;
 
 import com.ocelot.opendevices.api.registry.ComponentBuilderBoardLayout;
+import com.ocelot.opendevices.crafting.component_builder.ComponentBuilderRecipe;
 import com.ocelot.opendevices.init.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.CraftResultInventory;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.play.server.SSetSlotPacket;
 import net.minecraft.util.IWorldPosCallable;
+import net.minecraft.world.World;
 import net.minecraftforge.common.Tags;
+
+import java.util.Objects;
+import java.util.Optional;
 
 public class ComponentBuilderContainer extends Container
 {
@@ -46,7 +53,7 @@ public class ComponentBuilderContainer extends Container
     public ComponentBuilderContainer(int id, PlayerInventory playerInventory, IWorldPosCallable posCallable)
     {
         super(DeviceContainers.COMPONENT_BUILDER, id);
-        this.layout = DeviceBoardLayouts.TEST5;
+        this.layout = DeviceBoardLayouts.CENTER;
         this.posCallable = posCallable;
         this.player = playerInventory.player;
 
@@ -136,15 +143,39 @@ public class ComponentBuilderContainer extends Container
         this.layout = layout;
     }
 
+    protected static void updateRecipe(int windowId, World world, PlayerEntity player, IInventory craftingArea, CraftResultInventory resultInventory)
+    {
+        if (!world.isRemote)
+        {
+            ServerPlayerEntity serverplayerentity = (ServerPlayerEntity) player;
+            ItemStack itemstack = ItemStack.EMPTY;
+            Optional<ComponentBuilderRecipe> optional = Objects.requireNonNull(world.getServer()).getRecipeManager().getRecipe(DeviceRecipes.COMPONENT_BUILDER, craftingArea, world);
+            if (optional.isPresent())
+            {
+                ComponentBuilderRecipe recipe = optional.get();
+                if (resultInventory.canUseRecipe(world, serverplayerentity, recipe))
+                {
+                    itemstack = recipe.getCraftingResult(craftingArea);
+                }
+            }
+
+            resultInventory.setInventorySlotContents(0, itemstack);
+            serverplayerentity.connection.sendPacket(new SSetSlotPacket(windowId, 12, itemstack));
+        }
+    }
+
     @Override
     public void onCraftMatrixChanged(IInventory inventory)
     {
-        // TODO crafting
-        if (!this.hasCircuitBoard())
+        this.posCallable.consume((world, pos) ->
         {
-            this.posCallable.consume((world, pos) -> this.clearContainer(this.player, this.player.world, this.craftingArea));
-        }
-        super.onCraftMatrixChanged(inventory);
+            if (!this.hasCircuitBoard())
+            {
+                this.clearContainer(this.player, this.player.world, this.craftingArea);
+            }
+            this.detectAndSendChanges();
+            updateRecipe(this.windowId, world, this.player, this.craftingArea, this.craftingResult);
+        });
     }
 
     public ItemStack transferStackInSlot(PlayerEntity playerIn, int index)
