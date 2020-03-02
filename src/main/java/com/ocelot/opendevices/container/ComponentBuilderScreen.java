@@ -2,20 +2,34 @@ package com.ocelot.opendevices.container;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.ocelot.opendevices.OpenDevices;
+import com.ocelot.opendevices.core.render.ComponentBuilderBoardTextureManager;
+import com.ocelot.opendevices.init.DeviceTags;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
+import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.Map;
+
 public class ComponentBuilderScreen extends ContainerScreen<ComponentBuilderContainer>
 {
-    public static final ResourceLocation CONTAINER_TEXTURE = new ResourceLocation(OpenDevices.MOD_ID, "textures/gui/container/component_builder.png");
+    private static final ResourceLocation CONTAINER_TEXTURE = new ResourceLocation(OpenDevices.MOD_ID, "textures/gui/container/component_builder.png");
 
     public ComponentBuilderScreen(ComponentBuilderContainer screenContainer, PlayerInventory playerInventory, ITextComponent title)
     {
         super(screenContainer, playerInventory, title);
         this.xSize = 176;
-        this.ySize = 240;
+        this.ySize = 176;
+    }
+
+    private void renderTab(int index, @Nullable ItemStack icon, boolean enabled) {
+        assert this.minecraft != null;
+        this.minecraft.getTextureManager().bindTexture(CONTAINER_TEXTURE);
+        this.blit(this.guiLeft - 28, this.guiTop + 4 + 29 * index, 176, enabled ? 28 : 0, 32, 28);
     }
 
     @Override
@@ -41,5 +55,12 @@ public class ComponentBuilderScreen extends ContainerScreen<ComponentBuilderCont
         GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         this.minecraft.getTextureManager().bindTexture(CONTAINER_TEXTURE);
         this.blit(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
+
+        if (this.container.hasCircuitBoard())
+        {
+            this.minecraft.getTextureManager().bindTexture(ComponentBuilderBoardTextureManager.LOCATION);
+            blit(this.guiLeft + 7, this.guiTop + 17, 0, 64, 64, ComponentBuilderBoardTextureManager.getBoardTexture(this.container.getCraftingAreaInventory().getStackInSlot(9).getItem()));
+            blit(this.guiLeft + 7, this.guiTop + 17, 0, 64, 64, ComponentBuilderBoardTextureManager.getLayoutTexture(this.container.getLayout()));
+        }
     }
 }

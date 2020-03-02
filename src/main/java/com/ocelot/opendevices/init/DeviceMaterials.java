@@ -24,10 +24,7 @@ public enum DeviceMaterials
     FLOPPY_DRIVE("floppy_drive"), // Placeholder
     FLASH_DRIVE("flash_drive"), // Placeholder
 
-    FIBERGLASS_PANEL("fiberglass_panel"),
-    GREEN_CIRCUIT_BOARD("green_circuit_board"),
-    BLUE_CIRCUIT_BOARD("blue_circuit_board"),
-    RED_CIRCUIT_BOARD("red_circuit_board"),
+    FIBERGLASS_PANEL("fiberglass_panel")
 
     ;
 

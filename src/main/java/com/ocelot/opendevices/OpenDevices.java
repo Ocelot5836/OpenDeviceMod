@@ -7,11 +7,14 @@ import com.ocelot.opendevices.api.computer.desktop.DesktopManager;
 import com.ocelot.opendevices.api.computer.settings.LaptopSetting;
 import com.ocelot.opendevices.api.device.process.DeviceProcess;
 import com.ocelot.opendevices.api.device.process.ProcessInputRegistry;
+import com.ocelot.opendevices.api.registry.ComponentBuilderBoardLayout;
+import com.ocelot.opendevices.api.registry.DeviceCircuitBoardItem;
 import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.core.computer.process.TestProcess;
 import com.ocelot.opendevices.core.computer.process.TestProcessInputHandler;
 import com.ocelot.opendevices.core.computer.process.TestProcessRenderer;
 import com.ocelot.opendevices.core.registry.ApplicationRegistryEntry;
+import com.ocelot.opendevices.core.registry.ComponentBuilderBoardTexture;
 import com.ocelot.opendevices.core.registry.DeviceProcessRegistryEntry;
 import com.ocelot.opendevices.core.registry.TaskRegistryEntry;
 import com.ocelot.opendevices.core.render.LaptopTileEntityRenderer;
@@ -35,6 +38,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.forgespi.language.ModFileScanData;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.Type;
@@ -128,6 +132,26 @@ public class OpenDevices
         public static void registerTileEntities(RegistryEvent.Register<TileEntityType<?>> event)
         {
             event.getRegistry().registerAll(DeviceBlocks.getTileEntities());
+        }
+
+        @SubscribeEvent
+        public static void registerBoardLayouts(RegistryEvent.Register<ComponentBuilderBoardLayout> event)
+        {
+            event.getRegistry().registerAll(DeviceBoardLayouts.getBoardLayouts());
+        }
+
+        @SubscribeEvent
+        public static void registerBoardTextures(RegistryEvent.Register<ComponentBuilderBoardTexture> event)
+        {
+            for (Item item : ForgeRegistries.ITEMS)
+            {
+                if (item instanceof DeviceCircuitBoardItem)
+                {
+                    ResourceLocation registryName = item.getRegistryName();
+                    assert registryName != null;
+                    event.getRegistry().register(new ComponentBuilderBoardTexture(item, ((DeviceCircuitBoardItem) item).getTextureLocation(item)).setRegistryName(registryName));
+                }
+            }
         }
 
         @SubscribeEvent
