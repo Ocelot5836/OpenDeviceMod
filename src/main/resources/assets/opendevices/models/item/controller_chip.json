@@ -2,8 +2,8 @@
     "__comment": "Model generated using MrCrayfish's Model Creator (https://mrcrayfish.com/tools?id=mc)",
     "parent": "block/thin_block",
     "textures": {
-        "0": "opendevices:item/controller_chip_red",
-        "1": "opendevices:item/controller_chip_red_bottom"
+        "0": "opendevices:item/controller_chip",
+        "1": "opendevices:item/controller_chip_bottom"
     },
     "elements": [
         {

@@ -31,17 +31,19 @@ public class DeviceItems
     public static final Item SOLDER_IRON = register(new ModItem("solder_iron", new Item.Properties().maxDamage(64).group(OpenDevices.TAB)));
     public static final Item SOLDER = register(new ModItem("solder", new Item.Properties().group(OpenDevices.TAB)));
 
-    public static final Item GREEN_CIRCUIT_BOARD = register(new CircuitBoardItem("green_circuit_board", 0, new Item.Properties().group(OpenDevices.TAB)));
-    public static final Item BLUE_CIRCUIT_BOARD = register(new CircuitBoardItem("blue_circuit_board", 1, new Item.Properties().group(OpenDevices.TAB)));
-    public static final Item RED_CIRCUIT_BOARD = register(new CircuitBoardItem("red_circuit_board", 2, new Item.Properties().group(OpenDevices.TAB)));
+    public static final Item GREEN_CIRCUIT_BOARD = register(new CircuitBoardItem("green_circuit_board", 0));
+    public static final Item BLUE_CIRCUIT_BOARD = register(new CircuitBoardItem("blue_circuit_board", 1));
+    public static final Item RED_CIRCUIT_BOARD = register(new CircuitBoardItem("red_circuit_board", 2));
 
-    public static final Item GREEN_COMPONENT_MOTHERBOARD = register(new ComponentItem("green_motherboard", -1, new Item.Properties().group(OpenDevices.TAB)));
-    public static final Item COMPONENT_CPU = register(new ComponentItem("cpu", -1, new Item.Properties().group(OpenDevices.TAB)));
-    public static final Item COMPONENT_RAM = register(new ComponentItem("ram", -1, new Item.Properties().group(OpenDevices.TAB)));
-    public static final Item COMPONENT_GPU = register(new ComponentItem("gpu", -1, new Item.Properties().group(OpenDevices.TAB)));
+    public static final Item GREEN_COMPONENT_MOTHERBOARD = register(new ComponentItem("green_motherboard", 0));
+    public static final Item BLUE_COMPONENT_MOTHERBOARD = register(new ComponentItem("blue_motherboard", 1));
+    public static final Item RED_COMPONENT_MOTHERBOARD = register(new ComponentItem("red_motherboard", 2));
+    public static final Item COMPONENT_CPU = register(new ComponentItem("cpu", -1));
+    public static final Item COMPONENT_RAM = register(new ComponentItem("ram", -1));
+    public static final Item COMPONENT_GPU = register(new ComponentItem("gpu", -1));
 
-    public static final Item FLASH_CHIP = register(new ComponentItem("flash_chip", -1, new Item.Properties().group(OpenDevices.TAB)));
-    public static final Item CONTROLLER_CHIP = register(new ComponentItem("controller_chip", -1, new Item.Properties().group(OpenDevices.TAB)));
+    public static final Item FLASH_CHIP = register(new ComponentItem("flash_chip", -1));
+    public static final Item CONTROLLER_CHIP = register(new ComponentItem("controller_chip", -1));
 
     public static Item register(Item item)
     {

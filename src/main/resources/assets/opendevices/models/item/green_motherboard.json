@@ -1,0 +1,7 @@
+{
+    "parent": "opendevices:item/motherboard",
+    "textures": {
+        "top": "opendevices:item/green_motherboard",
+        "bottom": "opendevices:item/green_motherboard_bottom"
+    }
+}

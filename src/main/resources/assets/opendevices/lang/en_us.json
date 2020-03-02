@@ -29,13 +29,19 @@
 	"item.opendevices.plastic_frame": "Plastic Frame",
 	"item.opendevices.battery": "Battery",
 	"item.opendevices.screen": "Screen",
-
 	"item.opendevices.wheel": "Wheel",
 	"item.opendevices.small_electric_motor": "Small Electric Motor",
 	"item.opendevices.carriage": "Carriage",
 
 	"item.opendevices.solder_iron": "Solder Iron",
 	"item.opendevices.solder": "Solder",
+
+	"item.opendevices.green_motherboard": "Motherboard",
+	"item.opendevices.blue_motherboard": "Improved Motherboard",
+	"item.opendevices.red_motherboard": "Ultimate Motherboard",
+	"item.opendevices.cpu": "Central Processing Unit (CPU)",
+	"item.opendevices.ram": "Random Access Memory (RAM)",
+	"item.opendevices.gpu": "Graphics Processing Unit (GPU)",
 
 	"item.opendevices.flash_chip": "Flash Chip",
 	"item.opendevices.controller_chip": "Controller Chip",
