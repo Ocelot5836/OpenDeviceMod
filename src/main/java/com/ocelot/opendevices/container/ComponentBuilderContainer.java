@@ -7,6 +7,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.CraftResultInventory;
+import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.container.Container;
@@ -25,7 +26,10 @@ public class ComponentBuilderContainer extends Container
     private ComponentBuilderBoardLayout layout;
     private IWorldPosCallable posCallable;
     private PlayerEntity player;
-    private IInventory craftingArea = new Inventory(12)
+
+    private IInventory craftingArea = new CraftingInventory(this, 3, 3);
+
+    private IInventory inventory = new Inventory(3)
     {
         @Override
         public void markDirty()
@@ -112,10 +116,10 @@ public class ComponentBuilderContainer extends Container
             {
                 for (int i = 0; i < 10; i++)
                 {
-                    ComponentBuilderContainer.this.craftingArea.decrStackSize(i, 1);
+                    ComponentBuilderContainer.this.craftingArea.decrStackSize(i, amount);
                 }
                 ComponentBuilderContainer.this.posCallable.consume((world, pos) -> ComponentBuilderContainer.this.craftingArea.getStackInSlot(1).attemptDamageItem(10, world.rand, null));
-                ComponentBuilderContainer.this.craftingArea.decrStackSize(11, 1); // TODO decrease solder by recipe amount
+                ComponentBuilderContainer.this.craftingArea.decrStackSize(11, amount); // TODO decrease solder by recipe amount
                 return super.decrStackSize(amount);
             }
         });
@@ -137,6 +141,7 @@ public class ComponentBuilderContainer extends Container
     public void setLayout(ComponentBuilderBoardLayout layout)
     {
         this.posCallable.consume((world, pos) -> this.clearContainer(this.player, this.player.world, this.craftingArea));
+        this.detectAndSendChanges();
         this.layout = layout;
     }
 
@@ -164,15 +169,12 @@ public class ComponentBuilderContainer extends Container
     @Override
     public void onCraftMatrixChanged(IInventory inventory)
     {
-        this.posCallable.consume((world, pos) ->
+        if (!this.hasCircuitBoard())
         {
-            if (!this.hasCircuitBoard())
-            {
-                this.clearContainer(this.player, this.player.world, this.craftingArea);
-            }
+            this.clearContainer(this.player, this.player.world, this.craftingArea);
             this.detectAndSendChanges();
-            updateRecipe(this.windowId, world, this.player, this.craftingArea, this.craftingResult);
-        });
+        }
+        this.posCallable.consume((world, pos) -> updateRecipe(this.windowId, world, this.player, this.craftingArea, this.craftingResult));
     }
 
     public ItemStack transferStackInSlot(PlayerEntity playerIn, int index)

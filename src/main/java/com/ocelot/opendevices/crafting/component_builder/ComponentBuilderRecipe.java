@@ -26,13 +26,13 @@ import java.util.Set;
 public class ComponentBuilderRecipe implements IRecipe<IInventory>, IShapedRecipe<IInventory>
 {
     private final NonNullList<Ingredient> recipeItems;
-    private final ItemStack recipeInput;
+    private final Ingredient recipeInput;
     private final ItemStack recipeOutput;
     private final ComponentBuilderBoardLayout layout;
     private final ResourceLocation id;
     private final String group;
 
-    public ComponentBuilderRecipe(ResourceLocation id, String group, NonNullList<Ingredient> recipeItems, ItemStack recipeInput, ItemStack recipeOutput, ComponentBuilderBoardLayout layout)
+    public ComponentBuilderRecipe(ResourceLocation id, String group, NonNullList<Ingredient> recipeItems, Ingredient recipeInput, ItemStack recipeOutput, ComponentBuilderBoardLayout layout)
     {
         this.recipeItems = recipeItems;
         this.recipeInput = recipeInput;
@@ -97,7 +97,7 @@ public class ComponentBuilderRecipe implements IRecipe<IInventory>, IShapedRecip
             }
         }
 
-        return ItemStack.areItemStacksEqual(this.recipeInput, inventory.getStackInSlot(9));
+        return this.recipeInput.test(inventory.getStackInSlot(9));
     }
 
     /**
@@ -320,7 +320,7 @@ public class ComponentBuilderRecipe implements IRecipe<IInventory>, IShapedRecip
             Map<String, Ingredient> map = ComponentBuilderRecipe.deserializeKey(JSONUtils.getJsonObject(json, "key"));
             String[] ingredientsString = ComponentBuilderRecipe.shrink(ComponentBuilderRecipe.patternFromJson(JSONUtils.getJsonArray(json, "pattern")));
             NonNullList<Ingredient> ingredients = ComponentBuilderRecipe.deserializeIngredients(layout, ingredientsString, map);
-            ItemStack input = ShapedRecipe.deserializeItem(JSONUtils.getJsonObject(json, "input"));
+            Ingredient input = Ingredient.deserialize(JSONUtils.getJsonObject(json, "input"));
             ItemStack result = ShapedRecipe.deserializeItem(JSONUtils.getJsonObject(json, "result"));
             return new ComponentBuilderRecipe(id, group, ingredients, input, result, layout);
         }
@@ -338,7 +338,7 @@ public class ComponentBuilderRecipe implements IRecipe<IInventory>, IShapedRecip
                 ingredients.set(k, Ingredient.read(buffer));
             }
 
-            ItemStack input = buffer.readItemStack();
+            Ingredient input = Ingredient.read(buffer);
             ItemStack result = buffer.readItemStack();
             return new ComponentBuilderRecipe(id, s, ingredients, input, result, DeviceRegistries.COMPONENT_BUILDER_BOARD_LAYOUTS.getValue(layoutId));
         }
@@ -354,7 +354,7 @@ public class ComponentBuilderRecipe implements IRecipe<IInventory>, IShapedRecip
                 ingredient.write(buffer);
             }
 
-            buffer.writeItemStack(recipe.recipeInput);
+            recipe.recipeInput.write(buffer);
             buffer.writeItemStack(recipe.recipeOutput);
         }
     }
