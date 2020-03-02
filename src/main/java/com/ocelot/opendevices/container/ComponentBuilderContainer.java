@@ -79,12 +79,6 @@ public class ComponentBuilderContainer extends Container
             {
                 return stack.getItem().isIn(DeviceTags.CIRCUIT_BOARDS);
             }
-
-            @Override
-            public int getSlotStackLimit()
-            {
-                return 1;
-            }
         });
 
         this.addSlot(new Slot(this.craftingArea, 10, 146, 18)
@@ -116,9 +110,12 @@ public class ComponentBuilderContainer extends Container
             @Override
             public ItemStack decrStackSize(int amount)
             {
-                ComponentBuilderContainer.this.craftingArea.decrStackSize(0, 1);
-                ComponentBuilderContainer.this.posCallable.consume((world, pos) -> ComponentBuilderContainer.this.craftingArea.getStackInSlot(1).attemptDamageItem(1, world.rand, null));
-                ComponentBuilderContainer.this.craftingArea.decrStackSize(2, 1); // TODO decrease solder by recipe amount
+                for (int i = 0; i < 10; i++)
+                {
+                    ComponentBuilderContainer.this.craftingArea.decrStackSize(i, 1);
+                }
+                ComponentBuilderContainer.this.posCallable.consume((world, pos) -> ComponentBuilderContainer.this.craftingArea.getStackInSlot(1).attemptDamageItem(10, world.rand, null));
+                ComponentBuilderContainer.this.craftingArea.decrStackSize(11, 1); // TODO decrease solder by recipe amount
                 return super.decrStackSize(amount);
             }
         });
