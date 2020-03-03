@@ -9,14 +9,13 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.CraftResultInventory;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.network.play.server.SSetSlotPacket;
 import net.minecraft.util.IWorldPosCallable;
 import net.minecraft.world.World;
-import net.minecraftforge.common.Tags;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -27,17 +26,7 @@ public class ComponentBuilderContainer extends Container
     private IWorldPosCallable posCallable;
     private PlayerEntity player;
 
-    private IInventory craftingArea = new CraftingInventory(this, 3, 3);
-
-    private IInventory inventory = new Inventory(3)
-    {
-        @Override
-        public void markDirty()
-        {
-            ComponentBuilderContainer.this.onCraftMatrixChanged(this);
-            super.markDirty();
-        }
-    };
+    private IInventory craftingArea = new CraftingInventory(this, 4, 3);
 
     private CraftResultInventory craftingResult = new CraftResultInventory()
     {
@@ -177,31 +166,55 @@ public class ComponentBuilderContainer extends Container
         this.posCallable.consume((world, pos) -> updateRecipe(this.windowId, world, this.player, this.craftingArea, this.craftingResult));
     }
 
+    private boolean isIngredient(ItemStack stack)
+    {
+        Optional<ComponentBuilderRecipe> optional = this.player.world.getRecipeManager().getRecipe(DeviceRecipes.COMPONENT_BUILDER, this.craftingArea, this.player.world);
+        if (optional.isPresent())
+        {
+            ComponentBuilderRecipe recipe = optional.get();
+            for (Ingredient ingredient : recipe.getIngredients())
+            {
+                if (ingredient.test(stack))
+                {
+                    return true;
+                }
+            }
+        }
+        // TODO find a way to detect if the stack is an ingredient
+        return false;
+    }
+
     public ItemStack transferStackInSlot(PlayerEntity playerIn, int index)
     {
         ItemStack itemstack = ItemStack.EMPTY;
         Slot slot = this.inventorySlots.get(index);
         if (slot != null && slot.getHasStack())
         {
+            System.out.println(index);
             ItemStack itemstack1 = slot.getStack();
             itemstack = itemstack1.copy();
-
-            if (index < 12)
+            if (index == 12)
             {
-                if (!this.mergeItemStack(itemstack1, 12, 49, true))
+                if (!this.mergeItemStack(itemstack1, 13, 49, true))
                 {
                     return ItemStack.EMPTY;
                 }
 
                 slot.onSlotChange(itemstack1, itemstack);
             }
-            else
+            else if (index > 12)
             {
-                if (itemstack1.getItem().isIn(Tags.Items.INGOTS)) // TODO only allow items that are in the recipe in here
+                if (this.isIngredient(itemstack1))
                 {
-                    if (!this.mergeItemStack(itemstack1, 0, 9, false)) // TODO only fill through the slots that can be filled
+                    for (int i = 0; i < 9; i++)
                     {
-                        return ItemStack.EMPTY;
+                        if (this.layout.hasSlot(1 << i))
+                        {
+                            if (!this.mergeItemStack(itemstack1, i, i + 1, false))
+                            {
+                                return ItemStack.EMPTY;
+                            }
+                        }
                     }
                 }
                 else if (itemstack1.getItem().isIn(DeviceTags.CIRCUIT_BOARDS))
@@ -225,56 +238,113 @@ public class ComponentBuilderContainer extends Container
                         return ItemStack.EMPTY;
                     }
                 }
-                else if (index < 40)
-                {
-                    if (!this.mergeItemStack(itemstack1, 40, 49, false))
-                    {
-                        return ItemStack.EMPTY;
-                    }
-                }
-                else if (index < 49 && !this.mergeItemStack(itemstack1, 13, 39, false))
-                {
-                    return ItemStack.EMPTY;
-                }
-                //                                if (itemstack1.getItem().isIn(DeviceTags.CIRCUIT_BOARDS)) {
-                //                                    if (!this.mergeItemStack(itemstack1, 9, 10, false)) {
-                //                                        return ItemStack.EMPTY;
-                //                                    }
-                //                                }else
-                //                                if (index >= 3 && index < 30) {
-                //                                                    if (!this.mergeItemStack(itemstack1, 30, 39, false)) {
-                //                                                        return ItemStack.EMPTY;
-                //                                                    }
-                //                                                } else if (index >= 30 && index < 39 && !this.mergeItemStack(itemstack1, 3, 30, false)) {
-                //                                                    return ItemStack.EMPTY;
-                //                                                }
             }
+            //            else if (index < 40)
+            //            {
+            //                if (!this.mergeItemStack(itemstack1, 40, 49, false))
+            //                {
+            //                    return ItemStack.EMPTY;
+            //                }
+            //            }
+            //            else if (index < 49 && !this.mergeItemStack(itemstack1, 13, 39, false))
+            //            {
+            //                return ItemStack.EMPTY;
+            //            }
+            //            else if (!this.mergeItemStack(itemstack1, 3, 39, false))
+            //            {
+            //                return ItemStack.EMPTY;
+            //            }
 
-            //            if (index == 2) {
-            //                if (!this.mergeItemStack(itemstack1, 3, 39, true)) {
+            //            if (index < 12)
+            //            {
+            //                if (!this.mergeItemStack(itemstack1, 12, 49, true))
+            //                {
             //                    return ItemStack.EMPTY;
             //                }
             //
             //                slot.onSlotChange(itemstack1, itemstack);
-            //            } else if (index != 1 && index != 0) {
-            //                if (this.func_217057_a(itemstack1)) {
-            //                    if (!this.mergeItemStack(itemstack1, 0, 1, false)) {
+            //            }
+            //            else
+            //            {
+            //                ComponentBuilderRecipe recipe = Objects.requireNonNull(this.player.world.getServer()).getRecipeManager().getRecipe(DeviceRecipes.COMPONENT_BUILDER, this.craftingArea, this.player.world).orElse(null);
+            //                if (recipe != null) // TODO only allow items that are in the recipe in here
+            //                {
+            //                    if (!this.mergeItemStack(itemstack1, 0, 9, false)) // TODO only fill through the slots that can be filled
+            //                    {
             //                        return ItemStack.EMPTY;
             //                    }
-            //                } else if (this.isFuel(itemstack1)) {
-            //                    if (!this.mergeItemStack(itemstack1, 1, 2, false)) {
+            //                }
+            //                if (itemstack1.getItem().isIn(DeviceTags.CIRCUIT_BOARDS))
+            //                {
+            //                    if (!this.mergeItemStack(itemstack1, 9, 10, false))
+            //                    {
             //                        return ItemStack.EMPTY;
             //                    }
-            //                } else if (index >= 3 && index < 30) {
-            //                    if (!this.mergeItemStack(itemstack1, 30, 39, false)) {
+            //                }
+            //                else if (itemstack1.getItem() == DeviceItems.SOLDER_IRON)
+            //                {
+            //                    if (!this.mergeItemStack(itemstack1, 10, 11, false))
+            //                    {
             //                        return ItemStack.EMPTY;
             //                    }
-            //                } else if (index >= 30 && index < 39 && !this.mergeItemStack(itemstack1, 3, 30, false)) {
+            //                }
+            //                else if (itemstack1.getItem() == DeviceItems.SOLDER)
+            //                {
+            //                    if (!this.mergeItemStack(itemstack1, 11, 12, false))
+            //                    {
+            //                        return ItemStack.EMPTY;
+            //                    }
+            //                }
+            //                else if (index < 40)
+            //                {
+            //                    if (!this.mergeItemStack(itemstack1, 40, 49, false))
+            //                    {
+            //                        return ItemStack.EMPTY;
+            //                    }
+            //                }
+            //                else if (index < 49 && !this.mergeItemStack(itemstack1, 13, 39, false))
+            //                {
             //                    return ItemStack.EMPTY;
             //                }
-            //            } else if (!this.mergeItemStack(itemstack1, 3, 39, false)) {
-            //                return ItemStack.EMPTY;
+            //                //                                if (itemstack1.getItem().isIn(DeviceTags.CIRCUIT_BOARDS)) {
+            //                //                                    if (!this.mergeItemStack(itemstack1, 9, 10, false)) {
+            //                //                                        return ItemStack.EMPTY;
+            //                //                                    }
+            //                //                                }else
+            //                //                                if (index >= 3 && index < 30) {
+            //                //                                                    if (!this.mergeItemStack(itemstack1, 30, 39, false)) {
+            //                //                                                        return ItemStack.EMPTY;
+            //                //                                                    }
+            //                //                                                } else if (index >= 30 && index < 39 && !this.mergeItemStack(itemstack1, 3, 30, false)) {
+            //                //                                                    return ItemStack.EMPTY;
+            //                //                                                }
             //            }
+            //
+            //            //            if (index == 2) {
+            //            //                if (!this.mergeItemStack(itemstack1, 3, 39, true)) {
+            //            //                    return ItemStack.EMPTY;
+            //            //                }
+            //            //
+            //            //                slot.onSlotChange(itemstack1, itemstack);
+            //            //            } else if (index != 1 && index != 0) {
+            //            //                if (this.func_217057_a(itemstack1)) {
+            //            //                    if (!this.mergeItemStack(itemstack1, 0, 1, false)) {
+            //            //                        return ItemStack.EMPTY;
+            //            //                    }
+            //            //                } else if (this.isFuel(itemstack1)) {
+            //            //                    if (!this.mergeItemStack(itemstack1, 1, 2, false)) {
+            //            //                        return ItemStack.EMPTY;
+            //            //                    }
+            //            //                } else if (index >= 3 && index < 30) {
+            //            //                    if (!this.mergeItemStack(itemstack1, 30, 39, false)) {
+            //            //                        return ItemStack.EMPTY;
+            //            //                    }
+            //            //                } else if (index >= 30 && index < 39 && !this.mergeItemStack(itemstack1, 3, 30, false)) {
+            //            //                    return ItemStack.EMPTY;
+            //            //                }
+            //            //            } else if (!this.mergeItemStack(itemstack1, 3, 39, false)) {
+            //            //                return ItemStack.EMPTY;
+            //            //            }
 
             if (itemstack1.isEmpty())
             {
