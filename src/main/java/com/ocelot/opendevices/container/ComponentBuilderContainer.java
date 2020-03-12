@@ -1,7 +1,7 @@
 package com.ocelot.opendevices.container;
 
 import com.ocelot.opendevices.api.registry.ComponentBuilderBoardLayout;
-import com.ocelot.opendevices.crafting.component_builder.ComponentBuilderRecipe;
+import com.ocelot.opendevices.crafting.ComponentBuilderRecipe;
 import com.ocelot.opendevices.init.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -9,16 +9,18 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.CraftResultInventory;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.network.play.server.SSetSlotPacket;
 import net.minecraft.util.IWorldPosCallable;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.world.World;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 
 public class ComponentBuilderContainer extends Container
 {
@@ -26,8 +28,16 @@ public class ComponentBuilderContainer extends Container
     private IWorldPosCallable posCallable;
     private PlayerEntity player;
 
-    private IInventory craftingArea = new CraftingInventory(this, 4, 3);
-
+    private IInventory inputArea = new Inventory(3)
+    {
+        @Override
+        public void markDirty()
+        {
+            ComponentBuilderContainer.this.onCraftMatrixChanged(this);
+            super.markDirty();
+        }
+    };
+    private IInventory craftingArea = new CraftingInventory(this, 3, 3);
     private CraftResultInventory craftingResult = new CraftResultInventory()
     {
         @Override
@@ -65,7 +75,7 @@ public class ComponentBuilderContainer extends Container
             }
         }
 
-        this.addSlot(new Slot(this.craftingArea, 9, 114, 28)
+        this.addSlot(new Slot(this.inputArea, 0, 114, 28)
         {
             @Override
             public boolean isItemValid(ItemStack stack)
@@ -74,7 +84,7 @@ public class ComponentBuilderContainer extends Container
             }
         });
 
-        this.addSlot(new Slot(this.craftingArea, 10, 146, 18)
+        this.addSlot(new Slot(this.inputArea, 1, 146, 18)
         {
             @Override
             public boolean isItemValid(ItemStack stack)
@@ -83,7 +93,7 @@ public class ComponentBuilderContainer extends Container
             }
         });
 
-        this.addSlot(new Slot(this.craftingArea, 11, 146, 40)
+        this.addSlot(new Slot(this.inputArea, 2, 146, 40)
         {
             @Override
             public boolean isItemValid(ItemStack stack)
@@ -94,6 +104,8 @@ public class ComponentBuilderContainer extends Container
 
         this.addSlot(new Slot(this.craftingResult, 0, 114, 54)
         {
+            private int removeCount;
+
             @Override
             public boolean isItemValid(ItemStack stack)
             {
@@ -103,13 +115,58 @@ public class ComponentBuilderContainer extends Container
             @Override
             public ItemStack decrStackSize(int amount)
             {
-                for (int i = 0; i < 10; i++)
+                if (this.getHasStack())
                 {
-                    ComponentBuilderContainer.this.craftingArea.decrStackSize(i, amount);
+                    this.removeCount += Math.min(amount, this.getStack().getCount());
                 }
-                ComponentBuilderContainer.this.posCallable.consume((world, pos) -> ComponentBuilderContainer.this.craftingArea.getStackInSlot(1).attemptDamageItem(10, world.rand, null));
-                ComponentBuilderContainer.this.craftingArea.decrStackSize(11, amount); // TODO decrease solder by recipe amount
+
                 return super.decrStackSize(amount);
+            }
+
+            @Override
+            public ItemStack onTake(PlayerEntity thePlayer, ItemStack stack)
+            {
+                this.onCrafting(stack);
+                super.onTake(thePlayer, stack);
+                return stack;
+            }
+
+            @Override
+            protected void onCrafting(ItemStack stack, int amount)
+            {
+                this.removeCount += amount;
+                this.onCrafting(stack);
+            }
+
+            @Override
+            protected void onCrafting(ItemStack stack)
+            {
+                stack.onCrafting(player.world, player, this.removeCount);
+                ComponentBuilderRecipe recipe = craftingResult.getRecipeUsed() instanceof ComponentBuilderRecipe ? ((ComponentBuilderRecipe) craftingResult.getRecipeUsed()) : null;
+
+                if (recipe != null && canCraft(recipe))
+                {
+                    if (!player.world.isRemote())
+                    {
+                        ItemStack result = inputArea.getStackInSlot(1).copy();
+                        result.damageItem(this.removeCount, player, t -> player.playSound(SoundEvents.ENTITY_ITEM_BREAK, 0.8F, 0.8F + player.world.rand.nextFloat() * 0.4F));
+                        inputArea.setInventorySlotContents(1, result);
+                        detectAndSendChanges();
+                    }
+
+                    for (int i = 0; i < craftingArea.getSizeInventory(); i++)
+                    {
+                        craftingArea.decrStackSize(i, this.removeCount);
+                    }
+
+                    if (!player.isCreative())
+                    {
+                        inputArea.decrStackSize(0, this.removeCount);
+                        inputArea.decrStackSize(2, this.removeCount * recipe.getSolderAmount());
+                    }
+                }
+
+                this.removeCount = 0;
             }
         });
 
@@ -129,27 +186,32 @@ public class ComponentBuilderContainer extends Container
 
     public void setLayout(ComponentBuilderBoardLayout layout)
     {
-        this.posCallable.consume((world, pos) -> this.clearContainer(this.player, this.player.world, this.craftingArea));
-        this.detectAndSendChanges();
+        if (!this.player.world.isRemote())
+        {
+            this.clearContainer(this.player, this.player.world, this.craftingArea);
+            this.detectAndSendChanges();
+        }
         this.layout = layout;
     }
 
-    protected static void updateRecipe(int windowId, World world, PlayerEntity player, IInventory craftingArea, CraftResultInventory resultInventory)
+    private static void updateRecipe(int windowId, World world, PlayerEntity player, IInventory craftingArea, CraftResultInventory resultInventory, Function<ComponentBuilderRecipe, Boolean> canCraft)
     {
-        if (!world.isRemote)
+        resultInventory.setRecipeUsed(null);
+        ServerPlayerEntity serverplayerentity = (ServerPlayerEntity) player;
+        ItemStack itemstack = ItemStack.EMPTY;
+        Optional<ComponentBuilderRecipe> optional = Objects.requireNonNull(world.getServer()).getRecipeManager().getRecipe(DeviceRecipes.COMPONENT_BUILDER, craftingArea, world);
+        if (optional.isPresent())
         {
-            ServerPlayerEntity serverplayerentity = (ServerPlayerEntity) player;
-            ItemStack itemstack = ItemStack.EMPTY;
-            Optional<ComponentBuilderRecipe> optional = Objects.requireNonNull(world.getServer()).getRecipeManager().getRecipe(DeviceRecipes.COMPONENT_BUILDER, craftingArea, world);
-            if (optional.isPresent())
+            ComponentBuilderRecipe recipe = optional.get();
+            if (canCraft.apply(recipe) && resultInventory.canUseRecipe(world, serverplayerentity, recipe))
             {
-                ComponentBuilderRecipe recipe = optional.get();
-                if (resultInventory.canUseRecipe(world, serverplayerentity, recipe))
-                {
-                    itemstack = recipe.getCraftingResult(craftingArea);
-                }
+                itemstack = recipe.getCraftingResult(craftingArea);
+                resultInventory.setRecipeUsed(recipe);
             }
+        }
 
+        if (!world.isRemote())
+        {
             resultInventory.setInventorySlotContents(0, itemstack);
             serverplayerentity.connection.sendPacket(new SSetSlotPacket(windowId, 12, itemstack));
         }
@@ -163,38 +225,29 @@ public class ComponentBuilderContainer extends Container
             this.clearContainer(this.player, this.player.world, this.craftingArea);
             this.detectAndSendChanges();
         }
-        this.posCallable.consume((world, pos) -> updateRecipe(this.windowId, world, this.player, this.craftingArea, this.craftingResult));
+        this.posCallable.consume((world, pos) -> updateRecipe(this.windowId, world, this.player, this.craftingArea, this.craftingResult, this::canCraft));
     }
 
-    private boolean isIngredient(ItemStack stack)
+    private boolean canCraft(ComponentBuilderRecipe recipe)
     {
-        Optional<ComponentBuilderRecipe> optional = this.player.world.getRecipeManager().getRecipe(DeviceRecipes.COMPONENT_BUILDER, this.craftingArea, this.player.world);
-        if (optional.isPresent())
-        {
-            ComponentBuilderRecipe recipe = optional.get();
-            for (Ingredient ingredient : recipe.getIngredients())
-            {
-                if (ingredient.test(stack))
-                {
-                    return true;
-                }
-            }
-        }
-        // TODO find a way to detect if the stack is an ingredient
-        return false;
+        ItemStack circuitBoardStack = this.inputArea.getStackInSlot(0);
+        ItemStack solderIronStack = this.inputArea.getStackInSlot(1);
+        ItemStack solderStack = this.inputArea.getStackInSlot(2);
+        return recipe.getLayout() == this.layout && recipe.getRecipeInput().test(circuitBoardStack) && (this.player.isCreative() || solderIronStack.getItem() == DeviceItems.SOLDER_IRON && solderStack.getItem() == DeviceItems.SOLDER && solderStack.getCount() >= recipe.getSolderAmount());
     }
 
-    public ItemStack transferStackInSlot(PlayerEntity playerIn, int index)
+    @Override
+    public ItemStack transferStackInSlot(PlayerEntity player, int index)
     {
         ItemStack itemstack = ItemStack.EMPTY;
         Slot slot = this.inventorySlots.get(index);
         if (slot != null && slot.getHasStack())
         {
-            System.out.println(index);
             ItemStack itemstack1 = slot.getStack();
             itemstack = itemstack1.copy();
             if (index == 12)
             {
+                this.posCallable.consume((world, pos) -> itemstack1.getItem().onCreated(itemstack1, world, player));
                 if (!this.mergeItemStack(itemstack1, 13, 49, true))
                 {
                     return ItemStack.EMPTY;
@@ -204,20 +257,7 @@ public class ComponentBuilderContainer extends Container
             }
             else if (index > 12)
             {
-                if (this.isIngredient(itemstack1))
-                {
-                    for (int i = 0; i < 9; i++)
-                    {
-                        if (this.layout.hasSlot(1 << i))
-                        {
-                            if (!this.mergeItemStack(itemstack1, i, i + 1, false))
-                            {
-                                return ItemStack.EMPTY;
-                            }
-                        }
-                    }
-                }
-                else if (itemstack1.getItem().isIn(DeviceTags.CIRCUIT_BOARDS))
+                if (itemstack1.getItem().isIn(DeviceTags.CIRCUIT_BOARDS))
                 {
                     if (!this.mergeItemStack(itemstack1, 9, 10, false))
                     {
@@ -238,113 +278,15 @@ public class ComponentBuilderContainer extends Container
                         return ItemStack.EMPTY;
                     }
                 }
+                else if (!this.mergeItemStack(itemstack1, 12, 49, false))
+                {
+                    return ItemStack.EMPTY;
+                }
             }
-            //            else if (index < 40)
-            //            {
-            //                if (!this.mergeItemStack(itemstack1, 40, 49, false))
-            //                {
-            //                    return ItemStack.EMPTY;
-            //                }
-            //            }
-            //            else if (index < 49 && !this.mergeItemStack(itemstack1, 13, 39, false))
-            //            {
-            //                return ItemStack.EMPTY;
-            //            }
-            //            else if (!this.mergeItemStack(itemstack1, 3, 39, false))
-            //            {
-            //                return ItemStack.EMPTY;
-            //            }
-
-            //            if (index < 12)
-            //            {
-            //                if (!this.mergeItemStack(itemstack1, 12, 49, true))
-            //                {
-            //                    return ItemStack.EMPTY;
-            //                }
-            //
-            //                slot.onSlotChange(itemstack1, itemstack);
-            //            }
-            //            else
-            //            {
-            //                ComponentBuilderRecipe recipe = Objects.requireNonNull(this.player.world.getServer()).getRecipeManager().getRecipe(DeviceRecipes.COMPONENT_BUILDER, this.craftingArea, this.player.world).orElse(null);
-            //                if (recipe != null) // TODO only allow items that are in the recipe in here
-            //                {
-            //                    if (!this.mergeItemStack(itemstack1, 0, 9, false)) // TODO only fill through the slots that can be filled
-            //                    {
-            //                        return ItemStack.EMPTY;
-            //                    }
-            //                }
-            //                if (itemstack1.getItem().isIn(DeviceTags.CIRCUIT_BOARDS))
-            //                {
-            //                    if (!this.mergeItemStack(itemstack1, 9, 10, false))
-            //                    {
-            //                        return ItemStack.EMPTY;
-            //                    }
-            //                }
-            //                else if (itemstack1.getItem() == DeviceItems.SOLDER_IRON)
-            //                {
-            //                    if (!this.mergeItemStack(itemstack1, 10, 11, false))
-            //                    {
-            //                        return ItemStack.EMPTY;
-            //                    }
-            //                }
-            //                else if (itemstack1.getItem() == DeviceItems.SOLDER)
-            //                {
-            //                    if (!this.mergeItemStack(itemstack1, 11, 12, false))
-            //                    {
-            //                        return ItemStack.EMPTY;
-            //                    }
-            //                }
-            //                else if (index < 40)
-            //                {
-            //                    if (!this.mergeItemStack(itemstack1, 40, 49, false))
-            //                    {
-            //                        return ItemStack.EMPTY;
-            //                    }
-            //                }
-            //                else if (index < 49 && !this.mergeItemStack(itemstack1, 13, 39, false))
-            //                {
-            //                    return ItemStack.EMPTY;
-            //                }
-            //                //                                if (itemstack1.getItem().isIn(DeviceTags.CIRCUIT_BOARDS)) {
-            //                //                                    if (!this.mergeItemStack(itemstack1, 9, 10, false)) {
-            //                //                                        return ItemStack.EMPTY;
-            //                //                                    }
-            //                //                                }else
-            //                //                                if (index >= 3 && index < 30) {
-            //                //                                                    if (!this.mergeItemStack(itemstack1, 30, 39, false)) {
-            //                //                                                        return ItemStack.EMPTY;
-            //                //                                                    }
-            //                //                                                } else if (index >= 30 && index < 39 && !this.mergeItemStack(itemstack1, 3, 30, false)) {
-            //                //                                                    return ItemStack.EMPTY;
-            //                //                                                }
-            //            }
-            //
-            //            //            if (index == 2) {
-            //            //                if (!this.mergeItemStack(itemstack1, 3, 39, true)) {
-            //            //                    return ItemStack.EMPTY;
-            //            //                }
-            //            //
-            //            //                slot.onSlotChange(itemstack1, itemstack);
-            //            //            } else if (index != 1 && index != 0) {
-            //            //                if (this.func_217057_a(itemstack1)) {
-            //            //                    if (!this.mergeItemStack(itemstack1, 0, 1, false)) {
-            //            //                        return ItemStack.EMPTY;
-            //            //                    }
-            //            //                } else if (this.isFuel(itemstack1)) {
-            //            //                    if (!this.mergeItemStack(itemstack1, 1, 2, false)) {
-            //            //                        return ItemStack.EMPTY;
-            //            //                    }
-            //            //                } else if (index >= 3 && index < 30) {
-            //            //                    if (!this.mergeItemStack(itemstack1, 30, 39, false)) {
-            //            //                        return ItemStack.EMPTY;
-            //            //                    }
-            //            //                } else if (index >= 30 && index < 39 && !this.mergeItemStack(itemstack1, 3, 30, false)) {
-            //            //                    return ItemStack.EMPTY;
-            //            //                }
-            //            //            } else if (!this.mergeItemStack(itemstack1, 3, 39, false)) {
-            //            //                return ItemStack.EMPTY;
-            //            //            }
+            else if (!this.mergeItemStack(itemstack1, 12, 49, false))
+            {
+                return ItemStack.EMPTY;
+            }
 
             if (itemstack1.isEmpty())
             {
@@ -360,7 +302,7 @@ public class ComponentBuilderContainer extends Container
                 return ItemStack.EMPTY;
             }
 
-            slot.onTake(playerIn, itemstack1);
+            slot.onTake(player, itemstack1);
         }
 
         return itemstack;
@@ -377,18 +319,22 @@ public class ComponentBuilderContainer extends Container
     {
         super.onContainerClosed(player);
         this.craftingResult.removeStackFromSlot(0);
-        this.posCallable.consume((world, pos) -> this.clearContainer(player, player.world, this.craftingArea));
+        this.posCallable.consume((world, pos) ->
+        {
+            this.clearContainer(player, player.world, this.inputArea);
+            this.clearContainer(player, player.world, this.craftingArea);
+        });
     }
 
     public boolean hasCircuitBoard()
     {
-        ItemStack circuitBoardStack = this.craftingArea.getStackInSlot(9);
+        ItemStack circuitBoardStack = this.inputArea.getStackInSlot(0);
         return !circuitBoardStack.isEmpty() && circuitBoardStack.getItem().isIn(DeviceTags.CIRCUIT_BOARDS);
     }
 
-    public IInventory getCraftingAreaInventory()
+    public IInventory getInputAreaInventory()
     {
-        return craftingArea;
+        return inputArea;
     }
 
     public ComponentBuilderBoardLayout getLayout()

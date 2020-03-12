@@ -1,7 +1,7 @@
 package com.ocelot.opendevices.init;
 
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.crafting.component_builder.ComponentBuilderRecipe;
+import com.ocelot.opendevices.crafting.ComponentBuilderRecipe;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.IRecipeType;

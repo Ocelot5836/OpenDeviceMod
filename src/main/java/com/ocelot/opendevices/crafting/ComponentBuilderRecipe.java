@@ -1,4 +1,4 @@
-package com.ocelot.opendevices.crafting.component_builder;
+package com.ocelot.opendevices.crafting;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -14,6 +14,7 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.crafting.IShapedRecipe;
 import net.minecraftforge.registries.ForgeRegistryEntry;
@@ -28,15 +29,17 @@ public class ComponentBuilderRecipe implements IRecipe<IInventory>, IShapedRecip
     private final NonNullList<Ingredient> recipeItems;
     private final Ingredient recipeInput;
     private final ItemStack recipeOutput;
+    private final int solderAmount;
     private final ComponentBuilderBoardLayout layout;
     private final ResourceLocation id;
     private final String group;
 
-    public ComponentBuilderRecipe(ResourceLocation id, String group, NonNullList<Ingredient> recipeItems, Ingredient recipeInput, ItemStack recipeOutput, ComponentBuilderBoardLayout layout)
+    public ComponentBuilderRecipe(ResourceLocation id, String group, NonNullList<Ingredient> recipeItems, Ingredient recipeInput, ItemStack recipeOutput, int solderAmount, ComponentBuilderBoardLayout layout)
     {
         this.recipeItems = recipeItems;
         this.recipeInput = recipeInput;
         this.recipeOutput = recipeOutput;
+        this.solderAmount = solderAmount;
         this.layout = layout;
         this.id = id;
         this.group = group;
@@ -71,46 +74,37 @@ public class ComponentBuilderRecipe implements IRecipe<IInventory>, IShapedRecip
         return recipeOutput;
     }
 
+    public Ingredient getRecipeInput()
+    {
+        return recipeInput;
+    }
+
+    public int getSolderAmount()
+    {
+        return solderAmount;
+    }
+
     @Override
     public NonNullList<Ingredient> getIngredients()
     {
         return recipeItems;
     }
 
-    public boolean matches(IInventory inventory, World world)
+    public boolean matches(@Nullable IInventory inventory, World world)
     {
         int subIndex = 0;
         for (int i = 0; i < 3; ++i)
         {
             for (int j = 0; j < 3; ++j)
             {
-                if (!this.layout.hasSlot(1 << i + j * 3))
+                int index = i + j * 3;
+                if (!this.layout.hasSlot(1 << index))
                 {
                     subIndex++;
                     continue;
                 }
-                Ingredient ingredient = this.recipeItems.get(i + j * 3 - subIndex);
-                if (!ingredient.test(inventory.getStackInSlot(i + j * 3)))
-                {
-                    return false;
-                }
-            }
-        }
-
-        return this.recipeInput.test(inventory.getStackInSlot(9));
-    }
-
-    /**
-     * Checks if the region of a crafting inventory is match for the recipe.
-     */
-    private boolean checkMatch(IInventory craftingInventory, boolean reverse)
-    {
-        for (int i = 0; i < 3; ++i)
-        {
-            for (int j = 0; j < 3; ++j)
-            {
-                Ingredient ingredient = this.recipeItems.get(i + j * 3);
-                if (!ingredient.test(craftingInventory.getStackInSlot(i + j * 3)))
+                Ingredient ingredient = this.recipeItems.get(index - subIndex);
+                if (!ingredient.test(inventory.getStackInSlot(index)))
                 {
                     return false;
                 }
@@ -317,12 +311,13 @@ public class ComponentBuilderRecipe implements IRecipe<IInventory>, IShapedRecip
                 throw new JsonParseException("Could not find board layout with id '" + layoutId + "'");
             ComponentBuilderBoardLayout layout = DeviceRegistries.COMPONENT_BUILDER_BOARD_LAYOUTS.getValue(layoutId);
             String group = JSONUtils.getString(json, "group", "");
+            int solderAmount = MathHelper.clamp(JSONUtils.getInt(json, "solderAmount", 1), 1, 64);
             Map<String, Ingredient> map = ComponentBuilderRecipe.deserializeKey(JSONUtils.getJsonObject(json, "key"));
             String[] ingredientsString = ComponentBuilderRecipe.shrink(ComponentBuilderRecipe.patternFromJson(JSONUtils.getJsonArray(json, "pattern")));
             NonNullList<Ingredient> ingredients = ComponentBuilderRecipe.deserializeIngredients(layout, ingredientsString, map);
             Ingredient input = Ingredient.deserialize(JSONUtils.getJsonObject(json, "input"));
             ItemStack result = ShapedRecipe.deserializeItem(JSONUtils.getJsonObject(json, "result"));
-            return new ComponentBuilderRecipe(id, group, ingredients, input, result, layout);
+            return new ComponentBuilderRecipe(id, group, ingredients, input, result, solderAmount, layout);
         }
 
         @Nullable
@@ -331,6 +326,7 @@ public class ComponentBuilderRecipe implements IRecipe<IInventory>, IShapedRecip
         {
             ResourceLocation layoutId = buffer.readResourceLocation();
             String s = buffer.readString(32767);
+            int solderAmount = buffer.readVarInt();
             NonNullList<Ingredient> ingredients = NonNullList.withSize(9, Ingredient.EMPTY);
 
             for (int k = 0; k < ingredients.size(); ++k)
@@ -340,7 +336,7 @@ public class ComponentBuilderRecipe implements IRecipe<IInventory>, IShapedRecip
 
             Ingredient input = Ingredient.read(buffer);
             ItemStack result = buffer.readItemStack();
-            return new ComponentBuilderRecipe(id, s, ingredients, input, result, DeviceRegistries.COMPONENT_BUILDER_BOARD_LAYOUTS.getValue(layoutId));
+            return new ComponentBuilderRecipe(id, s, ingredients, input, result, solderAmount, DeviceRegistries.COMPONENT_BUILDER_BOARD_LAYOUTS.getValue(layoutId));
         }
 
         @Override
@@ -348,6 +344,7 @@ public class ComponentBuilderRecipe implements IRecipe<IInventory>, IShapedRecip
         {
             buffer.writeResourceLocation(Objects.requireNonNull(recipe.getLayout().getRegistryName()));
             buffer.writeString(recipe.group);
+            buffer.writeVarInt(recipe.solderAmount);
 
             for (Ingredient ingredient : recipe.recipeItems)
             {
