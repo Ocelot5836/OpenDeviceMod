@@ -34,6 +34,11 @@ public class ComponentBuilderContainer extends Container
         public void markDirty()
         {
             ComponentBuilderContainer.this.onCraftMatrixChanged(this);
+            if (!hasCircuitBoard())
+            {
+                clearContainer(player, player.world, craftingArea);
+                detectAndSendChanges();
+            }
             super.markDirty();
         }
     };
@@ -44,6 +49,11 @@ public class ComponentBuilderContainer extends Container
         public void markDirty()
         {
             ComponentBuilderContainer.this.onCraftMatrixChanged(this);
+            if (!hasCircuitBoard())
+            {
+                clearContainer(player, player.world, craftingArea);
+                detectAndSendChanges();
+            }
             super.markDirty();
         }
     };
@@ -60,9 +70,9 @@ public class ComponentBuilderContainer extends Container
         this.posCallable = posCallable;
         this.player = playerInventory.player;
 
-        for (int x = 0; x < 3; x++)
+        for (int y = 0; y < 3; y++)
         {
-            for (int y = 0; y < 3; y++)
+            for (int x = 0; x < 3; x++)
             {
                 this.addSlot(new Slot(this.craftingArea, x + y * 3, 10 + x * 21, 20 + y * 21)
                 {
@@ -220,11 +230,6 @@ public class ComponentBuilderContainer extends Container
     @Override
     public void onCraftMatrixChanged(IInventory inventory)
     {
-        if (!this.hasCircuitBoard())
-        {
-            this.clearContainer(this.player, this.player.world, this.craftingArea);
-            this.detectAndSendChanges();
-        }
         this.posCallable.consume((world, pos) -> updateRecipe(this.windowId, world, this.player, this.craftingArea, this.craftingResult, this::canCraft));
     }
 

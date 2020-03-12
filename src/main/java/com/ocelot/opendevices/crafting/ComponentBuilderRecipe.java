@@ -90,21 +90,14 @@ public class ComponentBuilderRecipe implements IRecipe<IInventory>, IShapedRecip
         return recipeItems;
     }
 
-    public boolean matches(@Nullable IInventory inventory, World world)
+    public boolean matches(IInventory inventory, World world)
     {
-        int subIndex = 0;
         for (int i = 0; i < 3; ++i)
         {
             for (int j = 0; j < 3; ++j)
             {
                 int index = i + j * 3;
-                if (!this.layout.hasSlot(1 << index))
-                {
-                    subIndex++;
-                    continue;
-                }
-                Ingredient ingredient = this.recipeItems.get(index - subIndex);
-                if (!ingredient.test(inventory.getStackInSlot(index)))
+                if (!this.recipeItems.get(index).test(inventory.getStackInSlot(index)))
                 {
                     return false;
                 }
@@ -160,7 +153,7 @@ public class ComponentBuilderRecipe implements IRecipe<IInventory>, IShapedRecip
                 {
                     throw new JsonSyntaxException("Pattern references symbol '" + s + "' but it's not defined in the key");
                 }
-                else if (!layout.hasSlot(j + i * 3) && ingredient == Ingredient.EMPTY)
+                else if (!layout.hasSlot(1 << j + i * 3) && ingredient != Ingredient.EMPTY)
                 {
                     throw new JsonSyntaxException("Pattern has symbol '" + s + "' at '" + i + "','" + j + "' but it's not enabled in the specified layout");
                 }
@@ -178,73 +171,6 @@ public class ComponentBuilderRecipe implements IRecipe<IInventory>, IShapedRecip
         {
             return nonnulllist;
         }
-    }
-
-    private static String[] shrink(String... toShrink)
-    {
-        int i = Integer.MAX_VALUE;
-        int j = 0;
-        int k = 0;
-        int l = 0;
-
-        for (int i1 = 0; i1 < toShrink.length; ++i1)
-        {
-            String s = toShrink[i1];
-            i = Math.min(i, firstNonSpace(s));
-            int j1 = lastNonSpace(s);
-            j = Math.max(j, j1);
-            if (j1 < 0)
-            {
-                if (k == i1)
-                {
-                    ++k;
-                }
-
-                ++l;
-            }
-            else
-            {
-                l = 0;
-            }
-        }
-
-        if (toShrink.length == l)
-        {
-            return new String[0];
-        }
-        else
-        {
-            String[] astring = new String[toShrink.length - l - k];
-
-            for (int k1 = 0; k1 < astring.length; ++k1)
-            {
-                astring[k1] = toShrink[k1 + k].substring(i, j + 1);
-            }
-
-            return astring;
-        }
-    }
-
-    private static int firstNonSpace(String str)
-    {
-        int i;
-        for (i = 0; i < str.length() && str.charAt(i) == ' '; ++i)
-        {
-            ;
-        }
-
-        return i;
-    }
-
-    private static int lastNonSpace(String str)
-    {
-        int i;
-        for (i = str.length() - 1; i >= 0 && str.charAt(i) == ' '; --i)
-        {
-            ;
-        }
-
-        return i;
     }
 
     private static String[] patternFromJson(JsonArray jsonArr)
@@ -301,8 +227,6 @@ public class ComponentBuilderRecipe implements IRecipe<IInventory>, IShapedRecip
 
     public static class Serializer extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<ComponentBuilderRecipe>
     {
-        public static final ResourceLocation NAME = new ResourceLocation(OpenDevices.MOD_ID, "component_builder");
-
         @Override
         public ComponentBuilderRecipe read(ResourceLocation id, JsonObject json)
         {
@@ -313,7 +237,7 @@ public class ComponentBuilderRecipe implements IRecipe<IInventory>, IShapedRecip
             String group = JSONUtils.getString(json, "group", "");
             int solderAmount = MathHelper.clamp(JSONUtils.getInt(json, "solderAmount", 1), 1, 64);
             Map<String, Ingredient> map = ComponentBuilderRecipe.deserializeKey(JSONUtils.getJsonObject(json, "key"));
-            String[] ingredientsString = ComponentBuilderRecipe.shrink(ComponentBuilderRecipe.patternFromJson(JSONUtils.getJsonArray(json, "pattern")));
+            String[] ingredientsString = ComponentBuilderRecipe.patternFromJson(JSONUtils.getJsonArray(json, "pattern"));
             NonNullList<Ingredient> ingredients = ComponentBuilderRecipe.deserializeIngredients(layout, ingredientsString, map);
             Ingredient input = Ingredient.deserialize(JSONUtils.getJsonObject(json, "input"));
             ItemStack result = ShapedRecipe.deserializeItem(JSONUtils.getJsonObject(json, "result"));
