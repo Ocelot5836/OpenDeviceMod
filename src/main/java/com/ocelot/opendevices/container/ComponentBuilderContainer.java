@@ -33,12 +33,12 @@ public class ComponentBuilderContainer extends Container
         @Override
         public void markDirty()
         {
-            ComponentBuilderContainer.this.onCraftMatrixChanged(this);
             if (!hasCircuitBoard())
             {
                 clearContainer(player, player.world, craftingArea);
                 detectAndSendChanges();
             }
+            ComponentBuilderContainer.this.onCraftMatrixChanged(this);
             super.markDirty();
         }
     };
@@ -48,12 +48,12 @@ public class ComponentBuilderContainer extends Container
         @Override
         public void markDirty()
         {
-            ComponentBuilderContainer.this.onCraftMatrixChanged(this);
             if (!hasCircuitBoard())
             {
                 clearContainer(player, player.world, craftingArea);
                 detectAndSendChanges();
             }
+            ComponentBuilderContainer.this.onCraftMatrixChanged(this);
             super.markDirty();
         }
     };
@@ -279,6 +279,20 @@ public class ComponentBuilderContainer extends Container
                 else if (itemstack1.getItem() == DeviceItems.SOLDER)
                 {
                     if (!this.mergeItemStack(itemstack1, 11, 12, false))
+                    {
+                        return ItemStack.EMPTY;
+                    }
+                }
+                else if (index < 40)
+                {
+                    if (!this.mergeItemStack(itemstack1, 40, 49, false))
+                    {
+                        return ItemStack.EMPTY;
+                    }
+                }
+                else if (index < 48)
+                {
+                    if (!this.mergeItemStack(itemstack1, 12, 39, false))
                     {
                         return ItemStack.EMPTY;
                     }
