@@ -2,7 +2,9 @@ package com.ocelot.opendevices.api.computer.application;
 
 import com.ocelot.opendevices.api.component.Layout;
 import com.ocelot.opendevices.api.computer.Computer;
+import com.ocelot.opendevices.api.device.Device;
 import com.ocelot.opendevices.api.device.process.DeviceProcess;
+import net.minecraft.nbt.CompoundNBT;
 
 import javax.annotation.Nullable;
 import java.lang.annotation.ElementType;
@@ -15,7 +17,7 @@ import java.util.UUID;
  * @author Ocelot
  * @see AppInfo
  */
-public interface Application
+public interface Application<T extends Device> extends DeviceProcess<T>
 {
     /**
      * Checks for a layout in the specified window.

@@ -20,77 +20,77 @@ import javax.annotation.Nullable;
  * @see Application
  * @see DeviceProcess
  */
-public class ApplicationInputHandler<D extends Device, T extends DeviceProcess<D> & Application> implements ProcessInputHandler<D, T>
+public class ApplicationInputHandler<D extends Device, T extends Application<D>> implements ProcessInputHandler<D, T>
 {
     @Override
-    public boolean onKeyPressed(T process, @Nullable Window window, int keyCode, int scanCode, int mods)
+    public boolean onKeyPressed(T application, @Nullable Window window, int keyCode, int scanCode, int mods)
     {
         if (window != null)
         {
-            Layout layout = process.getLayout(window.getId());
+            Layout layout = application.getLayout(window.getId());
             return layout != null && layout.onKeyPressed(keyCode, scanCode, mods);
         }
         return false;
     }
 
     @Override
-    public boolean onKeyReleased(T process, @Nullable Window window, int keyCode, int scanCode, int mods)
+    public boolean onKeyReleased(T application, @Nullable Window window, int keyCode, int scanCode, int mods)
     {
         if (window != null)
         {
-            Layout layout = process.getLayout(window.getId());
+            Layout layout = application.getLayout(window.getId());
             return layout != null && layout.onKeyReleased(keyCode, scanCode, mods);
         }
         return false;
     }
 
     @Override
-    public boolean onMousePressed(T process, @Nullable Window window, double mouseX, double mouseY, int mouseButton)
+    public boolean onMousePressed(T application, @Nullable Window window, double mouseX, double mouseY, int mouseButton)
     {
         if (window != null)
         {
             float windowX = window.getInterpolatedX(Minecraft.getInstance().getRenderPartialTicks()) + 1;
             float windowY = window.getInterpolatedY(Minecraft.getInstance().getRenderPartialTicks()) + 1 + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT;
-            Layout layout = process.getLayout(window.getId());
+            Layout layout = application.getLayout(window.getId());
             return layout != null && layout.onMousePressed(mouseX - windowX, mouseY - windowY, mouseButton);
         }
         return false;
     }
 
     @Override
-    public boolean onMouseReleased(T process, @Nullable Window window, double mouseX, double mouseY, int mouseButton)
+    public boolean onMouseReleased(T application, @Nullable Window window, double mouseX, double mouseY, int mouseButton)
     {
         if (window != null)
         {
             float windowX = window.getInterpolatedX(Minecraft.getInstance().getRenderPartialTicks()) + 1;
             float windowY = window.getInterpolatedY(Minecraft.getInstance().getRenderPartialTicks()) + 1 + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT;
-            Layout layout = process.getLayout(window.getId());
+            Layout layout = application.getLayout(window.getId());
             return layout != null && layout.onMouseReleased(mouseX - windowX, mouseY - windowY, mouseButton);
         }
         return false;
     }
 
     @Override
-    public boolean onMouseScrolled(T process, @Nullable Window window, double mouseX, double mouseY, double amount)
+    public boolean onMouseScrolled(T application, @Nullable Window window, double mouseX, double mouseY, double amount)
     {
         if (window != null)
         {
             float windowX = window.getInterpolatedX(Minecraft.getInstance().getRenderPartialTicks()) + 1;
             float windowY = window.getInterpolatedY(Minecraft.getInstance().getRenderPartialTicks()) + 1 + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT;
-            Layout layout = process.getLayout(window.getId());
+            Layout layout = application.getLayout(window.getId());
             return layout != null && layout.onMouseScrolled(mouseX - windowX, mouseY - windowY, amount);
         }
         return false;
     }
 
     @Override
-    public void onMouseMoved(T process, @Nullable Window window, double mouseX, double mouseY)
+    public void onMouseMoved(T application, @Nullable Window window, double mouseX, double mouseY)
     {
         if (window != null)
         {
             float windowX = window.getInterpolatedX(Minecraft.getInstance().getRenderPartialTicks()) + 1;
             float windowY = window.getInterpolatedY(Minecraft.getInstance().getRenderPartialTicks()) + 1 + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT;
-            Layout layout = process.getLayout(window.getId());
+            Layout layout = application.getLayout(window.getId());
             if (layout != null)
             {
                 layout.onMouseMoved(mouseX - windowX, mouseY - windowY);
@@ -99,13 +99,13 @@ public class ApplicationInputHandler<D extends Device, T extends DeviceProcess<D
     }
 
     @Override
-    public boolean onMouseDragged(T process, @Nullable Window window, double mouseX, double mouseY, int mouseButton, double deltaX, double deltaY)
+    public boolean onMouseDragged(T application, @Nullable Window window, double mouseX, double mouseY, int mouseButton, double deltaX, double deltaY)
     {
         if (window != null)
         {
             float windowX = window.getInterpolatedX(Minecraft.getInstance().getRenderPartialTicks()) + 1;
             float windowY = window.getInterpolatedY(Minecraft.getInstance().getRenderPartialTicks()) + 1 + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT;
-            Layout layout = process.getLayout(window.getId());
+            Layout layout = application.getLayout(window.getId());
             return layout != null && layout.onMouseDragged(mouseX - windowX, mouseY - windowY, mouseButton, deltaX, deltaY);
         }
         return false;

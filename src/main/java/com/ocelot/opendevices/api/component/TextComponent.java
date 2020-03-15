@@ -4,9 +4,9 @@ import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.computer.Computer;
 import com.ocelot.opendevices.api.handler.ComponentClickListener;
 import com.ocelot.opendevices.api.util.RenderUtil;
+import com.ocelot.opendevices.api.util.SyncHelper;
 import com.ocelot.opendevices.api.util.TooltipRenderer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.RenderComponentsUtil;
 import net.minecraft.nbt.CompoundNBT;
@@ -29,7 +29,7 @@ import java.util.*;
  * @see ITextComponent
  * @see Layout
  */
-public class TextComponent extends AbstractGui implements Component
+public class TextComponent extends StandardComponent
 {
     private float x;
     private float y;
@@ -62,6 +62,7 @@ public class TextComponent extends AbstractGui implements Component
 
     public TextComponent(float x, float y, int maxWidth, ResourceLocation fontRenderer, List<ITextComponent> texts)
     {
+        this.createSyncHelper();
         this.x = x;
         this.y = y;
         this.maxWidth = maxWidth;
@@ -74,6 +75,39 @@ public class TextComponent extends AbstractGui implements Component
 
         this.lastTooltip = Long.MAX_VALUE;
         texts.forEach(this::addLine);
+    }
+
+    private void createSyncHelper()
+    {
+        SyncHelper syncHelper = new SyncHelper(this::markDirty);
+        {
+            syncHelper.addSerializer("x", nbt -> nbt.putFloat("x", this.x), nbt -> this.x = nbt.getFloat("x"));
+            syncHelper.addSerializer("y", nbt -> nbt.putFloat("y", this.y), nbt -> this.y = nbt.getFloat("y"));
+            syncHelper.addSerializer("maxWidth", nbt -> nbt.putInt("maxWidth", this.maxWidth), nbt -> this.maxWidth = nbt.getInt("maxWidth"));
+
+            syncHelper.addSerializer("fontRenderer", nbt -> nbt.putString("fontRenderer", this.fontRendererLocation.toString()), nbt -> this.fontRendererLocation = new ResourceLocation(nbt.getString("fontRenderer")));
+            syncHelper.addSerializer("text", this::serializeText, this::deserializeText);
+            syncHelper.addSerializer("tooltipDelay", nbt -> nbt.putLong("tooltipDelay", this.tooltipDelay), nbt -> this.tooltipDelay = nbt.getLong("tooltipDelay"));
+        }
+        this.setClientSerializer(syncHelper);
+    }
+
+    private void serializeText(CompoundNBT nbt)
+    {
+        ListNBT textList = new ListNBT();
+        this.text.forEach(text -> textList.add(new StringNBT(new String(Base64.getEncoder().encode(ITextComponent.Serializer.toJson(text).getBytes())))));
+        nbt.put("text", textList);
+    }
+
+    private void deserializeText(CompoundNBT nbt)
+    {
+        this.text.clear();
+        ListNBT textList = nbt.getList("text", Constants.NBT.TAG_STRING);
+        for (int i = 0; i < textList.size(); i++)
+        {
+            this.text.add(ITextComponent.Serializer.fromJson(new String(Base64.getDecoder().decode(textList.getString(i)))));
+        }
+        this.rebuildText();
     }
 
     private void rebuildText()
@@ -278,6 +312,7 @@ public class TextComponent extends AbstractGui implements Component
     public TextComponent setX(int x)
     {
         this.x = x;
+        this.getClientSerializer().markDirty("x");
         return this;
     }
 
@@ -289,6 +324,7 @@ public class TextComponent extends AbstractGui implements Component
     public TextComponent setY(int y)
     {
         this.y = y;
+        this.getClientSerializer().markDirty("y");
         return this;
     }
 
@@ -302,6 +338,8 @@ public class TextComponent extends AbstractGui implements Component
     {
         this.x = x;
         this.y = y;
+        this.getClientSerializer().markDirty("x");
+        this.getClientSerializer().markDirty("y");
         return this;
     }
 
@@ -314,6 +352,7 @@ public class TextComponent extends AbstractGui implements Component
     {
         this.maxWidth = maxWidth;
         this.rebuildText();
+        this.getClientSerializer().markDirty("maxWidth");
         return this;
     }
 
@@ -327,6 +366,7 @@ public class TextComponent extends AbstractGui implements Component
         this.fontRendererLocation = fontRenderer;
         this.fontRenderer = Minecraft.getInstance().getFontResourceManager().getFontRenderer(fontRenderer);
         this.rebuildText();
+        this.getClientSerializer().markDirty("fontRenderer");
         return this;
     }
 
@@ -352,6 +392,7 @@ public class TextComponent extends AbstractGui implements Component
         if (text != null)
             text.forEach(this::addLine);
         this.rebuildText();
+        this.getClientSerializer().markDirty("text");
         return this;
     }
 
@@ -363,6 +404,7 @@ public class TextComponent extends AbstractGui implements Component
     public TextComponent setTooltipDelay(long tooltipDelay)
     {
         this.tooltipDelay = Math.max(0, tooltipDelay);
+        this.getClientSerializer().markDirty("tooltipDelay");
         return this;
     }
 
@@ -375,43 +417,6 @@ public class TextComponent extends AbstractGui implements Component
     {
         this.clickListener = clickListener;
         return this;
-    }
-
-    @Override
-    public CompoundNBT serializeNBT()
-    {
-        CompoundNBT nbt = new CompoundNBT();
-        nbt.putFloat("x", this.x);
-        nbt.putFloat("y", this.y);
-        nbt.putString("fontRenderer", this.fontRendererLocation.toString());
-        nbt.putInt("maxWidth", this.maxWidth);
-
-        ListNBT textList = new ListNBT();
-        this.text.forEach(text -> textList.add(new StringNBT(new String(Base64.getEncoder().encode(ITextComponent.Serializer.toJson(text).getBytes())))));
-        nbt.put("text", textList);
-
-        nbt.putLong("tooltipDelay", this.tooltipDelay);
-
-        return nbt;
-    }
-
-    @Override
-    public void deserializeNBT(CompoundNBT nbt)
-    {
-        this.x = nbt.getFloat("x");
-        this.y = nbt.getFloat("y");
-        this.setFontRenderer(new ResourceLocation(nbt.getString("fontRenderer")));
-        this.maxWidth = nbt.getInt("maxWidth");
-
-        this.text.clear();
-        ListNBT textList = nbt.getList("text", Constants.NBT.TAG_STRING);
-        for (int i = 0; i < textList.size(); i++)
-        {
-            this.text.add(ITextComponent.Serializer.fromJson(new String(Base64.getDecoder().decode(textList.getString(i)))));
-        }
-        this.rebuildText();
-
-        this.tooltipDelay = Math.max(0, nbt.getLong("tooltipDelay"));
     }
 
     private static class Line
