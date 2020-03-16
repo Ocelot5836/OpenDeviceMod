@@ -3,25 +3,30 @@ package com.ocelot.opendevices.core.render;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceConstants;
+import com.ocelot.opendevices.api.DeviceRegistries;
 import com.ocelot.opendevices.api.LaptopSettings;
-import com.ocelot.opendevices.api.device.process.DeviceProcess;
-import com.ocelot.opendevices.api.device.process.ProcessInputRegistry;
-import com.ocelot.opendevices.api.device.process.ProcessWindowRenderer;
 import com.ocelot.opendevices.api.computer.Computer;
 import com.ocelot.opendevices.api.computer.desktop.Desktop;
 import com.ocelot.opendevices.api.computer.desktop.DesktopBackground;
 import com.ocelot.opendevices.api.computer.taskbar.TaskBar;
 import com.ocelot.opendevices.api.computer.window.Window;
 import com.ocelot.opendevices.api.computer.window.WindowManager;
+import com.ocelot.opendevices.api.device.process.DeviceProcess;
+import com.ocelot.opendevices.api.device.process.ProcessInputRegistry;
+import com.ocelot.opendevices.api.device.process.ProcessWindowRenderer;
 import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.api.util.TooltipRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.texture.AtlasTexture;
+import net.minecraft.client.renderer.texture.MissingTextureSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.ModContainer;
@@ -29,6 +34,8 @@ import net.minecraftforge.fml.ModList;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.codehaus.plexus.util.StringUtils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @OnlyIn(Dist.CLIENT)
@@ -146,7 +153,7 @@ public class LaptopRenderer extends AbstractGui
         }
     }
 
-    public static void renderOverlay(TooltipRenderer renderer, Computer computer, int posX, int posY, int screenWidth, int screenHeight, int mouseX, int mouseY, float partialTicks)
+    public static void renderOverlay(TooltipRenderer renderer, Computer computer, int posX, int posY, int screenWidth, int screenHeight, int mouseX, int mouseY, float partialTicks, ITooltipFlag flag)
     {
         WindowManager windowManager = computer.getWindowManager();
         TaskBar taskBar = computer.getTaskBar();
@@ -161,7 +168,15 @@ public class LaptopRenderer extends AbstractGui
                 String title = window.getTitle();
                 if (!StringUtils.isEmpty(title) && RenderUtil.isMouseInside(mouseX, mouseY, posX + 4 + (size + 4) * i, posY + screenHeight - taskBar.getHeight() + 4, posX + 4 + (size + 4) * i + size, posY + screenHeight - taskBar.getHeight() + 4 + size))
                 {
-                    renderer.renderTooltip(title, mouseX, mouseY);
+                    List<String> tooltip = new ArrayList<>();
+                    tooltip.add(title);
+                    if (flag.isAdvanced())
+                    {
+                        DeviceProcess<Computer> process = computer.getProcess(window.getProcessId());
+                        ResourceLocation registryName = process == null ? MissingTextureSprite.getLocation() : DeviceRegistries.getProcessRegistryName(process);
+                        tooltip.add(TextFormatting.DARK_GRAY + String.valueOf(registryName == null ? MissingTextureSprite.getLocation() : registryName));
+                    }
+                    renderer.renderTooltip(tooltip, mouseX, mouseY);
                     return;
                 }
                 i++;
