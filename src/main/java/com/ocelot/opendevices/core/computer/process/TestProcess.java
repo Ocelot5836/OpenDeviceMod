@@ -43,17 +43,18 @@ public class TestProcess implements Application<Computer>
         AppInfo info = this.getInfo();
         if (this.window.create())
         {
-            this.layoutManager.setCurrentLayout(this.window.getWindowId(), TEST_LAYOUT);
             this.window.center();
             this.window.setTitle(info.getName() + " v" + info.getVersion());
         }
 
         if (this.window2.create())
         {
-            this.layoutManager.setCurrentLayout(this.window2.getWindowId(), TEST_LAYOUT2);
             this.window2.center();
             this.window2.setTitle("Authors: " + Arrays.toString(info.getAuthors()));
         }
+
+        this.layoutManager.setCurrentLayout(this.window.getWindowId(), TEST_LAYOUT);
+        this.layoutManager.setCurrentLayout(this.window2.getWindowId(), TEST_LAYOUT2);
 
         this.synchronizeClients();
     }
