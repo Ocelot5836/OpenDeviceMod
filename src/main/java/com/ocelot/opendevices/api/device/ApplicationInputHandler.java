@@ -2,7 +2,7 @@ package com.ocelot.opendevices.api.device;
 
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.component.Layout;
-import com.ocelot.opendevices.api.computer.application.Application;
+import com.ocelot.opendevices.api.application.Application;
 import com.ocelot.opendevices.api.computer.window.Window;
 import com.ocelot.opendevices.api.device.process.DeviceProcess;
 import com.ocelot.opendevices.api.device.process.ProcessInputHandler;
