@@ -6,7 +6,9 @@ import com.ocelot.opendevices.api.DeviceRegistries;
 import com.ocelot.opendevices.api.DeviceSerializers;
 import com.ocelot.opendevices.api.computer.Computer;
 import com.ocelot.opendevices.api.computer.settings.LaptopSetting;
-import com.ocelot.opendevices.api.device.*;
+import com.ocelot.opendevices.api.device.Device;
+import com.ocelot.opendevices.api.device.DeviceSerializer;
+import com.ocelot.opendevices.api.device.DeviceTileEntity;
 import com.ocelot.opendevices.api.device.process.DeviceProcess;
 import com.ocelot.opendevices.api.device.process.ProcessSerializer;
 import com.ocelot.opendevices.api.task.TaskManager;
@@ -23,7 +25,6 @@ import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
@@ -64,7 +65,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
         this.startingProcesses = new HashSet<>();
         this.executionQueue = new ConcurrentLinkedQueue<>();
 
-        this.address = UUID.randomUUID();
+        this.randomizeAddress();
         this.settings = new CompoundNBT();
         this.desktop = new LaptopDesktop(this);
         this.windowManager = new LaptopWindowManager(this);
@@ -277,6 +278,12 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
     {
         super.read(nbt);
         this.open = nbt.getBoolean("open");
+    }
+
+    @Override
+    protected void randomizeAddress()
+    {
+        this.address = UUID.randomUUID();
     }
 
     @Override

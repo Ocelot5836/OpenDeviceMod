@@ -22,6 +22,30 @@ public abstract class DeviceTileEntity extends TileEntity
         super(type);
     }
 
+    @SuppressWarnings("unchecked")
+    private void setAddress(boolean remove)
+    {
+        if (this instanceof Device && this.world instanceof ServerWorld)
+        {
+            DeviceManager deviceManager = DeviceManager.get((ServerWorld) this.world);
+            if (remove)
+            {
+                deviceManager.remove(((Device) this).getAddress());
+            }
+            else
+            {
+                if(deviceManager.exists(((Device) this).getAddress()))
+                    this.randomizeAddress();
+                deviceManager.add((Device) this, (DeviceSerializer<? super Device>) ((Device) this).getSerializer());
+            }
+        }
+    }
+
+    /**
+     * Randomizes the address of this device if needed.
+     */
+    protected abstract void randomizeAddress();
+
     /**
      * Notifies the world that an update has occurred. Should be called whenever something should be saved to file.
      */
@@ -34,24 +58,17 @@ public abstract class DeviceTileEntity extends TileEntity
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void onLoad()
     {
-        if (this instanceof Device && ((Device) this).getSerializer() != null && this.world instanceof ServerWorld)
-        {
-            DeviceManager.get((ServerWorld) this.world).add((Device) this, (DeviceSerializer<? super Device>) ((Device) this).getSerializer());
-        }
+        this.setAddress(false);
         super.onLoad();
     }
 
     @Override
     public void remove()
     {
-        if (this instanceof Device && this.world instanceof ServerWorld)
-        {
-            DeviceManager.get((ServerWorld) this.world).remove(((Device) this).getAddress());
-        }
+        this.setAddress(true);
         super.remove();
     }
 
@@ -77,7 +94,9 @@ public abstract class DeviceTileEntity extends TileEntity
         if (nbt.contains("device", Constants.NBT.TAG_COMPOUND))
         {
             CompoundNBT data = nbt.getCompound("device");
+            this.setAddress(true);
             this.load(data);
+            this.setAddress(false);
         }
     }
 
