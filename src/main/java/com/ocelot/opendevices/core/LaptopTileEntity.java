@@ -3,9 +3,10 @@ package com.ocelot.opendevices.core;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.DeviceRegistries;
+import com.ocelot.opendevices.api.DeviceSerializers;
 import com.ocelot.opendevices.api.computer.Computer;
 import com.ocelot.opendevices.api.computer.settings.LaptopSetting;
-import com.ocelot.opendevices.api.device.DeviceTileEntity;
+import com.ocelot.opendevices.api.device.*;
 import com.ocelot.opendevices.api.device.process.DeviceProcess;
 import com.ocelot.opendevices.api.device.process.ProcessSerializer;
 import com.ocelot.opendevices.api.task.TaskManager;
@@ -22,6 +23,7 @@ import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
@@ -411,7 +413,6 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
         return open;
     }
 
-    @Override
     @Nullable
     public PlayerEntity getUser()
     {
@@ -424,6 +425,13 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
     public UUID getAddress()
     {
         return address;
+    }
+
+    @Nullable
+    @Override
+    public DeviceSerializer<? extends Device> getSerializer()
+    {
+        return DeviceSerializers.TILE_ENTITY_DEVICE_SERIALIZER;
     }
 
     @Override

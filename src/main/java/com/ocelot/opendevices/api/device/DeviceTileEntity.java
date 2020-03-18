@@ -6,6 +6,7 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.Constants;
 
 /**
@@ -31,6 +32,27 @@ public abstract class DeviceTileEntity extends TileEntity
         {
             this.world.notifyBlockUpdate(this.pos, this.getBlockState(), this.getBlockState(), 3);
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void onLoad()
+    {
+        if (this instanceof Device && ((Device) this).getSerializer() != null && this.world instanceof ServerWorld)
+        {
+            DeviceManager.get((ServerWorld) this.world).add((Device) this, (DeviceSerializer<? super Device>) ((Device) this).getSerializer());
+        }
+        super.onLoad();
+    }
+
+    @Override
+    public void remove()
+    {
+        if (this instanceof Device && this.world instanceof ServerWorld)
+        {
+            DeviceManager.get((ServerWorld) this.world).remove(((Device) this).getAddress());
+        }
+        super.remove();
     }
 
     /**

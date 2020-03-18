@@ -70,6 +70,15 @@ public interface Device extends Executor
     UUID getAddress();
 
     /**
+     * @return The device serializer this tile entity should use or null if this device should not be communicated with
+     */
+    @Nullable
+    default DeviceSerializer<? extends Device> getSerializer()
+    {
+        return null;
+    }
+
+    /**
      * @return The processes that are currently being executed
      * @throws UnsupportedOperationException If this devices does not support processes. Can be checked by using {@link #supportsProcesses()}
      */
