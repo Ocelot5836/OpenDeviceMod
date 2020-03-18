@@ -63,6 +63,9 @@
 	"screen.opendevices.laptop.dev_version": "Developer Version - %s",
 
 	"container.opendevices.component_builder": "Component Builder",
+	
+	"app.opendevices.test.name": "Test Application",
+	"app.opendevices.test.desc": "An application designed for testing windows and UI.",
 
 	"gui.tag_filter.opendevices.devices.laptops": "Laptops",
 

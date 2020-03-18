@@ -2,13 +2,14 @@ package com.ocelot.opendevices.core.computer.process;
 
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.component.Layout;
-import com.ocelot.opendevices.api.component.WindowLayoutManager;
 import com.ocelot.opendevices.api.computer.Computer;
-import com.ocelot.opendevices.api.computer.application.AppInfo;
-import com.ocelot.opendevices.api.computer.application.Application;
+import com.ocelot.opendevices.api.application.AppInfo;
+import com.ocelot.opendevices.api.application.Application;
 import com.ocelot.opendevices.api.computer.window.WindowHandle;
 import com.ocelot.opendevices.api.device.process.DeviceProcess;
+import com.ocelot.opendevices.api.util.WindowLayoutManager;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
@@ -17,11 +18,12 @@ import java.util.UUID;
 
 @Application.Register
 @DeviceProcess.Register(OpenDevices.MOD_ID + ":test")
-public class TestProcess implements DeviceProcess<Computer>, Application
+public class TestProcess implements Application<Computer>
 {
     public static final int TEST_LAYOUT = 0;
     public static final int TEST_LAYOUT2 = 1;
 
+    private boolean dirty;
     private Computer computer;
     private UUID processId;
     private WindowLayoutManager layoutManager;
@@ -32,7 +34,7 @@ public class TestProcess implements DeviceProcess<Computer>, Application
     {
         this.computer = computer;
         this.processId = processId;
-        this.layoutManager = new WindowLayoutManager(this.computer, this::synchronizeClients, TestProcessLayoutSupplier::new);
+        this.layoutManager = new WindowLayoutManager(this.computer, () -> this.dirty = true, TestProcessLayoutSupplier::new);
         this.window = new WindowHandle(this.computer.getWindowManager(), this.computer.getTaskBar(), this.processId);
         this.window2 = new WindowHandle(this.computer.getWindowManager(), this.computer.getTaskBar(), this.processId);
     }
@@ -43,24 +45,35 @@ public class TestProcess implements DeviceProcess<Computer>, Application
         AppInfo info = this.getInfo();
         if (this.window.create())
         {
-            this.layoutManager.setCurrentLayout(this.window.getWindowId(), TEST_LAYOUT);
             this.window.center();
-            this.window.setTitle(info.getName() + " v" + info.getVersion());
+            this.window.setTitle(info.getName().getFormattedText() + " v" + info.getVersion());
+            this.layoutManager.setCurrentLayout(this.window.getWindowId(), TEST_LAYOUT);
         }
 
         if (this.window2.create())
         {
-            this.layoutManager.setCurrentLayout(this.window2.getWindowId(), TEST_LAYOUT2);
             this.window2.center();
-            this.window2.setTitle("Authors: " + Arrays.toString(info.getAuthors()));
+            this.window2.setTitle("Authors: " + Arrays.toString(Arrays.stream(info.getAuthors()).map(ITextComponent::getFormattedText).toArray(String[]::new)));
+            this.layoutManager.setCurrentLayout(this.window2.getWindowId(), TEST_LAYOUT2);
         }
 
+        this.dirty = false;
         this.synchronizeClients();
     }
 
     @Override
     public void update()
     {
+        if (this.getDevice().isClient())
+        {
+            this.layoutManager.update();
+        }
+        else if (this.dirty)
+        {
+            this.dirty = false;
+            this.synchronizeClients();
+        }
+
         if (this.window2.exists() && this.window2.isCloseRequested())
         {
             this.window2.close();
@@ -116,13 +129,19 @@ public class TestProcess implements DeviceProcess<Computer>, Application
     @Override
     public CompoundNBT writeSyncNBT()
     {
-        return this.serializeNBT();
+        CompoundNBT nbt = new CompoundNBT();
+        nbt.put("layoutManager", this.layoutManager.writeSyncNBT());
+        nbt.put("window", this.window.serializeNBT());
+        nbt.put("window2", this.window2.serializeNBT());
+        return nbt;
     }
 
     @Override
     public void readSyncNBT(CompoundNBT nbt)
     {
-        this.deserializeNBT(nbt);
+        this.layoutManager.readSyncNBT(nbt.getCompound("layoutManager"));
+        this.window.deserializeNBT(nbt.getCompound("window"));
+        this.window2.deserializeNBT(nbt.getCompound("window2"));
     }
 
     @Nullable
@@ -131,4 +150,5 @@ public class TestProcess implements DeviceProcess<Computer>, Application
     {
         return this.layoutManager.getCurrentLayout(windowId);
     }
+
 }

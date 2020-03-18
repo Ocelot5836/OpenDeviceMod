@@ -2,7 +2,7 @@ package com.ocelot.opendevices;
 
 import com.mrcrayfish.filters.Filters;
 import com.ocelot.opendevices.api.DeviceConstants;
-import com.ocelot.opendevices.api.computer.application.Application;
+import com.ocelot.opendevices.api.application.Application;
 import com.ocelot.opendevices.api.computer.desktop.DesktopManager;
 import com.ocelot.opendevices.api.computer.settings.LaptopSetting;
 import com.ocelot.opendevices.api.device.process.DeviceProcess;
@@ -83,7 +83,7 @@ public class OpenDevices
     private void init(FMLCommonSetupEvent event)
     {
         DeviceMessages.init();
-        DesktopManager.registerBackgroundLocation(DeviceConstants.DEFAULT_BACKGROUND_LOCATION);
+        DesktopManager.registerBackgroundLocation(DeviceConstants.DEFAULT_BACKGROUND_LOCATION); // TODO revamp desktop backgrounds
     }
 
     private void initClient(FMLClientSetupEvent event)

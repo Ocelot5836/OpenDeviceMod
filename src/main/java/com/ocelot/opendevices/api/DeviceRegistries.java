@@ -1,7 +1,7 @@
 package com.ocelot.opendevices.api;
 
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.api.computer.application.Application;
+import com.ocelot.opendevices.api.application.Application;
 import com.ocelot.opendevices.api.computer.settings.LaptopSetting;
 import com.ocelot.opendevices.api.device.process.DeviceProcess;
 import com.ocelot.opendevices.api.registry.ComponentBuilderBoardLayout;

@@ -1,10 +1,12 @@
-package com.ocelot.opendevices.api.component;
+package com.ocelot.opendevices.api.util;
 
+import com.ocelot.opendevices.api.component.Layout;
 import com.ocelot.opendevices.api.computer.window.Window;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.fml.DistExecutor;
 
@@ -33,7 +35,7 @@ public class WindowLayoutManager implements INBTSerializable<ListNBT>
     @OnlyIn(Dist.CLIENT)
     private Map<Integer, Layout> cachedLayouts;
 
-    public WindowLayoutManager(Executor executor, Runnable markDirty, Supplier<Function<Integer, Layout>> layoutProvider)
+    public WindowLayoutManager(Executor executor, @Nullable Runnable markDirty, Supplier<Function<Integer, Layout>> layoutProvider)
     {
         this.executor = executor;
         this.markDirty = markDirty;
@@ -43,6 +45,28 @@ public class WindowLayoutManager implements INBTSerializable<ListNBT>
             this.layoutProvider = layoutProvider;
             this.cachedLayouts = new HashMap<>();
         });
+    }
+
+    private ListNBT writeCurrentLayouts()
+    {
+        ListNBT nbt = new ListNBT();
+        this.currentLayouts.forEach((windowId, layoutId) ->
+        {
+            CompoundNBT layoutNbt = new CompoundNBT();
+            layoutNbt.putUniqueId("windowId", windowId);
+            layoutNbt.putInt("layoutId", layoutId);
+            nbt.add(layoutNbt);
+        });
+        return nbt;
+    }
+
+    private void readCurrentLayouts(ListNBT nbt)
+    {
+        for (int i = 0; i < nbt.size(); i++)
+        {
+            CompoundNBT layoutNbt = nbt.getCompound(i);
+            this.setLayout(layoutNbt.getUniqueId("windowId"), layoutNbt.getInt("layoutId"), false);
+        }
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -83,8 +107,33 @@ public class WindowLayoutManager implements INBTSerializable<ListNBT>
                 this.cachedLayouts.put(layoutId, this.layoutProvider.get().apply(layoutId));
             });
         }
-        if (markDirty)
+        if (markDirty && this.markDirty != null)
             this.markDirty.run();
+    }
+
+    /**
+     * Updates the containing layout info for the client.
+     */
+    @OnlyIn(Dist.CLIENT)
+    public void update()
+    {
+        if (this.markDirty != null)
+        {
+            boolean dirty = false;
+            for (UUID windowId : this.currentLayouts.keySet())
+            {
+                Layout layout = this.getCurrentLayout(windowId);
+                if (layout != null && layout.isDirty())
+                {
+                    layout.setDirty(false);
+                    dirty = true;
+                }
+            }
+            if (dirty)
+            {
+                this.markDirty.run();
+            }
+        }
     }
 
     /**
@@ -133,24 +182,67 @@ public class WindowLayoutManager implements INBTSerializable<ListNBT>
     @Override
     public ListNBT serializeNBT()
     {
-        ListNBT nbt = new ListNBT();
-        this.currentLayouts.forEach((windowId, layoutId) ->
-        {
-            CompoundNBT layoutNbt = new CompoundNBT();
-            layoutNbt.putUniqueId("windowId", windowId);
-            layoutNbt.putInt("layoutId", layoutId);
-            nbt.add(layoutNbt);
-        });
-        return nbt;
+        return this.writeCurrentLayouts();
     }
 
     @Override
     public void deserializeNBT(ListNBT nbt)
     {
-        for (int i = 0; i < nbt.size(); i++)
+        this.readCurrentLayouts(nbt);
+        this.executor.execute(() -> this.markDirty.run());
+    }
+
+    /**
+     * Writes any data that will be needed.
+     *
+     * @return The tag full of data
+     */
+    public CompoundNBT writeSyncNBT()
+    {
+        CompoundNBT nbt = new CompoundNBT();
+        nbt.put("layouts", this.writeCurrentLayouts());
+        ListNBT layoutsNbt = new ListNBT();
+        DistExecutor.runWhenOn(Dist.CLIENT, () -> () ->
+                this.currentLayouts.forEach((windowId, layoutId) ->
+                {
+                    CompoundNBT layoutNbt = new CompoundNBT();
+                    Layout currentLayout = this.getCurrentLayout(windowId);
+                    if (currentLayout != null && currentLayout.getClientSerializer() != null)
+                    {
+                        layoutNbt.putUniqueId("windowId", windowId);
+                        layoutNbt.put("data", currentLayout.getClientSerializer().serializeNBT());
+                        layoutsNbt.add(layoutNbt);
+                    }
+                }));
+        nbt.put("layoutsData", layoutsNbt);
+        return nbt;
+    }
+
+    /**
+     * Reads any data from the specified tag on the other logical side.
+     *
+     * @param nbt The tag to read from
+     */
+    public void readSyncNBT(CompoundNBT nbt)
+    {
+        this.readCurrentLayouts(nbt.getList("layouts", Constants.NBT.TAG_COMPOUND));
+        DistExecutor.runWhenOn(Dist.CLIENT, () -> () ->
         {
-            CompoundNBT layoutNbt = nbt.getCompound(i);
-            this.setLayout(layoutNbt.getUniqueId("windowId"), layoutNbt.getInt("layoutId"), false);
-        }
+            ListNBT layoutsNbt = nbt.getList("layoutsData", Constants.NBT.TAG_COMPOUND);
+            for (int i = 0; i < layoutsNbt.size(); i++)
+            {
+                CompoundNBT layoutNbt = layoutsNbt.getCompound(i);
+                UUID windowId = layoutNbt.getUniqueId("windowId");
+                if (layoutNbt.contains("data", Constants.NBT.TAG_COMPOUND))
+                {
+                    CompoundNBT data = layoutNbt.getCompound("data");
+                    Layout currentLayout = this.getCurrentLayout(windowId);
+                    if (currentLayout != null && currentLayout.getClientSerializer() != null)
+                    {
+                        currentLayout.getClientSerializer().deserializeNBT(data);
+                    }
+                }
+            }
+        });
     }
 }

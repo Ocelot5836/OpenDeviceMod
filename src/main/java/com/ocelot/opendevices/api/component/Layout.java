@@ -3,9 +3,8 @@ package com.ocelot.opendevices.api.component;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.util.RenderUtil;
+import com.ocelot.opendevices.api.util.SyncHelper;
 import com.ocelot.opendevices.api.util.TooltipRenderer;
-import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.common.util.Constants;
@@ -22,7 +21,7 @@ import java.util.List;
  * @author Ocelot
  * @see Component
  */
-public class Layout extends AbstractGui implements Component
+public class Layout extends StandardComponent
 {
     private float x;
     private float y;
@@ -48,6 +47,29 @@ public class Layout extends AbstractGui implements Component
         this.width = MathHelper.clamp(width, DeviceConstants.LAPTOP_MIN_APPLICATION_WIDTH, DeviceConstants.LAPTOP_MAX_APPLICATION_WIDTH + 2);
         this.height = MathHelper.clamp(height, DeviceConstants.LAPTOP_MIN_APPLICATION_HEIGHT, DeviceConstants.LAPTOP_MAX_APPLICATION_HEIGHT + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + 2);
         this.components = new ArrayList<>();
+
+        SyncHelper syncHelper = new SyncHelper(this::markDirty);
+        {
+            syncHelper.addSerializer("components", nbt ->
+            {
+                ListNBT componentsNbt = new ListNBT();
+                this.components.forEach(component -> componentsNbt.add(component.serializeNBT()));
+                nbt.put("components", componentsNbt);
+            }, nbt ->
+            {
+                ListNBT componentsNbt = nbt.getList("components", Constants.NBT.TAG_COMPOUND);
+                if (this.components.size() != componentsNbt.size())
+                {
+                    OpenDevices.LOGGER.warn("Components sync tag size did not equal existing components size!");
+                    return;
+                }
+                for (int i = 0; i < componentsNbt.size(); i++)
+                {
+                    this.components.get(i).deserializeNBT(componentsNbt.getCompound(i));
+                }
+            });
+        }
+        this.setClientSerializer(syncHelper);
 
         if (width < DeviceConstants.LAPTOP_MIN_APPLICATION_WIDTH || width > DeviceConstants.LAPTOP_MAX_APPLICATION_WIDTH || height > DeviceConstants.LAPTOP_MAX_APPLICATION_HEIGHT || height < DeviceConstants.LAPTOP_MIN_APPLICATION_HEIGHT)
         {
@@ -262,33 +284,23 @@ public class Layout extends AbstractGui implements Component
     }
 
     @Override
-    public CompoundNBT serializeNBT()
+    public boolean isDirty()
     {
-        CompoundNBT nbt = new CompoundNBT();
-        nbt.putFloat("x", this.x);
-        nbt.putFloat("y", this.y);
-        nbt.putInt("width", this.width);
-        nbt.putInt("height", this.height);
-
-        ListNBT components = new ListNBT();
-        this.components.forEach(component -> components.add(component.serializeNBT()));
-        nbt.put("components", components);
-
-        return nbt;
+        if (!super.isDirty())
+        {
+            for (Component component : this.components)
+            {
+                if (component.isDirty())
+                    this.markDirty();
+            }
+        }
+        return super.isDirty();
     }
 
     @Override
-    public void deserializeNBT(CompoundNBT nbt)
+    public void setDirty(boolean dirty)
     {
-        this.x = nbt.getFloat("x");
-        this.y = nbt.getFloat("y");
-        this.width = nbt.getInt("width");
-        this.height = nbt.getInt("height");
-
-        ListNBT components = nbt.getList("components", Constants.NBT.TAG_COMPOUND);
-        for (int i = 0; i < components.size(); i++)
-        {
-            this.components.get(i).deserializeNBT(components.getCompound(i));
-        }
+        this.components.forEach(component -> component.setDirty(dirty));
+        super.setDirty(dirty);
     }
 }

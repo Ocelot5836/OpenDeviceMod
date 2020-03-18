@@ -1,8 +1,9 @@
-package com.ocelot.opendevices.api.computer.application;
+package com.ocelot.opendevices.api.application;
 
-import com.ocelot.opendevices.core.computer.application.ApplicationInfo;
-import net.minecraft.client.resources.I18n;
+import com.ocelot.opendevices.core.computer.ApplicationInfo;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 
 /**
  * <p>Contains information about each application that is registered. Application info be queried using {@link ApplicationManager#getAppInfo(Class)} or {@link ApplicationManager#getAppInfo(ResourceLocation)}</p>
@@ -16,30 +17,25 @@ public interface AppInfo
     /**
      * Application info that is used when there is an error fetching info
      */
-    AppInfo EMPTY = new ApplicationInfo("Missing Name", "Missing Description", new String[0], "Missing Version", false);
+    AppInfo EMPTY = new ApplicationInfo(new StringTextComponent("Missing Name"), new StringTextComponent("Missing Description"), new ITextComponent[0], "Missing Version");
 
     /**
      * @return The name of the application
      */
-    String getName();
+    ITextComponent getName();
 
     /**
      * @return A description of what the application does
      */
-    String getDescription();
+    ITextComponent getDescription();
 
     /**
      * @return The people that created the application
      */
-    String[] getAuthors();
+    ITextComponent[] getAuthors();
 
     /**
      * @return The current version of the application
      */
     String getVersion();
-
-    /**
-     * @return Whether or not names should be formatted using {@link I18n}.
-     */
-    boolean shouldTranslate();
 }

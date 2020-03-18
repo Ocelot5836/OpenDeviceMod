@@ -32,7 +32,10 @@ public interface Device extends Executor
      * @throws IllegalArgumentException      If the process registered under that id is either null or not for this device
      * @throws UnsupportedOperationException If this devices does not support processes. Can be checked by using {@link #supportsProcesses()}
      */
-    UUID executeProcess(ResourceLocation processId);
+    default UUID executeProcess(ResourceLocation processId)
+    {
+        throw new UnsupportedOperationException("This device does not support processes");
+    }
 
     /**
      * Stops the process with the specified ID and closes all associated tasks.
@@ -40,7 +43,10 @@ public interface Device extends Executor
      * @param processId The id of the process to stop
      * @throws UnsupportedOperationException If this devices does not support processes. Can be checked by using {@link #supportsProcesses()}
      */
-    void terminateProcess(UUID processId);
+    default void terminateProcess(UUID processId)
+    {
+        throw new UnsupportedOperationException("This device does not support processes");
+    }
 
     /**
      * Syncs the process with the specified id to the server and all clients. Does not sync the side called as it it assumed to already be in sync.
@@ -48,7 +54,10 @@ public interface Device extends Executor
      * @param processId The if of the process to sync
      * @throws UnsupportedOperationException If this devices does not support processes. Can be checked by using {@link #supportsProcesses()}
      */
-    void syncProcess(UUID processId);
+    default void syncProcess(UUID processId)
+    {
+        throw new UnsupportedOperationException("This device does not support processes");
+    }
 
     /**
      * @return The world the laptop is in
@@ -64,7 +73,10 @@ public interface Device extends Executor
      * @return The processes that are currently being executed
      * @throws UnsupportedOperationException If this devices does not support processes. Can be checked by using {@link #supportsProcesses()}
      */
-    Collection<UUID> getProcessIds();
+    default Collection<UUID> getProcessIds()
+    {
+        throw new UnsupportedOperationException("This device does not support processes");
+    }
 
     /**
      * Checks the currently running processes for the specified id.
@@ -74,7 +86,10 @@ public interface Device extends Executor
      * @throws UnsupportedOperationException If this devices does not support processes. Can be checked by using {@link #supportsProcesses()}
      */
     @Nullable
-    DeviceProcess<? extends Device> getProcess(UUID id);
+    default DeviceProcess<? extends Device> getProcess(UUID id)
+    {
+        throw new UnsupportedOperationException("This device does not support processes");
+    }
 
     /**
      * @return Whether or not the laptop is currently in a client world

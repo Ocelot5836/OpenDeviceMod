@@ -2,11 +2,10 @@ package com.ocelot.opendevices.network.handler;
 
 import com.ocelot.opendevices.api.DeviceRegistries;
 import com.ocelot.opendevices.api.task.Task;
-import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.init.DeviceMessages;
-import com.ocelot.opendevices.network.MessageResponse;
 import com.ocelot.opendevices.network.MessageOpenGui;
 import com.ocelot.opendevices.network.MessageRequest;
+import com.ocelot.opendevices.network.MessageResponse;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -23,7 +22,6 @@ public class ServerMessageHandler implements MessageHandler
     @Override
     public void handleOpenGuiMessage(MessageOpenGui msg, Supplier<NetworkEvent.Context> ctx)
     {
-
     }
 
     @Override

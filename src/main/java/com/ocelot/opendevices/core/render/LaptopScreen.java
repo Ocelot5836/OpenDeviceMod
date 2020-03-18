@@ -14,11 +14,12 @@ import com.ocelot.opendevices.api.util.TooltipRenderer;
 import com.ocelot.opendevices.core.LaptopTaskBar;
 import com.ocelot.opendevices.core.LaptopTileEntity;
 import com.ocelot.opendevices.core.LaptopWindowManager;
-import com.ocelot.opendevices.core.computer.window.LaptopWindow;
+import com.ocelot.opendevices.core.computer.LaptopWindow;
 import com.ocelot.opendevices.core.task.CloseLaptopTask;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -110,7 +111,7 @@ public class LaptopScreen extends Screen implements TooltipRenderer
         super.render(mouseX, mouseY, partialTicks);
 
         /* Render the Tooltips */
-        LaptopRenderer.renderOverlay(this, this.laptop, this.posX + DeviceConstants.LAPTOP_GUI_BORDER, this.posY + DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_SCREEN_WIDTH, DeviceConstants.LAPTOP_SCREEN_HEIGHT, mouseX, mouseY, partialTicks);
+        LaptopRenderer.renderOverlay(this, this.laptop, this.posX + DeviceConstants.LAPTOP_GUI_BORDER, this.posY + DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_SCREEN_WIDTH, DeviceConstants.LAPTOP_SCREEN_HEIGHT, mouseX, mouseY, partialTicks, Minecraft.getInstance().gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL);
     }
 
     @Override

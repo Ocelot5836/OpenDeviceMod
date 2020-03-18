@@ -6,8 +6,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.INBTSerializable;
 import org.lwjgl.glfw.GLFW;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Target;
+import javax.annotation.Nullable;
 
 /**
  * <p>Components are the building blocks of the rendering API in windows by default. These don't have to be used but they allow an in-built application engine.</p>
@@ -16,6 +15,14 @@ import java.lang.annotation.Target;
  */
 public interface Component extends INBTSerializable<CompoundNBT>
 {
+    /**
+     * Marks this component as needing to be synced.
+     */
+    default void markDirty()
+    {
+        this.setDirty(true);
+    }
+
     /**
      * Called 20 times per second to update any logic.
      */
@@ -200,4 +207,15 @@ public interface Component extends INBTSerializable<CompoundNBT>
      * @return The y size of this component
      */
     int getHeight();
+
+    /**
+     * @return Whether or not this component needs to be synced
+     */
+    boolean isDirty();
+
+    /**
+     * Marks this component as needing to be synced or not.
+     * @param dirty Whether or not this component should be synced
+     */
+    void setDirty(boolean dirty);
 }

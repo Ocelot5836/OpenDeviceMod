@@ -1,7 +1,8 @@
-package com.ocelot.opendevices.api.computer.application;
+package com.ocelot.opendevices.api.application;
 
 import com.ocelot.opendevices.api.component.Layout;
 import com.ocelot.opendevices.api.computer.Computer;
+import com.ocelot.opendevices.api.device.Device;
 import com.ocelot.opendevices.api.device.process.DeviceProcess;
 
 import javax.annotation.Nullable;
@@ -10,12 +11,12 @@ import java.lang.annotation.Target;
 import java.util.UUID;
 
 /**
- * <p>Specifies that a {@link DeviceProcess} is also an Application. Applications have extra required information that allows the {@link Computer} to determine extra features.</p>
+ * <p>Specifies that a {@link DeviceProcess} is also an Application. Applications have extra required information that allows the {@link Device} running this to determine extra information.</p>
  *
  * @author Ocelot
  * @see AppInfo
  */
-public interface Application
+public interface Application<T extends Device> extends DeviceProcess<T>
 {
     /**
      * Checks for a layout in the specified window.

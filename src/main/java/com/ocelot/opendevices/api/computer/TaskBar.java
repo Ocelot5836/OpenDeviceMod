@@ -1,6 +1,5 @@
-package com.ocelot.opendevices.api.computer.taskbar;
+package com.ocelot.opendevices.api.computer;
 
-import com.ocelot.opendevices.api.computer.Computer;
 import com.ocelot.opendevices.api.computer.window.Window;
 
 /**

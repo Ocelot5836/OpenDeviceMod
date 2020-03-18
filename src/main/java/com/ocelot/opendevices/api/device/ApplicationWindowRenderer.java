@@ -3,7 +3,7 @@ package com.ocelot.opendevices.api.device;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.component.Layout;
 import com.ocelot.opendevices.api.computer.Computer;
-import com.ocelot.opendevices.api.computer.application.Application;
+import com.ocelot.opendevices.api.application.Application;
 import com.ocelot.opendevices.api.computer.window.Window;
 import com.ocelot.opendevices.api.device.process.DeviceProcess;
 import com.ocelot.opendevices.api.device.process.ProcessWindowRenderer;
@@ -19,7 +19,7 @@ import com.ocelot.opendevices.api.util.TooltipRenderer;
  * @see Application
  * @see DeviceProcess
  */
-public class ApplicationWindowRenderer<D extends Computer, T extends DeviceProcess<D> & Application> implements ProcessWindowRenderer<D, T>
+public class ApplicationWindowRenderer<D extends Computer, T extends Application<D>> implements ProcessWindowRenderer<D, T>
 {
     @Override
     public void render(T application, Window window, int posX, int posY, int mouseX, int mouseY, float partialTicks)

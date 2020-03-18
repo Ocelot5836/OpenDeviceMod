@@ -4,7 +4,6 @@ import com.ocelot.opendevices.api.device.Device;
 import com.ocelot.opendevices.api.device.process.DeviceProcess;
 import com.ocelot.opendevices.api.computer.desktop.Desktop;
 import com.ocelot.opendevices.api.computer.settings.LaptopSetting;
-import com.ocelot.opendevices.api.computer.taskbar.TaskBar;
 import com.ocelot.opendevices.api.computer.window.WindowManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;

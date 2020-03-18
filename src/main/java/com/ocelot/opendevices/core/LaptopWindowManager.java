@@ -5,7 +5,7 @@ import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.computer.window.Window;
 import com.ocelot.opendevices.api.computer.window.WindowManager;
 import com.ocelot.opendevices.api.task.TaskManager;
-import com.ocelot.opendevices.core.computer.window.LaptopWindow;
+import com.ocelot.opendevices.core.computer.LaptopWindow;
 import com.ocelot.opendevices.core.task.*;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
