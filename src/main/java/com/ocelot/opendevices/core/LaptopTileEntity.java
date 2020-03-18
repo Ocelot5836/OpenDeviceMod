@@ -69,6 +69,16 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
         this.taskBar = new LaptopTaskBar(this);
     }
 
+    private void startProcess(UUID processId, DeviceProcess<Computer> process)
+    {
+        this.processes.put(processId, process);
+        if (!this.isClient())
+        {
+            OpenDevices.LOGGER.debug("Starting process '" + DeviceRegistries.getProcessRegistryName(process) + "' for Laptop with id '" + processId + "'");
+            this.startingProcesses.add(processId);
+        }
+    }
+
     @Override
     public void tick()
     {
@@ -151,12 +161,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
         DeviceProcess<Computer> process = entry.createProcess(Computer.class, this, processId);
         if (process != null)
         {
-            this.processes.put(processId, process);
-            if (!this.isClient())
-            {
-                OpenDevices.LOGGER.debug("Starting process '" + processName + "' for Laptop with id '" + processId + "'");
-                this.startingProcesses.add(processId);
-            }
+            this.startProcess(processId, process);
             return true;
         }
         return false;
@@ -308,14 +313,10 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
             DeviceProcess<Computer> process = ProcessSerializer.read(Computer.class, this, processesNbt.getCompound(i));
             if (process != null)
             {
-                ResourceLocation processName = DeviceRegistries.getProcessRegistryName(process);
                 UUID processId = process.getProcessId();
-
-                this.processes.put(processId, process);
+                this.startProcess(processId, process);
                 if (!this.isClient())
                 {
-                    OpenDevices.LOGGER.debug("Starting process '" + processName + "' for Laptop with id '" + processId + "'");
-                    this.startingProcesses.add(processId);
                     this.initProcess(processId);
                 }
             }
