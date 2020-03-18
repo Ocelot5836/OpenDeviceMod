@@ -1,38 +1,37 @@
-package com.ocelot.opendevices.core.computer.application;
+package com.ocelot.opendevices.core.computer;
 
 import com.ocelot.opendevices.api.computer.application.AppInfo;
+import net.minecraft.util.text.ITextComponent;
 
 public class ApplicationInfo implements AppInfo
 {
-    private String name;
-    private String description;
-    private String[] authors;
+    private ITextComponent name;
+    private ITextComponent description;
+    private ITextComponent[] authors;
     private String version;
-    private boolean translate;
 
-    public ApplicationInfo(String name, String description, String[] authors, String version, boolean translate)
+    public ApplicationInfo(ITextComponent name, ITextComponent description, ITextComponent[] authors, String version)
     {
         this.name = name;
         this.description = description;
         this.authors = authors;
         this.version = version;
-        this.translate = translate;
     }
 
     @Override
-    public String getName()
+    public ITextComponent getName()
     {
         return name;
     }
 
     @Override
-    public String getDescription()
+    public ITextComponent getDescription()
     {
         return description;
     }
 
     @Override
-    public String[] getAuthors()
+    public ITextComponent[] getAuthors()
     {
         return authors;
     }
@@ -41,11 +40,5 @@ public class ApplicationInfo implements AppInfo
     public String getVersion()
     {
         return version;
-    }
-
-    @Override
-    public boolean shouldTranslate()
-    {
-        return translate;
     }
 }

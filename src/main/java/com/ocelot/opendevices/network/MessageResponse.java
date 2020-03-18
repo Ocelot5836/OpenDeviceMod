@@ -7,6 +7,8 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 
+import java.util.Objects;
+
 public class MessageResponse
 {
     private Task request;
@@ -20,10 +22,7 @@ public class MessageResponse
 
     public static void encode(MessageResponse msg, PacketBuffer buf)
     {
-        ResourceLocation registryName = DeviceRegistries.getTaskRegistryName(msg.request.getClass());
-        if (registryName == null)
-            throw new NullPointerException("Could not encode task class: " + msg.request.getClass() + " as it is not registered!");
-        buf.writeResourceLocation(registryName);
+        buf.writeResourceLocation(Objects.requireNonNull(DeviceRegistries.getTaskRegistryName(msg.request.getClass()), "Could not encode task class: " + msg.request.getClass() + " as it is not registered!"));
         msg.request.prepareResponse(msg.nbt);
         buf.writeBoolean(msg.request.isSucessful());
         buf.writeCompoundTag(msg.nbt);

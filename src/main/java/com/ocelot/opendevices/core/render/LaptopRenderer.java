@@ -8,7 +8,7 @@ import com.ocelot.opendevices.api.LaptopSettings;
 import com.ocelot.opendevices.api.computer.Computer;
 import com.ocelot.opendevices.api.computer.desktop.Desktop;
 import com.ocelot.opendevices.api.computer.desktop.DesktopBackground;
-import com.ocelot.opendevices.api.computer.taskbar.TaskBar;
+import com.ocelot.opendevices.api.computer.TaskBar;
 import com.ocelot.opendevices.api.computer.window.Window;
 import com.ocelot.opendevices.api.computer.window.WindowManager;
 import com.ocelot.opendevices.api.device.process.DeviceProcess;

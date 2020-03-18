@@ -1,7 +1,7 @@
 package com.ocelot.opendevices.core;
 
 import com.ocelot.opendevices.api.LaptopSettings;
-import com.ocelot.opendevices.api.computer.taskbar.TaskBar;
+import com.ocelot.opendevices.api.computer.TaskBar;
 import com.ocelot.opendevices.api.computer.window.Window;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;

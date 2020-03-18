@@ -2,7 +2,7 @@ package com.ocelot.opendevices.api.computer.window;
 
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.device.process.DeviceProcess;
-import com.ocelot.opendevices.api.computer.taskbar.TaskBar;
+import com.ocelot.opendevices.api.computer.TaskBar;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.INBTSerializable;
 

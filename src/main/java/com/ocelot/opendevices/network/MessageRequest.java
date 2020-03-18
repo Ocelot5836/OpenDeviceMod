@@ -29,7 +29,7 @@ public class MessageRequest
 
     public static void encode(MessageRequest msg, PacketBuffer buf)
     {
-        buf.writeResourceLocation(Objects.requireNonNull(DeviceRegistries.getTaskRegistryName(msg.request.getClass())));
+        buf.writeResourceLocation(Objects.requireNonNull(DeviceRegistries.getTaskRegistryName(msg.request.getClass()), "Could not encode task class: " + msg.request.getClass() + " as it is not registered!"));
         msg.request.prepareRequest(msg.nbt);
         buf.writeBoolean(msg.request.isSucessful());
         buf.writeCompoundTag(msg.nbt);
