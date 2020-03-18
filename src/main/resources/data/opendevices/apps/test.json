@@ -4,7 +4,10 @@
 	},
 	"authors": [
 		"Ocelot5836",
-		"MrCrayfish"
+		"MrCrayfish",
+		{
+			"translate": "gui.done"
+		}
 	],
 	"description": {
 		"translate": "app.opendevices.test.desc"

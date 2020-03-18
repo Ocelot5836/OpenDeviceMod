@@ -8,7 +8,6 @@ import net.minecraftforge.registries.ForgeRegistryEntry;
 import javax.annotation.Nullable;
 import java.util.UUID;
 
-@SuppressWarnings("unchecked")
 public class DeviceProcessRegistryEntry extends ForgeRegistryEntry<DeviceProcessRegistryEntry>
 {
     private Class<? extends DeviceProcess<?>> clazz;
@@ -19,6 +18,7 @@ public class DeviceProcessRegistryEntry extends ForgeRegistryEntry<DeviceProcess
     }
 
     @Nullable
+    @SuppressWarnings("unchecked")
     public <T extends Device> DeviceProcess<T> createProcess(Class<T> deviceClass, T device, UUID processId)
     {
         try

@@ -10,17 +10,14 @@ import net.minecraft.util.ResourceLocation;
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 /**
- * Manages the serialization and deserialization of {@link DeviceProcess}.
+ * <p>Manages the serialization and deserialization of {@link DeviceProcess} to and from NBT</p>.
  *
  * @author Ocelot
  */
 public class ProcessSerializer
 {
-    private static final Map<Class<? extends DeviceProcess<?>>, ResourceLocation> REGISTRY_CACHE = new HashMap<>();
-
     /**
      * Writes the specified process to NBT.
      *
@@ -36,7 +33,7 @@ public class ProcessSerializer
 
             if (registryName == null)
             {
-                OpenDevices.LOGGER.warn("Could not save process with class '" + process.getClass() + "' as it does not exist. Skipping!");
+                OpenDevices.LOGGER.warn("Could not save process with class '" + process.getClass() + "' as it is not registered. Skipping!");
             }
             else
             {
@@ -71,17 +68,15 @@ public class ProcessSerializer
 
         if (entry == null)
         {
-            OpenDevices.LOGGER.warn("Could not read process with name '" + processName + "' as it does not exist. Skipping!");
+            OpenDevices.LOGGER.warn("Could not read process with name '" + processName + "' as it is not registered. Skipping!");
             return null;
         }
 
-        UUID processId = nbt.getUniqueId("processId");
-
         try
         {
-            DeviceProcess<T> process = entry.createProcess(deviceClass, device, processId);
+            DeviceProcess<T> process = entry.createProcess(deviceClass, device, nbt.getUniqueId("processId"));
             if (process == null)
-                return null;
+                throw new IllegalArgumentException("Error creating new process.");
             process.deserializeNBT(nbt.getCompound("data"));
             return process;
         }
