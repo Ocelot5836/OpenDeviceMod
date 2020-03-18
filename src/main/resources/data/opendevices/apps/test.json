@@ -1,7 +1,13 @@
 {
-	"name": "Test Application",
-	"author": "Ocelot5836",
-	"description": "app.opendevices.test.desc",
-	"version": "1.0",
-	"i18n": true
+	"name": {
+		"translate": "app.opendevices.test.name"
+	},
+	"authors": [
+		"Ocelot5836",
+		"MrCrayfish"
+	],
+	"description": {
+		"translate": "app.opendevices.test.desc"
+	},
+	"version": "1.0"
 }

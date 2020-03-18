@@ -3,9 +3,14 @@ package com.ocelot.opendevices.api.computer.application;
 import com.google.gson.*;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceRegistries;
-import com.ocelot.opendevices.core.computer.application.ApplicationInfo;
+import com.ocelot.opendevices.core.computer.ApplicationInfo;
 import com.ocelot.opendevices.core.registry.ApplicationRegistryEntry;
+import net.minecraft.util.EnumTypeAdapterFactory;
+import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.Style;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -29,7 +34,7 @@ import java.util.Map;
 @Mod.EventBusSubscriber(modid = OpenDevices.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ApplicationManager
 {
-    private static final Gson GSON = new GsonBuilder().registerTypeAdapter(AppInfo.class, new AppInfoDeserializer()).create();
+    private static final Gson GSON = new GsonBuilder().registerTypeHierarchyAdapter(ITextComponent.class, new ITextComponent.Serializer()).registerTypeHierarchyAdapter(Style.class, new Style.Serializer()).registerTypeAdapterFactory(new EnumTypeAdapterFactory()).registerTypeAdapter(AppInfo.class, new AppInfoDeserializer()).create();
     private static final Map<ResourceLocation, AppInfo> APP_INFO = new HashMap<>();
 
     private static AppInfo loadAppInfo(ResourceLocation registryName) throws IOException
@@ -90,16 +95,15 @@ public class ApplicationManager
             JsonObject jsonObject = json.getAsJsonObject();
 
             if (jsonObject.has("author") && jsonObject.has("authors"))
-                throw new JsonParseException("Either 'author' or 'authors' may be present. Both is not allowed.");
+                throw new JsonParseException("Either 'author' or 'authors' may be present. Both are not allowed.");
 
-            String name = context.deserialize(jsonObject.get("name"), String.class);
-            String description = context.deserialize(jsonObject.get("description"), String.class);
-            String author = jsonObject.has("author") ? context.deserialize(jsonObject.get("author"), String.class) : null;
-            String[] authors = jsonObject.has("authors") ? context.deserialize(jsonObject.get("authors"), String[].class) : null;
-            String version = context.deserialize(jsonObject.get("version"), String.class);
-            boolean i18n = jsonObject.has("i18n") && jsonObject.get("i18n").getAsBoolean();
+            ITextComponent name = JSONUtils.deserializeClass(jsonObject, "name", context, ITextComponent.class);
+            ITextComponent description = JSONUtils.deserializeClass(jsonObject, "description", context, ITextComponent.class);
+            ITextComponent author = JSONUtils.deserializeClass(jsonObject, "author", new StringTextComponent(""), context, ITextComponent.class);
+            ITextComponent[] authors = JSONUtils.deserializeClass(jsonObject, "authors", new ITextComponent[0], context, ITextComponent[].class);
+            String version = JSONUtils.deserializeClass(jsonObject, "version", context, String.class);
 
-            return new ApplicationInfo(name, description, author != null ? new String[]{author} : authors != null ? authors : new String[0], version, i18n);
+            return new ApplicationInfo(name, description, !author.getFormattedText().isEmpty() ? new ITextComponent[]{author} : authors, version);
         }
     }
 }
