@@ -47,6 +47,28 @@ public class WindowLayoutManager implements INBTSerializable<ListNBT>
         });
     }
 
+    private ListNBT writeCurrentLayouts()
+    {
+        ListNBT nbt = new ListNBT();
+        this.currentLayouts.forEach((windowId, layoutId) ->
+        {
+            CompoundNBT layoutNbt = new CompoundNBT();
+            layoutNbt.putUniqueId("windowId", windowId);
+            layoutNbt.putInt("layoutId", layoutId);
+            nbt.add(layoutNbt);
+        });
+        return nbt;
+    }
+
+    private void readCurrentLayouts(ListNBT nbt)
+    {
+        for (int i = 0; i < nbt.size(); i++)
+        {
+            CompoundNBT layoutNbt = nbt.getCompound(i);
+            this.setLayout(layoutNbt.getUniqueId("windowId"), layoutNbt.getInt("layoutId"), false);
+        }
+    }
+
     @OnlyIn(Dist.CLIENT)
     @Nullable
     private Layout getLayout(int layoutId)
@@ -95,19 +117,22 @@ public class WindowLayoutManager implements INBTSerializable<ListNBT>
     @OnlyIn(Dist.CLIENT)
     public void update()
     {
-        boolean dirty = false;
-        for (UUID windowId : this.currentLayouts.keySet())
+        if (this.markDirty != null)
         {
-            Layout layout = this.getCurrentLayout(windowId);
-            if (layout != null && layout.isDirty())
+            boolean dirty = false;
+            for (UUID windowId : this.currentLayouts.keySet())
             {
-                layout.setDirty(false);
-                dirty = true;
+                Layout layout = this.getCurrentLayout(windowId);
+                if (layout != null && layout.isDirty())
+                {
+                    layout.setDirty(false);
+                    dirty = true;
+                }
             }
-        }
-        if (dirty && this.markDirty != null)
-        {
-            this.markDirty.run();
+            if (dirty)
+            {
+                this.markDirty.run();
+            }
         }
     }
 
@@ -157,25 +182,14 @@ public class WindowLayoutManager implements INBTSerializable<ListNBT>
     @Override
     public ListNBT serializeNBT()
     {
-        ListNBT nbt = new ListNBT();
-        this.currentLayouts.forEach((windowId, layoutId) ->
-        {
-            CompoundNBT layoutNbt = new CompoundNBT();
-            layoutNbt.putUniqueId("windowId", windowId);
-            layoutNbt.putInt("layoutId", layoutId);
-            nbt.add(layoutNbt);
-        });
-        return nbt;
+        return this.writeCurrentLayouts();
     }
 
     @Override
     public void deserializeNBT(ListNBT nbt)
     {
-        for (int i = 0; i < nbt.size(); i++)
-        {
-            CompoundNBT layoutNbt = nbt.getCompound(i);
-            this.setLayout(layoutNbt.getUniqueId("windowId"), layoutNbt.getInt("layoutId"), false);
-        }
+        this.readCurrentLayouts(nbt);
+        this.executor.execute(() -> this.markDirty.run());
     }
 
     /**
@@ -186,7 +200,7 @@ public class WindowLayoutManager implements INBTSerializable<ListNBT>
     public CompoundNBT writeSyncNBT()
     {
         CompoundNBT nbt = new CompoundNBT();
-        nbt.put("layouts", this.serializeNBT());
+        nbt.put("layouts", this.writeCurrentLayouts());
         ListNBT layoutsNbt = new ListNBT();
         DistExecutor.runWhenOn(Dist.CLIENT, () -> () ->
                 this.currentLayouts.forEach((windowId, layoutId) ->
@@ -211,7 +225,7 @@ public class WindowLayoutManager implements INBTSerializable<ListNBT>
      */
     public void readSyncNBT(CompoundNBT nbt)
     {
-        this.deserializeNBT(nbt.getList("layouts", Constants.NBT.TAG_COMPOUND));
+        this.readCurrentLayouts(nbt.getList("layouts", Constants.NBT.TAG_COMPOUND));
         DistExecutor.runWhenOn(Dist.CLIENT, () -> () ->
         {
             ListNBT layoutsNbt = nbt.getList("layoutsData", Constants.NBT.TAG_COMPOUND);
@@ -219,11 +233,14 @@ public class WindowLayoutManager implements INBTSerializable<ListNBT>
             {
                 CompoundNBT layoutNbt = layoutsNbt.getCompound(i);
                 UUID windowId = layoutNbt.getUniqueId("windowId");
-                CompoundNBT data = layoutNbt.getCompound("data");
-                Layout currentLayout = this.getCurrentLayout(windowId);
-                if (currentLayout != null && currentLayout.getClientSerializer() != null)
+                if (layoutNbt.contains("data", Constants.NBT.TAG_COMPOUND))
                 {
-                    currentLayout.getClientSerializer().deserializeNBT(data);
+                    CompoundNBT data = layoutNbt.getCompound("data");
+                    Layout currentLayout = this.getCurrentLayout(windowId);
+                    if (currentLayout != null && currentLayout.getClientSerializer() != null)
+                    {
+                        currentLayout.getClientSerializer().deserializeNBT(data);
+                    }
                 }
             }
         });

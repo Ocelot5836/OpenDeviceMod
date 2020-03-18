@@ -3,11 +3,11 @@ package com.ocelot.opendevices.core;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.DeviceRegistries;
-import com.ocelot.opendevices.api.device.process.DeviceProcess;
-import com.ocelot.opendevices.api.device.DeviceTileEntity;
-import com.ocelot.opendevices.api.device.process.ProcessSerializer;
 import com.ocelot.opendevices.api.computer.Computer;
 import com.ocelot.opendevices.api.computer.settings.LaptopSetting;
+import com.ocelot.opendevices.api.device.DeviceTileEntity;
+import com.ocelot.opendevices.api.device.process.DeviceProcess;
+import com.ocelot.opendevices.api.device.process.ProcessSerializer;
 import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.core.registry.DeviceProcessRegistryEntry;
 import com.ocelot.opendevices.core.task.ExecuteProcessTask;
@@ -305,21 +305,18 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
         ListNBT processesNbt = nbt.getList("processes", Constants.NBT.TAG_COMPOUND);
         for (int i = 0; i < processesNbt.size(); i++)
         {
-            CompoundNBT processNbt = processesNbt.getCompound(i);
-            DeviceProcess<Computer> process = ProcessSerializer.read(Computer.class, this, processNbt);
+            DeviceProcess<Computer> process = ProcessSerializer.read(Computer.class, this, processesNbt.getCompound(i));
             if (process != null)
             {
-                CompoundNBT processData = processNbt.getCompound("data");
                 ResourceLocation processName = DeviceRegistries.getProcessRegistryName(process);
                 UUID processId = process.getProcessId();
 
-                if (this.syncExecuteProcess(processName, processId))
+                this.processes.put(processId, process);
+                if (!this.isClient())
                 {
-                    this.syncProcess(processId, processData);
-                    if (!this.isClient())
-                    {
-                        this.initProcess(processId);
-                    }
+                    OpenDevices.LOGGER.debug("Starting process '" + processName + "' for Laptop with id '" + processId + "'");
+                    this.startingProcesses.add(processId);
+                    this.initProcess(processId);
                 }
             }
         }

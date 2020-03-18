@@ -79,7 +79,11 @@ public class ProcessSerializer
 
         try
         {
-            return entry.createProcess(deviceClass, device, processId);
+            DeviceProcess<T> process = entry.createProcess(deviceClass, device, processId);
+            if (process == null)
+                return null;
+            process.deserializeNBT(nbt.getCompound("data"));
+            return process;
         }
         catch (Exception e)
         {
