@@ -46,16 +46,17 @@ public class TestProcess implements Application<Computer>
         if (this.window.create())
         {
             this.window.center();
-            this.window.setTitle(info.getName().getFormattedText() + " v" + info.getVersion());
             this.layoutManager.setCurrentLayout(this.window.getWindowId(), TEST_LAYOUT);
         }
+        this.window.setTitle(info.getName().getFormattedText() + " v" + info.getVersion());
+        this.window.setIcon(info.getIcon());
 
         if (this.window2.create())
         {
             this.window2.center();
-            this.window2.setTitle("Authors: " + Arrays.toString(Arrays.stream(info.getAuthors()).map(ITextComponent::getFormattedText).toArray(String[]::new)));
             this.layoutManager.setCurrentLayout(this.window2.getWindowId(), TEST_LAYOUT2);
         }
+        this.window2.setTitle("Authors: " + Arrays.toString(Arrays.stream(info.getAuthors()).map(ITextComponent::getFormattedText).toArray(String[]::new)));
 
         this.dirty = false;
         this.synchronizeClients();

@@ -12,5 +12,6 @@
 	"description": {
 		"translate": "app.opendevices.test.desc"
 	},
-	"version": "1.0"
+	"version": "1.0",
+	"icon": "opendevices:app/icon/test"
 }

@@ -1,6 +1,7 @@
 package com.ocelot.opendevices.api.computer.window;
 
 import com.ocelot.opendevices.api.computer.Computer;
+import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -106,6 +107,14 @@ public interface WindowManager
      * @param title    The new title of the window
      */
     void setWindowTitle(UUID windowId, String title);
+
+    /**
+     * Sets the icon of the window to the specified atlas texture.
+     *
+     * @param windowId The id of the window to change
+     * @param icon     The location of the icon in the window icon atlas
+     */
+    void setWindowIcon(UUID windowId, ResourceLocation icon);
 
     /**
      * Checks the opened windows for the window with the specified id.

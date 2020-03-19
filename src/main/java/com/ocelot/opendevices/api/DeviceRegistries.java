@@ -1,15 +1,16 @@
 package com.ocelot.opendevices.api;
 
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.api.device.process.DeviceProcess;
 import com.ocelot.opendevices.api.application.Application;
 import com.ocelot.opendevices.api.computer.settings.LaptopSetting;
 import com.ocelot.opendevices.api.device.DeviceSerializer;
+import com.ocelot.opendevices.api.device.process.DeviceProcess;
 import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.core.RegistryCache;
 import com.ocelot.opendevices.core.registry.ApplicationRegistryEntry;
 import com.ocelot.opendevices.core.registry.DeviceProcessRegistryEntry;
 import com.ocelot.opendevices.core.registry.TaskRegistryEntry;
+import com.ocelot.opendevices.core.registry.WindowIconRegistryEntry;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -34,6 +35,7 @@ public class DeviceRegistries
     public static IForgeRegistry<DeviceProcessRegistryEntry> PROCESSES = null;
     public static IForgeRegistry<ApplicationRegistryEntry> APPLICATIONS = null;
     public static IForgeRegistry<DeviceSerializer<?>> DEVICE_SERIALIZERS = null;
+    public static IForgeRegistry<WindowIconRegistryEntry> WINDOW_ICONS = null;
 
     private static final RegistryCache<TaskRegistryEntry, Class<? extends Task>> TASKS_CACHE;
     private static final RegistryCache<DeviceProcessRegistryEntry, Class<? extends DeviceProcess<?>>> PROCESSES_CACHE;
@@ -57,12 +59,14 @@ public class DeviceRegistries
         makeRegistry("processes", DeviceProcessRegistryEntry.class).create();
         makeRegistry("applications", ApplicationRegistryEntry.class).create();
         makeRegistry("device_serializers", DeviceSerializer.class).create();
+        makeRegistry("window_icons", WindowIconRegistryEntry.class).create();
 
         SETTINGS = RegistryManager.ACTIVE.getRegistry(LaptopSetting.class);
         TASKS = RegistryManager.ACTIVE.getRegistry(TaskRegistryEntry.class);
         PROCESSES = RegistryManager.ACTIVE.getRegistry(DeviceProcessRegistryEntry.class);
         APPLICATIONS = RegistryManager.ACTIVE.getRegistry(ApplicationRegistryEntry.class);
         DEVICE_SERIALIZERS = RegistryManager.ACTIVE.getRegistry(DeviceSerializer.class);
+        WINDOW_ICONS = RegistryManager.ACTIVE.getRegistry(WindowIconRegistryEntry.class);
     }
 
     /**

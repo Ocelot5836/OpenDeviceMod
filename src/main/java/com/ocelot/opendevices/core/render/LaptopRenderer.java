@@ -4,11 +4,12 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.DeviceRegistries;
+import com.ocelot.opendevices.api.IconManager;
 import com.ocelot.opendevices.api.LaptopSettings;
 import com.ocelot.opendevices.api.computer.Computer;
+import com.ocelot.opendevices.api.computer.TaskBar;
 import com.ocelot.opendevices.api.computer.desktop.Desktop;
 import com.ocelot.opendevices.api.computer.desktop.DesktopBackground;
-import com.ocelot.opendevices.api.computer.TaskBar;
 import com.ocelot.opendevices.api.computer.window.Window;
 import com.ocelot.opendevices.api.computer.window.WindowManager;
 import com.ocelot.opendevices.api.device.process.DeviceProcess;
@@ -19,7 +20,6 @@ import com.ocelot.opendevices.api.util.TooltipRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.MissingTextureSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -136,18 +136,17 @@ public class LaptopRenderer extends AbstractGui
             }
             GlStateManager.color4f(1, 1, 1, 1);
 
+            /* Window Icons */
             {
+                Window[] displayedWindows = taskBar.getDisplayedWindows();
                 int size = taskBar.isEnlarged() ? 16 : 8;
-                int i = 0;
 
-                for (Window window : taskBar.getDisplayedWindows())
+                for (int i = 0; i < displayedWindows.length; i++)
                 {
-                    // TextureAtlasSprite icon = ApplicationManager.getAppIcon(window.getContentId());
-                    // textureManager.bindTexture(ApplicationManager.LOCATION_APP_ICON_TEXTURE);
-                    TextureAtlasSprite icon = Minecraft.getInstance().getTextureMap().getAtlasSprite("minecraft:item/paper");
-                    textureManager.bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
+                    Window window = displayedWindows[i];
+                    TextureAtlasSprite icon = IconManager.getWindowIcon(window.getIcon());
+                    textureManager.bindTexture(IconManager.LOCATION_WINDOW_ICONS_TEXTURE);
                     RenderUtil.drawRectWithTexture(posX + 4 + (size + 4) * i, posY + screenHeight - taskBar.getHeight() + 4, size, size, icon);
-                    i++;
                 }
             }
         }

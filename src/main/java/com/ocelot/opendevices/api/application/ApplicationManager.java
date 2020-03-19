@@ -5,6 +5,7 @@ import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceRegistries;
 import com.ocelot.opendevices.core.computer.ApplicationInfo;
 import com.ocelot.opendevices.core.registry.ApplicationRegistryEntry;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.util.EnumTypeAdapterFactory;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
@@ -34,7 +35,7 @@ import java.util.Map;
 @Mod.EventBusSubscriber(modid = OpenDevices.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ApplicationManager
 {
-    private static final Gson GSON = new GsonBuilder().registerTypeHierarchyAdapter(ITextComponent.class, new ITextComponent.Serializer()).registerTypeHierarchyAdapter(Style.class, new Style.Serializer()).registerTypeAdapterFactory(new EnumTypeAdapterFactory()).registerTypeAdapter(AppInfo.class, new AppInfoDeserializer()).create();
+    private static final Gson GSON = new GsonBuilder().registerTypeHierarchyAdapter(ITextComponent.class, new ITextComponent.Serializer()).registerTypeHierarchyAdapter(Style.class, new Style.Serializer()).registerTypeAdapterFactory(new EnumTypeAdapterFactory()).registerTypeAdapter(AppInfo.class, new AppInfoDeserializer()).registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer()).create();
     private static final Map<ResourceLocation, AppInfo> APP_INFO = new HashMap<>();
 
     private static AppInfo loadAppInfo(ResourceLocation registryName) throws IOException
@@ -102,8 +103,9 @@ public class ApplicationManager
             ITextComponent author = JSONUtils.deserializeClass(jsonObject, "author", new StringTextComponent(""), context, ITextComponent.class);
             ITextComponent[] authors = JSONUtils.deserializeClass(jsonObject, "authors", new ITextComponent[0], context, ITextComponent[].class);
             String version = JSONUtils.deserializeClass(jsonObject, "version", context, String.class);
+            ResourceLocation icon = JSONUtils.deserializeClass(jsonObject, "icon", null, context, ResourceLocation.class);
 
-            return new ApplicationInfo(name, description, !author.getFormattedText().isEmpty() ? new ITextComponent[]{author} : authors, version);
+            return new ApplicationInfo(name, description, !author.getFormattedText().isEmpty() ? new ITextComponent[]{author} : authors, version, icon);
         }
     }
 }

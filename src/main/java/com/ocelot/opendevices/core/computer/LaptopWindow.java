@@ -5,9 +5,12 @@ import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.computer.Computer;
 import com.ocelot.opendevices.api.computer.window.Window;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
 
+import javax.annotation.Nullable;
 import java.util.UUID;
 
 public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
@@ -23,6 +26,7 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
     private float lastY;
     private int width;
     private int height;
+    private ResourceLocation icon;
 
     public LaptopWindow(Computer computer, UUID processId)
     {
@@ -32,6 +36,7 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
         this.title = String.valueOf(this.id);
         this.width = DeviceConstants.LAPTOP_DEFAULT_APPLICATION_WIDTH + 2;
         this.height = DeviceConstants.LAPTOP_DEFAULT_APPLICATION_HEIGHT + 2 + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT;
+        this.icon = null;
     }
 
     public LaptopWindow(Computer computer, CompoundNBT nbt)
@@ -106,6 +111,13 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
         return height;
     }
 
+    @Nullable
+    @Override
+    public ResourceLocation getIcon()
+    {
+        return icon;
+    }
+
     public void setTitle(String title)
     {
         this.title = title;
@@ -151,6 +163,11 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
         }
     }
 
+    public void setIcon(ResourceLocation icon)
+    {
+        this.icon = icon;
+    }
+
     @Override
     public CompoundNBT serializeNBT()
     {
@@ -162,6 +179,8 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
         nbt.putFloat("y", this.y);
         nbt.putInt("width", this.width);
         nbt.putInt("height", this.height);
+        if (this.icon != null)
+            nbt.putString("icon", this.icon.toString());
 
         return nbt;
     }
@@ -178,6 +197,7 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
         this.lastY = this.y;
         this.width = nbt.getInt("width");
         this.height = nbt.getInt("height");
+        this.icon = nbt.contains("icon", Constants.NBT.TAG_STRING) ? new ResourceLocation(nbt.getString("icon")) : null;
     }
 
     @Override

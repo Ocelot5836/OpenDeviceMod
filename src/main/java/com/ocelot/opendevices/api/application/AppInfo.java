@@ -1,9 +1,12 @@
 package com.ocelot.opendevices.api.application;
 
 import com.ocelot.opendevices.core.computer.ApplicationInfo;
+import net.minecraft.client.renderer.texture.MissingTextureSprite;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+
+import javax.annotation.Nullable;
 
 /**
  * <p>Contains information about each application that is registered. Application info be queried using {@link ApplicationManager#getAppInfo(Class)} or {@link ApplicationManager#getAppInfo(ResourceLocation)}</p>
@@ -17,7 +20,7 @@ public interface AppInfo
     /**
      * Application info that is used when there is an error fetching info
      */
-    AppInfo EMPTY = new ApplicationInfo(new StringTextComponent("Missing Name"), new StringTextComponent("Missing Description"), new ITextComponent[0], "Missing Version");
+    AppInfo EMPTY = new ApplicationInfo(new StringTextComponent("Missing Name"), new StringTextComponent("Missing Description"), new ITextComponent[0], "Missing Version", null);
 
     /**
      * @return The name of the application
@@ -38,4 +41,10 @@ public interface AppInfo
      * @return The current version of the application
      */
     String getVersion();
+
+    /**
+     * @return The location of the application icon
+     */
+    @Nullable
+    ResourceLocation getIcon();
 }
