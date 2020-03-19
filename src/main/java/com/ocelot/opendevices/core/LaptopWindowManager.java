@@ -205,11 +205,11 @@ public class LaptopWindowManager implements WindowManager, INBTSerializable<Comp
         {
             if (this.laptop.isClient())
             {
-                TaskManager.sendToServer(new OpenWindowTask(this.laptop.getPos(), window.serializeNBT()), TaskManager.TaskReceiver.NEARBY);
+                TaskManager.sendToServer(new OpenWindowTask(this.laptop.getAddress(), window.serializeNBT()), TaskManager.TaskReceiver.NEARBY);
             }
             else
             {
-                TaskManager.sendToTracking(new OpenWindowTask(this.laptop.getPos(), window.serializeNBT()), this.laptop.getWorld(), this.laptop.getPos());
+                TaskManager.sendToTracking(new OpenWindowTask(this.laptop.getAddress(), window.serializeNBT()), this.laptop.getWorld(), this.laptop.getPos());
             }
             return window.getId();
         }
@@ -223,11 +223,11 @@ public class LaptopWindowManager implements WindowManager, INBTSerializable<Comp
         {
             if (this.laptop.isClient())
             {
-                TaskManager.sendToServer(new FocusWindowTask(this.laptop.getPos(), windowId), TaskManager.TaskReceiver.NEARBY);
+                TaskManager.sendToServer(new FocusWindowTask(this.laptop.getAddress(), windowId), TaskManager.TaskReceiver.NEARBY);
             }
             else
             {
-                TaskManager.sendToTracking(new FocusWindowTask(this.laptop.getPos(), windowId), this.laptop.getWorld(), this.laptop.getPos());
+                TaskManager.sendToTracking(new FocusWindowTask(this.laptop.getAddress(), windowId), this.laptop.getWorld(), this.laptop.getPos());
             }
         }
     }
@@ -250,11 +250,11 @@ public class LaptopWindowManager implements WindowManager, INBTSerializable<Comp
         this.syncRequestCloseWindows(windowIds);
         if (this.laptop.isClient())
         {
-            TaskManager.sendToServer(new RequestCloseWindowTask(this.laptop.getPos(), windowIds), TaskManager.TaskReceiver.NEARBY);
+            TaskManager.sendToServer(new RequestCloseWindowTask(this.laptop.getAddress(), windowIds), TaskManager.TaskReceiver.NEARBY);
         }
         else
         {
-            TaskManager.sendToTracking(new RequestCloseWindowTask(this.laptop.getPos(), windowIds), this.laptop.getWorld(), this.laptop.getPos());
+            TaskManager.sendToTracking(new RequestCloseWindowTask(this.laptop.getAddress(), windowIds), this.laptop.getWorld(), this.laptop.getPos());
         }
     }
 
@@ -276,11 +276,11 @@ public class LaptopWindowManager implements WindowManager, INBTSerializable<Comp
         this.syncCloseWindows(windowIds);
         if (this.laptop.isClient())
         {
-            TaskManager.sendToServer(new CloseWindowTask(this.laptop.getPos(), windowIds), TaskManager.TaskReceiver.NEARBY);
+            TaskManager.sendToServer(new CloseWindowTask(this.laptop.getAddress(), windowIds), TaskManager.TaskReceiver.NEARBY);
         }
         else
         {
-            TaskManager.sendToTracking(new CloseWindowTask(this.laptop.getPos(), windowIds), this.laptop.getWorld(), this.laptop.getPos());
+            TaskManager.sendToTracking(new CloseWindowTask(this.laptop.getAddress(), windowIds), this.laptop.getWorld(), this.laptop.getPos());
         }
     }
 
@@ -291,11 +291,11 @@ public class LaptopWindowManager implements WindowManager, INBTSerializable<Comp
         {
             if (this.laptop.isClient())
             {
-                TaskManager.sendToServer(new MoveWindowTask(this.laptop.getPos(), windowId, xDirection, yDirection), TaskManager.TaskReceiver.NEARBY);
+                TaskManager.sendToServer(new MoveWindowTask(this.laptop.getAddress(), windowId, xDirection, yDirection), TaskManager.TaskReceiver.NEARBY);
             }
             else
             {
-                TaskManager.sendToTracking(new MoveWindowTask(this.laptop.getPos(), windowId, xDirection, yDirection), this.laptop.getWorld(), this.laptop.getPos());
+                TaskManager.sendToTracking(new MoveWindowTask(this.laptop.getAddress(), windowId, xDirection, yDirection), this.laptop.getWorld(), this.laptop.getPos());
             }
         }
     }
@@ -307,11 +307,11 @@ public class LaptopWindowManager implements WindowManager, INBTSerializable<Comp
         {
             if (this.laptop.isClient())
             {
-                TaskManager.sendToServer(new SetWindowPositionTask(this.laptop.getPos(), windowId, x, y), TaskManager.TaskReceiver.NEARBY);
+                TaskManager.sendToServer(new SetWindowPositionTask(this.laptop.getAddress(), windowId, x, y), TaskManager.TaskReceiver.NEARBY);
             }
             else
             {
-                TaskManager.sendToTracking(new SetWindowPositionTask(this.laptop.getPos(), windowId, x, y), this.laptop.getWorld(), this.laptop.getPos());
+                TaskManager.sendToTracking(new SetWindowPositionTask(this.laptop.getAddress(), windowId, x, y), this.laptop.getWorld(), this.laptop.getPos());
             }
         }
     }
@@ -323,11 +323,11 @@ public class LaptopWindowManager implements WindowManager, INBTSerializable<Comp
         {
             if (this.laptop.isClient())
             {
-                TaskManager.sendToServer(new SetWindowSizeTask(this.laptop.getPos(), windowId, width, height), TaskManager.TaskReceiver.NEARBY);
+                TaskManager.sendToServer(new SetWindowSizeTask(this.laptop.getAddress(), windowId, width, height), TaskManager.TaskReceiver.NEARBY);
             }
             else
             {
-                TaskManager.sendToTracking(new SetWindowSizeTask(this.laptop.getPos(), windowId, width, height), this.laptop.getWorld(), this.laptop.getPos());
+                TaskManager.sendToTracking(new SetWindowSizeTask(this.laptop.getAddress(), windowId, width, height), this.laptop.getWorld(), this.laptop.getPos());
             }
         }
     }
@@ -339,11 +339,11 @@ public class LaptopWindowManager implements WindowManager, INBTSerializable<Comp
         {
             if (this.laptop.isClient())
             {
-                TaskManager.sendToServer(new SetWindowTitleTask(this.laptop.getPos(), windowId, title), TaskManager.TaskReceiver.NEARBY);
+                TaskManager.sendToServer(new SetWindowTitleTask(this.laptop.getAddress(), windowId, title), TaskManager.TaskReceiver.NEARBY);
             }
             else
             {
-                TaskManager.sendToTracking(new SetWindowTitleTask(this.laptop.getPos(), windowId, title), this.laptop.getWorld(), this.laptop.getPos());
+                TaskManager.sendToTracking(new SetWindowTitleTask(this.laptop.getAddress(), windowId, title), this.laptop.getWorld(), this.laptop.getPos());
             }
         }
     }

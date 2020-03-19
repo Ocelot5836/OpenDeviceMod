@@ -80,7 +80,7 @@ public class LaptopBlock extends DeviceBlock implements IWaterLoggable
                 {
                     if (player instanceof ServerPlayerEntity)
                     {
-                        TaskManager.sendToTracking(new UpdateLaptopUserTask(pos, player.getUniqueID()), world, pos);
+                        TaskManager.sendToTracking(new UpdateLaptopUserTask(te.getAddress(), player.getUniqueID()), world, pos);
                         DeviceMessages.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new MessageOpenGui(MessageHandler.GuiType.LAPTOP, pos));
                     }
                 }

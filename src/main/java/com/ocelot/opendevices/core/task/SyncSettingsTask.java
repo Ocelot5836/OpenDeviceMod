@@ -1,19 +1,20 @@
 package com.ocelot.opendevices.core.task;
 
 import com.ocelot.opendevices.OpenDevices;
+import com.ocelot.opendevices.api.device.Device;
+import com.ocelot.opendevices.api.device.DeviceManager;
 import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.core.LaptopTileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import java.util.Objects;
+import java.util.UUID;
 
 @Task.Register(OpenDevices.MOD_ID + ":sync_settings")
 public class SyncSettingsTask extends Task
 {
-    private BlockPos pos;
+    private UUID address;
     private CompoundNBT nbt;
 
     public SyncSettingsTask()
@@ -21,28 +22,29 @@ public class SyncSettingsTask extends Task
         this(null, new CompoundNBT());
     }
 
-    public SyncSettingsTask(BlockPos pos, CompoundNBT nbt)
+    public SyncSettingsTask(UUID address, CompoundNBT nbt)
     {
-        this.pos = pos;
+        this.address = address;
         this.nbt = nbt;
     }
 
     @Override
     public void prepareRequest(CompoundNBT nbt)
     {
-        nbt.putLong("pos", this.pos.toLong());
+        nbt.putUniqueId("address", this.address);
         nbt.put("nbt", this.nbt);
     }
 
     @Override
     public void processRequest(CompoundNBT nbt, World world, PlayerEntity player)
     {
-        this.pos = BlockPos.fromLong(nbt.getLong("pos"));
+        this.address = nbt.getUniqueId("address");
         this.nbt = nbt.getCompound("nbt");
 
-        if (world.getTileEntity(this.pos) instanceof LaptopTileEntity)
+        Device device = DeviceManager.get(world).locate(this.address);
+        if (device instanceof LaptopTileEntity)
         {
-            LaptopTileEntity laptop = (LaptopTileEntity) Objects.requireNonNull(world.getTileEntity(this.pos));
+            LaptopTileEntity laptop = (LaptopTileEntity) device;
             laptop.syncSettings(this.nbt);
             this.setSuccessful();
         }

@@ -3,8 +3,11 @@ package com.ocelot.opendevices.core;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.DeviceRegistries;
+import com.ocelot.opendevices.api.DeviceSerializers;
 import com.ocelot.opendevices.api.computer.Computer;
 import com.ocelot.opendevices.api.computer.settings.LaptopSetting;
+import com.ocelot.opendevices.api.device.Device;
+import com.ocelot.opendevices.api.device.DeviceSerializer;
 import com.ocelot.opendevices.api.device.DeviceTileEntity;
 import com.ocelot.opendevices.api.device.process.DeviceProcess;
 import com.ocelot.opendevices.api.device.process.ProcessSerializer;
@@ -62,7 +65,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
         this.startingProcesses = new HashSet<>();
         this.executionQueue = new ConcurrentLinkedQueue<>();
 
-        this.address = UUID.randomUUID();
+        this.randomizeAddress();
         this.settings = new CompoundNBT();
         this.desktop = new LaptopDesktop(this);
         this.windowManager = new LaptopWindowManager(this);
@@ -224,13 +227,13 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
     {
         if (this.isClient())
         {
-            TaskManager.sendToServer(new TerminateProcessTask(this.getPos(), processId), TaskManager.TaskReceiver.SENDER_AND_NEARBY);
+            TaskManager.sendToServer(new TerminateProcessTask(this.getAddress(), processId), TaskManager.TaskReceiver.SENDER_AND_NEARBY);
         }
         else
         {
             if (this.syncTerminateProcess(processId))
             {
-                TaskManager.sendToTracking(new TerminateProcessTask(this.getPos(), processId), this.getWorld(), this.getPos());
+                TaskManager.sendToTracking(new TerminateProcessTask(this.getAddress(), processId), this.getWorld(), this.getPos());
             }
         }
     }
@@ -248,11 +251,11 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
 
         if (this.isClient())
         {
-            TaskManager.sendToServer(new SyncProcessTask(this.getPos(), processId, process.writeSyncNBT()), TaskManager.TaskReceiver.NEARBY);
+            TaskManager.sendToServer(new SyncProcessTask(this.getAddress(), processId, process.writeSyncNBT()), TaskManager.TaskReceiver.NEARBY);
         }
         else
         {
-            TaskManager.sendToTracking(new SyncProcessTask(this.getPos(), processId, process.writeSyncNBT()), this.getWorld(), this.getPos());
+            TaskManager.sendToTracking(new SyncProcessTask(this.getAddress(), processId, process.writeSyncNBT()), this.getWorld(), this.getPos());
         }
     }
 
@@ -275,6 +278,12 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
     {
         super.read(nbt);
         this.open = nbt.getBoolean("open");
+    }
+
+    @Override
+    protected void randomizeAddress()
+    {
+        this.address = UUID.randomUUID();
     }
 
     @Override
@@ -356,12 +365,12 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
 
             if (this.world.isRemote())
             {
-                TaskManager.sendToServer(new SyncSettingsTask(this.pos, nbt), TaskManager.TaskReceiver.NEARBY);
+                TaskManager.sendToServer(new SyncSettingsTask(this.getAddress(), nbt), TaskManager.TaskReceiver.NEARBY);
                 this.syncSettings(nbt);
             }
             else
             {
-                TaskManager.sendToTracking(new SyncSettingsTask(this.pos, nbt), this.world, this.getPos());
+                TaskManager.sendToTracking(new SyncSettingsTask(this.getAddress(), nbt), this.world, this.getPos());
             }
         }
     }
@@ -411,7 +420,6 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
         return open;
     }
 
-    @Override
     @Nullable
     public PlayerEntity getUser()
     {
@@ -424,6 +432,13 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
     public UUID getAddress()
     {
         return address;
+    }
+
+    @Nullable
+    @Override
+    public DeviceSerializer<? extends Device> getSerializer()
+    {
+        return DeviceSerializers.TILE_ENTITY_DEVICE_SERIALIZER;
     }
 
     @Override

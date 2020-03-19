@@ -1,47 +1,43 @@
 package com.ocelot.opendevices.core.task;
 
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.api.device.Device;
-import com.ocelot.opendevices.api.device.DeviceManager;
 import com.ocelot.opendevices.api.task.Task;
-import com.ocelot.opendevices.core.LaptopTileEntity;
+import com.ocelot.opendevices.core.devicemanager.ClientDeviceManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
 
-import java.util.UUID;
-
-@Task.Register(OpenDevices.MOD_ID + ":close_laptop")
-public class CloseLaptopTask extends Task
+@Task.Register(OpenDevices.MOD_ID + ":sync_devices")
+public class SyncDevicesTask extends Task
 {
-    private UUID address;
+    private ListNBT devices;
 
-    public CloseLaptopTask()
+    public SyncDevicesTask()
     {
         this(null);
     }
 
-    public CloseLaptopTask(UUID address)
+    public SyncDevicesTask(ListNBT devices)
     {
-        this.address = address;
+        this.devices = devices;
     }
 
     @Override
     public void prepareRequest(CompoundNBT nbt)
     {
-        nbt.putUniqueId("address", this.address);
+        nbt.put("devices", this.devices);
     }
 
     @Override
     public void processRequest(CompoundNBT nbt, World world, PlayerEntity player)
     {
-        this.address = nbt.getUniqueId("address");
+        this.devices = nbt.getList("devices", Constants.NBT.TAG_COMPOUND);
 
-        Device device = DeviceManager.get(world).locate(this.address);
-        if (device instanceof LaptopTileEntity)
+        if (world.isRemote())
         {
-            LaptopTileEntity laptop = (LaptopTileEntity) device;
-            laptop.stopView(player);
+            ClientDeviceManager.INSTANCE.receiveDevices(this.devices);
             this.setSuccessful();
         }
     }

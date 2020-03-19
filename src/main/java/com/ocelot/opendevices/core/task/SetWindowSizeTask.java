@@ -1,6 +1,8 @@
 package com.ocelot.opendevices.core.task;
 
 import com.ocelot.opendevices.OpenDevices;
+import com.ocelot.opendevices.api.device.Device;
+import com.ocelot.opendevices.api.device.DeviceManager;
 import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.core.LaptopTileEntity;
 import com.ocelot.opendevices.core.LaptopWindowManager;
@@ -15,7 +17,7 @@ import java.util.UUID;
 @Task.Register(OpenDevices.MOD_ID + ":set_window_size")
 public class SetWindowSizeTask extends Task
 {
-    private BlockPos pos;
+    private UUID address;
     private UUID windowId;
     private int width;
     private int height;
@@ -25,9 +27,9 @@ public class SetWindowSizeTask extends Task
         this(null, null, 0, 0);
     }
 
-    public SetWindowSizeTask(BlockPos pos, UUID windowId, int width, int height)
+    public SetWindowSizeTask(UUID address, UUID windowId, int width, int height)
     {
-        this.pos = pos;
+        this.address = address;
         this.windowId = windowId;
         this.width = width;
         this.height = height;
@@ -36,7 +38,7 @@ public class SetWindowSizeTask extends Task
     @Override
     public void prepareRequest(CompoundNBT nbt)
     {
-        nbt.putLong("pos", this.pos.toLong());
+        nbt.putUniqueId("address", this.address);
         nbt.putUniqueId("windowId", this.windowId);
         nbt.putInt("width", this.width);
         nbt.putInt("height", this.height);
@@ -45,14 +47,15 @@ public class SetWindowSizeTask extends Task
     @Override
     public void processRequest(CompoundNBT nbt, World world, PlayerEntity player)
     {
-        this.pos = BlockPos.fromLong(nbt.getLong("pos"));
+        this.address = nbt.getUniqueId("address");
         this.windowId = nbt.getUniqueId("windowId");
         this.width = nbt.getInt("width");
         this.height = nbt.getInt("height");
 
-        if (world.getTileEntity(this.pos) instanceof LaptopTileEntity)
+        Device device = DeviceManager.get(world).locate(this.address);
+        if (device instanceof LaptopTileEntity)
         {
-            LaptopTileEntity laptop = (LaptopTileEntity) Objects.requireNonNull(world.getTileEntity(this.pos));
+            LaptopTileEntity laptop = (LaptopTileEntity) device;
             LaptopWindowManager windowManager = laptop.getWindowManager();
             if (windowManager.syncSetWindowSize(this.windowId, this.width, this.height))
             {

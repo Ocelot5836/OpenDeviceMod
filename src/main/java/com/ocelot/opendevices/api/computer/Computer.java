@@ -1,11 +1,10 @@
 package com.ocelot.opendevices.api.computer;
 
-import com.ocelot.opendevices.api.device.Device;
+import com.ocelot.opendevices.api.device.TileEntityDevice;
 import com.ocelot.opendevices.api.device.process.DeviceProcess;
 import com.ocelot.opendevices.api.computer.desktop.Desktop;
 import com.ocelot.opendevices.api.computer.settings.LaptopSetting;
 import com.ocelot.opendevices.api.computer.window.WindowManager;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.Nullable;
@@ -16,7 +15,7 @@ import java.util.UUID;
  *
  * @author Ocelot
  */
-public interface Computer extends Device
+public interface Computer extends TileEntityDevice
 {
     /**
      * Writes the specified setting value to NBT.
@@ -37,18 +36,6 @@ public interface Computer extends Device
     <T> T readSetting(LaptopSetting<T> setting);
 
     /**
-     * TODO remove once a device manager is added to find devices by address
-     * @return The user currently using the laptop or null if no player is using the laptop
-     */
-    @Nullable
-    PlayerEntity getUser();
-
-    /**
-     * @return The position of the laptop
-     */
-    BlockPos getPos();
-
-    /**
      * @return The laptop's desktop
      */
     Desktop getDesktop();
@@ -65,4 +52,8 @@ public interface Computer extends Device
 
     @Nullable
     DeviceProcess<Computer> getProcess(UUID id);
+
+    @Deprecated
+    @Override
+    BlockPos getPos();
 }

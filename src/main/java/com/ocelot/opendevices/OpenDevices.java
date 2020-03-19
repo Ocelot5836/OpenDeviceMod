@@ -5,11 +5,13 @@ import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.application.Application;
 import com.ocelot.opendevices.api.computer.desktop.DesktopManager;
 import com.ocelot.opendevices.api.computer.settings.LaptopSetting;
+import com.ocelot.opendevices.api.device.DeviceSerializer;
 import com.ocelot.opendevices.api.device.process.DeviceProcess;
 import com.ocelot.opendevices.api.device.process.ProcessInputRegistry;
 import com.ocelot.opendevices.api.registry.ComponentBuilderBoardLayout;
 import com.ocelot.opendevices.api.registry.DeviceCircuitBoardItem;
 import com.ocelot.opendevices.api.task.Task;
+import com.ocelot.opendevices.core.EventHandler;
 import com.ocelot.opendevices.core.computer.process.TestProcess;
 import com.ocelot.opendevices.core.computer.process.TestProcessInputHandler;
 import com.ocelot.opendevices.core.computer.process.TestProcessRenderer;
@@ -78,6 +80,7 @@ public class OpenDevices
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::init);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::initClient);
         MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(new EventHandler());
     }
 
     private void init(FMLCommonSetupEvent event)
@@ -279,6 +282,35 @@ public class OpenDevices
                 catch (Exception e)
                 {
                     OpenDevices.LOGGER.error("Could not register application class " + className + ". Skipping!", e);
+                }
+            }
+        }
+
+        @SubscribeEvent
+        public static void registerDeviceSerializers(RegistryEvent.Register<DeviceSerializer<?>> event)
+        {
+            Set<ModFileScanData.AnnotationData> annotations = OpenDevices.annotationScanData.stream().filter(it -> it.getTargetType() == ElementType.FIELD && it.getAnnotationType().equals(Type.getType(DeviceSerializer.Register.class))).collect(Collectors.toSet());
+
+            for (ModFileScanData.AnnotationData data : annotations)
+            {
+                ResourceLocation registryName = new ResourceLocation((String) data.getAnnotationData().get("value"));
+
+                String className = data.getClassType().getClassName();
+                String fieldName = data.getMemberName();
+                try
+                {
+                    Class<?> clazz = Class.forName(className);
+                    Field field = clazz.getField(fieldName);
+                    DeviceSerializer<?> serializer = (DeviceSerializer<?>) field.get(null);
+
+                    if (registryName.getPath().isEmpty())
+                        throw new IllegalArgumentException("Device Serializer: " + clazz + " does not have a valid registry name. Skipping!");
+
+                    event.getRegistry().register(serializer.setRegistryName(registryName));
+                }
+                catch (Exception e)
+                {
+                    OpenDevices.LOGGER.error("Could not register device serializer field " + fieldName + " in " + className + ". Skipping!", e);
                 }
             }
         }

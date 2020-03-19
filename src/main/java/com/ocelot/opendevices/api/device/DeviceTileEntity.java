@@ -9,7 +9,7 @@ import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.common.util.Constants;
 
 /**
- * <p>A tile entity that defines a device. Make sure to extend this class if you want to make your own device.</p>
+ * <p>A tile entity that defines a tile entity device.</p>
  *
  * @author Ocelot
  * @see LaptopTileEntity
@@ -22,6 +22,33 @@ public abstract class DeviceTileEntity extends TileEntity
     }
 
     /**
+     * Syncs this device address with the server.
+     */
+    @SuppressWarnings("unchecked")
+    protected void setAddress(boolean remove)
+    {
+        if (this instanceof Device && this.world != null && !this.world.isRemote())
+        {
+            DeviceManager deviceManager = DeviceManager.get(this.world);
+            if (remove)
+            {
+                deviceManager.remove(((Device) this).getAddress());
+            }
+            else
+            {
+                if (deviceManager.exists(((Device) this).getAddress()))
+                    this.randomizeAddress();
+                deviceManager.add((Device) this, (DeviceSerializer<? super Device>) ((Device) this).getSerializer());
+            }
+        }
+    }
+
+    /**
+     * Randomizes the address of this device if needed.
+     */
+    protected abstract void randomizeAddress();
+
+    /**
      * Notifies the world that an update has occurred. Should be called whenever something should be saved to file.
      */
     public void notifyUpdate()
@@ -31,6 +58,20 @@ public abstract class DeviceTileEntity extends TileEntity
         {
             this.world.notifyBlockUpdate(this.pos, this.getBlockState(), this.getBlockState(), 3);
         }
+    }
+
+    @Override
+    public void onLoad()
+    {
+        this.setAddress(false);
+        super.onLoad();
+    }
+
+    @Override
+    public void remove()
+    {
+        this.setAddress(true);
+        super.remove();
     }
 
     /**
@@ -55,7 +96,9 @@ public abstract class DeviceTileEntity extends TileEntity
         if (nbt.contains("device", Constants.NBT.TAG_COMPOUND))
         {
             CompoundNBT data = nbt.getCompound("device");
+            this.setAddress(true);
             this.load(data);
+            this.setAddress(false);
         }
     }
 

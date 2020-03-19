@@ -1,6 +1,8 @@
 package com.ocelot.opendevices.core.task;
 
 import com.ocelot.opendevices.OpenDevices;
+import com.ocelot.opendevices.api.device.Device;
+import com.ocelot.opendevices.api.device.DeviceManager;
 import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.core.LaptopTileEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -14,7 +16,7 @@ import java.util.UUID;
 @Task.Register(OpenDevices.MOD_ID + ":terminate_process")
 public class TerminateProcessTask extends Task
 {
-    private BlockPos pos;
+    private UUID address;
     private UUID processId;
 
     public TerminateProcessTask()
@@ -22,28 +24,29 @@ public class TerminateProcessTask extends Task
         this(null, null);
     }
 
-    public TerminateProcessTask(BlockPos pos, UUID processId)
+    public TerminateProcessTask(UUID address, UUID processId)
     {
-        this.pos = pos;
+        this.address = address;
         this.processId = processId;
     }
 
     @Override
     public void prepareRequest(CompoundNBT nbt)
     {
-        nbt.putLong("pos", this.pos.toLong());
+        nbt.putUniqueId("address", this.address);
         nbt.putUniqueId("processId", this.processId);
     }
 
     @Override
     public void processRequest(CompoundNBT nbt, World world, PlayerEntity player)
     {
-        this.pos = BlockPos.fromLong(nbt.getLong("pos"));
+        this.address = nbt.getUniqueId("address");
         this.processId = nbt.getUniqueId("processId");
 
-        if (world.getTileEntity(this.pos) instanceof LaptopTileEntity)
+        Device device = DeviceManager.get(world).locate(this.address);
+        if (device instanceof LaptopTileEntity)
         {
-            LaptopTileEntity laptop = (LaptopTileEntity) Objects.requireNonNull(world.getTileEntity(this.pos));
+            LaptopTileEntity laptop = (LaptopTileEntity) device;
             if (laptop.syncTerminateProcess(this.processId))
             {
                 this.setSuccessful();

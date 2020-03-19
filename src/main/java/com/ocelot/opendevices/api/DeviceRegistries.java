@@ -3,6 +3,7 @@ package com.ocelot.opendevices.api;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.application.Application;
 import com.ocelot.opendevices.api.computer.settings.LaptopSetting;
+import com.ocelot.opendevices.api.device.DeviceSerializer;
 import com.ocelot.opendevices.api.device.process.DeviceProcess;
 import com.ocelot.opendevices.api.registry.ComponentBuilderBoardLayout;
 import com.ocelot.opendevices.api.task.Task;
@@ -38,6 +39,7 @@ public class DeviceRegistries
     public static IForgeRegistry<TaskRegistryEntry> TASKS = null;
     public static IForgeRegistry<DeviceProcessRegistryEntry> PROCESSES = null;
     public static IForgeRegistry<ApplicationRegistryEntry> APPLICATIONS = null;
+    public static IForgeRegistry<DeviceSerializer<?>> DEVICE_SERIALIZERS = null;
 
     private static final RegistryCache<ComponentBuilderBoardTexture, Item> COMPONENT_BUILDER_BOARD_TEXTURES_CACHE;
 
@@ -67,6 +69,7 @@ public class DeviceRegistries
         makeRegistry("tasks", TaskRegistryEntry.class).create();
         makeRegistry("processes", DeviceProcessRegistryEntry.class).create();
         makeRegistry("applications", ApplicationRegistryEntry.class).create();
+        makeRegistry("device_serializers", DeviceSerializer.class).create();
 
         COMPONENT_BUILDER_BOARD_LAYOUTS = RegistryManager.ACTIVE.getRegistry(ComponentBuilderBoardLayout.class);
         COMPONENT_BUILDER_BOARD_TEXTURES = RegistryManager.ACTIVE.getRegistry(ComponentBuilderBoardTexture.class);
@@ -75,6 +78,7 @@ public class DeviceRegistries
         TASKS = RegistryManager.ACTIVE.getRegistry(TaskRegistryEntry.class);
         PROCESSES = RegistryManager.ACTIVE.getRegistry(DeviceProcessRegistryEntry.class);
         APPLICATIONS = RegistryManager.ACTIVE.getRegistry(ApplicationRegistryEntry.class);
+        DEVICE_SERIALIZERS = RegistryManager.ACTIVE.getRegistry(DeviceSerializer.class);
     }
 
     /**
