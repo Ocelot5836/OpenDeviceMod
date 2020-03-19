@@ -2,20 +2,24 @@ package com.ocelot.opendevices;
 
 import com.mrcrayfish.filters.Filters;
 import com.ocelot.opendevices.api.DeviceConstants;
+import com.ocelot.opendevices.api.DeviceRegistries;
+import com.ocelot.opendevices.api.IconManager;
+import com.ocelot.opendevices.api.application.Application;
+import com.ocelot.opendevices.api.application.ApplicationManager;
+import com.ocelot.opendevices.api.computer.desktop.DesktopManager;
+import com.ocelot.opendevices.api.computer.settings.LaptopSetting;
+import com.ocelot.opendevices.api.device.ApplicationInputHandler;
+import com.ocelot.opendevices.api.device.ApplicationWindowRenderer;
 import com.ocelot.opendevices.api.device.DeviceSerializer;
 import com.ocelot.opendevices.api.device.process.DeviceProcess;
 import com.ocelot.opendevices.api.device.process.ProcessInputRegistry;
-import com.ocelot.opendevices.api.application.Application;
-import com.ocelot.opendevices.api.computer.desktop.DesktopManager;
-import com.ocelot.opendevices.api.computer.settings.LaptopSetting;
 import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.core.EventHandler;
 import com.ocelot.opendevices.core.computer.process.TestProcess;
-import com.ocelot.opendevices.core.computer.process.TestProcessInputHandler;
-import com.ocelot.opendevices.core.computer.process.TestProcessRenderer;
 import com.ocelot.opendevices.core.registry.ApplicationRegistryEntry;
 import com.ocelot.opendevices.core.registry.DeviceProcessRegistryEntry;
 import com.ocelot.opendevices.core.registry.TaskRegistryEntry;
+import com.ocelot.opendevices.core.registry.WindowIconRegistryEntry;
 import com.ocelot.opendevices.core.render.LaptopTileEntityRenderer;
 import com.ocelot.opendevices.init.DeviceBlocks;
 import com.ocelot.opendevices.init.DeviceItems;
@@ -77,6 +81,7 @@ public class OpenDevices
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::initClient);
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(new EventHandler());
+        DistExecutor.runWhenOn(Dist.CLIENT, () -> IconManager::init);
     }
 
     private void init(FMLCommonSetupEvent event)
@@ -87,8 +92,8 @@ public class OpenDevices
 
     private void initClient(FMLClientSetupEvent event)
     {
-        ProcessInputRegistry.bindInputHandler(TestProcess.class, new TestProcessInputHandler());
-        ProcessInputRegistry.bindWindowRenderer(TestProcess.class, new TestProcessRenderer());
+        ProcessInputRegistry.bindInputHandler(TestProcess.class, new ApplicationInputHandler<>());
+        ProcessInputRegistry.bindWindowRenderer(TestProcess.class, new ApplicationWindowRenderer<>());
 
         if (ModList.get().isLoaded("filters"))
         {
@@ -276,6 +281,12 @@ public class OpenDevices
                     OpenDevices.LOGGER.error("Could not register device serializer field " + fieldName + " in " + className + ". Skipping!", e);
                 }
             }
+        }
+
+        @SubscribeEvent
+        public static void registerWindowIcons(RegistryEvent.Register<WindowIconRegistryEntry> event)
+        {
+            event.getRegistry().registerAll(DeviceRegistries.APPLICATIONS.getKeys().stream().map(registryName -> new WindowIconRegistryEntry(ApplicationManager.getAppInfo(registryName).getIcon()).setRegistryName(registryName)).toArray(WindowIconRegistryEntry[]::new));
         }
     }
 }
