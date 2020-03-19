@@ -9,7 +9,7 @@ import net.minecraft.nbt.ListNBT;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
-@Task.Register(OpenDevices.MOD_ID + ":sync_Devices")
+@Task.Register(OpenDevices.MOD_ID + ":sync_devices")
 public class SyncDevicesTask extends Task
 {
     private ListNBT devices;
