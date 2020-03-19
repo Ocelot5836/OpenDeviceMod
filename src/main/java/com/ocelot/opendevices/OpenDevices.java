@@ -9,6 +9,7 @@ import com.ocelot.opendevices.api.application.Application;
 import com.ocelot.opendevices.api.computer.desktop.DesktopManager;
 import com.ocelot.opendevices.api.computer.settings.LaptopSetting;
 import com.ocelot.opendevices.api.task.Task;
+import com.ocelot.opendevices.core.EventHandler;
 import com.ocelot.opendevices.core.computer.process.TestProcess;
 import com.ocelot.opendevices.core.computer.process.TestProcessInputHandler;
 import com.ocelot.opendevices.core.computer.process.TestProcessRenderer;
@@ -75,6 +76,7 @@ public class OpenDevices
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::init);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::initClient);
         MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(new EventHandler());
     }
 
     private void init(FMLCommonSetupEvent event)

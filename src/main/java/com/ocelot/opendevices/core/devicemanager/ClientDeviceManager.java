@@ -64,6 +64,7 @@ public class ClientDeviceManager implements DeviceManager
     {
         Map<UUID, Pair<ResourceLocation, CompoundNBT>> devices = new HashMap<>();
         DeviceManagerSavedData.loadDevices(devices, nbt);
+        this.devices.clear();
         devices.forEach((address, pair) ->
         {
             Device device = DeviceManagerSavedData.parseDevice(Minecraft.getInstance().world, address, pair.getLeft(), pair.getRight());

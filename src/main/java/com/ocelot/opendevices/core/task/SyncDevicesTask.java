@@ -33,7 +33,7 @@ public class SyncDevicesTask extends Task
     @Override
     public void processRequest(CompoundNBT nbt, World world, PlayerEntity player)
     {
-        this.devices = nbt.getList("data", Constants.NBT.TAG_COMPOUND);
+        this.devices = nbt.getList("devices", Constants.NBT.TAG_COMPOUND);
 
         if (world.isRemote())
         {

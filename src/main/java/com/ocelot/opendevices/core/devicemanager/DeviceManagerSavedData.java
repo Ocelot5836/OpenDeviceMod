@@ -29,14 +29,17 @@ public class DeviceManagerSavedData extends WorldSavedData implements DeviceMana
 
     private Map<UUID, Pair<ResourceLocation, CompoundNBT>> devices;
     private ServerWorld world;
+    private boolean syncing;
 
     public DeviceManagerSavedData()
     {
         super(NAME);
         this.devices = new HashMap<>();
         this.world = null;
+        this.syncing = false;
     }
 
+    // TODO add verification to see if the device still exists
     @Override
     public <T extends Device> void add(T device, DeviceSerializer<T> serializer)
     {
@@ -47,6 +50,7 @@ public class DeviceManagerSavedData extends WorldSavedData implements DeviceMana
         }
         this.devices.put(device.getAddress(), new ImmutablePair<>(DeviceRegistries.DEVICE_SERIALIZERS.getKey(serializer), serializer.write(this.world, device)));
         this.markDirty();
+        TaskManager.sendToAll(new SyncDevicesTask(this.saveDevices()));
     }
 
     @Override
@@ -54,6 +58,7 @@ public class DeviceManagerSavedData extends WorldSavedData implements DeviceMana
     {
         this.devices.remove(address);
         this.markDirty();
+        TaskManager.sendToAll(new SyncDevicesTask(this.saveDevices()));
     }
 
     @Nullable
@@ -85,7 +90,6 @@ public class DeviceManagerSavedData extends WorldSavedData implements DeviceMana
     public CompoundNBT write(CompoundNBT nbt)
     {
         nbt.put("devices", this.saveDevices());
-        TaskManager.sendToAll(new SyncDevicesTask(this.saveDevices()));
         return nbt;
     }
 

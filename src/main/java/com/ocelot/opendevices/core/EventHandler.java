@@ -1,6 +1,5 @@
 package com.ocelot.opendevices.core;
 
-import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.device.DeviceManager;
 import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.core.devicemanager.DeviceManagerSavedData;
@@ -10,9 +9,7 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 
-@Mod.EventBusSubscriber(modid = OpenDevices.MOD_ID)
 public class EventHandler
 {
     @SubscribeEvent
