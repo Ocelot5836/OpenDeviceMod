@@ -1,6 +1,8 @@
 package com.ocelot.opendevices.core.task;
 
 import com.ocelot.opendevices.OpenDevices;
+import com.ocelot.opendevices.api.device.Device;
+import com.ocelot.opendevices.api.device.DeviceManager;
 import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.core.LaptopTileEntity;
 import com.ocelot.opendevices.core.LaptopWindowManager;
@@ -16,7 +18,7 @@ import java.util.UUID;
 @Task.Register(OpenDevices.MOD_ID + ":focus_window")
 public class FocusWindowTask extends Task
 {
-    private BlockPos pos;
+    private UUID address;
     private UUID windowId;
 
     public FocusWindowTask()
@@ -24,16 +26,16 @@ public class FocusWindowTask extends Task
         this(null, null);
     }
 
-    public FocusWindowTask(BlockPos pos, @Nullable UUID windowId)
+    public FocusWindowTask(UUID address, @Nullable UUID windowId)
     {
-        this.pos = pos;
+        this.address = address;
         this.windowId = windowId;
     }
 
     @Override
     public void prepareRequest(CompoundNBT nbt)
     {
-        nbt.putLong("pos", this.pos.toLong());
+        nbt.putUniqueId("address", this.address);
         if (this.windowId != null)
         {
             nbt.putUniqueId("windowId", this.windowId);
@@ -43,12 +45,13 @@ public class FocusWindowTask extends Task
     @Override
     public void processRequest(CompoundNBT nbt, World world, PlayerEntity player)
     {
-        this.pos = BlockPos.fromLong(nbt.getLong("pos"));
+        this.address = nbt.getUniqueId("address");
         this.windowId = nbt.hasUniqueId("windowId") ? nbt.getUniqueId("windowId") : null;
 
-        if (world.getTileEntity(this.pos) instanceof LaptopTileEntity)
+        Device device = DeviceManager.get(world).locate(this.address);
+        if (device instanceof LaptopTileEntity)
         {
-            LaptopTileEntity laptop = (LaptopTileEntity) Objects.requireNonNull(world.getTileEntity(this.pos));
+            LaptopTileEntity laptop = (LaptopTileEntity) device;
             LaptopWindowManager windowManager = laptop.getWindowManager();
             if (windowManager.syncFocusWindow(this.windowId))
             {

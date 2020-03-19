@@ -227,13 +227,13 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
     {
         if (this.isClient())
         {
-            TaskManager.sendToServer(new TerminateProcessTask(this.getPos(), processId), TaskManager.TaskReceiver.SENDER_AND_NEARBY);
+            TaskManager.sendToServer(new TerminateProcessTask(this.getAddress(), processId), TaskManager.TaskReceiver.SENDER_AND_NEARBY);
         }
         else
         {
             if (this.syncTerminateProcess(processId))
             {
-                TaskManager.sendToTracking(new TerminateProcessTask(this.getPos(), processId), this.getWorld(), this.getPos());
+                TaskManager.sendToTracking(new TerminateProcessTask(this.getAddress(), processId), this.getWorld(), this.getPos());
             }
         }
     }
@@ -251,11 +251,11 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
 
         if (this.isClient())
         {
-            TaskManager.sendToServer(new SyncProcessTask(this.getPos(), processId, process.writeSyncNBT()), TaskManager.TaskReceiver.NEARBY);
+            TaskManager.sendToServer(new SyncProcessTask(this.getAddress(), processId, process.writeSyncNBT()), TaskManager.TaskReceiver.NEARBY);
         }
         else
         {
-            TaskManager.sendToTracking(new SyncProcessTask(this.getPos(), processId, process.writeSyncNBT()), this.getWorld(), this.getPos());
+            TaskManager.sendToTracking(new SyncProcessTask(this.getAddress(), processId, process.writeSyncNBT()), this.getWorld(), this.getPos());
         }
     }
 
@@ -365,12 +365,12 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
 
             if (this.world.isRemote())
             {
-                TaskManager.sendToServer(new SyncSettingsTask(this.pos, nbt), TaskManager.TaskReceiver.NEARBY);
+                TaskManager.sendToServer(new SyncSettingsTask(this.getAddress(), nbt), TaskManager.TaskReceiver.NEARBY);
                 this.syncSettings(nbt);
             }
             else
             {
-                TaskManager.sendToTracking(new SyncSettingsTask(this.pos, nbt), this.world, this.getPos());
+                TaskManager.sendToTracking(new SyncSettingsTask(this.getAddress(), nbt), this.world, this.getPos());
             }
         }
     }

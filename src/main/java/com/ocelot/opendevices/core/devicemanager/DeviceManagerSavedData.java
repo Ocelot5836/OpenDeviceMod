@@ -29,17 +29,14 @@ public class DeviceManagerSavedData extends WorldSavedData implements DeviceMana
 
     private Map<UUID, Pair<ResourceLocation, CompoundNBT>> devices;
     private ServerWorld world;
-    private boolean syncing;
 
     public DeviceManagerSavedData()
     {
         super(NAME);
         this.devices = new HashMap<>();
         this.world = null;
-        this.syncing = false;
     }
 
-    // TODO add verification to see if the device still exists
     @Override
     public <T extends Device> void add(T device, DeviceSerializer<T> serializer)
     {
@@ -48,13 +45,7 @@ public class DeviceManagerSavedData extends WorldSavedData implements DeviceMana
             OpenDevices.LOGGER.warn("Could not add device with address '" + device.getAddress() + "' as serializer '" + serializer.getClass().getName() + "' is not registered. Skipping!");
             return;
         }
-        CompoundNBT nbt = serializer.write(this.world, device);
-        if (!serializer.exists(this.world, device.getAddress(), nbt))
-        {
-            OpenDevices.LOGGER.warn("Could not add device with address '" + device.getAddress() + "' as it does not exist in the world. Skipping!");
-            return;
-        }
-        this.devices.put(device.getAddress(), new ImmutablePair<>(DeviceRegistries.DEVICE_SERIALIZERS.getKey(serializer), nbt));
+        this.devices.put(device.getAddress(), new ImmutablePair<>(DeviceRegistries.DEVICE_SERIALIZERS.getKey(serializer), serializer.write(this.world, device)));
         this.markDirty();
         TaskManager.sendToAll(new SyncDevicesTask(this.saveDevices()));
     }
@@ -83,9 +74,7 @@ public class DeviceManagerSavedData extends WorldSavedData implements DeviceMana
     @Override
     public boolean exists(UUID address)
     {
-        if (!this.devices.containsKey(address) || !DeviceRegistries.DEVICE_SERIALIZERS.containsKey(this.devices.get(address).getLeft()))
-            return false;
-        return Objects.requireNonNull(DeviceRegistries.DEVICE_SERIALIZERS.getValue(this.devices.get(address).getLeft())).exists(this.world, address, this.devices.get(address).getRight());
+        return this.devices.containsKey(address);
     }
 
     @Override

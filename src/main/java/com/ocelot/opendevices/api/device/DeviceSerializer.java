@@ -40,16 +40,6 @@ public interface DeviceSerializer<T extends Device> extends IForgeRegistryEntry<
     CompoundNBT write(ServerWorld world, T device);
 
     /**
-     * Checks to see if a device exists in the world from the provided NBT.
-     *
-     * @param world   The world being operated in
-     * @param address The address of the device
-     * @param nbt     The tag containing the position data
-     * @return Whether or not the device can be found in the world
-     */
-    boolean exists(World world, UUID address, CompoundNBT nbt);
-
-    /**
      * Checks if a device can be located from the provided NBT.
      *
      * @param world   The world being operated in
@@ -57,10 +47,7 @@ public interface DeviceSerializer<T extends Device> extends IForgeRegistryEntry<
      * @param nbt     The tag containing the position data
      * @return Whether or not the device is there
      */
-    default boolean canRead(World world, UUID address, CompoundNBT nbt)
-    {
-        return this.exists(world, address, nbt);
-    }
+    boolean canRead(World world, UUID address, CompoundNBT nbt);
 
     /**
      * Registers a new type of device serializer for the {@link DeviceManagerSavedData}.

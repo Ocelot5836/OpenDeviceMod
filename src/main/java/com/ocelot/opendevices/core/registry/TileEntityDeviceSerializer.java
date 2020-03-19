@@ -37,7 +37,7 @@ public class TileEntityDeviceSerializer extends ForgeRegistryEntry<DeviceSeriali
     }
 
     @Override
-    public boolean exists(World world, UUID address, CompoundNBT nbt)
+    public boolean canRead(World world, UUID address, CompoundNBT nbt)
     {
         if (!nbt.contains("pos", Constants.NBT.TAG_LONG) || !nbt.contains("dimension", Constants.NBT.TAG_INT))
             return false;

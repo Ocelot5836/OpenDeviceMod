@@ -1,21 +1,22 @@
 package com.ocelot.opendevices.core.task;
 
 import com.ocelot.opendevices.OpenDevices;
+import com.ocelot.opendevices.api.device.Device;
+import com.ocelot.opendevices.api.device.DeviceManager;
 import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.core.LaptopTileEntity;
 import com.ocelot.opendevices.core.LaptopWindowManager;
 import com.ocelot.opendevices.core.computer.LaptopWindow;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import java.util.Objects;
+import java.util.UUID;
 
 @Task.Register(OpenDevices.MOD_ID + ":open_window")
 public class OpenWindowTask extends Task
 {
-    private BlockPos pos;
+    private UUID address;
     private CompoundNBT windowData;
 
     public OpenWindowTask()
@@ -23,28 +24,29 @@ public class OpenWindowTask extends Task
         this(null, null);
     }
 
-    public OpenWindowTask(BlockPos pos, CompoundNBT windowData)
+    public OpenWindowTask(UUID address, CompoundNBT windowData)
     {
-        this.pos = pos;
+        this.address = address;
         this.windowData = windowData;
     }
 
     @Override
     public void prepareRequest(CompoundNBT nbt)
     {
-        nbt.putLong("pos", this.pos.toLong());
+        nbt.putUniqueId("address", this.address);
         nbt.put("windowData", this.windowData);
     }
 
     @Override
     public void processRequest(CompoundNBT nbt, World world, PlayerEntity player)
     {
-        this.pos = BlockPos.fromLong(nbt.getLong("pos"));
+        this.address = nbt.getUniqueId("address");
         this.windowData = nbt.getCompound("windowData");
 
-        if (world.getTileEntity(this.pos) instanceof LaptopTileEntity)
+        Device device = DeviceManager.get(world).locate(this.address);
+        if (device instanceof LaptopTileEntity)
         {
-            LaptopTileEntity laptop = (LaptopTileEntity) Objects.requireNonNull(world.getTileEntity(this.pos));
+            LaptopTileEntity laptop = (LaptopTileEntity) device;
             LaptopWindowManager windowManager = laptop.getWindowManager();
             LaptopWindow window = windowManager.createWindow(this.windowData);
             if (windowManager.syncOpenWindow(window))

@@ -1,6 +1,8 @@
 package com.ocelot.opendevices.core.task;
 
 import com.ocelot.opendevices.OpenDevices;
+import com.ocelot.opendevices.api.device.Device;
+import com.ocelot.opendevices.api.device.DeviceManager;
 import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.core.LaptopTileEntity;
 import com.ocelot.opendevices.core.LaptopWindowManager;
@@ -15,7 +17,7 @@ import java.util.UUID;
 @Task.Register(OpenDevices.MOD_ID + ":move_window")
 public class MoveWindowTask extends Task
 {
-    private BlockPos pos;
+    private UUID address;
     private UUID windowId;
     private float xDirection;
     private float yDirection;
@@ -25,9 +27,9 @@ public class MoveWindowTask extends Task
         this(null, null, 0, 0);
     }
 
-    public MoveWindowTask(BlockPos pos, UUID windowId, float xDirection, float yDirection)
+    public MoveWindowTask(UUID address, UUID windowId, float xDirection, float yDirection)
     {
-        this.pos = pos;
+        this.address = address;
         this.windowId = windowId;
         this.xDirection = xDirection;
         this.yDirection = yDirection;
@@ -36,7 +38,7 @@ public class MoveWindowTask extends Task
     @Override
     public void prepareRequest(CompoundNBT nbt)
     {
-        nbt.putLong("pos", this.pos.toLong());
+        nbt.putUniqueId("address", this.address);
         nbt.putUniqueId("windowId", this.windowId);
         nbt.putDouble("xDirection", this.xDirection);
         nbt.putDouble("yDirection", this.yDirection);
@@ -45,14 +47,15 @@ public class MoveWindowTask extends Task
     @Override
     public void processRequest(CompoundNBT nbt, World world, PlayerEntity player)
     {
-        this.pos = BlockPos.fromLong(nbt.getLong("pos"));
+        this.address = nbt.getUniqueId("address");
         this.windowId = nbt.getUniqueId("windowId");
         this.xDirection = nbt.getFloat("xDirection");
         this.yDirection = nbt.getFloat("yDirection");
 
-        if (world.getTileEntity(this.pos) instanceof LaptopTileEntity)
+        Device device = DeviceManager.get(world).locate(this.address);
+        if (device instanceof LaptopTileEntity)
         {
-            LaptopTileEntity laptop = (LaptopTileEntity) Objects.requireNonNull(world.getTileEntity(this.pos));
+            LaptopTileEntity laptop = (LaptopTileEntity) device;
             LaptopWindowManager windowManager = laptop.getWindowManager();
             if (windowManager.syncMoveWindow(this.windowId, this.xDirection, this.yDirection))
             {

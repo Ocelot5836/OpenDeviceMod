@@ -1,6 +1,8 @@
 package com.ocelot.opendevices.core.task;
 
 import com.ocelot.opendevices.OpenDevices;
+import com.ocelot.opendevices.api.device.Device;
+import com.ocelot.opendevices.api.device.DeviceManager;
 import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.core.LaptopTileEntity;
 import com.ocelot.opendevices.core.LaptopWindowManager;
@@ -17,7 +19,7 @@ import java.util.UUID;
 @Task.Register(OpenDevices.MOD_ID + ":close_window")
 public class CloseWindowTask extends Task
 {
-    private BlockPos pos;
+    private UUID address;
     private UUID[] windowIds;
 
     public CloseWindowTask()
@@ -25,16 +27,16 @@ public class CloseWindowTask extends Task
         this(null);
     }
 
-    public CloseWindowTask(BlockPos pos, UUID... windowIds)
+    public CloseWindowTask(UUID address, UUID... windowIds)
     {
-        this.pos = pos;
+        this.address = address;
         this.windowIds = windowIds;
     }
 
     @Override
     public void prepareRequest(CompoundNBT nbt)
     {
-        nbt.putLong("pos", this.pos.toLong());
+        nbt.putUniqueId("address", this.address);
 
         ListNBT windowIds = new ListNBT();
         for (UUID windowId : this.windowIds)
@@ -49,7 +51,7 @@ public class CloseWindowTask extends Task
     @Override
     public void processRequest(CompoundNBT nbt, World world, PlayerEntity player)
     {
-        this.pos = BlockPos.fromLong(nbt.getLong("pos"));
+        this.address = nbt.getUniqueId("address");
 
         ListNBT windowIds = nbt.getList("windowIds", Constants.NBT.TAG_COMPOUND);
         this.windowIds = new UUID[windowIds.size()];
@@ -58,9 +60,10 @@ public class CloseWindowTask extends Task
             this.windowIds[i] = windowIds.getCompound(i).getUniqueId("id");
         }
 
-        if (world.getTileEntity(this.pos) instanceof LaptopTileEntity)
+        Device device = DeviceManager.get(world).locate(this.address);
+        if (device instanceof LaptopTileEntity)
         {
-            LaptopTileEntity laptop = (LaptopTileEntity) Objects.requireNonNull(world.getTileEntity(this.pos));
+            LaptopTileEntity laptop = (LaptopTileEntity) device;
             LaptopWindowManager windowManager = laptop.getWindowManager();
             windowManager.syncCloseWindows(this.windowIds);
             this.setSuccessful();
