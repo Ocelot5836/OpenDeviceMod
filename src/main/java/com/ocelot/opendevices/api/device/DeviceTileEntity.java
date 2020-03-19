@@ -6,11 +6,10 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.Constants;
 
 /**
- * <p>A tile entity that defines a device. Make sure to extend this class if you want to make your own device.</p>
+ * <p>A tile entity that defines a tile entity device.</p>
  *
  * @author Ocelot
  * @see LaptopTileEntity
@@ -22,19 +21,22 @@ public abstract class DeviceTileEntity extends TileEntity
         super(type);
     }
 
+    /**
+     * Syncs this device address with the server.
+     */
     @SuppressWarnings("unchecked")
-    private void setAddress(boolean remove)
+    protected void setAddress(boolean remove)
     {
-        if (this instanceof Device && this.world instanceof ServerWorld)
+        if (this instanceof Device && this.world != null && !this.world.isRemote())
         {
-            DeviceManager deviceManager = DeviceManager.get((ServerWorld) this.world);
+            DeviceManager deviceManager = DeviceManager.get(this.world);
             if (remove)
             {
                 deviceManager.remove(((Device) this).getAddress());
             }
             else
             {
-                if(deviceManager.exists(((Device) this).getAddress()))
+                if (deviceManager.exists(((Device) this).getAddress()))
                     this.randomizeAddress();
                 deviceManager.add((Device) this, (DeviceSerializer<? super Device>) ((Device) this).getSerializer());
             }

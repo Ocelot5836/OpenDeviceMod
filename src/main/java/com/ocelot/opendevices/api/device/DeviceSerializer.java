@@ -1,6 +1,8 @@
 package com.ocelot.opendevices.api.device;
 
+import com.ocelot.opendevices.core.devicemanager.DeviceManagerSavedData;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
@@ -17,15 +19,38 @@ import java.util.UUID;
  */
 public interface DeviceSerializer<T extends Device> extends IForgeRegistryEntry<DeviceSerializer<?>>
 {
+    /**
+     * Locates a device from the provided NBT.
+     *
+     * @param world   The world being operated in
+     * @param address The address of the device
+     * @param nbt     The tag containing the position data
+     * @return The device found or null if the device is not there
+     */
     @Nullable
-    T read(ServerWorld world, UUID address, CompoundNBT nbt);
-
-    CompoundNBT write(ServerWorld world, T device);
-
-    boolean canRead(ServerWorld world, UUID address, CompoundNBT nbt);
+    T read(World world, UUID address, CompoundNBT nbt);
 
     /**
-     * Registers a new type of device serializer for the {@link DeviceManager}.
+     * Saves the position of the specified device to NBT.
+     *
+     * @param world  The world being operated in
+     * @param device The device to get the position info from
+     * @return The tag containing the position data
+     */
+    CompoundNBT write(ServerWorld world, T device);
+
+    /**
+     * Checks if a device can be located from the provided NBT.
+     *
+     * @param world   The world being operated in
+     * @param address The address of the device
+     * @param nbt     The tag containing the position data
+     * @return Whether or not the device is there
+     */
+    boolean canRead(World world, UUID address, CompoundNBT nbt);
+
+    /**
+     * Registers a new type of device serializer for the {@link DeviceManagerSavedData}.
      *
      * @author Ocelot
      */

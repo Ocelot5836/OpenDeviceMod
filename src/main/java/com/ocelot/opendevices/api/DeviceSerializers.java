@@ -2,17 +2,17 @@ package com.ocelot.opendevices.api;
 
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.device.Device;
-import com.ocelot.opendevices.api.device.DeviceManager;
+import com.ocelot.opendevices.core.devicemanager.DeviceManagerSavedData;
 import com.ocelot.opendevices.api.device.DeviceSerializer;
 import com.ocelot.opendevices.api.device.TileEntityDevice;
 import com.ocelot.opendevices.core.registry.TileEntityDeviceSerializer;
 
 /**
- * <p>Contains default serializers for {@link Device} that allow them to communicate with {@link DeviceManager}.</p>
+ * <p>Contains default serializers for {@link Device} that allow them to communicate with {@link DeviceManagerSavedData}.</p>
  *
  * @author Ocelot
  * @see DeviceSerializer
- * @see DeviceManager
+ * @see DeviceManagerSavedData
  */
 public class DeviceSerializers
 {

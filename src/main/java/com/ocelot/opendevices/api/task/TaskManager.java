@@ -111,6 +111,19 @@ public final class TaskManager
     }
 
     /**
+     * Sends a task from the server to all clients.
+     *
+     * @param task  The task to send to the clients
+     */
+    public static void sendToAll(Task task)
+    {
+        if (DeviceRegistries.getTaskRegistryName(task.getClass()) == null)
+            throw new RuntimeException("Unregistered Task: " + task.getClass().getName() + ". Use Task annotation to register a task.");
+
+        DeviceMessages.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageRequest(task, TaskReceiver.NONE));
+    }
+
+    /**
      * Creates a new task based on registry name.
      *
      * @param registryName The registry name of the task to make

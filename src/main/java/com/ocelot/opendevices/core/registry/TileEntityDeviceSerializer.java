@@ -5,6 +5,7 @@ import com.ocelot.opendevices.api.device.DeviceSerializer;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.registries.ForgeRegistryEntry;
@@ -16,7 +17,7 @@ public class TileEntityDeviceSerializer extends ForgeRegistryEntry<DeviceSeriali
 {
     @Nullable
     @Override
-    public TileEntityDevice read(ServerWorld world, UUID address, CompoundNBT nbt)
+    public TileEntityDevice read(World world, UUID address, CompoundNBT nbt)
     {
         if (!nbt.contains("pos", Constants.NBT.TAG_LONG) || !nbt.contains("dimension", Constants.NBT.TAG_INT))
             return null;
@@ -36,7 +37,7 @@ public class TileEntityDeviceSerializer extends ForgeRegistryEntry<DeviceSeriali
     }
 
     @Override
-    public boolean canRead(ServerWorld world, UUID address, CompoundNBT nbt)
+    public boolean canRead(World world, UUID address, CompoundNBT nbt)
     {
         if (!nbt.contains("pos", Constants.NBT.TAG_LONG) || !nbt.contains("dimension", Constants.NBT.TAG_INT))
             return false;
