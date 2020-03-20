@@ -25,6 +25,9 @@
 	"screen.opendevices.laptop.unknown_version": "Unknown",
 	"screen.opendevices.laptop.version": "Alpha v%s",
 	"screen.opendevices.laptop.dev_version": "Developer Version - %s",
+	"screen.opendevices.laptop.dev_fps": "%s FPS",
+	"screen.opendevices.laptop.dev_processes": "%s Processes Running",
+	"screen.opendevices.laptop.dev_windows": "%s Windows Opened",
 
 	"app.opendevices.test.name": "Test Application",
 	"app.opendevices.test.desc": "An application designed for testing windows and UI.",

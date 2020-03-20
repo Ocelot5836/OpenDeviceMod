@@ -78,17 +78,20 @@ public class LaptopRenderer extends AbstractGui
             //            }
         }
 
-        /* Version Text */
-        if (DeviceConstants.DEVELOPER_MODE)
+        /* Desktop Text */
         {
-            fontRenderer.drawStringWithShadow(I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.dev_version", MOD_VERSION), posX + 5, posY + 5, computer.readSetting(LaptopSettings.DESKTOP_TEXT_COLOR));
-            fontRenderer.drawStringWithShadow(Minecraft.getDebugFPS() + " FPS", posX + 5, posY + 18, computer.readSetting(LaptopSettings.DESKTOP_TEXT_COLOR));
-            fontRenderer.drawStringWithShadow(computer.getProcessIds().size() + " Processes Running", posX + 5, posY + 31, computer.readSetting(LaptopSettings.DESKTOP_TEXT_COLOR));
-            fontRenderer.drawStringWithShadow(computer.getWindowManager().getWindows().length + " Windows Opened", posX + 5, posY + 44, computer.readSetting(LaptopSettings.DESKTOP_TEXT_COLOR));
-        }
-        else
-        {
-            fontRenderer.drawStringWithShadow(I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.version", MOD_VERSION), posX + 5, posY + 5, computer.readSetting(LaptopSettings.DESKTOP_TEXT_COLOR));
+            int color = computer.readSetting(LaptopSettings.DESKTOP_TEXT_COLOR);
+            if (DeviceConstants.DEVELOPER_MODE)
+            {
+                fontRenderer.drawStringWithShadow(I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.dev_version", MOD_VERSION), posX + 5, posY + 5, color);
+                fontRenderer.drawStringWithShadow(I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.dev_fps", Minecraft.getDebugFPS()), posX + 5, posY + 18, color);
+                fontRenderer.drawStringWithShadow(I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.dev_processes", computer.getProcessIds().size()), posX + 5, posY + 31, color);
+                fontRenderer.drawStringWithShadow(I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.dev_windows", computer.getWindowManager().getWindows().length), posX + 5, posY + 44, color);
+            }
+            else
+            {
+                fontRenderer.drawStringWithShadow(I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.version", MOD_VERSION), posX + 5, posY + 5, color);
+            }
         }
 
         /* Applications */
