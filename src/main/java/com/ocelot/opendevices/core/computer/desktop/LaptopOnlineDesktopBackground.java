@@ -1,5 +1,6 @@
 package com.ocelot.opendevices.core.computer.desktop;
 
+import com.ocelot.opendevices.api.component.SpinnerComponent;
 import com.ocelot.opendevices.api.computer.desktop.OnlineDesktopBackground;
 import com.ocelot.opendevices.api.util.OnlineImageCache;
 import net.minecraft.nbt.CompoundNBT;
@@ -14,6 +15,7 @@ public class LaptopOnlineDesktopBackground implements OnlineDesktopBackground
     private String url;
     private ResourceLocation location;
     private long cacheTime;
+    private int progress;
 
     public LaptopOnlineDesktopBackground(CompoundNBT nbt)
     {
@@ -33,6 +35,23 @@ public class LaptopOnlineDesktopBackground implements OnlineDesktopBackground
     }
 
     @Override
+    public void update()
+    {
+        if (this.location != null)
+        {
+            this.progress = 0;
+        }
+        else
+        {
+            if (this.progress >= SpinnerComponent.MAX_PROGRESS)
+            {
+                this.progress = 0;
+            }
+            this.progress++;
+        }
+    }
+
+    @Override
     public void request()
     {
         DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> OnlineImageCache.request(this.url, this.cacheTime, loc -> this.location = loc, null));
@@ -43,6 +62,12 @@ public class LaptopOnlineDesktopBackground implements OnlineDesktopBackground
     public ResourceLocation getLocation()
     {
         return location;
+    }
+
+    @Override
+    public int getProgress()
+    {
+        return progress;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.ocelot.opendevices.api.computer.desktop;
 
+import com.ocelot.opendevices.api.component.SpinnerComponent;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.system.NativeResource;
 
@@ -22,6 +23,11 @@ public interface OnlineDesktopBackground extends DesktopBackground, NativeResour
      */
     @Nullable
     ResourceLocation getLocation();
+
+    /**
+     * @return The progress of the spinner
+     */
+    int getProgress();
 
     @Override
     default DesktopBackgroundType getType()

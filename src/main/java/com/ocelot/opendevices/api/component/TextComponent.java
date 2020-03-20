@@ -20,6 +20,8 @@ import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>Allows the addition of {@link ITextComponent} lines of text to a {@link Layout}.</p>
@@ -39,6 +41,8 @@ public class TextComponent extends StandardComponent
     private ResourceLocation fontRendererLocation;
     private List<ITextComponent> text;
     private long tooltipDelay;
+    private boolean renderShadow;
+    private boolean visible;
 
     private List<Line> lines;
     private long lastTooltip;
@@ -55,12 +59,12 @@ public class TextComponent extends StandardComponent
         this(x, y, maxWidth, fontRenderer, Arrays.asList(texts));
     }
 
-    public TextComponent(float x, float y, ResourceLocation fontRenderer, List<ITextComponent> texts)
+    public TextComponent(float x, float y, ResourceLocation fontRenderer, Collection<ITextComponent> texts)
     {
         this(x, y, -1, fontRenderer, texts);
     }
 
-    public TextComponent(float x, float y, int maxWidth, ResourceLocation fontRenderer, List<ITextComponent> texts)
+    public TextComponent(float x, float y, int maxWidth, ResourceLocation fontRenderer, Collection<ITextComponent> texts)
     {
         this.createSyncHelper();
         this.x = x;
@@ -72,6 +76,7 @@ public class TextComponent extends StandardComponent
 
         this.setFontRenderer(fontRenderer);
         this.tooltipDelay = DeviceConstants.DEFAULT_TOOLTIP_DELAY;
+        this.visible = true;
 
         this.lastTooltip = Long.MAX_VALUE;
         texts.forEach(this::addLine);
@@ -88,6 +93,8 @@ public class TextComponent extends StandardComponent
             syncHelper.addSerializer("fontRenderer", nbt -> nbt.putString("fontRenderer", this.fontRendererLocation.toString()), nbt -> this.fontRendererLocation = new ResourceLocation(nbt.getString("fontRenderer")));
             syncHelper.addSerializer("text", this::serializeText, this::deserializeText);
             syncHelper.addSerializer("tooltipDelay", nbt -> nbt.putLong("tooltipDelay", this.tooltipDelay), nbt -> this.tooltipDelay = nbt.getLong("tooltipDelay"));
+            syncHelper.addSerializer("renderShadow", nbt -> nbt.putBoolean("renderShadow", this.renderShadow), nbt -> this.renderShadow = nbt.getBoolean("renderShadow"));
+            syncHelper.addSerializer("visible", nbt -> nbt.putBoolean("visible", this.visible), nbt -> this.visible = nbt.getBoolean("visible"));
         }
         this.setClientSerializer(syncHelper);
     }
@@ -134,7 +141,7 @@ public class TextComponent extends StandardComponent
 
     private ITextComponent getHoveredText(double mouseX, double mouseY)
     {
-        if (!this.isHovered(mouseX, mouseY))
+        if (!this.visible || !this.isHovered(mouseX, mouseY))
             return null;
 
         for (int i = 0; i < this.lines.size(); i++)
@@ -192,27 +199,40 @@ public class TextComponent extends StandardComponent
     @Override
     public void render(float posX, float posY, int mouseX, int mouseY, float partialTicks)
     {
-        for (int i = 0; i < this.lines.size(); i++)
+        if (this.visible)
         {
-            Line line = this.lines.get(i);
-            int yOffset = i * this.fontRenderer.FONT_HEIGHT;
-            this.fontRenderer.drawString(line.text, posX + this.x, posY + this.y + yOffset, 0xffffffff);
+            for (int i = 0; i < this.lines.size(); i++)
+            {
+                Line line = this.lines.get(i);
+                int yOffset = i * this.fontRenderer.FONT_HEIGHT;
+                if (this.renderShadow)
+                {
+                    this.fontRenderer.drawStringWithShadow(line.text, posX + this.x, posY + this.y + yOffset, 0xffffffff);
+                }
+                else
+                {
+                    this.fontRenderer.drawString(line.text, posX + this.x, posY + this.y + yOffset, 0xffffffff);
+                }
+            }
         }
     }
 
     @Override
     public void renderOverlay(TooltipRenderer renderer, float posX, float posY, int mouseX, int mouseY, float partialTicks)
     {
-        if (this.isHovered(mouseX - posX, mouseY - posY))
+        if (this.visible)
         {
-            if (this.lastTooltip == Long.MAX_VALUE)
-                this.lastTooltip = System.currentTimeMillis();
-            if (System.currentTimeMillis() - this.lastTooltip >= this.tooltipDelay)
-                renderer.renderComponentHoverEffect(this.getHoveredText(mouseX - posX, mouseY - posY), mouseX, mouseY);
-        }
-        else
-        {
-            this.lastTooltip = Long.MAX_VALUE;
+            if (this.isHovered(mouseX - posX, mouseY - posY))
+            {
+                if (this.lastTooltip == Long.MAX_VALUE)
+                    this.lastTooltip = System.currentTimeMillis();
+                if (System.currentTimeMillis() - this.lastTooltip >= this.tooltipDelay)
+                    renderer.renderComponentHoverEffect(this.getHoveredText(mouseX - posX, mouseY - posY), mouseX, mouseY);
+            }
+            else
+            {
+                this.lastTooltip = Long.MAX_VALUE;
+            }
         }
     }
 
@@ -220,7 +240,7 @@ public class TextComponent extends StandardComponent
     public boolean onMousePressed(double mouseX, double mouseY, int mouseButton)
     {
         ITextComponent hoveredText = this.getHoveredText(mouseX, mouseY);
-        if (hoveredText != null)
+        if (this.visible && hoveredText != null)
         {
             if (this.clickListener != null)
             {
@@ -288,11 +308,27 @@ public class TextComponent extends StandardComponent
     }
 
     /**
-     * @return The time it takes for tooltips to begin rendering
+     * @return The time it takes for tooltips to begin rendering in ms
      */
     public long getTooltipDelay()
     {
         return tooltipDelay;
+    }
+
+    /**
+     * @return Whether or not a shadow will render behind the text
+     */
+    public boolean shouldRenderShadow()
+    {
+        return renderShadow;
+    }
+
+    /**
+     * @return Whether or not this text can be seen and interacted with
+     */
+    public boolean isVisible()
+    {
+        return visible;
     }
 
     /**
@@ -344,7 +380,7 @@ public class TextComponent extends StandardComponent
     }
 
     /**
-     * Sets the maximum width of a line before being split. In order to call this during a tick, use {@link Computer#execute(Runnable)}!
+     * Sets the maximum width of a line before being split. In order to call this during a tick, use {@link Executor#execute(Runnable)}!
      *
      * @param maxWidth The new maximum width
      */
@@ -357,7 +393,7 @@ public class TextComponent extends StandardComponent
     }
 
     /**
-     * Sets the font renderer used for rendering text. In order to call this during a tick, use {@link Computer#execute(Runnable)}!
+     * Sets the font renderer used for rendering text. In order to call this during a tick, use {@link Executor#execute(Runnable)}!
      *
      * @param fontRenderer The new font renderer
      */
@@ -371,7 +407,7 @@ public class TextComponent extends StandardComponent
     }
 
     /**
-     * Sets the text displayed on the button to the specified information. In order to call this during a tick, use {@link Computer#execute(Runnable)}!
+     * Sets the text displayed on the button to the specified information. In order to call this during a tick, use {@link Executor#execute(Runnable)}!
      *
      * @param text The new text to display
      */
@@ -382,7 +418,7 @@ public class TextComponent extends StandardComponent
     }
 
     /**
-     * Sets the text displayed on the button to the specified information. In order to call this during a tick, use {@link Computer#execute(Runnable)}!
+     * Sets the text displayed on the button to the specified information. In order to call this during a tick, use {@link Executor#execute(Runnable)}!
      *
      * @param text The new text to display
      */
@@ -397,14 +433,39 @@ public class TextComponent extends StandardComponent
     }
 
     /**
-     * Sets the amount of time in ms it takes for a tooltip to begin rendering.
+     * Sets the amount of time in the specified time unit it takes for a tooltip to begin rendering.
      *
+     * @param unit         The time unit to use
      * @param tooltipDelay The time it takes for tooltips to begin rendering
      */
-    public TextComponent setTooltipDelay(long tooltipDelay)
+    public TextComponent setTooltipDelay(TimeUnit unit, long tooltipDelay)
     {
-        this.tooltipDelay = Math.max(0, tooltipDelay);
+        this.tooltipDelay = Math.max(0, unit.toMillis(tooltipDelay));
         this.getClientSerializer().markDirty("tooltipDelay");
+        return this;
+    }
+
+    /**
+     * Sets whether or not a shadow will render behind this text.
+     *
+     * @param renderShadow Whether or not to render a shadow
+     */
+    public TextComponent setRenderShadow(boolean renderShadow)
+    {
+        this.renderShadow = renderShadow;
+        this.getClientSerializer().markDirty("renderShadow");
+        return this;
+    }
+
+    /**
+     * Marks this component as able to be seen or not.
+     *
+     * @param visible Whether or not this component is visible
+     */
+    public TextComponent setVisible(boolean visible)
+    {
+        this.visible = visible;
+        this.getClientSerializer().markDirty("visible");
         return this;
     }
 
