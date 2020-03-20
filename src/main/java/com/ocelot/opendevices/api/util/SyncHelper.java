@@ -63,13 +63,13 @@ public class SyncHelper implements ClientSerializer
             }
             this.serializers.get(fieldName).getLeft().accept(nbt);
         });
-        this.modifiedFields.clear();
         return nbt;
     }
 
     @Override
     public void deserializeNBT(CompoundNBT nbt)
     {
+        this.modifiedFields.clear();
         nbt.keySet().forEach(fieldName ->
         {
             if (!this.serializers.containsKey(fieldName))
@@ -78,6 +78,7 @@ public class SyncHelper implements ClientSerializer
                 return;
             }
             this.serializers.get(fieldName).getRight().accept(nbt);
+            this.modifiedFields.add(fieldName);
         });
     }
 }

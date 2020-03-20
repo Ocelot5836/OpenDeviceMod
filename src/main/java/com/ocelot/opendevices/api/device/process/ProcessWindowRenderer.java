@@ -15,6 +15,14 @@ import com.ocelot.opendevices.api.util.TooltipRenderer;
 public interface ProcessWindowRenderer<D extends Device, T extends DeviceProcess<D>>
 {
     /**
+     * Updates the contents of the specified window.
+     *
+     * @param process The process the window belongs to
+     * @param window  The window being rendered
+     */
+    void update(T process, Window window);
+
+    /**
      * Renders the contents of the specified window.
      *
      * @param process      The process the window belongs to

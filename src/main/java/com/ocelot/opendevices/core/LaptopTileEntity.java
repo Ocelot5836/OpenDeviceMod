@@ -13,6 +13,7 @@ import com.ocelot.opendevices.api.device.process.DeviceProcess;
 import com.ocelot.opendevices.api.device.process.ProcessSerializer;
 import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.core.registry.DeviceProcessRegistryEntry;
+import com.ocelot.opendevices.core.render.LaptopRenderer;
 import com.ocelot.opendevices.core.task.ExecuteProcessTask;
 import com.ocelot.opendevices.core.task.SyncProcessTask;
 import com.ocelot.opendevices.core.task.SyncSettingsTask;
@@ -89,6 +90,8 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
         {
             if (this.isClient())
             {
+                LaptopRenderer.update(this);
+
                 this.lastRotation = this.rotation;
                 if (!this.open)
                 {

@@ -6,6 +6,7 @@ import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.DeviceRegistries;
 import com.ocelot.opendevices.api.IconManager;
 import com.ocelot.opendevices.api.LaptopSettings;
+import com.ocelot.opendevices.api.component.SpinnerComponent;
 import com.ocelot.opendevices.api.computer.Computer;
 import com.ocelot.opendevices.api.computer.TaskBar;
 import com.ocelot.opendevices.api.computer.desktop.Desktop;
@@ -59,6 +60,26 @@ public class LaptopRenderer extends AbstractGui
         }
     }
 
+    public static void update(Computer computer)
+    {
+        WindowManager windowManager = computer.getWindowManager();
+
+        /* Windows */
+        Window[] windows = windowManager.getWindows();
+        for (Window window : windows)
+        {
+            DeviceProcess<Computer> process = computer.getProcess(window.getProcessId());
+            if (process != null)
+            {
+                ProcessWindowRenderer<Computer, DeviceProcess<Computer>> renderer = ProcessInputRegistry.getWindowRenderer(process);
+                if (renderer != null)
+                {
+                    renderer.update(process, window);
+                }
+            }
+        }
+    }
+
     public static void render(Computer computer, Minecraft minecraft, FontRenderer fontRenderer, int posX, int posY, int screenWidth, int screenHeight, int mouseX, int mouseY, float partialTicks)
     {
         TextureManager textureManager = minecraft.getTextureManager();
@@ -90,20 +111,11 @@ public class LaptopRenderer extends AbstractGui
                     else
                     {
                         onlineDesktopBackground.request();
+                        SpinnerComponent.renderProgress(posX + (screenWidth - SpinnerComponent.SIZE) / 2f, posY + (screenHeight - SpinnerComponent.SIZE) / 2f, SpinnerComponent.DEFAULT_COLOR, 0xFFFFFFFF, onlineDesktopBackground.getProgress());
                     }
                     break;
                 }
             }
-            //            DesktopBackgroundOld desktopBackground = desktop.getBackgroundOld();
-            //            if (!desktopBackground.isOnline() && desktopBackground.getLocation() != null)
-            //            {
-            //                textureManager.bindTexture(desktopBackground.getLocation());
-            //                RenderUtil.drawRectWithTexture(posX, posY, desktopBackground.getU(), desktopBackground.getV(), screenWidth, screenHeight, desktopBackground.getWidth(), desktopBackground.getHeight(), desktopBackground.getImageWidth(), desktopBackground.getImageHeight());
-            //            }
-            //            else if (desktopBackground.getUrl() != null)
-            //            {
-            //                 TODO download and render online image
-            //            }
         }
 
         /* Desktop Text */
