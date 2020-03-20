@@ -2,15 +2,13 @@ package com.ocelot.opendevices.api;
 
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.application.Application;
+import com.ocelot.opendevices.api.computer.desktop.DesktopBackground;
 import com.ocelot.opendevices.api.computer.settings.LaptopSetting;
 import com.ocelot.opendevices.api.device.DeviceSerializer;
 import com.ocelot.opendevices.api.device.process.DeviceProcess;
 import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.core.RegistryCache;
-import com.ocelot.opendevices.core.registry.ApplicationRegistryEntry;
-import com.ocelot.opendevices.core.registry.DeviceProcessRegistryEntry;
-import com.ocelot.opendevices.core.registry.TaskRegistryEntry;
-import com.ocelot.opendevices.core.registry.WindowIconRegistryEntry;
+import com.ocelot.opendevices.core.registry.*;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -36,6 +34,7 @@ public class DeviceRegistries
     public static IForgeRegistry<ApplicationRegistryEntry> APPLICATIONS = null;
     public static IForgeRegistry<DeviceSerializer<?>> DEVICE_SERIALIZERS = null;
     public static IForgeRegistry<WindowIconRegistryEntry> WINDOW_ICONS = null;
+    public static IForgeRegistry<DesktopBackgroundRegistryEntry> DESKTOP_BACKGROUNDS = null;
 
     private static final RegistryCache<TaskRegistryEntry, Class<? extends Task>> TASKS_CACHE;
     private static final RegistryCache<DeviceProcessRegistryEntry, Class<? extends DeviceProcess<?>>> PROCESSES_CACHE;
@@ -60,6 +59,7 @@ public class DeviceRegistries
         makeRegistry("applications", ApplicationRegistryEntry.class).create();
         makeRegistry("device_serializers", DeviceSerializer.class).create();
         makeRegistry("window_icons", WindowIconRegistryEntry.class).create();
+        makeRegistry("desktop_backgrounds", DesktopBackgroundRegistryEntry.class).create();
 
         SETTINGS = RegistryManager.ACTIVE.getRegistry(LaptopSetting.class);
         TASKS = RegistryManager.ACTIVE.getRegistry(TaskRegistryEntry.class);
@@ -67,6 +67,7 @@ public class DeviceRegistries
         APPLICATIONS = RegistryManager.ACTIVE.getRegistry(ApplicationRegistryEntry.class);
         DEVICE_SERIALIZERS = RegistryManager.ACTIVE.getRegistry(DeviceSerializer.class);
         WINDOW_ICONS = RegistryManager.ACTIVE.getRegistry(WindowIconRegistryEntry.class);
+        DESKTOP_BACKGROUNDS = RegistryManager.ACTIVE.getRegistry(DesktopBackgroundRegistryEntry.class);
     }
 
     /**

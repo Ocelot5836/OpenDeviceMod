@@ -67,7 +67,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
 
         this.randomizeAddress();
         this.settings = new CompoundNBT();
-        this.desktop = new LaptopDesktop(this);
+        this.desktop = new LaptopDesktop();
         this.windowManager = new LaptopWindowManager(this);
         this.taskBar = new LaptopTaskBar(this);
     }

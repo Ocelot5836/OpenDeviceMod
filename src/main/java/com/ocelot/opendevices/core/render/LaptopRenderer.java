@@ -10,6 +10,7 @@ import com.ocelot.opendevices.api.computer.Computer;
 import com.ocelot.opendevices.api.computer.TaskBar;
 import com.ocelot.opendevices.api.computer.desktop.Desktop;
 import com.ocelot.opendevices.api.computer.desktop.DesktopBackground;
+import com.ocelot.opendevices.api.computer.desktop.LocalDesktopBackground;
 import com.ocelot.opendevices.api.computer.window.Window;
 import com.ocelot.opendevices.api.computer.window.WindowManager;
 import com.ocelot.opendevices.api.device.process.DeviceProcess;
@@ -66,12 +67,27 @@ public class LaptopRenderer extends AbstractGui
 
         /* Desktop Background */
         {
-            DesktopBackground desktopBackground = desktop.getBackground();
-            if (!desktopBackground.isOnline() && desktopBackground.getLocation() != null)
+            DesktopBackground background = desktop.getBackground();
+            switch (background.getType())
             {
-                textureManager.bindTexture(desktopBackground.getLocation());
-                RenderUtil.drawRectWithTexture(posX, posY, desktopBackground.getU(), desktopBackground.getV(), screenWidth, screenHeight, desktopBackground.getWidth(), desktopBackground.getHeight(), desktopBackground.getImageWidth(), desktopBackground.getImageHeight());
+                case RESOURCE_LOCATION:
+                {
+                    LocalDesktopBackground localDesktopBackground = (LocalDesktopBackground) background;
+                    textureManager.bindTexture(localDesktopBackground.getLocation());
+                    RenderUtil.drawRectWithTexture(posX, posY, localDesktopBackground.getU(), localDesktopBackground.getV(), screenWidth, screenHeight, localDesktopBackground.getWidth(), localDesktopBackground.getHeight(), localDesktopBackground.getImageWidth(), localDesktopBackground.getImageHeight());
+                    break;
+                }
+                case ONLINE:
+                {
+                    break;
+                }
             }
+            //            DesktopBackgroundOld desktopBackground = desktop.getBackgroundOld();
+            //            if (!desktopBackground.isOnline() && desktopBackground.getLocation() != null)
+            //            {
+            //                textureManager.bindTexture(desktopBackground.getLocation());
+            //                RenderUtil.drawRectWithTexture(posX, posY, desktopBackground.getU(), desktopBackground.getV(), screenWidth, screenHeight, desktopBackground.getWidth(), desktopBackground.getHeight(), desktopBackground.getImageWidth(), desktopBackground.getImageHeight());
+            //            }
             //            else if (desktopBackground.getUrl() != null)
             //            {
             //                 TODO download and render online image

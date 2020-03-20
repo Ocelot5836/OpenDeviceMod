@@ -6,7 +6,6 @@ import com.ocelot.opendevices.api.DeviceRegistries;
 import com.ocelot.opendevices.api.IconManager;
 import com.ocelot.opendevices.api.application.Application;
 import com.ocelot.opendevices.api.application.ApplicationManager;
-import com.ocelot.opendevices.api.computer.desktop.DesktopManager;
 import com.ocelot.opendevices.api.computer.settings.LaptopSetting;
 import com.ocelot.opendevices.api.device.ApplicationInputHandler;
 import com.ocelot.opendevices.api.device.ApplicationWindowRenderer;
@@ -87,7 +86,6 @@ public class OpenDevices
     private void init(FMLCommonSetupEvent event)
     {
         DeviceMessages.init();
-        DesktopManager.registerBackgroundLocation(DeviceConstants.DEFAULT_BACKGROUND_LOCATION);
     }
 
     private void initClient(FMLClientSetupEvent event)
