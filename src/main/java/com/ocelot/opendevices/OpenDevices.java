@@ -13,6 +13,7 @@ import com.ocelot.opendevices.api.device.DeviceSerializer;
 import com.ocelot.opendevices.api.device.process.DeviceProcess;
 import com.ocelot.opendevices.api.device.process.ProcessInputRegistry;
 import com.ocelot.opendevices.api.task.Task;
+import com.ocelot.opendevices.api.util.OnlineImageCache;
 import com.ocelot.opendevices.core.EventHandler;
 import com.ocelot.opendevices.core.computer.process.TestProcess;
 import com.ocelot.opendevices.core.registry.ApplicationRegistryEntry;
@@ -105,6 +106,7 @@ public class OpenDevices
         if (event.getWorld().isRemote())
         {
             LaptopTileEntityRenderer.INSTANCE.delete();
+            OnlineImageCache.clear();
         }
     }
 
