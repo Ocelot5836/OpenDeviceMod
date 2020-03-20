@@ -31,8 +31,9 @@ public class OnlineImageCache
     private static final File cacheFolder = new File(Minecraft.getInstance().gameDir, OpenDevices.MOD_ID + "-online-image-cache");
     private static final Map<String, Pair<File, Long>> cache = new HashMap<>();
 
-    private static void cache(String hash, NativeImage image, long expires)
+    private static void writeCache(String hash, NativeImage image, long expires)
     {
+        OpenDevices.LOGGER.debug("Writing image with hash '" + hash + "' to cache");
         try
         {
             File cacheFile = new File(cacheFolder, hash);
@@ -53,6 +54,7 @@ public class OnlineImageCache
     {
         if (!cache.containsKey(hash))
             return null;
+        OpenDevices.LOGGER.debug("Reading image with hash '" + hash + "' from cache");
         try
         {
             FileInputStream stream = new FileInputStream(cache.get(hash).getLeft());
@@ -91,7 +93,9 @@ public class OnlineImageCache
     {
         if (requestedUrls.contains(url))
             return;
+        requestedUrls.add(url);
         String hash = DigestUtils.md5Hex(url);
+        OpenDevices.LOGGER.debug("Requesting Online Image from '" + url + "' with hash '" + hash + "'");
         if (cacheTime == 0 || !hasExpired(url))
         {
             ResourceLocation location = new ResourceLocation(hash);
@@ -100,7 +104,6 @@ public class OnlineImageCache
                 NativeImage image = readCache(hash);
                 if (image != null)
                 {
-                    requestedUrls.add(url);
                     Minecraft.getInstance().execute(() ->
                     {
                         Minecraft.getInstance().getTextureManager().loadTexture(location, new DynamicTexture(image));
@@ -117,16 +120,16 @@ public class OnlineImageCache
             else
             {
                 callback.accept(location);
+                requestedUrls.remove(url);
                 return;
             }
         }
-        requestedUrls.add(url);
         OnlineRequest.make(url, inputStream ->
         {
             try
             {
                 NativeImage image = NativeImage.read(inputStream);
-                cache(hash, image, System.currentTimeMillis() + cacheTime);
+                writeCache(hash, image, System.currentTimeMillis() + cacheTime);
                 Minecraft.getInstance().execute(() ->
                 {
                     ResourceLocation location = new ResourceLocation(hash);
@@ -157,11 +160,27 @@ public class OnlineImageCache
      */
     public static void delete(String url)
     {
+        OpenDevices.LOGGER.debug("Deleting Online Image '" + url + "'");
+
         String hash = DigestUtils.md5Hex(url);
         if (cache.containsKey(hash))
         {
             cache.remove(hash);
             Minecraft.getInstance().execute(() -> Minecraft.getInstance().getTextureManager().deleteTexture(new ResourceLocation(hash)));
         }
+    }
+
+    /**
+     * Deletes all cached images and textures.
+     */
+    public static void clear()
+    {
+        OpenDevices.LOGGER.debug("Clearing Online Image Cache");
+
+        Minecraft.getInstance().execute(() ->
+        {
+            cache.forEach((hash, pair) -> Minecraft.getInstance().getTextureManager().deleteTexture(new ResourceLocation(hash)));
+            cache.clear();
+        });
     }
 }

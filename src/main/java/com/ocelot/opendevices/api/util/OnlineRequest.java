@@ -23,7 +23,12 @@ import java.util.function.Consumer;
  */
 public class OnlineRequest
 {
-    private static final ExecutorService POOL = Executors.newCachedThreadPool(r -> new Thread(r, "Online Request Thread"));
+    private static final ExecutorService POOL = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), r -> new Thread(r, "Online Request Thread"));
+
+    static
+    {
+        Runtime.getRuntime().addShutdownHook(new Thread(POOL::shutdown));
+    }
 
     private OnlineRequest() {}
 
@@ -56,7 +61,7 @@ public class OnlineRequest
     }
 
     /**
-     * Adds a request to the queue.99
+     * Adds a request to the queue.
      *
      * @param url the URL to make a request to
      * @return A {@link Future} representing the resulting task of this.
