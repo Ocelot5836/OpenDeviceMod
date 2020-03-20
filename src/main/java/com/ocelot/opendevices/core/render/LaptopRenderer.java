@@ -94,7 +94,7 @@ public class LaptopRenderer extends AbstractGui
             }
         }
 
-        /* Applications */
+        /* Windows */
         Window[] windows = windowManager.getWindows();
         for (Window window : windows)
         {
@@ -118,9 +118,10 @@ public class LaptopRenderer extends AbstractGui
         {
             textureManager.bindTexture(DeviceConstants.WINDOW_LOCATION);
             int color = computer.readSetting(LaptopSettings.TASKBAR_COLOR);
+            int highlightColor = computer.readSetting(LaptopSettings.TASKBAR_HIGHLIGHT_COLOR);
             int height = taskBar.getHeight();
 
-            RenderUtil.glColor(0xff000000 | color);
+            RenderUtil.glColor(color);
             {
                 /* Corners */
                 RenderUtil.drawRectWithTexture(posX, posY + screenHeight - height, 0, 15, 1, 1, 1, 1);
@@ -142,14 +143,18 @@ public class LaptopRenderer extends AbstractGui
             /* Window Icons */
             {
                 Window[] displayedWindows = taskBar.getDisplayedWindows();
-                int size = taskBar.isEnlarged() ? 16 : 8;
+                int size = taskBar.isEnlarged() ? 2 : 1;
 
                 for (int i = 0; i < displayedWindows.length; i++)
                 {
                     Window window = displayedWindows[i];
                     TextureAtlasSprite icon = IconManager.getWindowIcon(window.getIcon());
                     textureManager.bindTexture(IconManager.LOCATION_WINDOW_ICONS_TEXTURE);
-                    RenderUtil.drawRectWithTexture(posX + 4 + (size + 4) * i, posY + screenHeight - taskBar.getHeight() + 4, size, size, icon);
+                    RenderUtil.drawRectWithTexture(posX + 4 + (8 * size + 5) * i, posY + screenHeight - taskBar.getHeight() + 4, 8 * size, 8 * size, icon);
+                    textureManager.bindTexture(DeviceConstants.WINDOW_LOCATION);
+                    RenderUtil.glColor(highlightColor);
+                    RenderUtil.drawRectWithTexture(posX + 2 + (8 * size + 5) * i, posY + screenHeight - taskBar.getHeight() + 2, 3, 15, 12 * size, 12 * size, 12, 12, 256, 256);
+                    GlStateManager.color4f(1, 1, 1, 1);
                 }
             }
         }
@@ -162,13 +167,14 @@ public class LaptopRenderer extends AbstractGui
 
         /* Task bar */
         {
-            int size = taskBar.isEnlarged() ? 16 : 8;
-            int i = 0;
+            Window[] displayedWindows = taskBar.getDisplayedWindows();
+            int size = taskBar.isEnlarged() ? 2 : 1;
 
-            for (Window window : taskBar.getDisplayedWindows())
+            for (int i = 0; i < displayedWindows.length; i++)
             {
+                Window window = displayedWindows[i];
                 String title = window.getTitle();
-                if (!StringUtils.isEmpty(title) && RenderUtil.isMouseInside(mouseX, mouseY, posX + 4 + (size + 4) * i, posY + screenHeight - taskBar.getHeight() + 4, posX + 4 + (size + 4) * i + size, posY + screenHeight - taskBar.getHeight() + 4 + size))
+                if (!StringUtils.isEmpty(title) && RenderUtil.isMouseInside(mouseX, mouseY, posX + 2 + (8 * size + 5) * i, posY + screenHeight - taskBar.getHeight() + 2, posX + 2 + (8 * size + 5) * i + 12 * size, posY + screenHeight - taskBar.getHeight() + 2 + 12 * size))
                 {
                     List<String> tooltip = new ArrayList<>();
                     tooltip.add(title);
@@ -181,7 +187,6 @@ public class LaptopRenderer extends AbstractGui
                     renderer.renderTooltip(tooltip, mouseX, mouseY);
                     return;
                 }
-                i++;
             }
         }
 
@@ -206,7 +211,7 @@ public class LaptopRenderer extends AbstractGui
     {
         Minecraft minecraft = Minecraft.getInstance();
         minecraft.getTextureManager().bindTexture(DeviceConstants.WINDOW_LOCATION);
-        GlStateManager.color4f(((color >> 16) & 0xff) / 255f, ((color >> 8) & 0xff) / 255f, (color & 0xff) / 255f, 1);
+        RenderUtil.glColor(color);
 
         float windowX = window.getInterpolatedX(partialTicks) + window.getWidth() - DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE - 1;
         float windowY = window.getInterpolatedY(partialTicks) + 1;
@@ -221,7 +226,7 @@ public class LaptopRenderer extends AbstractGui
     private static void renderWindow(int posX, int posY, Window window, int color, int borderColor, float partialTicks)
     {
         Minecraft.getInstance().getTextureManager().bindTexture(DeviceConstants.WINDOW_LOCATION);
-        RenderUtil.glColor(0xff000000 | borderColor);
+        RenderUtil.glColor(borderColor);
 
         float windowX = window.getInterpolatedX(partialTicks);
         float windowY = window.getInterpolatedY(partialTicks);
@@ -241,7 +246,7 @@ public class LaptopRenderer extends AbstractGui
         RenderUtil.drawRectWithTexture(posX + windowX, posY + windowY + 13, 0, 13, 1, windowHeight - 14, 1, 1);
 
         /* Center */
-        RenderUtil.glColor(0xff000000 | color);
+        RenderUtil.glColor(color);
         RenderUtil.drawRectWithTexture(posX + windowX + 1, posY + windowY + 13, 1, 13, windowWidth - 2, windowHeight - 14, 13, 1);
 
         GlStateManager.color4f(1, 1, 1, 1);

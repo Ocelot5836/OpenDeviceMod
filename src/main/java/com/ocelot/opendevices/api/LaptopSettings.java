@@ -19,18 +19,18 @@ public class LaptopSettings
     @LaptopSetting.Register(OpenDevices.MOD_ID + ":desktop_text_color")
     public static final LaptopSetting<Integer> DESKTOP_TEXT_COLOR = new IntegerLaptopSetting(0xFFFFFFFF);
     @LaptopSetting.Register(OpenDevices.MOD_ID + ":taskbar_color")
-    public static final LaptopSetting<Integer> TASKBAR_COLOR = new IntegerLaptopSetting(0x45494D);
+    public static final LaptopSetting<Integer> TASKBAR_COLOR = new IntegerLaptopSetting(0xFF45494D);
     @LaptopSetting.Register(OpenDevices.MOD_ID + ":taskbar_highlight_color")
-    public static final LaptopSetting<Integer> TASKBAR_HIGHLIGHT_COLOR = new IntegerLaptopSetting(0xBDC6FF);
+    public static final LaptopSetting<Integer> TASKBAR_HIGHLIGHT_COLOR = new IntegerLaptopSetting(0xFFBDC6FF);
     @LaptopSetting.Register(OpenDevices.MOD_ID + ":taskbar_enlarged")
     public static final LaptopSetting<Boolean> TASKBAR_ENLARGED = new BooleanLaptopSetting(false);
 
     @LaptopSetting.Register(OpenDevices.MOD_ID + ":window_color")
-    public static final LaptopSetting<Integer> WINDOW_COLOR = new IntegerLaptopSetting(0x45494D);
+    public static final LaptopSetting<Integer> WINDOW_COLOR = new IntegerLaptopSetting(0xFF45494D);
     @LaptopSetting.Register(OpenDevices.MOD_ID + ":focused_window_color")
-    public static final LaptopSetting<Integer> FOCUSED_WINDOW_COLOR = new IntegerLaptopSetting(0xFF00FF);
+    public static final LaptopSetting<Integer> FOCUSED_WINDOW_COLOR = new IntegerLaptopSetting(0xFFFF00FF);
     @LaptopSetting.Register(OpenDevices.MOD_ID + ":window_button_color")
-    public static final LaptopSetting<Integer> WINDOW_BUTTON_COLOR = new IntegerLaptopSetting(0xCCCCCC);
+    public static final LaptopSetting<Integer> WINDOW_BUTTON_COLOR = new IntegerLaptopSetting(0xFFCCCCCC);
     @LaptopSetting.Register(OpenDevices.MOD_ID + ":scroll_speed")
     public static final LaptopSetting<Double> SCROLL_SPEED = new DoubleLaptopSetting(8.0);
 

@@ -245,28 +245,21 @@ public class LaptopScreen extends Screen implements TooltipRenderer
         }
         else
         {
-            int size = taskBar.isEnlarged() ? 16 : 8;
-            int i = 0;
+            Window[] displayedWindows = taskBar.getDisplayedWindows();
+            int size = taskBar.isEnlarged() ? 2 : 1;
 
             Window hoveredWindow = null;
-            for (Window window : taskBar.getDisplayedWindows())
+            for (int i = 0; i < displayedWindows.length; i++)
             {
-                if (RenderUtil.isMouseInside(mouseX - (this.posX + DeviceConstants.LAPTOP_GUI_BORDER), mouseY - (this.posY + DeviceConstants.LAPTOP_GUI_BORDER), 4 + (size + 4) * i, DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4, 4 + (size + 4) * i + size, DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 4 + size))
+                Window window = displayedWindows[i];
+                if (RenderUtil.isMouseInside(mouseX - (this.posX + DeviceConstants.LAPTOP_GUI_BORDER), mouseY - (this.posY + DeviceConstants.LAPTOP_GUI_BORDER), 2 + (8 * size + 5) * i, DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 2, 2 + (8 * size + 5) * i + 12 * size, DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 2 + 12 * size))
                 {
                     hoveredWindow = window;
                     break;
                 }
-                i++;
             }
 
-            if (hoveredWindow != null)
-            {
-                windowManager.focusWindow(hoveredWindow.getId());
-            }
-            else
-            {
-                windowManager.focusWindow(null);
-            }
+            windowManager.focusWindow(hoveredWindow != null ? hoveredWindow.getId() : null);
         }
 
         return super.mouseClicked(mouseX, mouseY, mouseButton);
