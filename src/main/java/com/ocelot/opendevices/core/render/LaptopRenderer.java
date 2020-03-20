@@ -4,11 +4,14 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.DeviceRegistries;
+import com.ocelot.opendevices.api.IconManager;
 import com.ocelot.opendevices.api.LaptopSettings;
 import com.ocelot.opendevices.api.computer.Computer;
+import com.ocelot.opendevices.api.computer.TaskBar;
 import com.ocelot.opendevices.api.computer.desktop.Desktop;
 import com.ocelot.opendevices.api.computer.desktop.DesktopBackground;
-import com.ocelot.opendevices.api.computer.TaskBar;
+import com.ocelot.opendevices.api.computer.desktop.LocalDesktopBackground;
+import com.ocelot.opendevices.api.computer.desktop.OnlineDesktopBackground;
 import com.ocelot.opendevices.api.computer.window.Window;
 import com.ocelot.opendevices.api.computer.window.WindowManager;
 import com.ocelot.opendevices.api.device.process.DeviceProcess;
@@ -19,7 +22,6 @@ import com.ocelot.opendevices.api.util.TooltipRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.MissingTextureSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -66,32 +68,61 @@ public class LaptopRenderer extends AbstractGui
 
         /* Desktop Background */
         {
-            DesktopBackground desktopBackground = desktop.getBackground();
-            if (!desktopBackground.isOnline() && desktopBackground.getLocation() != null)
+            DesktopBackground background = desktop.getBackground();
+            switch (background.getType())
             {
-                textureManager.bindTexture(desktopBackground.getLocation());
-                RenderUtil.drawRectWithTexture(posX, posY, desktopBackground.getU(), desktopBackground.getV(), screenWidth, screenHeight, desktopBackground.getWidth(), desktopBackground.getHeight(), desktopBackground.getImageWidth(), desktopBackground.getImageHeight());
+                case RESOURCE_LOCATION:
+                {
+                    LocalDesktopBackground localDesktopBackground = (LocalDesktopBackground) background;
+                    textureManager.bindTexture(localDesktopBackground.getLocation());
+                    RenderUtil.drawRectWithTexture(posX, posY, localDesktopBackground.getU(), localDesktopBackground.getV(), screenWidth, screenHeight, localDesktopBackground.getWidth(), localDesktopBackground.getHeight(), localDesktopBackground.getImageWidth(), localDesktopBackground.getImageHeight());
+                    break;
+                }
+                case ONLINE:
+                {
+                    OnlineDesktopBackground onlineDesktopBackground = (OnlineDesktopBackground) background;
+                    ResourceLocation location = onlineDesktopBackground.getLocation();
+                    if (location != null)
+                    {
+                        textureManager.bindTexture(location);
+                        RenderUtil.drawRectWithTexture(posX, posY, 0, 0, screenWidth, screenHeight, 1, 1, 1, 1);
+                    }
+                    else
+                    {
+                        onlineDesktopBackground.request();
+                    }
+                    break;
+                }
             }
+            //            DesktopBackgroundOld desktopBackground = desktop.getBackgroundOld();
+            //            if (!desktopBackground.isOnline() && desktopBackground.getLocation() != null)
+            //            {
+            //                textureManager.bindTexture(desktopBackground.getLocation());
+            //                RenderUtil.drawRectWithTexture(posX, posY, desktopBackground.getU(), desktopBackground.getV(), screenWidth, screenHeight, desktopBackground.getWidth(), desktopBackground.getHeight(), desktopBackground.getImageWidth(), desktopBackground.getImageHeight());
+            //            }
             //            else if (desktopBackground.getUrl() != null)
             //            {
             //                 TODO download and render online image
             //            }
         }
 
-        /* Version Text */
-        if (DeviceConstants.DEVELOPER_MODE)
+        /* Desktop Text */
         {
-            fontRenderer.drawStringWithShadow(I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.dev_version", MOD_VERSION), posX + 5, posY + 5, computer.readSetting(LaptopSettings.DESKTOP_TEXT_COLOR));
-            fontRenderer.drawStringWithShadow(Minecraft.getDebugFPS() + " FPS", posX + 5, posY + 18, computer.readSetting(LaptopSettings.DESKTOP_TEXT_COLOR));
-            fontRenderer.drawStringWithShadow(computer.getProcessIds().size() + " Processes Running", posX + 5, posY + 31, computer.readSetting(LaptopSettings.DESKTOP_TEXT_COLOR));
-            fontRenderer.drawStringWithShadow(computer.getWindowManager().getWindows().length + " Windows Opened", posX + 5, posY + 44, computer.readSetting(LaptopSettings.DESKTOP_TEXT_COLOR));
-        }
-        else
-        {
-            fontRenderer.drawStringWithShadow(I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.version", MOD_VERSION), posX + 5, posY + 5, computer.readSetting(LaptopSettings.DESKTOP_TEXT_COLOR));
+            int color = computer.readSetting(LaptopSettings.DESKTOP_TEXT_COLOR);
+            if (DeviceConstants.DEVELOPER_MODE)
+            {
+                fontRenderer.drawStringWithShadow(I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.dev_version", MOD_VERSION), posX + 5, posY + 5, color);
+                fontRenderer.drawStringWithShadow(I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.dev_fps", Minecraft.getDebugFPS()), posX + 5, posY + 18, color);
+                fontRenderer.drawStringWithShadow(I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.dev_processes", computer.getProcessIds().size()), posX + 5, posY + 31, color);
+                fontRenderer.drawStringWithShadow(I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.dev_windows", computer.getWindowManager().getWindows().length), posX + 5, posY + 44, color);
+            }
+            else
+            {
+                fontRenderer.drawStringWithShadow(I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.version", MOD_VERSION), posX + 5, posY + 5, color);
+            }
         }
 
-        /* Applications */
+        /* Windows */
         Window[] windows = windowManager.getWindows();
         for (Window window : windows)
         {
@@ -115,9 +146,10 @@ public class LaptopRenderer extends AbstractGui
         {
             textureManager.bindTexture(DeviceConstants.WINDOW_LOCATION);
             int color = computer.readSetting(LaptopSettings.TASKBAR_COLOR);
+            int highlightColor = computer.readSetting(LaptopSettings.TASKBAR_HIGHLIGHT_COLOR);
             int height = taskBar.getHeight();
 
-            RenderUtil.glColor(0xff000000 | color);
+            RenderUtil.glColor(color);
             {
                 /* Corners */
                 RenderUtil.drawRectWithTexture(posX, posY + screenHeight - height, 0, 15, 1, 1, 1, 1);
@@ -136,18 +168,21 @@ public class LaptopRenderer extends AbstractGui
             }
             GlStateManager.color4f(1, 1, 1, 1);
 
+            /* Window Icons */
             {
-                int size = taskBar.isEnlarged() ? 16 : 8;
-                int i = 0;
+                Window[] displayedWindows = taskBar.getDisplayedWindows();
+                int size = taskBar.isEnlarged() ? 2 : 1;
 
-                for (Window window : taskBar.getDisplayedWindows())
+                for (int i = 0; i < displayedWindows.length; i++)
                 {
-                    // TextureAtlasSprite icon = ApplicationManager.getAppIcon(window.getContentId());
-                    // textureManager.bindTexture(ApplicationManager.LOCATION_APP_ICON_TEXTURE);
-                    TextureAtlasSprite icon = Minecraft.getInstance().getTextureMap().getAtlasSprite("minecraft:item/paper");
-                    textureManager.bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
-                    RenderUtil.drawRectWithTexture(posX + 4 + (size + 4) * i, posY + screenHeight - taskBar.getHeight() + 4, size, size, icon);
-                    i++;
+                    Window window = displayedWindows[i];
+                    TextureAtlasSprite icon = IconManager.getWindowIcon(window.getIcon());
+                    textureManager.bindTexture(IconManager.LOCATION_WINDOW_ICONS_TEXTURE);
+                    RenderUtil.drawRectWithTexture(posX + 4 + (8 * size + 5) * i, posY + screenHeight - taskBar.getHeight() + 4, 8 * size, 8 * size, icon);
+                    textureManager.bindTexture(DeviceConstants.WINDOW_LOCATION);
+                    RenderUtil.glColor(highlightColor);
+                    RenderUtil.drawRectWithTexture(posX + 2 + (8 * size + 5) * i, posY + screenHeight - taskBar.getHeight() + 2, 3, 15, 12 * size, 12 * size, 12, 12, 256, 256);
+                    GlStateManager.color4f(1, 1, 1, 1);
                 }
             }
         }
@@ -160,13 +195,14 @@ public class LaptopRenderer extends AbstractGui
 
         /* Task bar */
         {
-            int size = taskBar.isEnlarged() ? 16 : 8;
-            int i = 0;
+            Window[] displayedWindows = taskBar.getDisplayedWindows();
+            int size = taskBar.isEnlarged() ? 2 : 1;
 
-            for (Window window : taskBar.getDisplayedWindows())
+            for (int i = 0; i < displayedWindows.length; i++)
             {
+                Window window = displayedWindows[i];
                 String title = window.getTitle();
-                if (!StringUtils.isEmpty(title) && RenderUtil.isMouseInside(mouseX, mouseY, posX + 4 + (size + 4) * i, posY + screenHeight - taskBar.getHeight() + 4, posX + 4 + (size + 4) * i + size, posY + screenHeight - taskBar.getHeight() + 4 + size))
+                if (!StringUtils.isEmpty(title) && RenderUtil.isMouseInside(mouseX, mouseY, posX + 2 + (8 * size + 5) * i, posY + screenHeight - taskBar.getHeight() + 2, posX + 2 + (8 * size + 5) * i + 12 * size, posY + screenHeight - taskBar.getHeight() + 2 + 12 * size))
                 {
                     List<String> tooltip = new ArrayList<>();
                     tooltip.add(title);
@@ -179,7 +215,6 @@ public class LaptopRenderer extends AbstractGui
                     renderer.renderTooltip(tooltip, mouseX, mouseY);
                     return;
                 }
-                i++;
             }
         }
 
@@ -204,7 +239,7 @@ public class LaptopRenderer extends AbstractGui
     {
         Minecraft minecraft = Minecraft.getInstance();
         minecraft.getTextureManager().bindTexture(DeviceConstants.WINDOW_LOCATION);
-        GlStateManager.color4f(((color >> 16) & 0xff) / 255f, ((color >> 8) & 0xff) / 255f, (color & 0xff) / 255f, 1);
+        RenderUtil.glColor(color);
 
         float windowX = window.getInterpolatedX(partialTicks) + window.getWidth() - DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE - 1;
         float windowY = window.getInterpolatedY(partialTicks) + 1;
@@ -219,7 +254,7 @@ public class LaptopRenderer extends AbstractGui
     private static void renderWindow(int posX, int posY, Window window, int color, int borderColor, float partialTicks)
     {
         Minecraft.getInstance().getTextureManager().bindTexture(DeviceConstants.WINDOW_LOCATION);
-        RenderUtil.glColor(0xff000000 | borderColor);
+        RenderUtil.glColor(borderColor);
 
         float windowX = window.getInterpolatedX(partialTicks);
         float windowY = window.getInterpolatedY(partialTicks);
@@ -239,7 +274,7 @@ public class LaptopRenderer extends AbstractGui
         RenderUtil.drawRectWithTexture(posX + windowX, posY + windowY + 13, 0, 13, 1, windowHeight - 14, 1, 1);
 
         /* Center */
-        RenderUtil.glColor(0xff000000 | color);
+        RenderUtil.glColor(color);
         RenderUtil.drawRectWithTexture(posX + windowX + 1, posY + windowY + 13, 1, 13, windowWidth - 2, windowHeight - 14, 13, 1);
 
         GlStateManager.color4f(1, 1, 1, 1);

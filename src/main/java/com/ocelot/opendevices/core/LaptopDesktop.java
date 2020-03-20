@@ -1,9 +1,10 @@
 package com.ocelot.opendevices.core;
 
-import com.ocelot.opendevices.OpenDevices;
+import com.ocelot.opendevices.api.DeviceDesktopBackgrounds;
 import com.ocelot.opendevices.api.computer.desktop.Desktop;
 import com.ocelot.opendevices.api.computer.desktop.DesktopBackground;
-import com.ocelot.opendevices.api.computer.desktop.DesktopManager;
+import com.ocelot.opendevices.api.computer.desktop.DesktopBackgroundType;
+import com.ocelot.opendevices.core.computer.desktop.LaptopOnlineDesktopBackground;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.INBTSerializable;
 
@@ -11,18 +12,17 @@ import javax.annotation.Nullable;
 
 public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
 {
-    // TODO implement a good desktop background
-    private LaptopTileEntity laptop;
     private DesktopBackground background;
 
-    LaptopDesktop(LaptopTileEntity laptop)
+    public LaptopDesktop()
     {
-        this.laptop = laptop;
-        this.background = DesktopBackground.DEFAULT.copy();
+        this.background = DeviceDesktopBackgrounds.DEFAULT.get();
+        this.background = new LaptopOnlineDesktopBackground("https://api.battlefieldsmc.net/api/launcher/images/welcome.png");
     }
 
     public void update()
     {
+        this.background.update();
     }
 
     @Override
@@ -34,22 +34,14 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
     @Override
     public void setBackground(@Nullable DesktopBackground background)
     {
-        if (background == null)
-            background = DesktopBackground.DEFAULT.copy();
-
-        if (!background.isOnline() && !DesktopManager.isValidLocation(background.getLocation()))
-        {
-            OpenDevices.LOGGER.warn("Resource Location Desktop Backgrounds need to be registered on both the client and server!");
-            return;
-        }
-
-        this.background = background;
+        throw new UnsupportedOperationException("Not implemented");
     }
 
     @Override
     public CompoundNBT serializeNBT()
     {
         CompoundNBT nbt = new CompoundNBT();
+        nbt.putString("backgroundType", this.background.getType().getRegistryName());
         nbt.put("background", this.background.serializeNBT());
         return nbt;
     }
@@ -57,6 +49,6 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
     @Override
     public void deserializeNBT(CompoundNBT nbt)
     {
-        this.background.deserializeNBT(nbt.getCompound("background"));
+        this.background = DesktopBackgroundType.byName(nbt.getString("backgroundType")).apply(nbt.getCompound("background"));
     }
 }

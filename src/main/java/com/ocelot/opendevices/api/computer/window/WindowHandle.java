@@ -1,9 +1,10 @@
 package com.ocelot.opendevices.api.computer.window;
 
 import com.ocelot.opendevices.api.DeviceConstants;
-import com.ocelot.opendevices.api.device.process.DeviceProcess;
 import com.ocelot.opendevices.api.computer.TaskBar;
+import com.ocelot.opendevices.api.device.process.DeviceProcess;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nullable;
@@ -119,6 +120,19 @@ public class WindowHandle implements INBTSerializable<CompoundNBT>
         if (this.windowId != null)
         {
             this.windowManager.setWindowTitle(this.windowId, title);
+        }
+    }
+
+    /**
+     * Sets the icon of the window with the specified id to the specified icon sprite.
+     *
+     * @param icon The new icon for the window
+     */
+    public void setIcon(ResourceLocation icon)
+    {
+        if (this.windowId != null)
+        {
+            this.windowManager.setWindowIcon(this.windowId, icon);
         }
     }
 

@@ -4,7 +4,9 @@ import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.computer.Computer;
 import com.ocelot.opendevices.api.computer.desktop.Desktop;
 import com.ocelot.opendevices.api.util.RenderUtil;
+import net.minecraft.util.ResourceLocation;
 
+import javax.annotation.Nullable;
 import java.util.UUID;
 
 /**
@@ -87,6 +89,12 @@ public interface Window
      * @return The y size of this window including the borders
      */
     int getHeight();
+
+    /**
+     * @return The icon of this window or null for no custom icon
+     */
+    @Nullable
+    ResourceLocation getIcon();
 
     /**
      * Checks to see if the provided x and y is within this window.

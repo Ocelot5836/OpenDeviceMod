@@ -8,10 +8,7 @@ import com.ocelot.opendevices.api.device.process.DeviceProcess;
 import com.ocelot.opendevices.api.registry.ComponentBuilderBoardLayout;
 import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.core.RegistryCache;
-import com.ocelot.opendevices.core.registry.ApplicationRegistryEntry;
-import com.ocelot.opendevices.core.registry.ComponentBuilderBoardTexture;
-import com.ocelot.opendevices.core.registry.DeviceProcessRegistryEntry;
-import com.ocelot.opendevices.core.registry.TaskRegistryEntry;
+import com.ocelot.opendevices.core.registry.*;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
@@ -40,6 +37,8 @@ public class DeviceRegistries
     public static IForgeRegistry<DeviceProcessRegistryEntry> PROCESSES = null;
     public static IForgeRegistry<ApplicationRegistryEntry> APPLICATIONS = null;
     public static IForgeRegistry<DeviceSerializer<?>> DEVICE_SERIALIZERS = null;
+    public static IForgeRegistry<WindowIconRegistryEntry> WINDOW_ICONS = null;
+    public static IForgeRegistry<DesktopBackgroundRegistryEntry> DESKTOP_BACKGROUNDS = null;
 
     private static final RegistryCache<ComponentBuilderBoardTexture, Item> COMPONENT_BUILDER_BOARD_TEXTURES_CACHE;
 
@@ -70,6 +69,8 @@ public class DeviceRegistries
         makeRegistry("processes", DeviceProcessRegistryEntry.class).create();
         makeRegistry("applications", ApplicationRegistryEntry.class).create();
         makeRegistry("device_serializers", DeviceSerializer.class).create();
+        makeRegistry("window_icons", WindowIconRegistryEntry.class).create();
+        makeRegistry("desktop_backgrounds", DesktopBackgroundRegistryEntry.class).create();
 
         COMPONENT_BUILDER_BOARD_LAYOUTS = RegistryManager.ACTIVE.getRegistry(ComponentBuilderBoardLayout.class);
         COMPONENT_BUILDER_BOARD_TEXTURES = RegistryManager.ACTIVE.getRegistry(ComponentBuilderBoardTexture.class);
@@ -79,6 +80,8 @@ public class DeviceRegistries
         PROCESSES = RegistryManager.ACTIVE.getRegistry(DeviceProcessRegistryEntry.class);
         APPLICATIONS = RegistryManager.ACTIVE.getRegistry(ApplicationRegistryEntry.class);
         DEVICE_SERIALIZERS = RegistryManager.ACTIVE.getRegistry(DeviceSerializer.class);
+        WINDOW_ICONS = RegistryManager.ACTIVE.getRegistry(WindowIconRegistryEntry.class);
+        DESKTOP_BACKGROUNDS = RegistryManager.ACTIVE.getRegistry(DesktopBackgroundRegistryEntry.class);
     }
 
     /**

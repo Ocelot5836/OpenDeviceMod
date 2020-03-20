@@ -9,6 +9,7 @@ import com.ocelot.opendevices.core.computer.LaptopWindow;
 import com.ocelot.opendevices.core.task.*;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
 
@@ -191,6 +192,20 @@ public class LaptopWindowManager implements WindowManager, INBTSerializable<Comp
         return true;
     }
 
+    public boolean syncSetWindowIcon(UUID windowId, ResourceLocation icon)
+    {
+        LaptopWindow window = this.getWindow(windowId);
+
+        if (window == null)
+        {
+            OpenDevices.LOGGER.warn("Could not set icon of window with id '" + windowId + "' as it does not exist. Skipping!");
+            return false;
+        }
+
+        window.setIcon(icon);
+        return true;
+    }
+
     @Override
     public UUID openWindow(UUID processId)
     {
@@ -344,6 +359,22 @@ public class LaptopWindowManager implements WindowManager, INBTSerializable<Comp
             else
             {
                 TaskManager.sendToTracking(new SetWindowTitleTask(this.laptop.getAddress(), windowId, title), this.laptop.getWorld(), this.laptop.getPos());
+            }
+        }
+    }
+
+    @Override
+    public void setWindowIcon(UUID windowId, ResourceLocation icon)
+    {
+        if (this.syncSetWindowIcon(windowId, icon))
+        {
+            if (this.laptop.isClient())
+            {
+                TaskManager.sendToServer(new SetWindowIconTask(this.laptop.getAddress(), windowId, icon), TaskManager.TaskReceiver.NEARBY);
+            }
+            else
+            {
+                TaskManager.sendToTracking(new SetWindowIconTask(this.laptop.getAddress(), windowId, icon), this.laptop.getWorld(), this.laptop.getPos());
             }
         }
     }

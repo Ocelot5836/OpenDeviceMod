@@ -19,7 +19,7 @@ public class LaptopTaskBar implements TaskBar, INBTSerializable<CompoundNBT>
     private LaptopTileEntity laptop;
     private List<Window> openedWindows;
 
-    LaptopTaskBar(LaptopTileEntity laptop)
+    public LaptopTaskBar(LaptopTileEntity laptop)
     {
         this.laptop = laptop;
         this.openedWindows = new ArrayList<>();

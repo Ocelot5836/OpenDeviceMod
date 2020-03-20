@@ -61,6 +61,9 @@
 	"screen.opendevices.laptop.unknown_version": "Unknown",
 	"screen.opendevices.laptop.version": "Alpha v%s",
 	"screen.opendevices.laptop.dev_version": "Developer Version - %s",
+	"screen.opendevices.laptop.dev_fps": "%s FPS",
+	"screen.opendevices.laptop.dev_processes": "%s Processes Running",
+	"screen.opendevices.laptop.dev_windows": "%s Windows Opened",
 
 	"container.opendevices.component_builder": "Component Builder",
 	
