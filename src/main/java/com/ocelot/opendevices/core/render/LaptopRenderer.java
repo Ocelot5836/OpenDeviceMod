@@ -11,6 +11,7 @@ import com.ocelot.opendevices.api.computer.TaskBar;
 import com.ocelot.opendevices.api.computer.desktop.Desktop;
 import com.ocelot.opendevices.api.computer.desktop.DesktopBackground;
 import com.ocelot.opendevices.api.computer.desktop.LocalDesktopBackground;
+import com.ocelot.opendevices.api.computer.desktop.OnlineDesktopBackground;
 import com.ocelot.opendevices.api.computer.window.Window;
 import com.ocelot.opendevices.api.computer.window.WindowManager;
 import com.ocelot.opendevices.api.device.process.DeviceProcess;
@@ -79,6 +80,17 @@ public class LaptopRenderer extends AbstractGui
                 }
                 case ONLINE:
                 {
+                    OnlineDesktopBackground onlineDesktopBackground = (OnlineDesktopBackground) background;
+                    ResourceLocation location = onlineDesktopBackground.getLocation();
+                    if (location != null)
+                    {
+                        textureManager.bindTexture(location);
+                        RenderUtil.drawRectWithTexture(posX, posY, 0, 0, screenWidth, screenHeight, 1, 1, 1, 1);
+                    }
+                    else
+                    {
+                        onlineDesktopBackground.request();
+                    }
                     break;
                 }
             }

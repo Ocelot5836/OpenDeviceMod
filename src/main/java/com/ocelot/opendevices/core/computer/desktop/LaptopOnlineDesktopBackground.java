@@ -1,6 +1,7 @@
 package com.ocelot.opendevices.core.computer.desktop;
 
 import com.ocelot.opendevices.api.computer.desktop.OnlineDesktopBackground;
+import com.ocelot.opendevices.api.util.OnlineImageCache;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
@@ -12,10 +13,7 @@ public class LaptopOnlineDesktopBackground implements OnlineDesktopBackground
 {
     private String url;
     private ResourceLocation location;
-    private int width;
-    private int height;
     private long cacheTime;
-    private long expires;
 
     public LaptopOnlineDesktopBackground(CompoundNBT nbt)
     {
@@ -31,25 +29,13 @@ public class LaptopOnlineDesktopBackground implements OnlineDesktopBackground
     {
         this.url = url;
         this.location = null;
-        this.width = -1;
-        this.height = -1;
         this.cacheTime = cacheTime;
-        this.expires = -1;
     }
 
     @Override
     public void request()
     {
-        DistExecutor.runWhenOn(Dist.CLIENT, () -> () ->
-        {
-            // TODO tell cache to load image
-        });
-    }
-
-    @Override
-    public String getUrl()
-    {
-        return url;
+        DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> OnlineImageCache.request(this.url, this.cacheTime, loc -> this.location = loc, null));
     }
 
     @Nullable
@@ -57,24 +43,6 @@ public class LaptopOnlineDesktopBackground implements OnlineDesktopBackground
     public ResourceLocation getLocation()
     {
         return location;
-    }
-
-    @Override
-    public float getWidth()
-    {
-        return width;
-    }
-
-    @Override
-    public float getHeight()
-    {
-        return height;
-    }
-
-    @Override
-    public long getExpirationTime()
-    {
-        return expires;
     }
 
     @Override
@@ -96,9 +64,6 @@ public class LaptopOnlineDesktopBackground implements OnlineDesktopBackground
     @Override
     public void free()
     {
-        DistExecutor.runWhenOn(Dist.CLIENT, () -> () ->
-        {
-            // TODO tell cache to erase local
-        });
+        DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> OnlineImageCache.delete(this.url));
     }
 }

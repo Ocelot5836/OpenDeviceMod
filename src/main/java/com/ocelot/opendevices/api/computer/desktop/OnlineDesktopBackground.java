@@ -18,30 +18,10 @@ public interface OnlineDesktopBackground extends DesktopBackground, NativeResour
     void request();
 
     /**
-     * @return The URL of the desktop background texture
-     */
-    String getUrl();
-
-    /**
      * @return The location of the desktop background texture
      */
     @Nullable
     ResourceLocation getLocation();
-
-    /**
-     * @return The width of the texture
-     */
-    float getWidth();
-
-    /**
-     * @return The height of the texture
-     */
-    float getHeight();
-
-    /**
-     * @return The time when this image will next expire
-     */
-    long getExpirationTime();
 
     @Override
     default DesktopBackgroundType getType()

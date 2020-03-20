@@ -1,6 +1,7 @@
 package com.ocelot.opendevices.api.computer.desktop;
 
 import com.ocelot.opendevices.core.computer.desktop.LaptopLocalDesktopBackground;
+import com.ocelot.opendevices.core.computer.desktop.LaptopOnlineDesktopBackground;
 import net.minecraft.nbt.CompoundNBT;
 
 import java.util.HashMap;
@@ -15,7 +16,7 @@ import java.util.function.Function;
  */
 public enum DesktopBackgroundType implements Function<CompoundNBT, DesktopBackground>
 {
-    RESOURCE_LOCATION("resource_location", LaptopLocalDesktopBackground::new), ONLINE("online", null);
+    RESOURCE_LOCATION("resource_location", LaptopLocalDesktopBackground::new), ONLINE("online", LaptopOnlineDesktopBackground::new);
 
     private static final Map<String, DesktopBackgroundType> NAME_LOOKUP = new HashMap<>();
 

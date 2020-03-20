@@ -4,6 +4,7 @@ import com.ocelot.opendevices.api.DeviceDesktopBackgrounds;
 import com.ocelot.opendevices.api.computer.desktop.Desktop;
 import com.ocelot.opendevices.api.computer.desktop.DesktopBackground;
 import com.ocelot.opendevices.api.computer.desktop.DesktopBackgroundType;
+import com.ocelot.opendevices.core.computer.desktop.LaptopOnlineDesktopBackground;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.INBTSerializable;
 
@@ -16,6 +17,7 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
     public LaptopDesktop()
     {
         this.background = DeviceDesktopBackgrounds.DEFAULT.get();
+        this.background = new LaptopOnlineDesktopBackground("https://api.battlefieldsmc.net/api/launcher/images/welcome.png");
     }
 
     public void update()
