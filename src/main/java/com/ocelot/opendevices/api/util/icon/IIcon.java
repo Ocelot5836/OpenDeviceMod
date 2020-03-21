@@ -1,8 +1,10 @@
 package com.ocelot.opendevices.api.util.icon;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.util.RenderUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 
 /**
@@ -28,9 +30,14 @@ public interface IIcon
     int getV();
 
     /**
-     * @return The size of this icon
+     * @return The x size of this icon
      */
-    int getIconSize();
+    int getWidth();
+
+    /**
+     * @return The y size of this icon
+     */
+    int getHeight();
 
     /**
      * @return The amount of icons in the x
@@ -47,7 +54,7 @@ public interface IIcon
      */
     default int getTextureWidth()
     {
-        return this.getGridWidth() * this.getIconSize();
+        return this.getGridWidth() * this.getWidth();
     }
 
     /**
@@ -55,13 +62,13 @@ public interface IIcon
      */
     default int getTextureHeight()
     {
-        return this.getGridHeight() * this.getIconSize();
+        return this.getGridHeight() * this.getHeight();
     }
 
     /**
      * @return The index of this icon
      */
-    int ordinal();
+    int getIndex();
 
     /**
      * Renders this icon at the specified x and y.
@@ -73,7 +80,61 @@ public interface IIcon
     {
         GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         Minecraft.getInstance().getTextureManager().bindTexture(this.getIconLocation());
-        int size = this.getIconSize();
-        RenderUtil.drawRectWithTexture(x, y, this.getU(), this.getV(), size, size, size, size, this.getTextureWidth(), this.getTextureHeight());
+        RenderUtil.drawRectWithTexture(x, y, this.getU(), this.getV(), this.getWidth(), this.getHeight(), this.getWidth(), this.getHeight(), this.getTextureWidth(), this.getTextureHeight());
+    }
+
+    /**
+     * Serializes the icon to NBT.
+     *
+     * @param icon The icon to serialize
+     * @return The tag full of data
+     */
+    static CompoundNBT serializeNBT(IIcon icon)
+    {
+        CompoundNBT nbt = new CompoundNBT();
+        nbt.putInt("index", icon.getIndex());
+        nbt.putString("class", icon.getClass().getName());
+        return nbt;
+    }
+
+    /**
+     * Deserializes an icon from NBT.
+     *
+     * @param nbt The tag full of data
+     * @return The icon serialized or {@link MissingIcon#INSTANCE} if there was an error
+     */
+    static IIcon deserializeNBT(CompoundNBT nbt)
+    {
+        int index = nbt.getInt("index");
+        String className = nbt.getString("class");
+        try
+        {
+            Class<?> clazz = Class.forName(className);
+            if (!clazz.isEnum())
+                throw new IllegalArgumentException("Icon class '" + className + "' is not an enum.");
+            if (!IIcon.class.isAssignableFrom(clazz))
+                throw new IllegalArgumentException("Icon enum '" + className + "' does not implement IIcon.");
+
+            IIcon[] icons = (IIcon[]) clazz.getEnumConstants();
+            if (index < 0 || index >= icons.length)
+            {
+                OpenDevices.LOGGER.warn("Icon index '" + index + "' is out of bounds for enum '" + className + "'. Using first element.");
+                index = 0;
+            }
+
+            if (icons.length == 0)
+            {
+                OpenDevices.LOGGER.warn("No icons could be found for enum '" + className + "'. Using missing icon.");
+                return MissingIcon.INSTANCE;
+            }
+
+            return (IIcon) clazz.getEnumConstants()[index];
+        }
+        catch (Exception e)
+        {
+            OpenDevices.LOGGER.error("Could not read IIcon from NBT for '" + className + "' with id '" + index + "'. Using missing icon.", e);
+        }
+
+        return MissingIcon.INSTANCE;
     }
 }

@@ -1,6 +1,7 @@
 package com.ocelot.opendevices.api.util.icon;
 
 import com.ocelot.opendevices.OpenDevices;
+import com.ocelot.opendevices.api.computer.desktop.DesktopBackgroundType;
 import net.minecraft.util.ResourceLocation;
 
 /**
@@ -180,7 +181,13 @@ public enum Icons implements IIcon
     }
 
     @Override
-    public int getIconSize()
+    public int getWidth()
+    {
+        return ICON_SIZE;
+    }
+
+    @Override
+    public int getHeight()
     {
         return ICON_SIZE;
     }
@@ -195,5 +202,11 @@ public enum Icons implements IIcon
     public int getGridHeight()
     {
         return GRID_SIZE;
+    }
+
+    @Override
+    public int getIndex()
+    {
+        return this.ordinal();
     }
 }
