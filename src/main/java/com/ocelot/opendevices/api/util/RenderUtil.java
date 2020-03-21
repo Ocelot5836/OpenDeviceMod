@@ -51,7 +51,7 @@ public class RenderUtil
             double scale = framebufferScale == 0 ? window.getGuiScaleFactor() : framebufferScale;
             int frameHeight = framebufferHeight == 0 ? window.getFramebufferHeight() : framebufferHeight;
             enableScissor();
-            glScissor((int) (scissor.x * scale), (int) (frameHeight - scissor.y * scale - scissor.height * scale), (int) Math.max(0, scissor.width * scale), (int) Math.max(0, scissor.height * scale));
+            glScissor((int) (scissor.x * scale), (int) (frameHeight - (int) (scissor.y + scissor.height) * scale), (int) Math.max(0, scissor.width * scale), (int) Math.max(0, scissor.height * scale));
         }
         else
         {
@@ -75,7 +75,7 @@ public class RenderUtil
      * @param width  The x size of the rectangle
      * @param height The y size of the rectangle
      */
-    public static void pushScissor(double x, double y, double width, double height)
+    public static void pushScissor(float x, float y, float width, float height)
     {
         if (SCISSOR_STACK.size() > 0)
         {
@@ -291,12 +291,12 @@ public class RenderUtil
 
     private static class Scissor
     {
-        private double x;
-        private double y;
-        private double width;
-        private double height;
+        private float x;
+        private float y;
+        private float width;
+        private float height;
 
-        Scissor(double x, double y, double width, double height)
+        Scissor(float x, float y, float width, float height)
         {
             this.x = x;
             this.y = y;
