@@ -9,6 +9,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 
 import javax.annotation.Nullable;
+import java.util.concurrent.TimeUnit;
 
 public class LaptopOnlineDesktopBackground implements OnlineDesktopBackground
 {
@@ -24,14 +25,14 @@ public class LaptopOnlineDesktopBackground implements OnlineDesktopBackground
 
     public LaptopOnlineDesktopBackground(String url)
     {
-        this(url, 0);
+        this(url, TimeUnit.MILLISECONDS, 0);
     }
 
-    public LaptopOnlineDesktopBackground(String url, long cacheTime)
+    public LaptopOnlineDesktopBackground(String url, TimeUnit unit, long cacheTime)
     {
         this.url = url;
         this.location = null;
-        this.cacheTime = cacheTime;
+        this.cacheTime = unit.toMillis(cacheTime);
     }
 
     @Override
@@ -54,7 +55,7 @@ public class LaptopOnlineDesktopBackground implements OnlineDesktopBackground
     @Override
     public void request()
     {
-        DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> OnlineImageCache.request(this.url, this.cacheTime, loc -> this.location = loc, null));
+        DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> OnlineImageCache.request(this.url, TimeUnit.MILLISECONDS, this.cacheTime, (loc, cachedImage) -> this.location = loc, null));
     }
 
     @Nullable
