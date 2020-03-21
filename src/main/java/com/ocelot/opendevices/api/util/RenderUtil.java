@@ -149,6 +149,48 @@ public class RenderUtil
         drawRectWithTexture(x, y, 0, sprite.getMinU(), sprite.getMinV(), width, height, sprite.getMaxU() - sprite.getMinU(), sprite.getMaxV() - sprite.getMinV(), 1, 1);
     }
 
+    public static void drawRectWithTexture(float x, float y, float u, float v, float width, float height, float textureWidth, float textureHeight, int sourceWidth, int sourceHeight, ImageFit fit)
+    {
+        drawRectWithTexture(x, y, 0, u, v, width, height, textureWidth, textureHeight, sourceWidth, sourceHeight, fit);
+    }
+
+    // TODO finish the last 3 cases
+    public static void drawRectWithTexture(float x, float y, float z, float u, float v, float width, float height, float textureWidth, float textureHeight, int sourceWidth, int sourceHeight, ImageFit fit)
+    {
+        switch (fit)
+        {
+            case FILL:
+            {
+                break;
+            }
+            case FIT:
+            {
+                break;
+            }
+            case STRETCH:
+            {
+                drawRectWithTexture(x, y, z, u, v, width, height, textureWidth, textureHeight, sourceWidth, sourceHeight);
+                break;
+            }
+            case TILE:
+            {
+                drawRectWithTexture(x, y, z, u, v, width, height, textureWidth / (textureWidth / height), textureHeight / (textureHeight / width), sourceWidth, sourceHeight);
+                break;
+            }
+            case CENTER:
+            {
+                float x1 = (width - textureWidth) / 2;
+                float y1 = (height - textureHeight) / 2;
+                drawRectWithTexture(x + Math.max(0, x1), y + Math.max(0, y1), z, u - Math.min(0, x1), v - Math.min(0, y1), Math.min(width, textureWidth), Math.min(height, textureHeight), Math.min(width, textureWidth), Math.min(height, textureHeight), sourceWidth, sourceHeight);
+                break;
+            }
+            case SPAN:
+            {
+                break;
+            }
+        }
+    }
+
     public static void drawRectWithTexture(float x, float y, float z, float u, float v, float width, float height, float textureWidth, float textureHeight, int sourceWidth, int sourceHeight)
     {
         float scaleWidth = 1.0F / sourceWidth;
