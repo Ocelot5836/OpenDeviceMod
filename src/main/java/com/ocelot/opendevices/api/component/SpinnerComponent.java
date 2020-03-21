@@ -139,7 +139,7 @@ public class SpinnerComponent extends StandardComponent
      *
      * @param x The new x position
      */
-    public SpinnerComponent setX(int x)
+    public SpinnerComponent setX(float x)
     {
         this.x = x;
         this.getClientSerializer().markDirty("x");
@@ -151,7 +151,7 @@ public class SpinnerComponent extends StandardComponent
      *
      * @param y The new y position
      */
-    public SpinnerComponent setY(int y)
+    public SpinnerComponent setY(float y)
     {
         this.y = y;
         this.getClientSerializer().markDirty("y");
@@ -164,7 +164,7 @@ public class SpinnerComponent extends StandardComponent
      * @param x The new x position
      * @param y The new y position
      */
-    public SpinnerComponent setPosition(int x, int y)
+    public SpinnerComponent setPosition(float x, float y)
     {
         this.x = x;
         this.y = y;

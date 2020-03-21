@@ -345,7 +345,7 @@ public class TextComponent extends StandardComponent
      *
      * @param x The new x position
      */
-    public TextComponent setX(int x)
+    public TextComponent setX(float x)
     {
         this.x = x;
         this.getClientSerializer().markDirty("x");
@@ -357,7 +357,7 @@ public class TextComponent extends StandardComponent
      *
      * @param y The new y position
      */
-    public TextComponent setY(int y)
+    public TextComponent setY(float y)
     {
         this.y = y;
         this.getClientSerializer().markDirty("y");
@@ -370,7 +370,7 @@ public class TextComponent extends StandardComponent
      * @param x The new x position
      * @param y The new y position
      */
-    public TextComponent setPosition(int x, int y)
+    public TextComponent setPosition(float x, float y)
     {
         this.x = x;
         this.y = y;
