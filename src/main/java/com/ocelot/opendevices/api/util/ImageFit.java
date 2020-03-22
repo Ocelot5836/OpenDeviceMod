@@ -7,7 +7,7 @@ package com.ocelot.opendevices.api.util;
  */
 public enum ImageFit
 {
-    FILL, FIT, STRETCH, TILE, CENTER, SPAN;
+    FILL, STRETCH, TILE, CENTER, SPAN;
 
     /**
      * @return The id of this state as a byte

@@ -154,17 +154,15 @@ public class RenderUtil
         drawRectWithTexture(x, y, 0, u, v, width, height, textureWidth, textureHeight, sourceWidth, sourceHeight, fit);
     }
 
-    // TODO finish the last 3 cases
     public static void drawRectWithTexture(float x, float y, float z, float u, float v, float width, float height, float textureWidth, float textureHeight, int sourceWidth, int sourceHeight, ImageFit fit)
     {
         switch (fit)
         {
             case FILL:
             {
-                break;
-            }
-            case FIT:
-            {
+                float w1 = height / (textureHeight / textureWidth);
+                float w2 = width * (textureWidth / w1);
+                drawRectWithTexture(x + Math.max((width - w1) / 2, 0), y, z, u - Math.min((w2 - textureWidth) / 2, 0), v, Math.min(width, w1), height, Math.min(textureWidth, w2), textureHeight, sourceWidth, sourceHeight);
                 break;
             }
             case STRETCH:
@@ -174,7 +172,24 @@ public class RenderUtil
             }
             case TILE:
             {
-                drawRectWithTexture(x, y, z, u, v, width, height, textureWidth / (textureWidth / height), textureHeight / (textureHeight / width), sourceWidth, sourceHeight);
+                float scaleWidth = 1.0F / sourceWidth;
+                float scaleHeight = 1.0F / sourceHeight;
+                Tessellator tessellator = Tessellator.getInstance();
+                BufferBuilder buffer = tessellator.getBuffer();
+                buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+
+                for (int tileY = 0; tileY < Math.ceil(height / textureHeight); tileY++)
+                {
+                    for (int tileX = 0; tileX < Math.ceil(width / textureWidth); tileX++)
+                    {
+                        buffer.pos(x + tileX * textureWidth, y + tileY * textureHeight + textureHeight, z).tex(u * scaleWidth, (v + textureHeight) * scaleHeight).endVertex();
+                        buffer.pos(x + tileX * textureWidth + textureWidth, y + tileY * textureHeight + textureHeight, z).tex((u + textureWidth) * scaleWidth, (v + textureHeight) * scaleHeight).endVertex();
+                        buffer.pos(x + tileX * textureWidth + textureWidth, y + tileY * textureHeight, z).tex((u + textureWidth) * scaleWidth, v * scaleHeight).endVertex();
+                        buffer.pos(x + tileX * textureWidth, y + tileY * textureHeight, z).tex(u * scaleWidth, v * scaleHeight).endVertex();
+                    }
+                }
+
+                tessellator.draw();
                 break;
             }
             case CENTER:
@@ -186,6 +201,7 @@ public class RenderUtil
             }
             case SPAN:
             {
+                drawRectWithTexture(x, y, z, u, v, width, height, textureWidth / (textureWidth / textureHeight), textureHeight, sourceWidth, sourceHeight);
                 break;
             }
         }
