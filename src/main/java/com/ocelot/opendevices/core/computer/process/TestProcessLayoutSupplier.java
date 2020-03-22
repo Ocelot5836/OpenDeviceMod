@@ -26,9 +26,9 @@ public class TestProcessLayoutSupplier implements Function<Integer, Layout>
 //            spinner.setPaused(!spinner.isPaused());
 //            return true;
 //        }));
-        String url = "https://cdn.discordapp.com/attachments/683471388434366490/690802222245609492/unknown.png";
-        layout.addComponent(new ImageComponent(0, 20, 64, 64, ImageComponent.with(url)).setImageFit(ImageFit.STRETCH));
-        layout.addComponent(new ImageComponent(layout.getWidth() - 64, 20, 64, 64, ImageComponent.with(url)).setImageFit(ImageFit.FIT));
+        String url = id == 0 ? "https://cdn.discordapp.com/attachments/426584849088774187/690434011415183420/2020-03-19_22.37.18.png" : "https://api.battlefieldsmc.net/api/launcher/images/welcome.png";
+//        layout.addComponent(new ImageComponent(0, 20, 64, 64, ImageComponent.with(url)).setImageFit(ImageFit.STRETCH));
+        layout.addComponent(new ImageComponent(0, 0, layout.getWidth(), layout.getHeight(), ImageComponent.with(Alphabet.UPPERCASE_Q)).setImageFit(ImageFit.TILE));
         //        for (int i = 0; i < Icons.values().length; i++)
 //        {
 //            int x = i % 12;

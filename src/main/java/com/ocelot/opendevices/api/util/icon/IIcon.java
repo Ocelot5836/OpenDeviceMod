@@ -52,7 +52,7 @@ public interface IIcon
     /**
      * @return The width of the texture image
      */
-    default int getTextureWidth()
+    default int getSourceWidth()
     {
         return this.getGridWidth() * this.getWidth();
     }
@@ -60,7 +60,7 @@ public interface IIcon
     /**
      * @return The height of the texture image
      */
-    default int getTextureHeight()
+    default int getSourceHeight()
     {
         return this.getGridHeight() * this.getHeight();
     }
@@ -80,7 +80,7 @@ public interface IIcon
     {
         GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         Minecraft.getInstance().getTextureManager().bindTexture(this.getIconLocation());
-        RenderUtil.drawRectWithTexture(x, y, this.getU(), this.getV(), this.getWidth(), this.getHeight(), this.getWidth(), this.getHeight(), this.getTextureWidth(), this.getTextureHeight());
+        RenderUtil.drawRectWithTexture(x, y, this.getU(), this.getV(), this.getWidth(), this.getHeight(), this.getWidth(), this.getHeight(), this.getSourceWidth(), this.getSourceHeight());
     }
 
     /**

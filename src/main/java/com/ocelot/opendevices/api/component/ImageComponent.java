@@ -584,13 +584,13 @@ public class ImageComponent extends StandardComponent
         @Override
         public int getImageWidth()
         {
-            return this.icon.getTextureWidth();
+            return this.icon.getSourceWidth();
         }
 
         @Override
         public int getImageHeight()
         {
-            return this.icon.getTextureHeight();
+            return this.icon.getSourceHeight();
         }
 
         @Override

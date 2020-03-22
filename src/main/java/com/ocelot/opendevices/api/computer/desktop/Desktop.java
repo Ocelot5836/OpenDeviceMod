@@ -1,6 +1,7 @@
 package com.ocelot.opendevices.api.computer.desktop;
 
 import com.ocelot.opendevices.api.computer.Computer;
+import com.ocelot.opendevices.api.util.ImageFit;
 
 import javax.annotation.Nullable;
 

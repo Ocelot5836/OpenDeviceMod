@@ -18,6 +18,7 @@ import com.ocelot.opendevices.api.computer.window.WindowManager;
 import com.ocelot.opendevices.api.device.process.DeviceProcess;
 import com.ocelot.opendevices.api.device.process.ProcessInputRegistry;
 import com.ocelot.opendevices.api.device.process.ProcessWindowRenderer;
+import com.ocelot.opendevices.api.util.ImageFit;
 import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.api.util.TooltipRenderer;
 import net.minecraft.client.Minecraft;
@@ -96,7 +97,7 @@ public class LaptopRenderer extends AbstractGui
                 {
                     LocalDesktopBackground localDesktopBackground = (LocalDesktopBackground) background;
                     textureManager.bindTexture(localDesktopBackground.getLocation());
-                    RenderUtil.drawRectWithTexture(posX, posY, localDesktopBackground.getU(), localDesktopBackground.getV(), screenWidth, screenHeight, localDesktopBackground.getWidth(), localDesktopBackground.getHeight(), localDesktopBackground.getImageWidth(), localDesktopBackground.getImageHeight());
+                    RenderUtil.drawRectWithTexture(posX, posY, background.getU(), background.getV(), screenWidth, screenHeight, background.getWidth(), background.getHeight(), background.getImageWidth(), background.getImageHeight(), background.getFit());
                     break;
                 }
                 case ONLINE:
@@ -106,7 +107,7 @@ public class LaptopRenderer extends AbstractGui
                     if (location != null)
                     {
                         textureManager.bindTexture(location);
-                        RenderUtil.drawRectWithTexture(posX, posY, 0, 0, screenWidth, screenHeight, 1, 1, 1, 1);
+                        RenderUtil.drawRectWithTexture(posX, posY, background.getU(), background.getV(), screenWidth, screenHeight, background.getWidth(), background.getHeight(), background.getImageWidth(), background.getImageHeight(), background.getFit());
                     }
                     else
                     {

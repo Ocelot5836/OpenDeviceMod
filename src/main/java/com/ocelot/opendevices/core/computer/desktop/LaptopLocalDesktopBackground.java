@@ -1,6 +1,7 @@
 package com.ocelot.opendevices.core.computer.desktop;
 
 import com.ocelot.opendevices.api.computer.desktop.LocalDesktopBackground;
+import com.ocelot.opendevices.api.util.ImageFit;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 
@@ -13,13 +14,14 @@ public class LaptopLocalDesktopBackground implements LocalDesktopBackground
     private float height;
     private int imageWidth;
     private int imageHeight;
+    private ImageFit fit;
 
     public LaptopLocalDesktopBackground(CompoundNBT nbt)
     {
         this.deserializeNBT(nbt);
     }
 
-    public LaptopLocalDesktopBackground(ResourceLocation location, float u, float v, float width, float height, int imageWidth, int imageHeight)
+    public LaptopLocalDesktopBackground(ResourceLocation location, float u, float v, float width, float height, int imageWidth, int imageHeight, ImageFit fit)
     {
         this.location = location;
         this.u = u;
@@ -28,6 +30,7 @@ public class LaptopLocalDesktopBackground implements LocalDesktopBackground
         this.height = height;
         this.imageWidth = imageWidth;
         this.imageHeight = imageHeight;
+        this.fit = fit;
     }
 
     public ResourceLocation getLocation()
@@ -66,6 +69,12 @@ public class LaptopLocalDesktopBackground implements LocalDesktopBackground
     }
 
     @Override
+    public ImageFit getFit()
+    {
+        return fit;
+    }
+
+    @Override
     public CompoundNBT serializeNBT()
     {
         CompoundNBT nbt = new CompoundNBT();
@@ -76,6 +85,7 @@ public class LaptopLocalDesktopBackground implements LocalDesktopBackground
         nbt.putFloat("height", this.height);
         nbt.putInt("imageWidth", this.imageWidth);
         nbt.putInt("imageHeight", this.imageHeight);
+        nbt.putByte("fit", this.fit.serialize());
         return nbt;
     }
 
@@ -89,5 +99,6 @@ public class LaptopLocalDesktopBackground implements LocalDesktopBackground
         this.height = nbt.getFloat("height");
         this.imageWidth = nbt.getInt("imageWidth");
         this.imageHeight = nbt.getInt("imageHeight");
+        this.fit = ImageFit.deserialize(nbt.getByte("fit"));
     }
 }
