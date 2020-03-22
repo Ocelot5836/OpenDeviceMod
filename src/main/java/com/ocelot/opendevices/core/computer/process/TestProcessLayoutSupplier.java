@@ -20,7 +20,7 @@ public class TestProcessLayoutSupplier implements Function<Integer, Layout>
     {
         Layout layout = new Layout();
         String url = id == 0 ? "https://cdn.discordapp.com/attachments/426584849088774187/690434011415183420/2020-03-19_22.37.18.png" : "https://api.battlefieldsmc.net/api/launcher/images/welcome.png";
-        layout.addComponent(new ImageComponent(0, 0, layout.getWidth(), layout.getHeight(), ImageComponent.with(url)).setImageFit(ImageFit.STRETCH));
+        layout.addComponent(new ImageComponent(0, 0, layout.getWidth(), layout.getHeight(), ImageComponent.with(url)));
         Alphabet[] characters = Alphabet.getCharSequence(url.toUpperCase(Locale.ROOT));
         int xOffset = 0;
         int yOffset = 0;
@@ -36,7 +36,7 @@ public class TestProcessLayoutSupplier implements Function<Integer, Layout>
         }
         SpinnerComponent spinner = new SpinnerComponent(64, 64);
         layout.addComponent(spinner);
-        layout.addComponent(new TextComponent(0, 0, Minecraft.DEFAULT_FONT_RENDERER_NAME, new ItemStack(Blocks.DIAMOND_BLOCK).getTextComponent()).setRenderShadow(true).setClickListener((text, mouseX, mouseY, mouseButton) ->
+        layout.addComponent(new TextComponent(0, 0, Minecraft.DEFAULT_FONT_RENDERER_NAME, new ItemStack(Blocks.DIAMOND_BLOCK).getTextComponent()).setClickListener((text, mouseX, mouseY, mouseButton) ->
         {
             spinner.setPaused(!spinner.isPaused());
             return true;

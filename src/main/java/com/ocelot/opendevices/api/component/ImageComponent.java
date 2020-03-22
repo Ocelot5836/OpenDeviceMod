@@ -19,6 +19,18 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
+/**
+ * <p>Allowes the addition of different types of images to a {@link Layout}. Local {@link ResourceLocation} textures, online images, and {@link IIcon} are supported as image types.</p>
+ * <p>In order to use a resource location as an image, use one of {@link #with(ResourceLocation, float, float, float, float)} or {@link #with(ResourceLocation, float, float, float, float, int, int)}.</p>
+ * <p>Icons only requiring the use of {@link #with(IIcon)}.</p>
+ * <p>Online images can be made using {@link #with(String)}, {@link #with(String, float, float, float, float)}, or {@link #with(String, float, float, float, float, TimeUnit, long)}. Online images take time to download to a {@link SpinnerComponent} is rendered in the center until the download has completed.</p>
+ *
+ * @author Ocelot
+ * @see ImageProvider
+ * @see ResourceLocationImageProvider
+ * @see IconImageProvider
+ * @see OnlineImageProvider
+ */
 public class ImageComponent extends StandardComponent
 {
     public static final int DEFAULT_COLOR = 0xFF2F2F2F;
@@ -42,7 +54,7 @@ public class ImageComponent extends StandardComponent
         this.y = y;
         this.width = width;
         this.height = height;
-        this.backgroundColor = 0xFF2F2F2F;
+        this.backgroundColor = DEFAULT_COLOR;
         this.visible = true;
 
         this.imageFit = ImageFit.STRETCH;
@@ -104,7 +116,7 @@ public class ImageComponent extends StandardComponent
                 GlStateManager.pushMatrix();
                 GlStateManager.translatef(posX + this.x, posY + this.y, 0);
                 fill(0, 0, this.width, this.height, this.backgroundColor);
-                SpinnerComponent.renderProgress((this.width - SpinnerComponent.SIZE) / 2f, (this.height - SpinnerComponent.SIZE) / 2f, this.backgroundColor, 0xFFFFFFFF, this.progress);
+                SpinnerComponent.renderProgress((this.width - SpinnerComponent.SIZE) / 2f, (this.height - SpinnerComponent.SIZE) / 2f, 0, 0xFFFFFFFF, this.progress);
                 GlStateManager.popMatrix();
             }
         }
@@ -151,21 +163,33 @@ public class ImageComponent extends StandardComponent
         return height;
     }
 
+    /**
+     * @return The color of the background
+     */
     public int getBackgroundColor()
     {
         return backgroundColor;
     }
 
+    /**
+     * @return Whether or not this component can be seen and interacted with
+     */
     public boolean isVisible()
     {
         return visible;
     }
 
+    /**
+     * @return How the rendered image should fit to the component size
+     */
     public ImageFit getImageFit()
     {
         return imageFit;
     }
 
+    /**
+     * @return The provider for rendering parameters
+     */
     public ImageProvider getImageProvider()
     {
         return imageProvider;
@@ -754,31 +778,100 @@ public class ImageComponent extends StandardComponent
         }
     }
 
+    /**
+     * Creates a new {@link ResourceLocationImageProvider} with the specified local location, u, v, width, and height. The texture file size is automatically set to 256x256.
+     *
+     * @param location      The location of the texture file
+     * @param u             The x on the texture to start
+     * @param v             The y on the texture to start
+     * @param textureWidth  The width of the selection to grab from the texture
+     * @param textureHeight The height of the selection to grab from the texture
+     * @return The image provider with the provided details
+     */
     public static ImageProvider with(ResourceLocation location, float u, float v, float textureWidth, float textureHeight)
     {
         return new ImageComponent.ResourceLocationImageProvider(location, u, v, textureWidth, textureHeight, 256, 256);
     }
 
+    /**
+     * Creates a new {@link ResourceLocationImageProvider} with the specified local location, u, v, width, height, texture file width, and texture file height.
+     *
+     * @param location      The location of the texture file
+     * @param u             The x on the texture to start
+     * @param v             The y on the texture to start
+     * @param textureWidth  The width of the selection to grab from the texture
+     * @param textureHeight The height of the selection to grab from the texture
+     * @param imageWidth    The width of the texture file
+     * @param imageHeight   The height of the texture file
+     * @return The image provider with the provided details
+     */
     public static ImageProvider with(ResourceLocation location, float u, float v, float textureWidth, float textureHeight, int imageWidth, int imageHeight)
     {
         return new ImageComponent.ResourceLocationImageProvider(location, u, v, textureWidth, textureHeight, imageWidth, imageHeight);
     }
 
+    /**
+     * Creates a new {@link IconImageProvider} with the specified {@link IIcon}.
+     *
+     * @param icon The icon to use
+     * @return The image provider with the provided details
+     */
     public static ImageProvider with(IIcon icon)
     {
         return new IconImageProvider(icon);
     }
 
+    /**
+     * Creates a new {@link OnlineImageProvider} with the specified URL. The uv is set to zero and the selection size is set to the image size with no cache time specified.
+     *
+     * @param url The url of the image
+     * @return The image provider with the provided details
+     */
     public static ImageProvider with(String url)
     {
         return new ImageComponent.OnlineImageProvider(url, 0, 0, -1, -1, TimeUnit.MILLISECONDS, 0);
     }
 
+    /**
+     * Creates a new {@link OnlineImageProvider} with the specified URL and cache time. The uv is set to zero and the selection size is set to the image size.
+     *
+     * @param url       The url of the image
+     * @param unit      The time unit the cache time is provided in
+     * @param cacheTime The amount of the specified unit to cache the image for
+     * @return The image provider with the provided details
+     */
+    public static ImageProvider with(String url, TimeUnit unit, long cacheTime)
+    {
+        return new ImageComponent.OnlineImageProvider(url, 0, 0, -1, -1, unit, cacheTime);
+    }
+
+    /**
+     * Creates a new {@link OnlineImageProvider} with the specified URL u, v, texture width, and texture height. No cache time is specified.
+     *
+     * @param url           The url of the image
+     * @param u             The x on the texture to start
+     * @param v             The y on the texture to start
+     * @param textureWidth  The width of the selection to grab from the texture
+     * @param textureHeight The height of the selection to grab from the texture
+     * @return The image provider with the provided details
+     */
     public static ImageProvider with(String url, float u, float v, float textureWidth, float textureHeight)
     {
         return new ImageComponent.OnlineImageProvider(url, u, v, textureWidth, textureHeight, TimeUnit.MILLISECONDS, 0);
     }
 
+    /**
+     * Creates a new {@link OnlineImageProvider} with the specified URL u, v, texture width, texture height, and cache time.
+     *
+     * @param url           The url of the image
+     * @param u             The x on the texture to start
+     * @param v             The y on the texture to start
+     * @param textureWidth  The width of the selection to grab from the texture
+     * @param textureHeight The height of the selection to grab from the texture
+     * @param unit          The time unit the cache time is provided in
+     * @param cacheTime     The amount of the specified unit to cache the image for
+     * @return The image provider with the provided details
+     */
     public static ImageProvider with(String url, float u, float v, float textureWidth, float textureHeight, TimeUnit unit, long cacheTime)
     {
         return new ImageComponent.OnlineImageProvider(url, u, v, textureWidth, textureHeight, unit, cacheTime);

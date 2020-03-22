@@ -112,7 +112,7 @@ public class LaptopRenderer extends AbstractGui
                     else
                     {
                         onlineDesktopBackground.request();
-                        SpinnerComponent.renderProgress(posX + (screenWidth - SpinnerComponent.SIZE) / 2f, posY + (screenHeight - SpinnerComponent.SIZE) / 2f, SpinnerComponent.DEFAULT_COLOR, 0xFFFFFFFF, onlineDesktopBackground.getProgress());
+                        SpinnerComponent.renderProgress(posX + (screenWidth - SpinnerComponent.SIZE) / 2f, posY + (screenHeight - SpinnerComponent.SIZE) / 2f, 0, 0xFFFFFFFF, onlineDesktopBackground.getProgress());
                     }
                     break;
                 }

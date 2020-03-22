@@ -23,6 +23,7 @@ public class SpinnerComponent extends StandardComponent
     private float y;
     private int color;
     private boolean visible;
+    private boolean backgroundVisible;
 
     private int progress;
     private boolean paused;
@@ -34,6 +35,7 @@ public class SpinnerComponent extends StandardComponent
         this.y = y;
         this.color = DEFAULT_COLOR;
         this.visible = true;
+        this.backgroundVisible = true;
     }
 
     private void createSyncHelper()
@@ -44,6 +46,7 @@ public class SpinnerComponent extends StandardComponent
             syncHelper.addSerializer("y", nbt -> nbt.putFloat("y", this.y), nbt -> this.y = nbt.getFloat("y"));
             syncHelper.addSerializer("color", nbt -> nbt.putInt("color", this.color), nbt -> this.color = nbt.getInt("color"));
             syncHelper.addSerializer("visible", nbt -> nbt.putBoolean("visible", this.visible), nbt -> this.visible = nbt.getBoolean("visible"));
+            syncHelper.addSerializer("backgroundVisible", nbt -> nbt.putBoolean("backgroundVisible", this.backgroundVisible), nbt -> this.backgroundVisible = nbt.getBoolean("backgroundVisible"));
 
             syncHelper.addSerializer("progress", nbt -> nbt.putInt("progress", this.progress), nbt -> this.progress = nbt.getInt("progress"));
             syncHelper.addSerializer("paused", nbt -> nbt.putBoolean("paused", this.paused), nbt -> this.paused = nbt.getBoolean("paused"));
@@ -69,7 +72,7 @@ public class SpinnerComponent extends StandardComponent
     {
         if (this.visible)
         {
-            renderProgress(posX + this.x, posY + this.y, this.color, 0xFFFFFFFF, this.progress);
+            renderProgress(posX + this.x, posY + this.y, this.backgroundVisible ? this.color : 0, 0xFFFFFFFF, this.progress);
         }
     }
 
@@ -116,6 +119,14 @@ public class SpinnerComponent extends StandardComponent
     public boolean isVisible()
     {
         return visible;
+    }
+
+    /**
+     * @return Whether or not the background can be seen
+     */
+    public boolean isBackgroundVisible()
+    {
+        return backgroundVisible;
     }
 
     /**
@@ -194,6 +205,18 @@ public class SpinnerComponent extends StandardComponent
     {
         this.visible = visible;
         this.getClientSerializer().markDirty("visible");
+        return this;
+    }
+
+    /**
+     * Marks this component's background as able to be seen or not.
+     *
+     * @param backgroundVisible Whether or not the background of this component is visible
+     */
+    public SpinnerComponent setBackgroundVisible(boolean backgroundVisible)
+    {
+        this.backgroundVisible = backgroundVisible;
+        this.getClientSerializer().markDirty("backgroundVisible");
         return this;
     }
 
