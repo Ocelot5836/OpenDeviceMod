@@ -160,6 +160,22 @@ public enum Alphabet implements IIcon
         return NAME_LOOKUP.getOrDefault(character, UNKNOWN);
     }
 
+    /**
+     * Looks up the alphabet icons for the specified char sequence.
+     *
+     * @param sequence The sequence of characters to look for
+     * @return The alphabet characters array
+     */
+    public static Alphabet[] getCharSequence(CharSequence sequence)
+    {
+        Alphabet[] alphabet = new Alphabet[sequence.length()];
+        for (int i = 0; i < sequence.length(); i++)
+        {
+            alphabet[i] = getCharacter(sequence.charAt(i));
+        }
+        return alphabet;
+    }
+
     static
     {
         for (Alphabet alphabet : Alphabet.values())
