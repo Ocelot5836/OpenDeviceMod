@@ -108,7 +108,7 @@ public class ImageComponent extends StandardComponent
             if (this.imageProvider.getLocation() != null)
             {
                 Minecraft.getInstance().getTextureManager().bindTexture(this.imageProvider.getLocation());
-                RenderUtil.drawRectWithTexture(posX + this.x, posY + this.y, this.imageProvider.getU(), this.imageProvider.getV(), this.width, this.height, this.imageProvider.getTextureWidth(), this.imageProvider.getTextureHeight(), this.imageProvider.getImageWidth(), this.imageProvider.getImageHeight(), this.imageFit);
+                RenderUtil.drawRectWithTexture(posX + this.x, posY + this.y, this.imageProvider.getU(), this.imageProvider.getV(), this.width, this.height, this.imageProvider.getTextureWidth(), this.imageProvider.getTextureHeight(), this.imageProvider.getSourceWidth(), this.imageProvider.getSourceHeight(), this.imageFit);
             }
             else
             {
@@ -408,12 +408,12 @@ public class ImageComponent extends StandardComponent
         /**
          * @return The x size of the image file in pixels
          */
-        int getImageWidth();
+        int getSourceWidth();
 
         /**
          * @return The y size of the image file in pixels
          */
-        int getImageHeight();
+        int getSourceHeight();
 
         /**
          * @return The type of image this renders
@@ -433,23 +433,23 @@ public class ImageComponent extends StandardComponent
         private float v;
         private float textureWidth;
         private float textureHeight;
-        private int imageWidth;
-        private int imageHeight;
+        private int sourceWidth;
+        private int sourceHeight;
 
         private ResourceLocationImageProvider(CompoundNBT nbt)
         {
             this.deserializeNBT(nbt);
         }
 
-        private ResourceLocationImageProvider(ResourceLocation location, float u, float v, float textureWidth, float textureHeight, int imageWidth, int imageHeight)
+        private ResourceLocationImageProvider(ResourceLocation location, float u, float v, float textureWidth, float textureHeight, int sourceWidth, int sourceHeight)
         {
             this.location = location;
             this.u = u;
             this.v = v;
             this.textureWidth = textureWidth;
             this.textureHeight = textureHeight;
-            this.imageWidth = imageWidth;
-            this.imageHeight = imageHeight;
+            this.sourceWidth = sourceWidth;
+            this.sourceHeight = sourceHeight;
         }
 
         @Override
@@ -494,15 +494,15 @@ public class ImageComponent extends StandardComponent
         }
 
         @Override
-        public int getImageWidth()
+        public int getSourceWidth()
         {
-            return imageWidth;
+            return sourceWidth;
         }
 
         @Override
-        public int getImageHeight()
+        public int getSourceHeight()
         {
-            return imageHeight;
+            return sourceHeight;
         }
 
         @Override
@@ -526,8 +526,8 @@ public class ImageComponent extends StandardComponent
             nbt.putFloat("v", this.v);
             nbt.putFloat("textureWidth", this.textureWidth);
             nbt.putFloat("textureHeight", this.textureHeight);
-            nbt.putFloat("imageWidth", this.imageWidth);
-            nbt.putFloat("imageHeight", this.imageHeight);
+            nbt.putFloat("sourceWidth", this.sourceWidth);
+            nbt.putFloat("sourceHeight", this.sourceHeight);
             return nbt;
         }
 
@@ -539,8 +539,8 @@ public class ImageComponent extends StandardComponent
             this.v = nbt.getFloat("v");
             this.textureWidth = nbt.getFloat("textureWidth");
             this.textureHeight = nbt.getFloat("textureHeight");
-            this.imageWidth = nbt.getInt("imageWidth");
-            this.imageHeight = nbt.getInt("imageHeight");
+            this.sourceWidth = nbt.getInt("sourceWidth");
+            this.sourceHeight = nbt.getInt("sourceHeight");
         }
     }
 
@@ -606,13 +606,13 @@ public class ImageComponent extends StandardComponent
         }
 
         @Override
-        public int getImageWidth()
+        public int getSourceWidth()
         {
             return this.icon.getSourceWidth();
         }
 
         @Override
-        public int getImageHeight()
+        public int getSourceHeight()
         {
             return this.icon.getSourceHeight();
         }
@@ -654,8 +654,8 @@ public class ImageComponent extends StandardComponent
         private float v;
         private float textureWidth;
         private float textureHeight;
-        private int imageWidth;
-        private int imageHeight;
+        private int sourceWidth;
+        private int sourceHeight;
         private long cacheTime;
 
         public OnlineImageProvider(CompoundNBT nbt)
@@ -671,8 +671,8 @@ public class ImageComponent extends StandardComponent
             this.v = v;
             this.textureWidth = textureWidth;
             this.textureHeight = textureHeight;
-            this.imageWidth = 1;
-            this.imageHeight = 1;
+            this.sourceWidth = 1;
+            this.sourceHeight = 1;
             this.cacheTime = unit.toMillis(cacheTime);
         }
 
@@ -691,8 +691,8 @@ public class ImageComponent extends StandardComponent
                     this.textureWidth = cachedImage.getWidth();
                 if (this.textureHeight == -1)
                     this.textureHeight = cachedImage.getHeight();
-                this.imageWidth = cachedImage.getWidth();
-                this.imageHeight = cachedImage.getHeight();
+                this.sourceWidth = cachedImage.getWidth();
+                this.sourceHeight = cachedImage.getHeight();
             }, null));
         }
 
@@ -728,15 +728,15 @@ public class ImageComponent extends StandardComponent
         }
 
         @Override
-        public int getImageWidth()
+        public int getSourceWidth()
         {
-            return imageWidth;
+            return sourceWidth;
         }
 
         @Override
-        public int getImageHeight()
+        public int getSourceHeight()
         {
-            return imageHeight;
+            return sourceHeight;
         }
 
         @Override
@@ -760,8 +760,8 @@ public class ImageComponent extends StandardComponent
             nbt.putFloat("v", this.v);
             nbt.putFloat("textureWidth", this.textureWidth);
             nbt.putFloat("textureHeight", this.textureHeight);
-            nbt.putFloat("imageWidth", this.imageWidth);
-            nbt.putFloat("imageHeight", this.imageHeight);
+            nbt.putFloat("sourceWidth", this.sourceWidth);
+            nbt.putFloat("sourceHeight", this.sourceHeight);
             return nbt;
         }
 
@@ -773,8 +773,8 @@ public class ImageComponent extends StandardComponent
             this.v = nbt.getFloat("v");
             this.textureWidth = nbt.getFloat("textureWidth");
             this.textureHeight = nbt.getFloat("textureHeight");
-            this.imageWidth = nbt.getInt("imageWidth");
-            this.imageHeight = nbt.getInt("imageHeight");
+            this.sourceWidth = nbt.getInt("sourceWidth");
+            this.sourceHeight = nbt.getInt("sourceHeight");
         }
     }
 
@@ -801,13 +801,13 @@ public class ImageComponent extends StandardComponent
      * @param v             The y on the texture to start
      * @param textureWidth  The width of the selection to grab from the texture
      * @param textureHeight The height of the selection to grab from the texture
-     * @param imageWidth    The width of the texture file
-     * @param imageHeight   The height of the texture file
+     * @param sourceWidth    The width of the texture file
+     * @param sourceHeight   The height of the texture file
      * @return The image provider with the provided details
      */
-    public static ImageProvider with(ResourceLocation location, float u, float v, float textureWidth, float textureHeight, int imageWidth, int imageHeight)
+    public static ImageProvider with(ResourceLocation location, float u, float v, float textureWidth, float textureHeight, int sourceWidth, int sourceHeight)
     {
-        return new ImageComponent.ResourceLocationImageProvider(location, u, v, textureWidth, textureHeight, imageWidth, imageHeight);
+        return new ImageComponent.ResourceLocationImageProvider(location, u, v, textureWidth, textureHeight, sourceWidth, sourceHeight);
     }
 
     /**
