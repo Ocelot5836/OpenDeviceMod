@@ -34,7 +34,7 @@ public class TestProcess implements Application<Computer>
     {
         this.computer = computer;
         this.processId = processId;
-        this.layoutManager = new WindowLayoutManager(this.computer, () -> this.dirty = true, TestProcessLayoutSupplier::new);
+        this.layoutManager = new WindowLayoutManager(this.computer, () -> this.dirty = true, () -> new TestProcessLayoutSupplier(this));
         this.window = new WindowHandle(this.computer.getWindowManager(), this.computer.getTaskBar(), this.processId);
         this.window2 = new WindowHandle(this.computer.getWindowManager(), this.computer.getTaskBar(), this.processId);
     }
