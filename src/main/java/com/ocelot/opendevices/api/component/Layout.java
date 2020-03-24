@@ -2,7 +2,6 @@ package com.ocelot.opendevices.api.component;
 
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceConstants;
-import com.ocelot.opendevices.api.util.ClientSerializer;
 import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.api.util.SyncHelper;
 import com.ocelot.opendevices.api.util.TooltipRenderer;
@@ -56,7 +55,8 @@ public class Layout extends StandardComponent
         }
     }
 
-    protected SyncHelper createSyncHelper(){
+    protected SyncHelper createSyncHelper()
+    {
         SyncHelper syncHelper = new SyncHelper(this::markDirty);
         {
             syncHelper.addSerializer("components", nbt ->
@@ -178,11 +178,14 @@ public class Layout extends StandardComponent
     @Override
     public boolean onMouseScrolled(double mouseX, double mouseY, double amount)
     {
-        for (Component component : this.components)
+        if (this.isHovered(mouseX, mouseY))
         {
-            if (component.onMouseScrolled(mouseX - this.x, mouseY - this.y, amount))
+            for (Component component : this.components)
             {
-                return true;
+                if (component.onMouseScrolled(mouseX - this.x, mouseY - this.y, amount))
+                {
+                    return true;
+                }
             }
         }
         return false;

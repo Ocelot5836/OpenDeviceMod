@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 /**
- * <p>Allowes the addition of different types of images to a {@link Layout}. Local {@link ResourceLocation} textures, online images, and {@link IIcon} are supported as image types.</p>
+ * <p>Allows the addition of different types of images to a {@link Layout}. Local {@link ResourceLocation} textures, online images, and {@link IIcon} are supported as image types.</p>
  * <p>In order to use a resource location as an image, use one of {@link #with(ResourceLocation, float, float, float, float)} or {@link #with(ResourceLocation, float, float, float, float, int, int)}.</p>
  * <p>Icons only requiring the use of {@link #with(IIcon)}.</p>
  * <p>Online images can be made using {@link #with(String)}, {@link #with(String, float, float, float, float)}, or {@link #with(String, float, float, float, float, TimeUnit, long)}. Online images take time to download, so a {@link SpinnerComponent} is rendered in the center until the download has completed.</p>
