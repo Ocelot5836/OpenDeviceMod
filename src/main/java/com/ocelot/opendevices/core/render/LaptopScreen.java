@@ -304,7 +304,7 @@ public class LaptopScreen extends Screen implements TooltipRenderer
             LaptopWindowManager windowManager = this.laptop.getWindowManager();
             LaptopWindow focusedWindow = windowManager.getFocusedWindow();
 
-            if (focusedWindow != null && focusedWindow.isWithinContent(mouseX, mouseY, Minecraft.getInstance().getRenderPartialTicks()))
+            if (focusedWindow != null && focusedWindow.isWithinContent(mouseX - (this.posX + DeviceConstants.LAPTOP_GUI_BORDER), mouseY - (this.posY + DeviceConstants.LAPTOP_GUI_BORDER), Minecraft.getInstance().getRenderPartialTicks()))
             {
                 DeviceProcess<Computer> focusedProcess = this.laptop.getProcess(focusedWindow.getProcessId());
                 if (focusedProcess != null)
