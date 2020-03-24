@@ -81,7 +81,7 @@ public class LaptopScreen extends Screen implements TooltipRenderer
         FontRenderer fontRenderer = minecraft.fontRenderer;
 
         this.renderBackground();
-        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.color4f(1, 1, 1, 1);
 
         minecraft.textureManager.bindTexture(DeviceConstants.LAPTOP_GUI);
 

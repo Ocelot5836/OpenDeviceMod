@@ -31,9 +31,10 @@ public interface ProcessWindowRenderer<D extends Device, T extends DeviceProcess
      * @param posY         The y position of the desktop
      * @param mouseX       The x position of the mouse
      * @param mouseY       The y position of the mouse
+     * @param main         Whether or not this is the main window rendering
      * @param partialTicks The percentage from last tick and this tick
      */
-    void render(T process, Window window, int posX, int posY, int mouseX, int mouseY, float partialTicks);
+    void render(T process, Window window, int posX, int posY, int mouseX, int mouseY, boolean main, float partialTicks);
 
     /**
      * Renders the overlay contents of the specified window.

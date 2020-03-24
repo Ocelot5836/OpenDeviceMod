@@ -114,14 +114,14 @@ public class Layout extends StandardComponent
     }
 
     @Override
-    public void render(float posX, float posY, int mouseX, int mouseY, float partialTicks)
+    public void render(float posX, float posY, int mouseX, int mouseY, boolean main, float partialTicks)
     {
         RenderUtil.pushScissor(posX + this.getX(), posY + this.getY(), this.getWidth(), this.getHeight());
         this.components.forEach(component ->
         {
             if (component.getX() + component.getWidth() >= this.x && component.getX() < this.x + this.width && component.getY() + component.getHeight() >= this.y && component.getY() < this.y + this.height)
             {
-                component.render(this.getX() + posX, this.getY() + posY, mouseX, mouseY, partialTicks);
+                component.render(this.getX() + posX, this.getY() + posY, mouseX, mouseY, main, partialTicks);
             }
         });
         RenderUtil.popScissor();

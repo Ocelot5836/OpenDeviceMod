@@ -68,7 +68,7 @@ public class SpinnerComponent extends StandardComponent
     }
 
     @Override
-    public void render(float posX, float posY, int mouseX, int mouseY, float partialTicks)
+    public void render(float posX, float posY, int mouseX, int mouseY, boolean main, float partialTicks)
     {
         if (this.visible)
         {

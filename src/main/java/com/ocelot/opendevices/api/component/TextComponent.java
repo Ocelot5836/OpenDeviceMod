@@ -90,7 +90,11 @@ public class TextComponent extends StandardComponent
             syncHelper.addSerializer("y", nbt -> nbt.putFloat("y", this.y), nbt -> this.y = nbt.getFloat("y"));
             syncHelper.addSerializer("maxWidth", nbt -> nbt.putInt("maxWidth", this.maxWidth), nbt -> this.maxWidth = nbt.getInt("maxWidth"));
 
-            syncHelper.addSerializer("fontRenderer", nbt -> nbt.putString("fontRenderer", this.fontRendererLocation.toString()), nbt -> this.fontRendererLocation = new ResourceLocation(nbt.getString("fontRenderer")));
+            syncHelper.addSerializer("fontRenderer", nbt -> nbt.putString("fontRenderer", this.fontRendererLocation.toString()), nbt ->
+            {
+                this.fontRendererLocation = new ResourceLocation(nbt.getString("fontRenderer"));
+                this.fontRenderer = Minecraft.getInstance().getFontResourceManager().getFontRenderer(this.fontRendererLocation);
+            });
             syncHelper.addSerializer("text", this::serializeText, this::deserializeText);
             syncHelper.addSerializer("tooltipDelay", nbt -> nbt.putLong("tooltipDelay", this.tooltipDelay), nbt -> this.tooltipDelay = nbt.getLong("tooltipDelay"));
             syncHelper.addSerializer("renderShadow", nbt -> nbt.putBoolean("renderShadow", this.renderShadow), nbt -> this.renderShadow = nbt.getBoolean("renderShadow"));
@@ -197,7 +201,7 @@ public class TextComponent extends StandardComponent
     }
 
     @Override
-    public void render(float posX, float posY, int mouseX, int mouseY, float partialTicks)
+    public void render(float posX, float posY, int mouseX, int mouseY, boolean main, float partialTicks)
     {
         if (this.visible)
         {

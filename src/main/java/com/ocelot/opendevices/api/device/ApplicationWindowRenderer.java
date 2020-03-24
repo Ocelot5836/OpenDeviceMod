@@ -32,14 +32,14 @@ public class ApplicationWindowRenderer<D extends Computer, T extends Application
     }
 
     @Override
-    public void render(T application, Window window, int posX, int posY, int mouseX, int mouseY, float partialTicks)
+    public void render(T application, Window window, int posX, int posY, int mouseX, int mouseY, boolean main, float partialTicks)
     {
         Layout layout = application.getLayout(window.getId());
         if (layout != null)
         {
             float contentX = window.getInterpolatedX(partialTicks) + 1;
             float contentY = window.getInterpolatedY(partialTicks) + 1 + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT;
-            layout.render(posX + contentX, posY + contentY, mouseX, mouseY, partialTicks);
+            layout.render(posX + contentX, posY + contentY, mouseX, mouseY, main, partialTicks);
         }
     }
 

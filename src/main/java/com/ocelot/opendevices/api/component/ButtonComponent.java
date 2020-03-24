@@ -4,19 +4,23 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.handler.ClickListener;
 import com.ocelot.opendevices.api.util.RenderUtil;
+import com.ocelot.opendevices.api.util.ShapeRenderer;
+import com.ocelot.opendevices.api.util.SyncHelper;
 import com.ocelot.opendevices.api.util.TooltipRenderer;
 import com.ocelot.opendevices.api.util.icon.IIcon;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.StringUtils;
 import net.minecraft.util.text.ITextComponent;
 
 import javax.annotation.Nullable;
+import java.util.Base64;
+import java.util.concurrent.TimeUnit;
 
 import static org.lwjgl.opengl.GL11C.*;
 
@@ -35,8 +39,8 @@ public class ButtonComponent extends StandardComponent
     public static final int DEFAULT_TEXT_COLOR = 0xFFA0A0A0;
     public static final int DEFAULT_HOVERED_TEXT_COLOR = 0xFFFFFFA0;
 
-    private int x;
-    private int y;
+    private float x;
+    private float y;
     private int width;
     private int height;
     private int padding;
@@ -53,8 +57,8 @@ public class ButtonComponent extends StandardComponent
     private int iconV;
     private int iconWidth;
     private int iconHeight;
-    private int iconTextureWidth;
-    private int iconTextureHeight;
+    private int iconSourceWidth;
+    private int iconSourceHeight;
 
     private ButtonState state;
     private int disabledButtonColor;
@@ -71,14 +75,74 @@ public class ButtonComponent extends StandardComponent
 
     public ButtonComponent(int x, int y)
     {
+        this.createSyncHelper();
         this.x = x;
         this.y = y;
-        this.setPadding(5);
-        this.setFontRenderer(Minecraft.DEFAULT_FONT_RENDERER_NAME);
+        this.padding = 5;
+        this.updateSize();
+        this.fontRenderer = Minecraft.getInstance().getFontResourceManager().getFontRenderer(Minecraft.DEFAULT_FONT_RENDERER_NAME);
+        this.fontRendererLocation = Minecraft.DEFAULT_FONT_RENDERER_NAME;
         this.tooltipDelay = DeviceConstants.DEFAULT_TOOLTIP_DELAY;
         this.lastTooltip = Long.MAX_VALUE;
 
         this.state = ButtonState.VISIBLE;
+        this.disabledButtonColor = DEFAULT_DISABLED_BUTTON_COLOR;
+        this.buttonColor = DEFAULT_BUTTON_COLOR;
+        this.hoveredButtonColor = DEFAULT_HOVERED_BUTTON_COLOR;
+        this.disabledTextColor = DEFAULT_DISABLED_TEXT_COLOR;
+        this.textColor = DEFAULT_TEXT_COLOR;
+        this.hoveredTextColor = DEFAULT_HOVERED_TEXT_COLOR;
+    }
+
+    private void createSyncHelper()
+    {
+        SyncHelper syncHelper = new SyncHelper(this::markDirty);
+        {
+            syncHelper.addSerializer("x", nbt -> nbt.putFloat("x", this.x), nbt -> this.x = nbt.getFloat("x"));
+            syncHelper.addSerializer("y", nbt -> nbt.putFloat("y", this.y), nbt -> this.y = nbt.getFloat("y"));
+            syncHelper.addSerializer("width", nbt -> nbt.putInt("width", this.width), nbt -> this.width = nbt.getInt("width"));
+            syncHelper.addSerializer("height", nbt -> nbt.putInt("height", this.height), nbt -> this.height = nbt.getInt("height"));
+
+            syncHelper.addSerializer("fontRenderer", nbt -> nbt.putString("fontRenderer", this.fontRendererLocation.toString()), nbt ->
+            {
+                this.fontRendererLocation = new ResourceLocation(nbt.getString("fontRenderer"));
+                this.fontRenderer = Minecraft.getInstance().getFontResourceManager().getFontRenderer(this.fontRendererLocation);
+            });
+            syncHelper.addSerializer("text", nbt -> nbt.putString("text", new String(Base64.getEncoder().encode(ITextComponent.Serializer.toJson(this.text).getBytes()))), nbt -> this.text = ITextComponent.Serializer.fromJson(new String(Base64.getDecoder().decode(nbt.getString("text")))));
+            syncHelper.addSerializer("tooltipDelay", nbt -> nbt.putLong("tooltipDelay", this.tooltipDelay), nbt -> this.tooltipDelay = nbt.getLong("tooltipDelay"));
+
+            syncHelper.addSerializer("icon", nbt ->
+            {
+                CompoundNBT iconNbt = new CompoundNBT();
+                iconNbt.putString("location", this.iconLocation.toString());
+                iconNbt.putInt("u", this.iconU);
+                iconNbt.putInt("v", this.iconV);
+                iconNbt.putInt("width", this.iconWidth);
+                iconNbt.putInt("height", this.iconHeight);
+                iconNbt.putInt("sourceWidth", this.iconSourceWidth);
+                iconNbt.putInt("sourceHeight", this.iconSourceHeight);
+                nbt.put("icon", iconNbt);
+            }, nbt ->
+            {
+                CompoundNBT iconNbt = nbt.getCompound("icon");
+                this.iconLocation = new ResourceLocation(iconNbt.getString("location"));
+                this.iconU = iconNbt.getInt("u");
+                this.iconV = iconNbt.getInt("v");
+                this.iconWidth = iconNbt.getInt("width");
+                this.iconHeight = iconNbt.getInt("height");
+                this.iconSourceWidth = iconNbt.getInt("sourceWidth");
+                this.iconSourceHeight = iconNbt.getInt("sourceHeight");
+            });
+
+            syncHelper.addSerializer("state", nbt -> nbt.putByte("state", this.state.serialize()), nbt -> this.state = ButtonState.deserialize(nbt.getByte("state")));
+            syncHelper.addSerializer("disabledButtonColor", nbt -> nbt.putInt("disabledButtonColor", this.disabledButtonColor), nbt -> this.disabledButtonColor = nbt.getInt("disabledButtonColor"));
+            syncHelper.addSerializer("buttonColor", nbt -> nbt.putInt("buttonColor", this.buttonColor), nbt -> this.buttonColor = nbt.getInt("buttonColor"));
+            syncHelper.addSerializer("hoveredButtonColor", nbt -> nbt.putInt("hoveredButtonColor", this.hoveredButtonColor), nbt -> this.hoveredButtonColor = nbt.getInt("hoveredButtonColor"));
+            syncHelper.addSerializer("disabledTextColor", nbt -> nbt.putInt("disabledTextColor", this.disabledTextColor), nbt -> this.disabledTextColor = nbt.getInt("disabledTextColor"));
+            syncHelper.addSerializer("textColor", nbt -> nbt.putInt("textColor", this.textColor), nbt -> this.textColor = nbt.getInt("textColor"));
+            syncHelper.addSerializer("hoveredTextColor", nbt -> nbt.putInt("hoveredTextColor", this.hoveredTextColor), nbt -> this.hoveredTextColor = nbt.getInt("hoveredTextColor"));
+        }
+        this.setClientSerializer(syncHelper);
     }
 
     private void updateTextCache()
@@ -117,9 +181,15 @@ public class ButtonComponent extends StandardComponent
         }
 
         if (!this.explicitWidth)
+        {
             this.width = width;
+            this.getClientSerializer().markDirty("width");
+        }
         if (!this.explicitHeight)
+        {
             this.height = height;
+            this.getClientSerializer().markDirty("height");
+        }
     }
 
     /**
@@ -131,6 +201,7 @@ public class ButtonComponent extends StandardComponent
      */
     protected void playPressSound(double mouseX, double mouseY, int mouseButton)
     {
+        // TODO make a sound handler that can allow for speakers
         Minecraft.getInstance().getSoundHandler().play(SimpleSound.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
     }
 
@@ -140,33 +211,63 @@ public class ButtonComponent extends StandardComponent
     }
 
     @Override
-    public void render(float posX, float posY, int mouseX, int mouseY, float partialTicks)
+    public void render(float posX, float posY, int mouseX, int mouseY, boolean main, float partialTicks)
     {
         if (this.state != ButtonState.INVISIBLE)
         {
-            boolean hovered = this.isHovered(mouseX, mouseY);
+            boolean hovered = main && this.isHovered(mouseX - posX, mouseY - posY);
             GlStateManager.enableBlend();
             GlStateManager.blendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
 
             Minecraft.getInstance().getTextureManager().bindTexture(DeviceConstants.COMPONENTS_LOCATION);
+            RenderUtil.glColor(this.disabledButtonColor);
+            {
+                BufferBuilder buffer = ShapeRenderer.begin();
+
+                /* Corners */
+                ShapeRenderer.drawRectWithTexture(buffer, posX + this.x, posY + this.y, 96, 12, 2, 2);
+                ShapeRenderer.drawRectWithTexture(buffer, posX + this.x + this.width - 2, posY + this.y, 99, 12, 2, 2);
+                ShapeRenderer.drawRectWithTexture(buffer, posX + this.x, posY + this.y + this.height - 2, 96, 15, 2, 2);
+                ShapeRenderer.drawRectWithTexture(buffer, posX + this.x + this.width - 2, posY + this.y + this.height - 2, 99, 15, 2, 2);
+
+                /* Middles */
+                ShapeRenderer.drawRectWithTexture(buffer, posX + this.x + 2, posY + this.y, 98, 12, this.width - 4, 2, 1, 2);
+                ShapeRenderer.drawRectWithTexture(buffer, posX + this.x + this.width - 2, posY + this.y + 2, 99, 12, 2, this.height - 4, 2, 1);
+                ShapeRenderer.drawRectWithTexture(buffer, posX + this.x + 2, posY + this.y + this.height - 2, 98, 15, this.width - 4, 2, 1, 2);
+                ShapeRenderer.drawRectWithTexture(buffer, posX + this.x, posY + this.y + 2, 96, 14, 2, this.height - 4, 2, 1);
+
+                /* Center */
+                if (this.state == ButtonState.DISABLED)
+                {
+                    ShapeRenderer.drawRectWithTexture(buffer, posX + this.x + 2, posY + this.y + 2, 98, 14, this.width - 4, this.height - 4, 1, 1);
+                }
+
+                ShapeRenderer.end();
+            }
+
             RenderUtil.glColor(this.state == ButtonState.DISABLED ? this.disabledButtonColor : hovered ? this.hoveredButtonColor : this.buttonColor);
+            if (this.state != ButtonState.DISABLED)
+            {
+                BufferBuilder buffer = ShapeRenderer.begin();
 
-            /* Corners */
-            RenderUtil.drawRectWithTexture(x, y, 96 + offset * 5, 12, 2, 2, 2, 2);
-            RenderUtil.drawRectWithTexture(x + width - 2, y, 99 + offset * 5, 12, 2, 2, 2, 2);
-            RenderUtil.drawRectWithTexture(x + width - 2, y + height - 2, 99 + offset * 5, 15, 2, 2, 2, 2);
-            RenderUtil.drawRectWithTexture(x, y + height - 2, 96 + offset * 5, 15, 2, 2, 2, 2);
+                /* Corners */
+                ShapeRenderer.drawRectWithTexture(buffer, posX + this.x + 1, posY + this.y + 1, 102, 13, 1, 1);
+                ShapeRenderer.drawRectWithTexture(buffer, posX + this.x + this.width - 2, posY + this.y + 1, 104, 13, 1, 1);
+                ShapeRenderer.drawRectWithTexture(buffer, posX + this.x + 1, posY + this.y + this.height - 2, 102, 15, 1, 1);
+                ShapeRenderer.drawRectWithTexture(buffer, posX + this.x + this.width - 2, posY + this.y + this.height - 2, 104, 15, 1, 1);
 
-            /* Middles */
-            RenderUtil.drawRectWithTexture(x + 2, y, 98 + offset * 5, 12, width - 4, 2, 1, 2);
-            RenderUtil.drawRectWithTexture(x + width - 2, y + 2, 99 + offset * 5, 14, 2, height - 4, 2, 1);
-            RenderUtil.drawRectWithTexture(x + 2, y + height - 2, 98 + offset * 5, 15, width - 4, 2, 1, 2);
-            RenderUtil.drawRectWithTexture(x, y + 2, 96 + offset * 5, 14, 2, height - 4, 2, 1);
+                /* Middles */
+                ShapeRenderer.drawRectWithTexture(buffer, posX + this.x + 2, posY + this.y + 1, 103, 13, this.width - 4, 1, 1, 1);
+                ShapeRenderer.drawRectWithTexture(buffer, posX + this.x + this.width - 2, posY + this.y + 2, 104, 14, 1, this.height - 4, 1, 1);
+                ShapeRenderer.drawRectWithTexture(buffer, posX + this.x + 2, posY + this.y + this.height - 2, 103, 15, this.width - 4, 1, 1, 1);
+                ShapeRenderer.drawRectWithTexture(buffer, posX + this.x + 1, posY + this.y + 2, 102, 14, 1, this.height - 4, 1, 1);
 
-            /* Center */
-            RenderUtil.drawRectWithTexture(x + 2, y + 2, 98 + offset * 5, 14, width - 4, height - 4, 1, 1);
+                /* Center */
+                ShapeRenderer.drawRectWithTexture(buffer, posX + this.x + 2, posY + this.y + 2, 103, 14, this.width - 4, this.height - 4, 1, 1);
 
-            GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+                ShapeRenderer.end();
+            }
+            GlStateManager.color4f(1, 1, 1, 1);
 
             int contentWidth = (this.iconLocation != null ? this.iconWidth : 0) + this.textWidth;
             if (this.iconLocation != null && !StringUtils.isNullOrEmpty(this.rawText))
@@ -177,15 +278,15 @@ public class ButtonComponent extends StandardComponent
             {
                 int iconY = (this.height - this.iconHeight) / 2;
                 Minecraft.getInstance().getTextureManager().bindTexture(this.iconLocation);
-                RenderUtil.drawRectWithTexture(this.x + contentX, this.y + iconY, this.iconU, this.iconV, this.iconWidth, this.iconHeight, this.iconWidth, this.iconHeight, this.iconTextureWidth, this.iconTextureHeight);
+                ShapeRenderer.drawRectWithTexture(posX + this.x + contentX, posY + this.y + iconY, this.iconU, this.iconV, this.iconWidth, this.iconHeight, this.iconWidth, this.iconHeight, this.iconSourceWidth, this.iconSourceHeight);
             }
 
             if (!StringUtils.isNullOrEmpty(this.rawText))
             {
                 int textY = (this.height - this.fontRenderer.FONT_HEIGHT) / 2 + 1;
                 int textOffsetX = this.iconLocation != null ? this.iconWidth + 3 : 0;
-                int textColor = this.state == ButtonState.DISABLED ? this.getDisabledTextColor() : (hovered ? this.getHoveredTextColor() : this.getTextColor());
-                this.fontRenderer.drawString(this.rawText, this.x + contentX + textOffsetX, this.y + textY, textColor);
+                int textColor = this.state == ButtonState.DISABLED ? this.disabledTextColor : hovered ? this.hoveredTextColor : this.buttonColor;
+                this.fontRenderer.drawString(this.rawText, posX + this.x + contentX + textOffsetX, posY + this.y + textY, textColor);
             }
         }
     }
@@ -234,6 +335,7 @@ public class ButtonComponent extends StandardComponent
     public ButtonComponent removeIcon()
     {
         this.iconLocation = null;
+        this.getClientSerializer().markDirty("icon");
         this.updateSize();
         return this;
     }
@@ -352,19 +454,19 @@ public class ButtonComponent extends StandardComponent
     }
 
     /**
-     * @return The width of the entire texture
+     * @return The width of the icon source texture
      */
-    public int getIconTextureWidth()
+    public int getIconSourceWidth()
     {
-        return iconTextureWidth;
+        return iconSourceWidth;
     }
 
     /**
-     * @return The height of the entire texture
+     * @return The height of the icon source texture
      */
-    public int getIconTextureHeight()
+    public int getIconSourceHeight()
     {
-        return iconTextureHeight;
+        return iconSourceHeight;
     }
 
     /**
@@ -429,10 +531,10 @@ public class ButtonComponent extends StandardComponent
      *
      * @param x The new x position
      */
-    public ButtonComponent setX(int x)
+    public ButtonComponent setX(float x)
     {
         this.x = x;
-        this.markDirty();
+        this.getClientSerializer().markDirty("x");
         return this;
     }
 
@@ -441,10 +543,10 @@ public class ButtonComponent extends StandardComponent
      *
      * @param y The new y position
      */
-    public ButtonComponent setY(int y)
+    public ButtonComponent setY(float y)
     {
         this.y = y;
-        this.markDirty();
+        this.getClientSerializer().markDirty("y");
         return this;
     }
 
@@ -454,11 +556,12 @@ public class ButtonComponent extends StandardComponent
      * @param x The new x position
      * @param y The new y position
      */
-    public ButtonComponent setPosition(int x, int y)
+    public ButtonComponent setPosition(float x, float y)
     {
         this.x = x;
         this.y = y;
-        this.markDirty();
+        this.getClientSerializer().markDirty("x");
+        this.getClientSerializer().markDirty("y");
         return this;
     }
 
@@ -471,7 +574,7 @@ public class ButtonComponent extends StandardComponent
     {
         this.width = width;
         this.explicitWidth = true;
-        this.markDirty();
+        this.getClientSerializer().markDirty("width");
         return this;
     }
 
@@ -484,7 +587,7 @@ public class ButtonComponent extends StandardComponent
     {
         this.height = height;
         this.explicitHeight = true;
-        this.markDirty();
+        this.getClientSerializer().markDirty("height");
         return this;
     }
 
@@ -500,6 +603,8 @@ public class ButtonComponent extends StandardComponent
         this.height = height;
         this.explicitWidth = true;
         this.explicitHeight = true;
+        this.getClientSerializer().markDirty("width");
+        this.getClientSerializer().markDirty("height");
         this.markDirty();
         return this;
     }
@@ -512,7 +617,6 @@ public class ButtonComponent extends StandardComponent
     public ButtonComponent setPadding(int padding)
     {
         this.padding = padding;
-        this.markDirty();
         this.updateSize();
         return this;
     }
@@ -526,7 +630,7 @@ public class ButtonComponent extends StandardComponent
     {
         this.fontRenderer = Minecraft.getInstance().getFontResourceManager().getFontRenderer(fontRenderer);
         this.fontRendererLocation = fontRenderer;
-        this.markDirty();
+        this.getClientSerializer().markDirty("fontRenderer");
         this.updateTextCache();
         this.updateSize();
         return this;
@@ -540,28 +644,29 @@ public class ButtonComponent extends StandardComponent
     public ButtonComponent setText(ITextComponent text)
     {
         this.text = text;
-        this.markDirty();
+        this.getClientSerializer().markDirty("text");
         this.updateTextCache();
         this.updateSize();
         return this;
     }
 
     /**
-     * Sets the amount of time in ms <i>(1/1000 of a second)</i> it takes for a tooltip to begin rendering.
+     * Sets the amount of time in the specified time unit it takes for a tooltip to begin rendering.
      *
-     * @param tooltipDelay The time it takes for tooltips to begin rendering in ms
+     * @param unit         The time unit to use
+     * @param tooltipDelay The time it takes for tooltips to begin rendering
      */
-    public ButtonComponent setTooltipDelay(long tooltipDelay)
+    public ButtonComponent setTooltipDelay(TimeUnit unit, long tooltipDelay)
     {
-        this.tooltipDelay = Math.max(0, tooltipDelay);
-        this.markDirty();
+        this.tooltipDelay = Math.max(0, unit.toMillis(tooltipDelay));
+        this.getClientSerializer().markDirty("tooltipDelay");
         return this;
     }
 
     /**
      * Sets the icon to the provided {@link IIcon}.
      *
-     * @param icon The icon to fetch the icon data from
+     * @param icon The icon to fetch the image data from
      */
     public ButtonComponent setIcon(IIcon icon)
     {
@@ -570,7 +675,7 @@ public class ButtonComponent extends StandardComponent
     }
 
     /**
-     * Sets the icon to the specified location, u, v, width, height and a texture size of 256x256.
+     * Sets the icon to the specified location, u, v, width, height and a source texture size of 256x256.
      *
      * @param location The location of the icon texture
      * @param u        The x position on the texture to start rendering
@@ -585,26 +690,26 @@ public class ButtonComponent extends StandardComponent
     }
 
     /**
-     * Sets the icon to the specified location, u, v, width, height, texture width, and texture height.
+     * Sets the icon to the specified location, u, v, width, height, source width, and source height.
      *
-     * @param location      The location of the icon texture
-     * @param u             The x position on the texture to start rendering
-     * @param v             The y position on the texture to start rendering
-     * @param width         The x size on the texture to fetch
-     * @param height        The y size of the texture to fetch
-     * @param textureWidth  The width of the entire texture
-     * @param textureHeight The height of the entire texture
+     * @param location     The location of the icon texture
+     * @param u            The x position on the texture to start rendering
+     * @param v            The y position on the texture to start rendering
+     * @param width        The x size on the texture to fetch
+     * @param height       The y size of the texture to fetch
+     * @param sourceWidth  The width of the icon source texture
+     * @param sourceHeight The height of the icon source texture
      */
-    public ButtonComponent setIcon(ResourceLocation location, int u, int v, int width, int height, int textureWidth, int textureHeight)
+    public ButtonComponent setIcon(ResourceLocation location, int u, int v, int width, int height, int sourceWidth, int sourceHeight)
     {
         this.iconLocation = location;
         this.iconU = u;
         this.iconV = v;
         this.iconWidth = width;
         this.iconHeight = height;
-        this.iconTextureWidth = textureWidth;
-        this.iconTextureHeight = textureHeight;
-        this.markDirty();
+        this.iconSourceWidth = sourceWidth;
+        this.iconSourceHeight = sourceHeight;
+        this.getClientSerializer().markDirty("icon");
         this.updateSize();
         return this;
     }
@@ -617,7 +722,7 @@ public class ButtonComponent extends StandardComponent
     public ButtonComponent setState(ButtonState state)
     {
         this.state = state;
-        this.markDirty();
+        this.getClientSerializer().markDirty("state");
         return this;
     }
 
@@ -633,7 +738,9 @@ public class ButtonComponent extends StandardComponent
         this.buttonColor = color;
         this.disabledButtonColor = disabledColor;
         this.hoveredButtonColor = hoveredColor;
-        this.markDirty();
+        this.getClientSerializer().markDirty("buttonColor");
+        this.getClientSerializer().markDirty("disabledButtonColor");
+        this.getClientSerializer().markDirty("hoveredButtonColor");
         return this;
     }
 
@@ -649,7 +756,9 @@ public class ButtonComponent extends StandardComponent
         this.textColor = color;
         this.disabledTextColor = disabledColor;
         this.hoveredTextColor = hoveredColor;
-        this.markDirty();
+        this.getClientSerializer().markDirty("textColor");
+        this.getClientSerializer().markDirty("disabledTextColor");
+        this.getClientSerializer().markDirty("hoveredTextColor");
         return this;
     }
 
@@ -662,9 +771,5 @@ public class ButtonComponent extends StandardComponent
     {
         this.clickListener = clickListener;
         return this;
-    }
-
-    private static void add(BufferBuilder buffer){
-
     }
 }

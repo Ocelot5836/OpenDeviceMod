@@ -18,11 +18,9 @@ import com.ocelot.opendevices.api.computer.window.WindowManager;
 import com.ocelot.opendevices.api.device.process.DeviceProcess;
 import com.ocelot.opendevices.api.device.process.ProcessInputRegistry;
 import com.ocelot.opendevices.api.device.process.ProcessWindowRenderer;
-import com.ocelot.opendevices.api.util.ImageFit;
 import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.api.util.TooltipRenderer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.texture.MissingTextureSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -42,8 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@OnlyIn(Dist.CLIENT)
-public class LaptopRenderer extends AbstractGui
+public class LaptopRenderer
 {
     public static final String MOD_VERSION;
 
@@ -150,7 +147,7 @@ public class LaptopRenderer extends AbstractGui
                 ProcessWindowRenderer<Computer, DeviceProcess<Computer>> renderer = ProcessInputRegistry.getWindowRenderer(process);
                 if (renderer != null)
                 {
-                    renderer.render(process, window, posX, posY, mouseX, mouseY, partialTicks);
+                    renderer.render(process, window, posX, posY, mouseX, mouseY, window.getId().equals(windowManager.getTopWindowId()), partialTicks);
                 }
             }
         }
