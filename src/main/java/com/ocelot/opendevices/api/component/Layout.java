@@ -2,6 +2,7 @@ package com.ocelot.opendevices.api.component;
 
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceConstants;
+import com.ocelot.opendevices.api.util.ClientSerializer;
 import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.api.util.SyncHelper;
 import com.ocelot.opendevices.api.util.TooltipRenderer;
@@ -28,7 +29,7 @@ public class Layout extends StandardComponent
     private int width;
     private int height;
 
-    private List<Component> components;
+    protected List<Component> components;
 
     public Layout()
     {
@@ -42,12 +43,20 @@ public class Layout extends StandardComponent
 
     public Layout(float x, float y, int width, int height)
     {
+        this.setClientSerializer(this.createSyncHelper());
         this.x = x;
         this.y = y;
         this.width = MathHelper.clamp(width, DeviceConstants.LAPTOP_MIN_APPLICATION_WIDTH, DeviceConstants.LAPTOP_MAX_APPLICATION_WIDTH + 2);
         this.height = MathHelper.clamp(height, DeviceConstants.LAPTOP_MIN_APPLICATION_HEIGHT, DeviceConstants.LAPTOP_MAX_APPLICATION_HEIGHT + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + 2);
         this.components = new ArrayList<>();
 
+        if (width < DeviceConstants.LAPTOP_MIN_APPLICATION_WIDTH || width > DeviceConstants.LAPTOP_MAX_APPLICATION_WIDTH || height > DeviceConstants.LAPTOP_MAX_APPLICATION_HEIGHT || height < DeviceConstants.LAPTOP_MIN_APPLICATION_HEIGHT)
+        {
+            OpenDevices.LOGGER.warn("Layouts must be between " + DeviceConstants.LAPTOP_MIN_APPLICATION_WIDTH + "x" + DeviceConstants.LAPTOP_MIN_APPLICATION_HEIGHT + " and " + DeviceConstants.LAPTOP_MAX_APPLICATION_WIDTH + "x" + DeviceConstants.LAPTOP_MAX_APPLICATION_HEIGHT + ". Clamping size to screen.");
+        }
+    }
+
+    protected SyncHelper createSyncHelper(){
         SyncHelper syncHelper = new SyncHelper(this::markDirty);
         {
             syncHelper.addSerializer("components", nbt ->
@@ -69,12 +78,7 @@ public class Layout extends StandardComponent
                 }
             });
         }
-        this.setClientSerializer(syncHelper);
-
-        if (width < DeviceConstants.LAPTOP_MIN_APPLICATION_WIDTH || width > DeviceConstants.LAPTOP_MAX_APPLICATION_WIDTH || height > DeviceConstants.LAPTOP_MAX_APPLICATION_HEIGHT || height < DeviceConstants.LAPTOP_MIN_APPLICATION_HEIGHT)
-        {
-            OpenDevices.LOGGER.warn("Layouts must be between " + DeviceConstants.LAPTOP_MIN_APPLICATION_WIDTH + "x" + DeviceConstants.LAPTOP_MIN_APPLICATION_HEIGHT + " and " + DeviceConstants.LAPTOP_MAX_APPLICATION_WIDTH + "x" + DeviceConstants.LAPTOP_MAX_APPLICATION_HEIGHT + ". Clamping size to screen.");
-        }
+        return syncHelper;
     }
 
     /**
