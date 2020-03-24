@@ -18,7 +18,18 @@ public interface TaskBar
     /**
      * @return The windows that are currently displayed on the task bar
      */
+    @Deprecated
     Window[] getDisplayedWindows();
+
+    /**
+     * @return The icons displayed on the task bar
+     */
+    TaskbarIcon[] getDisplayedIcons();
+
+    /**
+     * @return The icons displayed in the tray
+     */
+    TrayIcon[] getTrayIcons();
 
     /**
      * @return The height of the task bar
