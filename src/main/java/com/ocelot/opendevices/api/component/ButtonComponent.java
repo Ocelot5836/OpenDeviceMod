@@ -9,6 +9,8 @@ import com.ocelot.opendevices.api.util.icon.IIcon;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.StringUtils;
@@ -26,6 +28,13 @@ import static org.lwjgl.opengl.GL11C.*;
  */
 public class ButtonComponent extends StandardComponent
 {
+    public static final int DEFAULT_DISABLED_BUTTON_COLOR = 0xFFFFFFFF;
+    public static final int DEFAULT_BUTTON_COLOR = 0xFFAAAAAA;
+    public static final int DEFAULT_HOVERED_BUTTON_COLOR = 0xFFBDC6FF;
+    public static final int DEFAULT_DISABLED_TEXT_COLOR = 0xFFE0E0E0;
+    public static final int DEFAULT_TEXT_COLOR = 0xFFA0A0A0;
+    public static final int DEFAULT_HOVERED_TEXT_COLOR = 0xFFFFFFA0;
+
     private int x;
     private int y;
     private int width;
@@ -48,7 +57,6 @@ public class ButtonComponent extends StandardComponent
     private int iconTextureHeight;
 
     private ButtonState state;
-    //TODO implement button colors
     private int disabledButtonColor;
     private int buttonColor;
     private int hoveredButtonColor;
@@ -137,12 +145,11 @@ public class ButtonComponent extends StandardComponent
         if (this.state != ButtonState.INVISIBLE)
         {
             boolean hovered = this.isHovered(mouseX, mouseY);
-            int offset = this.state == ButtonState.DISABLED ? 0 : hovered ? 2 : 1;
             GlStateManager.enableBlend();
             GlStateManager.blendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
 
             Minecraft.getInstance().getTextureManager().bindTexture(DeviceConstants.COMPONENTS_LOCATION);
-            //                    RenderUtil.glColor(this.getWindow().getLaptop().readSetting(LaptopSettings.DESKTOP_TEXT_COLOR));
+            RenderUtil.glColor(this.state == ButtonState.DISABLED ? this.disabledButtonColor : hovered ? this.hoveredButtonColor : this.buttonColor);
 
             /* Corners */
             RenderUtil.drawRectWithTexture(x, y, 96 + offset * 5, 12, 2, 2, 2, 2);
@@ -369,14 +376,6 @@ public class ButtonComponent extends StandardComponent
     }
 
     /**
-     * @return The color of the buttons when they are disabled
-     */
-    public int getDisabledButtonColor()
-    {
-        return this.disabledButtonColor;
-    }
-
-    /**
      * @return The color of the buttons when they are normal
      */
     public int getButtonColor()
@@ -393,11 +392,11 @@ public class ButtonComponent extends StandardComponent
     }
 
     /**
-     * @return The color of text when its disabled
+     * @return The color of the text when its disabled
      */
     public int getDisabledTextColor()
     {
-        return this.disabledTextColor;
+        return disabledTextColor;
     }
 
     /**
@@ -663,5 +662,9 @@ public class ButtonComponent extends StandardComponent
     {
         this.clickListener = clickListener;
         return this;
+    }
+
+    private static void add(BufferBuilder buffer){
+
     }
 }
