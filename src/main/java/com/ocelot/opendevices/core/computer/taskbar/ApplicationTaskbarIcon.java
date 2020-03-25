@@ -44,10 +44,10 @@ public class ApplicationTaskbarIcon implements TaskbarIcon
             return;
         }
 
-        if (this.computer.executeProcess(this.applicationId) != null)
+        if (this.computer.canExecuteProcess(this.applicationId) && this.computer.executeProcess(this.applicationId) != null)
         {
             Minecraft.getInstance().getSoundHandler().play(SimpleSound.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
-            // TODO send notification that the process failed to execute
+            // TODO send notification that process failed to execute
         }
     }
 
