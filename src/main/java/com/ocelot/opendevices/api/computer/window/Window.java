@@ -94,7 +94,7 @@ public interface Window
      * @return The icon of this window or null for no custom icon
      */
     @Nullable
-    ResourceLocation getIcon();
+    ResourceLocation getIconSprite();
 
     /**
      * Checks to see if the provided x and y is within this window.

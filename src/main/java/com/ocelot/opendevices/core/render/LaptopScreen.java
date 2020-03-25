@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.computer.Computer;
+import com.ocelot.opendevices.api.computer.TaskbarIcon;
 import com.ocelot.opendevices.api.computer.window.Window;
 import com.ocelot.opendevices.api.device.process.DeviceProcess;
 import com.ocelot.opendevices.api.device.process.ProcessInputHandler;
@@ -44,10 +45,6 @@ public class LaptopScreen extends Screen implements TooltipRenderer
     {
         super(new TranslationTextComponent("screen." + OpenDevices.MOD_ID + ".laptop"));
         this.laptop = laptop;
-        if (this.laptop.getProcessIds().isEmpty())
-        {
-            this.laptop.executeProcess(new ResourceLocation(OpenDevices.MOD_ID, "test"));
-        }
     }
 
     @Override
@@ -245,21 +242,18 @@ public class LaptopScreen extends Screen implements TooltipRenderer
         }
         else
         {
-            Window[] displayedWindows = taskBar.getDisplayedWindows();
+            TaskbarIcon[] displayedIcons = taskBar.getDisplayedIcons();
             int size = taskBar.isEnlarged() ? 2 : 1;
 
-            Window hoveredWindow = null;
-            for (int i = 0; i < displayedWindows.length; i++)
+            for (int i = 0; i < displayedIcons.length; i++)
             {
-                Window window = displayedWindows[i];
+                TaskbarIcon window = displayedIcons[i];
                 if (RenderUtil.isMouseInside(mouseX - (this.posX + DeviceConstants.LAPTOP_GUI_BORDER), mouseY - (this.posY + DeviceConstants.LAPTOP_GUI_BORDER), 2 + (8 * size + 5) * i, DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 2, 2 + (8 * size + 5) * i + 12 * size, DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 2 + 12 * size))
                 {
-                    hoveredWindow = window;
+                    window.execute();
                     break;
                 }
             }
-
-            windowManager.focusWindow(hoveredWindow != null ? hoveredWindow.getId() : null);
         }
 
         return super.mouseClicked(mouseX, mouseY, mouseButton);

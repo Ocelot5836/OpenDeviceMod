@@ -9,6 +9,7 @@ import com.ocelot.opendevices.api.LaptopSettings;
 import com.ocelot.opendevices.api.component.SpinnerComponent;
 import com.ocelot.opendevices.api.computer.Computer;
 import com.ocelot.opendevices.api.computer.TaskBar;
+import com.ocelot.opendevices.api.computer.TaskbarIcon;
 import com.ocelot.opendevices.api.computer.desktop.Desktop;
 import com.ocelot.opendevices.api.computer.desktop.DesktopBackground;
 import com.ocelot.opendevices.api.computer.desktop.LocalDesktopBackground;
@@ -20,6 +21,8 @@ import com.ocelot.opendevices.api.device.process.ProcessInputRegistry;
 import com.ocelot.opendevices.api.device.process.ProcessWindowRenderer;
 import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.api.util.TooltipRenderer;
+import com.ocelot.opendevices.core.computer.taskbar.ApplicationTaskbarIcon;
+import com.ocelot.opendevices.core.computer.taskbar.WindowTaskbarIcon;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.texture.MissingTextureSprite;
@@ -29,8 +32,6 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModList;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
@@ -38,6 +39,7 @@ import org.codehaus.plexus.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 public class LaptopRenderer
@@ -180,18 +182,21 @@ public class LaptopRenderer
 
             /* Window Icons */
             {
-                Window[] displayedWindows = taskBar.getDisplayedWindows();
+                TaskbarIcon[] displayedIcons = taskBar.getDisplayedIcons();
                 int size = taskBar.isEnlarged() ? 2 : 1;
 
-                for (int i = 0; i < displayedWindows.length; i++)
+                for (int i = 0; i < displayedIcons.length; i++)
                 {
-                    Window window = displayedWindows[i];
-                    TextureAtlasSprite icon = IconManager.getWindowIcon(window.getIcon());
+                    TaskbarIcon taskbarIcon = displayedIcons[i];
+                    TextureAtlasSprite icon = IconManager.getWindowIcon(taskbarIcon.getIconSprite());
                     textureManager.bindTexture(IconManager.LOCATION_WINDOW_ICONS_TEXTURE);
                     RenderUtil.drawRectWithTexture(posX + 4 + (8 * size + 5) * i, posY + screenHeight - taskBar.getHeight() + 4, 8 * size, 8 * size, icon);
-                    textureManager.bindTexture(DeviceConstants.WINDOW_LOCATION);
-                    RenderUtil.glColor(highlightColor);
-                    RenderUtil.drawRectWithTexture(posX + 2 + (8 * size + 5) * i, posY + screenHeight - taskBar.getHeight() + 2, 3, 15, 12 * size, 12 * size, 12, 12, 256, 256);
+                    if (taskbarIcon.isActive())
+                    {
+                        textureManager.bindTexture(DeviceConstants.WINDOW_LOCATION);
+                        RenderUtil.glColor(highlightColor);
+                        RenderUtil.drawRectWithTexture(posX + 2 + (8 * size + 5) * i, posY + screenHeight - taskBar.getHeight() + 2, 3, 15, 12 * size, 12 * size, 12, 12, 256, 256);
+                    }
                     GlStateManager.color4f(1, 1, 1, 1);
                 }
             }
@@ -205,22 +210,34 @@ public class LaptopRenderer
 
         /* Task bar */
         {
-            Window[] displayedWindows = taskBar.getDisplayedWindows();
+            TaskbarIcon[] displayedIcons = taskBar.getDisplayedIcons();
             int size = taskBar.isEnlarged() ? 2 : 1;
 
-            for (int i = 0; i < displayedWindows.length; i++)
+            for (int i = 0; i < displayedIcons.length; i++)
             {
-                Window window = displayedWindows[i];
-                String title = window.getTitle();
-                if (!StringUtils.isEmpty(title) && RenderUtil.isMouseInside(mouseX, mouseY, posX + 2 + (8 * size + 5) * i, posY + screenHeight - taskBar.getHeight() + 2, posX + 2 + (8 * size + 5) * i + 12 * size, posY + screenHeight - taskBar.getHeight() + 2 + 12 * size))
+                TaskbarIcon taskbarIcon = displayedIcons[i];
+                String name = taskbarIcon.getName();
+                if (!StringUtils.isEmpty(name) && RenderUtil.isMouseInside(mouseX, mouseY, posX + 2 + (8 * size + 5) * i, posY + screenHeight - taskBar.getHeight() + 2, posX + 2 + (8 * size + 5) * i + 12 * size, posY + screenHeight - taskBar.getHeight() + 2 + 12 * size))
                 {
                     List<String> tooltip = new ArrayList<>();
-                    tooltip.add(title);
+                    tooltip.add(name);
                     if (flag.isAdvanced())
                     {
-                        DeviceProcess<Computer> process = computer.getProcess(window.getProcessId());
-                        ResourceLocation registryName = process == null ? MissingTextureSprite.getLocation() : DeviceRegistries.getProcessRegistryName(process);
-                        tooltip.add(TextFormatting.DARK_GRAY + String.valueOf(registryName == null ? MissingTextureSprite.getLocation() : registryName));
+                        if (taskbarIcon instanceof ApplicationTaskbarIcon)
+                        {
+                            tooltip.add(TextFormatting.DARK_GRAY + String.valueOf(((ApplicationTaskbarIcon) taskbarIcon).getApplicationId()));
+                        }
+                        if (taskbarIcon instanceof WindowTaskbarIcon)
+                        {
+                            Window window = windowManager.getWindow(((WindowTaskbarIcon) taskbarIcon).getWindowId());
+                            if (window != null)
+                            {
+                                DeviceProcess<Computer> process = computer.getProcess(window.getProcessId());
+                                ResourceLocation registryName = process == null ? MissingTextureSprite.getLocation() : DeviceRegistries.getProcessRegistryName(process);
+                                tooltip.add(TextFormatting.DARK_GRAY + String.valueOf(registryName == null ? MissingTextureSprite.getLocation() : registryName));
+                            }
+                        }
+                        tooltip.add(TextFormatting.DARK_GRAY + taskbarIcon.getType().name().toLowerCase(Locale.ROOT));
                     }
                     renderer.renderTooltip(tooltip, mouseX, mouseY);
                     return;

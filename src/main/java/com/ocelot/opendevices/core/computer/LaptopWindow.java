@@ -113,7 +113,7 @@ public class LaptopWindow implements Window, INBTSerializable<CompoundNBT>
 
     @Nullable
     @Override
-    public ResourceLocation getIcon()
+    public ResourceLocation getIconSprite()
     {
         return icon;
     }

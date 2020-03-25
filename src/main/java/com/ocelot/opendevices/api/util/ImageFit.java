@@ -25,6 +25,6 @@ public enum ImageFit
      */
     public static ImageFit deserialize(int id)
     {
-        return values()[id % values().length];
+        return id < 0 || id >= values().length ? FILL : values()[id];
     }
 }
