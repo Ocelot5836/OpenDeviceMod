@@ -305,7 +305,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
     }
 
     @Override
-    protected void randomizeAddress()
+    public void randomizeAddress()
     {
         this.address = UUID.randomUUID();
     }
