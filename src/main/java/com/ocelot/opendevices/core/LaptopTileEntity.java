@@ -156,7 +156,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
 
     public boolean syncExecuteProcess(ResourceLocation processName, UUID processId)
     {
-        if (this.processes.size() >= DeviceConstants.MAX_COMPUTER_PROCESSES)
+        if (!this.canExecuteProcess(processName))
         {
             OpenDevices.LOGGER.warn("Could not execute process with name '" + processName + "' for Laptop as there are more than the maximum processes running. Skipping!");
             return false;
@@ -210,10 +210,21 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
     }
 
     @Override
+    public boolean canExecuteProcess(ResourceLocation processId)
+    {
+        return this.processes.size() < DeviceConstants.MAX_COMPUTER_PROCESSES;
+    }
+
+    @Override
     public UUID executeProcess(ResourceLocation processName)
     {
-        UUID processId = UUID.randomUUID();
+        if (this.canExecuteProcess(processName))
+        {
+            OpenDevices.LOGGER.warn("Could not execute process with name '" + processName + "' for Laptop as there are more than the maximum processes running. Skipping!");
+            return null;
+        }
 
+        UUID processId = UUID.randomUUID();
         if (this.isClient())
         {
             TaskManager.sendToServer(new ExecuteProcessTask(this.getPos(), processName, processId), TaskManager.TaskReceiver.SENDER_AND_NEARBY);

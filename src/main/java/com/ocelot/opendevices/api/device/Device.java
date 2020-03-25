@@ -25,6 +25,17 @@ public interface Device extends Executor
     }
 
     /**
+     * Checks to see if a new process can be executed.
+     *
+     * @param processId The id of the process to check
+     * @return Whether or not this process can execute the specified process
+     */
+    default boolean canExecuteProcess(ResourceLocation processId)
+    {
+        return this.supportsProcesses();
+    }
+
+    /**
      * Creates and starts a new process.
      *
      * @param processId The id of the process to start
