@@ -1,6 +1,7 @@
 package com.ocelot.opendevices.block;
 
 import com.ocelot.opendevices.OpenDevices;
+import com.ocelot.opendevices.api.device.Device;
 import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.api.util.ShapeHelper;
 import com.ocelot.opendevices.core.LaptopTileEntity;
@@ -18,12 +19,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.DyeColor;
 import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
-import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.shapes.IBooleanFunction;
@@ -50,6 +49,15 @@ public class LaptopBlock extends DeviceBlock implements IWaterLoggable
         this.setDefaultState(this.getStateContainer().getBaseState().with(HORIZONTAL_FACING, Direction.NORTH).with(SCREEN, false).with(WATERLOGGED, false));
         DeviceBlocks.register(this, new DeviceBlockItem(this));
         this.color = color;
+    }
+
+    @Override
+    protected void randomizeAddress(Device device, World world, BlockPos pos)
+    {
+        if (device instanceof LaptopTileEntity)
+        {
+            ((LaptopTileEntity) device).randomizeAddress();
+        }
     }
 
     @Override

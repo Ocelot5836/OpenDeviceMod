@@ -83,6 +83,11 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
         }
     }
 
+    public void randomizeAddress()
+    {
+        this.address = UUID.randomUUID();
+    }
+
     @Override
     public void tick()
     {
@@ -302,12 +307,6 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
     {
         super.read(nbt);
         this.open = nbt.getBoolean("open");
-    }
-
-    @Override
-    public void randomizeAddress()
-    {
-        this.address = UUID.randomUUID();
     }
 
     @Override

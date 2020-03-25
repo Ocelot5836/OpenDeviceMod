@@ -22,11 +22,6 @@ public abstract class DeviceTileEntity extends TileEntity
     }
 
     /**
-     * Randomizes the address of this device if needed.
-     */
-    protected abstract void randomizeAddress();
-
-    /**
      * Notifies the world that an update has occurred. Should be called whenever something should be saved to file.
      */
     public void notifyUpdate()

@@ -71,11 +71,6 @@ public interface Device extends Executor
     }
 
     /**
-     * Randomizes the address if the previous address exists.
-     */
-    void randomizeAddress();
-
-    /**
      * @return The world the laptop is in
      */
     IWorld getWorld();
