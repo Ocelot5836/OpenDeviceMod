@@ -60,7 +60,7 @@ public class TestProcessLayoutSupplier implements Function<Integer, Layout>
             });
             layout.addComponent(button);
 
-            ItemStackComponent stackComponent = new ItemStackComponent(80,0, new ItemStack(Blocks.DRAGON_EGG));
+            ItemStackComponent stackComponent = new ItemStackComponent(25,25, new ItemStack(Blocks.DIAMOND_ORE, 7));
             layout.addComponent(stackComponent);
 
             //                for (int i = 0; i < Icons.values().length; i++)

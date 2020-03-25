@@ -89,6 +89,8 @@ public class LaptopRenderer
         WindowManager windowManager = computer.getWindowManager();
         TaskBar taskBar = computer.getTaskBar();
 
+        GlStateManager.color4f(1, 1, 1, 1);
+
         /* Desktop Background */
         {
             DesktopBackground background = desktop.getBackground();
@@ -213,6 +215,8 @@ public class LaptopRenderer
     {
         WindowManager windowManager = computer.getWindowManager();
         TaskBar taskBar = computer.getTaskBar();
+
+        GlStateManager.color4f(1, 1, 1, 1);
 
         /* Task bar */
         {

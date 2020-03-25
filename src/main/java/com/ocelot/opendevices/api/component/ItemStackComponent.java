@@ -5,6 +5,7 @@ import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.util.SyncHelper;
 import com.ocelot.opendevices.api.util.TooltipRenderer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
 
@@ -15,6 +16,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author Ocelot
  * @see ItemStack
+ * @deprecated TODO Move to {@link ImageComponent} with FBO
  */
 public class ItemStackComponent extends StandardComponent
 {
@@ -78,10 +80,21 @@ public class ItemStackComponent extends StandardComponent
     {
         if (this.visible)
         {
+            RenderHelper.enableGUIStandardItemLighting();
             GlStateManager.pushMatrix();
-            GlStateManager.translatef(posX + this.x, posY + this.y, 0);
-            GlStateManager.scalef(this.size / 16f, this.size / 16f, 0);
-            Minecraft.getInstance().getItemRenderer().renderItemAndEffectIntoGUI(this.stack, 0, 0);
+            {
+                GlStateManager.translatef(posX + this.x, posY + this.y, 100);
+
+                GlStateManager.pushMatrix();
+                {
+                    GlStateManager.scalef(this.size / 16f, this.size / 16f, 1); // TODO render into a fbo and move to image component?
+                    Minecraft.getInstance().getItemRenderer().renderItemAndEffectIntoGUI(this.stack, 0, 0);
+                }
+                GlStateManager.popMatrix();
+
+                Minecraft.getInstance().getItemRenderer().renderItemOverlays(Minecraft.getInstance().fontRenderer, this.stack, 0, 0);
+                GlStateManager.enableAlphaTest();
+            }
             GlStateManager.popMatrix();
         }
     }
