@@ -66,7 +66,7 @@ public class TextComponent extends StandardComponent
 
     public TextComponent(float x, float y, int maxWidth, ResourceLocation fontRenderer, Collection<ITextComponent> texts)
     {
-        this.createSyncHelper();
+        this.setClientSerializer(this.createSyncHelper());
         this.x = x;
         this.y = y;
         this.maxWidth = maxWidth;
@@ -82,7 +82,7 @@ public class TextComponent extends StandardComponent
         texts.forEach(this::addLine);
     }
 
-    private void createSyncHelper()
+    protected SyncHelper createSyncHelper()
     {
         SyncHelper syncHelper = new SyncHelper(this::markDirty);
         {
@@ -100,7 +100,7 @@ public class TextComponent extends StandardComponent
             syncHelper.addSerializer("renderShadow", nbt -> nbt.putBoolean("renderShadow", this.renderShadow), nbt -> this.renderShadow = nbt.getBoolean("renderShadow"));
             syncHelper.addSerializer("visible", nbt -> nbt.putBoolean("visible", this.visible), nbt -> this.visible = nbt.getBoolean("visible"));
         }
-        this.setClientSerializer(syncHelper);
+        return syncHelper;
     }
 
     private void serializeText(CompoundNBT nbt)

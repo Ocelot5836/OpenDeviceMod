@@ -1,11 +1,10 @@
 package com.ocelot.opendevices.core.computer.process;
 
 import com.ocelot.opendevices.api.DeviceConstants;
-import com.ocelot.opendevices.api.component.ButtonComponent;
-import com.ocelot.opendevices.api.component.ImageComponent;
-import com.ocelot.opendevices.api.component.Layout;
-import com.ocelot.opendevices.api.component.ScrollableLayout;
+import com.ocelot.opendevices.api.component.*;
 import com.ocelot.opendevices.api.util.icon.Alphabet;
+import net.minecraft.block.Blocks;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.StringTextComponent;
 
 import java.util.Locale;
@@ -60,6 +59,10 @@ public class TestProcessLayoutSupplier implements Function<Integer, Layout>
                 return false;
             });
             layout.addComponent(button);
+
+            ItemStackComponent stackComponent = new ItemStackComponent(80,0, new ItemStack(Blocks.DRAGON_EGG));
+            layout.addComponent(stackComponent);
+
             //                for (int i = 0; i < Icons.values().length; i++)
             //                {
             //                    int x = i % 12;
