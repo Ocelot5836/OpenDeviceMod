@@ -20,11 +20,13 @@ import com.ocelot.opendevices.api.device.process.DeviceProcess;
 import com.ocelot.opendevices.api.device.process.ProcessInputRegistry;
 import com.ocelot.opendevices.api.device.process.ProcessWindowRenderer;
 import com.ocelot.opendevices.api.util.RenderUtil;
+import com.ocelot.opendevices.api.util.ShapeRenderer;
 import com.ocelot.opendevices.api.util.TooltipRenderer;
 import com.ocelot.opendevices.core.computer.taskbar.ApplicationTaskbarIcon;
 import com.ocelot.opendevices.core.computer.taskbar.WindowTaskbarIcon;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.texture.MissingTextureSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -163,20 +165,24 @@ public class LaptopRenderer
 
             RenderUtil.glColor(color);
             {
+                BufferBuilder buffer = ShapeRenderer.begin();
+
                 /* Corners */
-                RenderUtil.drawRectWithTexture(posX, posY + screenHeight - height, 0, 15, 1, 1, 1, 1);
-                RenderUtil.drawRectWithTexture(posX, posY + screenHeight - 1, 0, 17, 1, 1, 1, 1);
-                RenderUtil.drawRectWithTexture(posX + screenWidth - 1, posY + screenHeight - height, 2, 15, 1, 1, 1, 1);
-                RenderUtil.drawRectWithTexture(posX + screenWidth - 1, posY + screenHeight - 1, 2, 17, 1, 1, 1, 1);
+                ShapeRenderer.drawRectWithTexture(buffer, posX, posY + screenHeight - height, 0, 15, 1, 1, 1, 1);
+                ShapeRenderer.drawRectWithTexture(buffer, posX, posY + screenHeight - 1, 0, 17, 1, 1, 1, 1);
+                ShapeRenderer.drawRectWithTexture(buffer, posX + screenWidth - 1, posY + screenHeight - height, 2, 15, 1, 1, 1, 1);
+                ShapeRenderer.drawRectWithTexture(buffer, posX + screenWidth - 1, posY + screenHeight - 1, 2, 17, 1, 1, 1, 1);
 
                 /* Edges */
-                RenderUtil.drawRectWithTexture(posX, posY + screenHeight - height + 1, 0, 16, 1, height - 2, 1, 1);
-                RenderUtil.drawRectWithTexture(posX + 1, posY + screenHeight - height, 1, 15, screenWidth - 2, 1, 1, 1);
-                RenderUtil.drawRectWithTexture(posX + screenWidth - 1, posY + screenHeight - height + 1, 2, 16, 1, height - 2, 1, 1);
-                RenderUtil.drawRectWithTexture(posX + 1, posY + screenHeight - 1, 1, 17, screenWidth - 2, 1, 1, 1);
+                ShapeRenderer.drawRectWithTexture(buffer, posX, posY + screenHeight - height + 1, 0, 16, 1, height - 2, 1, 1);
+                ShapeRenderer.drawRectWithTexture(buffer, posX + 1, posY + screenHeight - height, 1, 15, screenWidth - 2, 1, 1, 1);
+                ShapeRenderer.drawRectWithTexture(buffer, posX + screenWidth - 1, posY + screenHeight - height + 1, 2, 16, 1, height - 2, 1, 1);
+                ShapeRenderer.drawRectWithTexture(buffer, posX + 1, posY + screenHeight - 1, 1, 17, screenWidth - 2, 1, 1, 1);
 
                 /* Center */
-                RenderUtil.drawRectWithTexture(posX + 1, posY + screenHeight - height + 1, 1, 16, screenWidth - 2, height - 2, 1, 1);
+                ShapeRenderer.drawRectWithTexture(buffer, posX + 1, posY + screenHeight - height + 1, 1, 16, screenWidth - 2, height - 2, 1, 1);
+
+                ShapeRenderer.end();
             }
             GlStateManager.color4f(1, 1, 1, 1);
 
@@ -190,12 +196,12 @@ public class LaptopRenderer
                     TaskbarIcon taskbarIcon = displayedIcons[i];
                     TextureAtlasSprite icon = IconManager.getWindowIcon(taskbarIcon.getIconSprite());
                     textureManager.bindTexture(IconManager.LOCATION_WINDOW_ICONS_TEXTURE);
-                    RenderUtil.drawRectWithTexture(posX + 4 + (8 * size + 5) * i, posY + screenHeight - taskBar.getHeight() + 4, 8 * size, 8 * size, icon);
+                    ShapeRenderer.drawRectWithTexture(posX + 4 + (8 * size + 5) * i, posY + screenHeight - taskBar.getHeight() + 4, 8 * size, 8 * size, icon);
                     if (taskbarIcon.isActive())
                     {
                         textureManager.bindTexture(DeviceConstants.WINDOW_LOCATION);
                         RenderUtil.glColor(highlightColor);
-                        RenderUtil.drawRectWithTexture(posX + 2 + (8 * size + 5) * i, posY + screenHeight - taskBar.getHeight() + 2, 3, 15, 12 * size, 12 * size, 12, 12, 256, 256);
+                        ShapeRenderer.drawRectWithTexture(posX + 2 + (8 * size + 5) * i, posY + screenHeight - taskBar.getHeight() + 2, 3, 15, 12 * size, 12 * size, 12, 12, 256, 256);
                     }
                     GlStateManager.color4f(1, 1, 1, 1);
                 }
@@ -275,7 +281,7 @@ public class LaptopRenderer
         GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 
-        RenderUtil.drawRectWithTexture(windowX + posX, windowY + posY, 26 + (!enabled ? 0 : window.isWithinButton(mouseX - posX, mouseY - posY, partialTicks) ? 2 : 1) * DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE, 0, DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE, DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE, DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE, DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE);
+        ShapeRenderer.drawRectWithTexture(windowX + posX, windowY + posY, 26 + (!enabled ? 0 : window.isWithinButton(mouseX - posX, mouseY - posY, partialTicks) ? 2 : 1) * DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE, 0, DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE, DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE, DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE, DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE);
     }
 
     private static void renderWindow(int posX, int posY, Window window, int color, int borderColor, float partialTicks)
@@ -288,21 +294,27 @@ public class LaptopRenderer
         int windowWidth = window.getWidth();
         int windowHeight = window.getHeight();
 
-        /* Corners */
-        RenderUtil.drawRectWithTexture(posX + windowX, posY + windowY, 0, 0, 1, 13, 1, 13);
-        RenderUtil.drawRectWithTexture(posX + windowX + windowWidth - 13, posY + windowY, 2, 0, 13, 13, 13, 13);
-        RenderUtil.drawRectWithTexture(posX + windowX + windowWidth - 1, posY + windowY + windowHeight - 1, 14, 14, 1, 1, 1, 1);
-        RenderUtil.drawRectWithTexture(posX + windowX, posY + windowY + windowHeight - 1, 0, 14, 1, 1, 1, 1);
+        {
+            BufferBuilder buffer = ShapeRenderer.begin();
 
-        /* Edges */
-        RenderUtil.drawRectWithTexture(posX + windowX + 1, posY + windowY, 1, 0, windowWidth - 14, 13, 1, 13);
-        RenderUtil.drawRectWithTexture(posX + windowX + windowWidth - 1, posY + windowY + 13, 14, 13, 1, windowHeight - 14, 1, 1);
-        RenderUtil.drawRectWithTexture(posX + windowX + 1, posY + windowY + windowHeight - 1, 1, 14, windowWidth - 2, 1, 13, 1);
-        RenderUtil.drawRectWithTexture(posX + windowX, posY + windowY + 13, 0, 13, 1, windowHeight - 14, 1, 1);
+            /* Corners */
+            ShapeRenderer.drawRectWithTexture(buffer, posX + windowX, posY + windowY, 0, 0, 1, 13, 1, 13);
+            ShapeRenderer.drawRectWithTexture(buffer, posX + windowX + windowWidth - 13, posY + windowY, 2, 0, 13, 13, 13, 13);
+            ShapeRenderer.drawRectWithTexture(buffer, posX + windowX + windowWidth - 1, posY + windowY + windowHeight - 1, 14, 14, 1, 1, 1, 1);
+            ShapeRenderer.drawRectWithTexture(buffer, posX + windowX, posY + windowY + windowHeight - 1, 0, 14, 1, 1, 1, 1);
+
+            /* Edges */
+            ShapeRenderer.drawRectWithTexture(buffer, posX + windowX + 1, posY + windowY, 1, 0, windowWidth - 14, 13, 1, 13);
+            ShapeRenderer.drawRectWithTexture(buffer, posX + windowX + windowWidth - 1, posY + windowY + 13, 14, 13, 1, windowHeight - 14, 1, 1);
+            ShapeRenderer.drawRectWithTexture(buffer, posX + windowX + 1, posY + windowY + windowHeight - 1, 1, 14, windowWidth - 2, 1, 13, 1);
+            ShapeRenderer.drawRectWithTexture(buffer, posX + windowX, posY + windowY + 13, 0, 13, 1, windowHeight - 14, 1, 1);
+
+            ShapeRenderer.end();
+        }
 
         /* Center */
         RenderUtil.glColor(color);
-        RenderUtil.drawRectWithTexture(posX + windowX + 1, posY + windowY + 13, 1, 13, windowWidth - 2, windowHeight - 14, 13, 1);
+        ShapeRenderer.drawRectWithTexture(posX + windowX + 1, posY + windowY + 13, 1, 13, windowWidth - 2, windowHeight - 14, 13, 1);
 
         GlStateManager.color4f(1, 1, 1, 1);
     }

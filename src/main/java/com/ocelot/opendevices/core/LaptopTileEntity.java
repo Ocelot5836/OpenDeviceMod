@@ -156,6 +156,12 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
 
     public boolean syncExecuteProcess(ResourceLocation processName, UUID processId)
     {
+        if (this.processes.size() >= DeviceConstants.MAX_COMPUTER_PROCESSES)
+        {
+            OpenDevices.LOGGER.warn("Could not execute process with name '" + processName + "' for Laptop as there are more than the maximum processes running. Skipping!");
+            return false;
+        }
+
         DeviceProcessRegistryEntry entry = DeviceRegistries.PROCESSES.getValue(processName);
 
         if (entry == null)
@@ -218,6 +224,10 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
             {
                 this.initProcess(processId);
                 TaskManager.sendToTracking(new ExecuteProcessTask(this.getPos(), processName, processId), this.getWorld(), this.getPos());
+            }
+            else
+            {
+                return null;
             }
         }
 
@@ -320,7 +330,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
         this.taskBar.deserializeNBT(nbt.getCompound("taskBar"));
 
         ListNBT processesNbt = nbt.getList("processes", Constants.NBT.TAG_COMPOUND);
-        for (int i = 0; i < processesNbt.size(); i++)
+        for (int i = 0; i < Math.min(processesNbt.size(), DeviceConstants.MAX_COMPUTER_PROCESSES); i++)
         {
             DeviceProcess<Computer> process = ProcessSerializer.read(Computer.class, this, processesNbt.getCompound(i));
             if (process != null)

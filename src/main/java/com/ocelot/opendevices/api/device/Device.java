@@ -28,7 +28,7 @@ public interface Device extends Executor
      * Creates and starts a new process.
      *
      * @param processId The id of the process to start
-     * @return The id assigned to the process
+     * @return The id assigned to the process or null if the process could not be created
      * @throws IllegalArgumentException      If the process registered under that id is either null or not for this device
      * @throws UnsupportedOperationException If this devices does not support processes. Can be checked by using {@link #supportsProcesses()}
      */

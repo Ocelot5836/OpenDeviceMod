@@ -24,7 +24,7 @@ public class WindowTaskbarIcon implements TaskbarIcon
 
     public WindowTaskbarIcon(Computer computer, UUID windowId)
     {
-        this.windowManager = computer.getWindowManager();
+        this(computer);
         this.windowId = windowId;
     }
 

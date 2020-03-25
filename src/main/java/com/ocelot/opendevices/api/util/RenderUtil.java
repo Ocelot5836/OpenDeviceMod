@@ -164,9 +164,6 @@ public class RenderUtil
         drawRectWithTexture(x, y, 0, sprite.getMinU(), sprite.getMinV(), width, height, sprite.getMaxU() - sprite.getMinU(), sprite.getMaxV() - sprite.getMinV(), 1, 1);
     }
 
-    /**
-     * @deprecated Use {@link ShapeRenderer}
-     */
     public static void drawRectWithTexture(float x, float y, float u, float v, float width, float height, float textureWidth, float textureHeight, int sourceWidth, int sourceHeight, ImageFit fit)
     {
         drawRectWithTexture(x, y, 0, u, v, width, height, textureWidth, textureHeight, sourceWidth, sourceHeight, fit);

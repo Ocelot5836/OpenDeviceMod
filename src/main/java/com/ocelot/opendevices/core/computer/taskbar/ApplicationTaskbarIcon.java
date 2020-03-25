@@ -1,14 +1,12 @@
 package com.ocelot.opendevices.core.computer.taskbar;
 
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.api.DeviceRegistries;
 import com.ocelot.opendevices.api.IconManager;
 import com.ocelot.opendevices.api.application.AppInfo;
 import com.ocelot.opendevices.api.application.ApplicationManager;
 import com.ocelot.opendevices.api.computer.Computer;
 import com.ocelot.opendevices.api.computer.TaskbarIcon;
 import com.ocelot.opendevices.api.computer.TaskbarIconType;
-import com.ocelot.opendevices.core.render.sprite.WindowIconSpriteUploader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.renderer.texture.MissingTextureSprite;
@@ -33,7 +31,7 @@ public class ApplicationTaskbarIcon implements TaskbarIcon
 
     public ApplicationTaskbarIcon(Computer computer, ResourceLocation applicationId)
     {
-        this.computer = computer;
+        this(computer);
         this.applicationId = applicationId;
     }
 
@@ -45,8 +43,12 @@ public class ApplicationTaskbarIcon implements TaskbarIcon
             OpenDevices.LOGGER.warn("Attempted to execute process from taskbar icon for device '" + this.computer.getClass() + "' that does not support processes.");
             return;
         }
-        this.computer.executeProcess(this.applicationId);
-        Minecraft.getInstance().getSoundHandler().play(SimpleSound.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+
+        if (this.computer.executeProcess(this.applicationId) != null)
+        {
+            Minecraft.getInstance().getSoundHandler().play(SimpleSound.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+            // TODO send notification that the process failed to execute
+        }
     }
 
     @Override
@@ -66,7 +68,8 @@ public class ApplicationTaskbarIcon implements TaskbarIcon
     {
         if (this.iconLocation == null)
         {
-            this.iconLocation = IconManager.getWindowIcon(ApplicationManager.getAppInfo(this.applicationId).getIcon()).getName();
+            AppInfo info = ApplicationManager.getAppInfo(this.applicationId);
+            this.iconLocation = IconManager.getWindowIcon(info.getIcon()).getName();
         }
         return iconLocation;
     }
@@ -101,5 +104,6 @@ public class ApplicationTaskbarIcon implements TaskbarIcon
     {
         this.applicationId = new ResourceLocation(nbt.getString("applicationId"));
         this.name = null;
+        this.iconLocation = null;
     }
 }

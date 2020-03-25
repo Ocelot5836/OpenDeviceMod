@@ -25,11 +25,13 @@ public class ShapeRenderer
      *
      * @param x      The x position to start
      * @param y      The y position to start
+     * @param width  The x size of the quad
+     * @param height The y size of the quad
      * @param sprite The sprite to render to the screen
      */
-    public static void drawRectWithTexture(double x, double y, TextureAtlasSprite sprite)
+    public static void drawRectWithTexture(double x, double y, double width, double height, TextureAtlasSprite sprite)
     {
-        drawRectWithTexture(x, y, 0, sprite.getMinU(), sprite.getMinV(), sprite.getMaxU() - sprite.getMinU(), sprite.getMaxV() - sprite.getMinV(), sprite.getWidth(), sprite.getHeight(), 1.0, 1.0);
+        drawRectWithTexture(x, y, 0, sprite.getMinU(), sprite.getMinV(), width, height, sprite.getMaxU() - sprite.getMinU(), sprite.getMaxV() - sprite.getMinV(), 1.0, 1.0);
     }
 
     /**
@@ -89,11 +91,13 @@ public class ShapeRenderer
      * @param x      The x position to start
      * @param y      The y position to start
      * @param z      The z position to start
+     * @param width  The x size of the quad
+     * @param height The y size of the quad
      * @param sprite The sprite to render to the screen
      */
-    public static void drawRectWithTexture(double x, double y, double z, TextureAtlasSprite sprite)
+    public static void drawRectWithTexture(double x, double y, double z, double width, double height, TextureAtlasSprite sprite)
     {
-        drawRectWithTexture(x, y, z, sprite.getMinU(), sprite.getMinV(), sprite.getMaxU() - sprite.getMinU(), sprite.getMaxV() - sprite.getMinV(), sprite.getWidth(), sprite.getHeight(), 1.0, 1.0);
+        drawRectWithTexture(x, y, z, sprite.getMinU(), sprite.getMinV(), width, height, sprite.getMaxU() - sprite.getMinU(), sprite.getMaxV() - sprite.getMinV(), 1.0, 1.0);
     }
 
     /**
@@ -178,11 +182,13 @@ public class ShapeRenderer
      * @param buffer The buffer being rendered into
      * @param x      The x position to start
      * @param y      The y position to start
+     * @param width  The x size of the quad
+     * @param height The y size of the quad
      * @param sprite The sprite to render to the screen
      */
-    public static void drawRectWithTexture(BufferBuilder buffer, double x, double y, TextureAtlasSprite sprite)
+    public static void drawRectWithTexture(BufferBuilder buffer, double x, double y, double width, double height, TextureAtlasSprite sprite)
     {
-        drawRectWithTexture(buffer, x, y, 0, sprite.getMinU(), sprite.getMinV(), sprite.getMaxU() - sprite.getMinU(), sprite.getMaxV() - sprite.getMinV(), sprite.getWidth(), sprite.getHeight(), 1.0, 1.0);
+        drawRectWithTexture(buffer, x, y, 0, sprite.getMinU(), sprite.getMinV(), width, height, sprite.getMaxU() - sprite.getMinU(), sprite.getMaxV() - sprite.getMinV(), 1.0, 1.0);
     }
 
     /**
@@ -246,11 +252,13 @@ public class ShapeRenderer
      * @param x      The x position to start
      * @param y      The y position to start
      * @param z      The z position to start
+     * @param width  The x size of the quad
+     * @param height The y size of the quad
      * @param sprite The sprite to render to the screen
      */
-    public static void drawRectWithTexture(BufferBuilder buffer, double x, double y, double z, TextureAtlasSprite sprite)
+    public static void drawRectWithTexture(BufferBuilder buffer, double x, double y, double z, double width, double height, TextureAtlasSprite sprite)
     {
-        drawRectWithTexture(buffer, x, y, z, sprite.getMinU(), sprite.getMinV(), sprite.getMaxU() - sprite.getMinU(), sprite.getMaxV() - sprite.getMinV(), sprite.getWidth(), sprite.getHeight(), 1.0, 1.0);
+        drawRectWithTexture(buffer, x, y, z, sprite.getMinU(), sprite.getMinV(), width, height, sprite.getMaxU() - sprite.getMinU(), sprite.getMaxV() - sprite.getMinV(), 1.0, 1.0);
     }
 
     /**

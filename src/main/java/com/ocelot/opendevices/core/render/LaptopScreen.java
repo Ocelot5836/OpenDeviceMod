@@ -11,6 +11,7 @@ import com.ocelot.opendevices.api.device.process.ProcessInputHandler;
 import com.ocelot.opendevices.api.device.process.ProcessInputRegistry;
 import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.api.util.RenderUtil;
+import com.ocelot.opendevices.api.util.ShapeRenderer;
 import com.ocelot.opendevices.api.util.TooltipRenderer;
 import com.ocelot.opendevices.core.LaptopTaskBar;
 import com.ocelot.opendevices.core.LaptopTileEntity;
@@ -20,10 +21,10 @@ import com.ocelot.opendevices.core.task.CloseLaptopTask;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
@@ -83,20 +84,24 @@ public class LaptopScreen extends Screen implements TooltipRenderer
         minecraft.textureManager.bindTexture(DeviceConstants.LAPTOP_GUI);
 
         {
+            BufferBuilder buffer = ShapeRenderer.begin();
+
             /* Screen Corners */
-            this.blit(this.posX, this.posY, 0, 0, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER); // TOP-LEFT
-            this.blit(this.posX + DeviceConstants.LAPTOP_GUI_WIDTH - DeviceConstants.LAPTOP_GUI_BORDER, this.posY, DeviceConstants.LAPTOP_GUI_BORDER + 1, 0, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER); // TOP-RIGHT
-            this.blit(this.posX + DeviceConstants.LAPTOP_GUI_WIDTH - DeviceConstants.LAPTOP_GUI_BORDER, this.posY + DeviceConstants.LAPTOP_GUI_HEIGHT - DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER + 1, DeviceConstants.LAPTOP_GUI_BORDER + 1, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER); // BOTTOM-RIGHT
-            this.blit(this.posX, this.posY + DeviceConstants.LAPTOP_GUI_HEIGHT - DeviceConstants.LAPTOP_GUI_BORDER, 0, DeviceConstants.LAPTOP_GUI_BORDER + 1, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER); // BOTTOM-LEFT
+            ShapeRenderer.drawRectWithTexture(buffer, this.posX, this.posY, 0, 0, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER);
+            ShapeRenderer.drawRectWithTexture(buffer, this.posX + DeviceConstants.LAPTOP_GUI_WIDTH - DeviceConstants.LAPTOP_GUI_BORDER, this.posY, DeviceConstants.LAPTOP_GUI_BORDER + 1, 0, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER);
+            ShapeRenderer.drawRectWithTexture(buffer, this.posX, this.posY + DeviceConstants.LAPTOP_GUI_HEIGHT - DeviceConstants.LAPTOP_GUI_BORDER, 0, DeviceConstants.LAPTOP_GUI_BORDER + 1, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER);
+            ShapeRenderer.drawRectWithTexture(buffer, this.posX + DeviceConstants.LAPTOP_GUI_WIDTH - DeviceConstants.LAPTOP_GUI_BORDER, this.posY + DeviceConstants.LAPTOP_GUI_HEIGHT - DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER + 1, DeviceConstants.LAPTOP_GUI_BORDER + 1, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER);
 
             /* Screen Edges */
-            RenderUtil.drawRectWithTexture(this.posX + DeviceConstants.LAPTOP_GUI_BORDER, this.posY, DeviceConstants.LAPTOP_GUI_BORDER, 0, DeviceConstants.LAPTOP_SCREEN_WIDTH, DeviceConstants.LAPTOP_GUI_BORDER, 1, DeviceConstants.LAPTOP_GUI_BORDER); // TOP
-            RenderUtil.drawRectWithTexture(this.posX + DeviceConstants.LAPTOP_GUI_WIDTH - DeviceConstants.LAPTOP_GUI_BORDER, this.posY + DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER + 1, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_SCREEN_HEIGHT, DeviceConstants.LAPTOP_GUI_BORDER, 1); // RIGHT
-            RenderUtil.drawRectWithTexture(this.posX + DeviceConstants.LAPTOP_GUI_BORDER, this.posY + DeviceConstants.LAPTOP_GUI_HEIGHT - DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER + 1, DeviceConstants.LAPTOP_SCREEN_WIDTH, DeviceConstants.LAPTOP_GUI_BORDER, 1, DeviceConstants.LAPTOP_GUI_BORDER); // BOTTOM
-            RenderUtil.drawRectWithTexture(this.posX, this.posY + DeviceConstants.LAPTOP_GUI_BORDER, 0, DeviceConstants.LAPTOP_GUI_BORDER + 1, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_SCREEN_HEIGHT, DeviceConstants.LAPTOP_GUI_BORDER, 1); // LEFT
+            ShapeRenderer.drawRectWithTexture(buffer, this.posX + DeviceConstants.LAPTOP_GUI_BORDER, this.posY, DeviceConstants.LAPTOP_GUI_BORDER, 0, DeviceConstants.LAPTOP_SCREEN_WIDTH, DeviceConstants.LAPTOP_GUI_BORDER, 1, DeviceConstants.LAPTOP_GUI_BORDER);
+            ShapeRenderer.drawRectWithTexture(buffer, this.posX + DeviceConstants.LAPTOP_GUI_WIDTH - DeviceConstants.LAPTOP_GUI_BORDER, this.posY + DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER + 1, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_SCREEN_HEIGHT, DeviceConstants.LAPTOP_GUI_BORDER, 1);
+            ShapeRenderer.drawRectWithTexture(buffer, this.posX + DeviceConstants.LAPTOP_GUI_BORDER, this.posY + DeviceConstants.LAPTOP_GUI_HEIGHT - DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER + 1, DeviceConstants.LAPTOP_SCREEN_WIDTH, DeviceConstants.LAPTOP_GUI_BORDER, 1, DeviceConstants.LAPTOP_GUI_BORDER); // BOTTOM
+            ShapeRenderer.drawRectWithTexture(buffer, this.posX, this.posY + DeviceConstants.LAPTOP_GUI_BORDER, 0, DeviceConstants.LAPTOP_GUI_BORDER + 1, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_SCREEN_HEIGHT, DeviceConstants.LAPTOP_GUI_BORDER, 1); // LEFT
 
             /* Screen Center */
-            RenderUtil.drawRectWithTexture(this.posX + DeviceConstants.LAPTOP_GUI_BORDER, posY + DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_SCREEN_WIDTH, DeviceConstants.LAPTOP_SCREEN_HEIGHT, 1, 1);
+            ShapeRenderer.drawRectWithTexture(buffer, this.posX + DeviceConstants.LAPTOP_GUI_BORDER, posY + DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_SCREEN_WIDTH, DeviceConstants.LAPTOP_SCREEN_HEIGHT, 1, 1);
+
+            ShapeRenderer.end();
         }
 
         RenderUtil.framebufferHeight = 0;
