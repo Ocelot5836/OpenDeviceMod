@@ -218,7 +218,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
     @Override
     public UUID executeProcess(ResourceLocation processName)
     {
-        if (this.canExecuteProcess(processName))
+        if (!this.canExecuteProcess(processName))
         {
             OpenDevices.LOGGER.warn("Could not execute process with name '" + processName + "' for Laptop as there are more than the maximum processes running. Skipping!");
             return null;
