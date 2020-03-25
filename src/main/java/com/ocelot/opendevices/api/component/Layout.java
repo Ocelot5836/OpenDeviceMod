@@ -123,7 +123,7 @@ public class Layout extends StandardComponent
         RenderUtil.pushScissor(posX + this.getX(), posY + this.getY(), this.getWidth(), this.getHeight());
         this.components.forEach(component ->
         {
-            if (component.getX() + component.getWidth() >= this.x && component.getX() < this.x + this.width && component.getY() + component.getHeight() >= this.y && component.getY() < this.y + this.height)
+            if ((component.getX() + component.getWidth() >= this.getX() || component.getX() < this.getX() + this.getWidth()) && (component.getY() + component.getHeight() >= this.getY() || component.getY() < this.getY() + this.getHeight()))
             {
                 component.render(this.getX() + posX, this.getY() + posY, mouseX, mouseY, main, partialTicks);
             }
@@ -138,7 +138,7 @@ public class Layout extends StandardComponent
         {
             this.components.forEach(component ->
             {
-                if (component.getX() + component.getWidth() >= this.x && component.getX() < this.x + this.width && component.getY() + component.getHeight() >= this.y && component.getY() < this.y + this.height)
+                if ((component.getX() + component.getWidth() >= this.getX() || component.getX() < this.getX() + this.getWidth()) && (component.getY() + component.getHeight() >= this.getY() || component.getY() < this.getY() + this.getHeight()))
                 {
                     component.renderOverlay(renderer, this.getX() + posX, this.getY() + posY, mouseX, mouseY, partialTicks);
                 }

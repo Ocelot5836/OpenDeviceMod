@@ -57,7 +57,7 @@ public class ScrollableLayout extends Layout
         RenderUtil.pushScissor(posX + this.getX(), posY + this.getY(), this.getWidth(), this.getHeight());
         this.components.forEach(component ->
         {
-            if (component.getX() + component.getWidth() >= this.getX() && component.getX() < this.getX() + this.getWidth() && component.getY() + component.getHeight() - this.scroll >= this.getY() && component.getY() - this.scroll < this.getY() + this.getHeight())
+            if ((component.getX() + component.getWidth() >= this.getX() || component.getX() < this.getX() + this.getWidth()) && (component.getY() + component.getHeight() - this.scroll >= this.getY() || component.getY() - this.scroll < this.getY() + this.getHeight()))
             {
                 component.render(posX + this.getX(), posY + this.getY() - this.scroll, mouseX, mouseY, main && this.isHovered(mouseX - (int) posX, mouseY - (int) posY), partialTicks);
             }
@@ -83,7 +83,7 @@ public class ScrollableLayout extends Layout
         {
             this.components.forEach(component ->
             {
-                if (component.getX() + component.getWidth() >= this.getX() && component.getX() < this.getX() + this.getWidth() && component.getY() + component.getHeight() - this.scroll >= this.getY() && component.getY() - this.scroll < this.getY() + this.getHeight())
+                if ((component.getX() + component.getWidth() >= this.getX() || component.getX() < this.getX() + this.getWidth()) && (component.getY() + component.getHeight() - this.scroll >= this.getY() || component.getY() - this.scroll < this.getY() + this.getHeight()))
                 {
                     component.renderOverlay(renderer, posX + this.getX(), posY + this.getY() - this.scroll, mouseX, mouseY, partialTicks);
                 }
