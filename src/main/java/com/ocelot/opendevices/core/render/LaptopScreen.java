@@ -19,12 +19,14 @@ import com.ocelot.opendevices.core.LaptopWindowManager;
 import com.ocelot.opendevices.core.computer.LaptopWindow;
 import com.ocelot.opendevices.core.task.CloseLaptopTask;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
@@ -255,7 +257,8 @@ public class LaptopScreen extends Screen implements TooltipRenderer
                 TaskbarIcon window = displayedIcons[i];
                 if (RenderUtil.isMouseInside(mouseX - (this.posX + DeviceConstants.LAPTOP_GUI_BORDER), mouseY - (this.posY + DeviceConstants.LAPTOP_GUI_BORDER), 2 + (8 * size + 5) * i, DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 2, 2 + (8 * size + 5) * i + 12 * size, DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 2 + 12 * size))
                 {
-                    window.execute();
+                    if (window.execute())
+                        Minecraft.getInstance().getSoundHandler().play(SimpleSound.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                     break;
                 }
             }
