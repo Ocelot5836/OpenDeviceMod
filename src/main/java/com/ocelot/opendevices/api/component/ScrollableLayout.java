@@ -81,6 +81,8 @@ public class ScrollableLayout extends Layout
         {
             this.scroll = MathHelper.clamp(this.scroll, 0, this.physicalHeight - this.getHeight());
             this.nextScroll = this.scroll;
+            this.getClientSerializer().markDirty("scroll");
+            this.getClientSerializer().markDirty("nextScroll");
         }
     }
 

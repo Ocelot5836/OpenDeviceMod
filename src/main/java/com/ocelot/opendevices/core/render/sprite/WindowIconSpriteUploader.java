@@ -8,6 +8,8 @@ import net.minecraft.client.renderer.texture.SpriteUploader;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.Collections;
 import java.util.Objects;
@@ -15,6 +17,7 @@ import java.util.stream.Collectors;
 
 import static com.ocelot.opendevices.api.IconManager.DEFAULT_WINDOW_ICON;
 
+@OnlyIn(Dist.CLIENT)
 public class WindowIconSpriteUploader extends SpriteUploader
 {
     public WindowIconSpriteUploader(TextureManager textureManager)
