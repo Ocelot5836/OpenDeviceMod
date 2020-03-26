@@ -291,6 +291,7 @@ public class ScrollableLayout extends Layout
     public ScrollableLayout setScrollbarColor(int scrollbarColor)
     {
         this.scrollbarColor = scrollbarColor;
+        this.getClientSerializer().markDirty("scrollbarColor");
         return this;
     }
 
@@ -316,6 +317,18 @@ public class ScrollableLayout extends Layout
     public ScrollableLayout setScrollSpeed(float scrollSpeed)
     {
         this.scrollSpeed = Math.max(scrollSpeed, 0);
+        this.getClientSerializer().markDirty("scrollSpeed");
+        return this;
+    }
+
+    /**
+     * Marks this component as able to be seen or not.
+     *
+     * @param visible Whether or not this component is visible
+     */
+    public ScrollableLayout setVisible(boolean visible)
+    {
+        super.setVisible(visible);
         return this;
     }
 }
