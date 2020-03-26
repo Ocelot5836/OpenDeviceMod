@@ -9,6 +9,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.math.MathHelper;
 
+/**
+ * <p>A {@link Layout} with a scroll bar as to allow for more components than can fit on screen.</p>
+ *
+ * @author Ocelot
+ * @see Layout
+ */
 public class ScrollableLayout extends Layout
 {
     public static final int DEFAULT_SCROLLBAR_COLOR = 0x5AFFFFFF;
@@ -45,11 +51,6 @@ public class ScrollableLayout extends Layout
         this.scrollSpeed = DEFAULT_SCROLL_SPEED;
 
         this.selected = false;
-    }
-
-    private float getInterpolatedScroll(float partialTicks)
-    {
-        return this.lastScroll + (this.scroll - this.lastScroll) * partialTicks;
     }
 
     @Override
@@ -247,11 +248,22 @@ public class ScrollableLayout extends Layout
     }
 
     /**
-     * @return The current scroll value
+     * @return The position of the scroll bar
      */
     public float getScroll()
     {
         return scroll;
+    }
+
+    /**
+     * Calculates the position of the scroll bar based on where is was last tick and now.
+     *
+     * @param partialTicks The percentage from last tick to this tick
+     * @return The position of the scroll bar interpolated over the specified value
+     */
+    public float getInterpolatedScroll(float partialTicks)
+    {
+        return this.lastScroll + (this.scroll - this.lastScroll) * partialTicks;
     }
 
     /**
@@ -263,20 +275,30 @@ public class ScrollableLayout extends Layout
     }
 
     /**
-     * @return Sets the scrollbar to be disabled
+     * @return Sets the scrollbar to not render
      */
-    public ScrollableLayout setScrollbarDisabled()
+    public ScrollableLayout setScrollbarHidden()
     {
         this.setScrollbarColor(0);
         return this;
     }
 
+    /**
+     * Sets the color of the scroll bar to the provided color.
+     *
+     * @param scrollbarColor The new color of the scroll bar
+     */
     public ScrollableLayout setScrollbarColor(int scrollbarColor)
     {
         this.scrollbarColor = scrollbarColor;
         return this;
     }
 
+    /**
+     * Sets the position of the scroll bar.
+     *
+     * @param scroll The new scroll value
+     */
     public ScrollableLayout setScroll(float scroll)
     {
         this.scroll = MathHelper.clamp(this.scroll, 0, this.physicalHeight - this.getHeight());
@@ -286,9 +308,14 @@ public class ScrollableLayout extends Layout
         return this;
     }
 
+    /**
+     * Sets the speed at which scrolling occurs.
+     *
+     * @param scrollSpeed The new scrolling speed
+     */
     public ScrollableLayout setScrollSpeed(float scrollSpeed)
     {
-        this.scrollSpeed = scrollSpeed;
+        this.scrollSpeed = Math.max(scrollSpeed, 0);
         return this;
     }
 }
