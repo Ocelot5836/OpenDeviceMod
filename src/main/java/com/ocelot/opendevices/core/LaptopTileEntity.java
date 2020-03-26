@@ -27,6 +27,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -359,15 +360,6 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
         }
     }
 
-    public void syncSettings(CompoundNBT nbt)
-    {
-        this.settings.merge(nbt);
-        if (!this.isClient())
-        {
-            this.markDirty();
-        }
-    }
-
     @Override
     public <T> T readSetting(LaptopSetting<T> setting)
     {
@@ -399,6 +391,15 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
             {
                 TaskManager.sendToTracking(new SyncSettingsTask(this.getAddress(), nbt), this.world, this.getPos());
             }
+        }
+    }
+
+    public void syncSettings(CompoundNBT nbt)
+    {
+        this.settings.merge(nbt);
+        if (!this.isClient())
+        {
+            this.markDirty();
         }
     }
 
@@ -453,6 +454,18 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
         if (this.user == null || this.world == null)
             return null;
         return this.world.getPlayerByUuid(this.user);
+    }
+
+    @Override
+    public IWorld getDeviceWorld()
+    {
+        return world;
+    }
+
+    @Override
+    public BlockPos getDevicePos()
+    {
+        return this.pos;
     }
 
     @Override

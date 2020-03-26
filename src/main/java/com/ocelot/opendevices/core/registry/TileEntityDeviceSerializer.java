@@ -19,11 +19,11 @@ public class TileEntityDeviceSerializer extends ForgeRegistryEntry<DeviceSeriali
     @Override
     public TileEntityDevice read(World world, UUID address, CompoundNBT nbt)
     {
-        if (!nbt.contains("dimension", Constants.NBT.TAG_INT))
+        if (!nbt.hasUniqueId("pos") || !nbt.contains("dimension", Constants.NBT.TAG_INT))
             return null;
         if (world.getDimension().getType().getId() != nbt.getInt("dimension"))
             return null;
-        TileEntity te = world.getTileEntity(new BlockPos(nbt.getInt("x"), nbt.getInt("y"), nbt.getInt("z")));
+        TileEntity te = world.getTileEntity(BlockPos.fromLong(nbt.getLong("pos")));
         return te instanceof TileEntityDevice ? (TileEntityDevice) te : null;
     }
 
@@ -31,9 +31,7 @@ public class TileEntityDeviceSerializer extends ForgeRegistryEntry<DeviceSeriali
     public CompoundNBT write(ServerWorld world, TileEntityDevice device)
     {
         CompoundNBT nbt = new CompoundNBT();
-        nbt.putInt("x", device.getPos().getX());
-        nbt.putInt("y", device.getPos().getY());
-        nbt.putInt("z", device.getPos().getZ());
+        nbt.putLong("pos", device.getDevicePos().toLong());
         nbt.putInt("dimension", world.getDimension().getType().getId());
         return nbt;
     }
@@ -41,10 +39,10 @@ public class TileEntityDeviceSerializer extends ForgeRegistryEntry<DeviceSeriali
     @Override
     public boolean canRead(World world, UUID address, CompoundNBT nbt)
     {
-        if (!nbt.contains("dimension", Constants.NBT.TAG_INT))
+        if (!nbt.hasUniqueId("pos") || !nbt.contains("dimension", Constants.NBT.TAG_INT))
             return false;
         if (world.getDimension().getType().getId() != nbt.getInt("dimension"))
             return false;
-        return world.getTileEntity(new BlockPos(nbt.getInt("x"), nbt.getInt("y"), nbt.getInt("z"))) instanceof TileEntityDevice;
+        return world.getTileEntity(BlockPos.fromLong(nbt.getLong("pos"))) instanceof TileEntityDevice;
     }
 }

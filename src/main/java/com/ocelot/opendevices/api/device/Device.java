@@ -73,7 +73,7 @@ public interface Device extends Executor
     /**
      * @return The world the laptop is in
      */
-    IWorld getWorld();
+    IWorld getDeviceWorld();
 
     /**
      * @return The unique address id of this device. Used for communication between devices
@@ -116,7 +116,7 @@ public interface Device extends Executor
      */
     default boolean isClient()
     {
-        return this.getWorld() != null && this.getWorld().isRemote();
+        return this.getDeviceWorld() != null && this.getDeviceWorld().isRemote();
     }
 
     /**

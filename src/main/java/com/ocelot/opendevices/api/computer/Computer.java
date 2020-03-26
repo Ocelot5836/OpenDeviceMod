@@ -52,8 +52,4 @@ public interface Computer extends TileEntityDevice
 
     @Nullable
     DeviceProcess<Computer> getProcess(UUID id);
-
-    @Deprecated
-    @Override
-    BlockPos getPos();
 }

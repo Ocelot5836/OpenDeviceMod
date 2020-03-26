@@ -12,5 +12,5 @@ public interface TileEntityDevice extends Device
     /**
      * @return The position of this device in the world
      */
-    BlockPos getPos();
+    BlockPos getDevicePos();
 }

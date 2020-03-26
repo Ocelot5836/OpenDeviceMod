@@ -194,6 +194,10 @@ public class OnlineImageCache
             cache.forEach((hash, pair) -> Minecraft.getInstance().getTextureManager().deleteTexture(new ResourceLocation(hash)));
             cache.clear();
             erroredUrls.clear();
+            if (!cacheFolder.delete())
+            {
+                OpenDevices.LOGGER.warn("Could not delete cache folder '" + cacheFolder.getPath() + "'");
+            }
         });
     }
 
