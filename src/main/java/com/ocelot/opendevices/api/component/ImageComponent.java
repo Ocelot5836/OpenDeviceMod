@@ -49,7 +49,7 @@ public class ImageComponent extends StandardComponent
 
     public ImageComponent(float x, float y, int width, int height, ImageProvider imageProvider)
     {
-        this.createSyncHelper();
+        this.setClientSerializer(this.createSyncHelper());
         this.x = x;
         this.y = y;
         this.width = width;
@@ -61,7 +61,7 @@ public class ImageComponent extends StandardComponent
         this.imageProvider = imageProvider;
     }
 
-    private void createSyncHelper()
+    protected SyncHelper createSyncHelper()
     {
         SyncHelper syncHelper = new SyncHelper(this::markDirty);
         {
@@ -79,7 +79,7 @@ public class ImageComponent extends StandardComponent
                 nbt.put("imageProvider", this.imageProvider.serializeNBT());
             }, nbt -> this.imageProvider = ImageType.byName(nbt.getString("imageProviderType")).apply(nbt.getCompound("imageProvider")));
         }
-        this.setClientSerializer(syncHelper);
+        return syncHelper;
     }
 
     @Override
@@ -801,8 +801,8 @@ public class ImageComponent extends StandardComponent
      * @param v             The y on the texture to start
      * @param textureWidth  The width of the selection to grab from the texture
      * @param textureHeight The height of the selection to grab from the texture
-     * @param sourceWidth    The width of the texture file
-     * @param sourceHeight   The height of the texture file
+     * @param sourceWidth   The width of the texture file
+     * @param sourceHeight  The height of the texture file
      * @return The image provider with the provided details
      */
     public static ImageProvider with(ResourceLocation location, float u, float v, float textureWidth, float textureHeight, int sourceWidth, int sourceHeight)
