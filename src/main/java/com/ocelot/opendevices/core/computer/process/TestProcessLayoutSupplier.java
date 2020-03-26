@@ -60,9 +60,6 @@ public class TestProcessLayoutSupplier implements Function<Integer, Layout>
             });
             layout.addComponent(button);
 
-            ItemStackComponent stackComponent = new ItemStackComponent(25,25, new ItemStack(Blocks.DIAMOND_ORE, 7));
-            layout.addComponent(stackComponent);
-
             //                for (int i = 0; i < Icons.values().length; i++)
             //                {
             //                    int x = i % 12;
