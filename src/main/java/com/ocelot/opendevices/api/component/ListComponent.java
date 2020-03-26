@@ -12,7 +12,14 @@ public class ListComponent<T> extends StandardComponent
     private int height;
     private int visibleHeight;
 
+    private Renderer<T> renderer;
     private List<T> items;
+
+    private float scroll;
+    private float scrollSpeed;
+
+    private float lastScroll;
+    private float nextScroll;
 
     @Override
     public void update()
@@ -35,25 +42,41 @@ public class ListComponent<T> extends StandardComponent
     @Override
     public float getX()
     {
-        return 0;
+        return x;
     }
 
     @Override
     public float getY()
     {
-        return 0;
+        return y;
     }
 
     @Override
     public int getWidth()
     {
-        return 0;
+        return width;
     }
 
     @Override
     public int getHeight()
     {
-        return 0;
+        return visibleHeight;
+    }
+
+
+    public int getPhysicalHeight()
+    {
+        return height;
+    }
+
+    public float getScroll()
+    {
+        return scroll;
+    }
+
+    public float getScrollSpeed()
+    {
+        return scrollSpeed;
     }
 
     public interface Renderer<T>

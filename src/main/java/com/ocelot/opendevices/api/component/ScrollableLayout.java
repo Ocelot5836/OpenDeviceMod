@@ -79,8 +79,7 @@ public class ScrollableLayout extends Layout
         }
         if (this.scroll < 0 || this.scroll >= this.physicalHeight - this.getHeight())
         {
-            this.scroll = MathHelper.clamp(this.scroll, 0, this.physicalHeight - this.getHeight());
-            this.nextScroll = this.scroll;
+            this.setScroll(0);
         }
     }
 
@@ -229,5 +228,67 @@ public class ScrollableLayout extends Layout
             }
         }
         return false;
+    }
+
+    /**
+     * @return The actual height of the layout
+     */
+    public int getPhysicalHeight()
+    {
+        return physicalHeight;
+    }
+
+    /**
+     * @return The color of the scroll bar
+     */
+    public int getScrollbarColor()
+    {
+        return scrollbarColor;
+    }
+
+    /**
+     * @return The current scroll value
+     */
+    public float getScroll()
+    {
+        return scroll;
+    }
+
+    /**
+     * @return The speed at which scrolling takes place
+     */
+    public float getScrollSpeed()
+    {
+        return scrollSpeed;
+    }
+
+    /**
+     * @return Sets the scrollbar to be disabled
+     */
+    public ScrollableLayout setScrollbarDisabled()
+    {
+        this.setScrollbarColor(0);
+        return this;
+    }
+
+    public ScrollableLayout setScrollbarColor(int scrollbarColor)
+    {
+        this.scrollbarColor = scrollbarColor;
+        return this;
+    }
+
+    public ScrollableLayout setScroll(float scroll)
+    {
+        this.scroll = MathHelper.clamp(this.scroll, 0, this.physicalHeight - this.getHeight());
+        this.nextScroll = this.scroll;
+        this.getClientSerializer().markDirty("scroll");
+        this.getClientSerializer().markDirty("nextScroll");
+        return this;
+    }
+
+    public ScrollableLayout setScrollSpeed(float scrollSpeed)
+    {
+        this.scrollSpeed = scrollSpeed;
+        return this;
     }
 }
