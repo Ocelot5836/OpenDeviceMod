@@ -1,7 +1,7 @@
 package com.ocelot.opendevices.core.registry;
 
-import com.ocelot.opendevices.api.device.TileEntityDevice;
 import com.ocelot.opendevices.api.device.DeviceSerializer;
+import com.ocelot.opendevices.api.device.TileEntityDevice;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -19,11 +19,11 @@ public class TileEntityDeviceSerializer extends ForgeRegistryEntry<DeviceSeriali
     @Override
     public TileEntityDevice read(World world, UUID address, CompoundNBT nbt)
     {
-        if (!nbt.contains("pos", Constants.NBT.TAG_LONG) || !nbt.contains("dimension", Constants.NBT.TAG_INT))
+        if (!nbt.contains("dimension", Constants.NBT.TAG_INT))
             return null;
         if (world.getDimension().getType().getId() != nbt.getInt("dimension"))
             return null;
-        TileEntity te = world.getTileEntity(BlockPos.fromLong(nbt.getLong("pos")));
+        TileEntity te = world.getTileEntity(new BlockPos(nbt.getInt("x"), nbt.getInt("y"), nbt.getInt("z")));
         return te instanceof TileEntityDevice ? (TileEntityDevice) te : null;
     }
 
@@ -31,7 +31,9 @@ public class TileEntityDeviceSerializer extends ForgeRegistryEntry<DeviceSeriali
     public CompoundNBT write(ServerWorld world, TileEntityDevice device)
     {
         CompoundNBT nbt = new CompoundNBT();
-        nbt.putLong("pos", device.getPos().toLong());
+        nbt.putInt("x", device.getPos().getX());
+        nbt.putInt("y", device.getPos().getY());
+        nbt.putInt("z", device.getPos().getZ());
         nbt.putInt("dimension", world.getDimension().getType().getId());
         return nbt;
     }
@@ -39,10 +41,10 @@ public class TileEntityDeviceSerializer extends ForgeRegistryEntry<DeviceSeriali
     @Override
     public boolean canRead(World world, UUID address, CompoundNBT nbt)
     {
-        if (!nbt.contains("pos", Constants.NBT.TAG_LONG) || !nbt.contains("dimension", Constants.NBT.TAG_INT))
+        if (!nbt.contains("dimension", Constants.NBT.TAG_INT))
             return false;
         if (world.getDimension().getType().getId() != nbt.getInt("dimension"))
             return false;
-        return world.getTileEntity(BlockPos.fromLong(nbt.getLong("pos"))) instanceof TileEntityDevice;
+        return world.getTileEntity(new BlockPos(nbt.getInt("x"), nbt.getInt("y"), nbt.getInt("z"))) instanceof TileEntityDevice;
     }
 }
