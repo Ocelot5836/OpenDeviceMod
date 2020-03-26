@@ -52,15 +52,6 @@ public class LaptopBlock extends DeviceBlock implements IWaterLoggable
     }
 
     @Override
-    protected void randomizeAddress(Device device, World world, BlockPos pos)
-    {
-        if (device instanceof LaptopTileEntity)
-        {
-            ((LaptopTileEntity) device).randomizeAddress();
-        }
-    }
-
-    @Override
     public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context)
     {
         boolean open = false;

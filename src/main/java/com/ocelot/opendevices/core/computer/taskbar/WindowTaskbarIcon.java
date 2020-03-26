@@ -29,10 +29,11 @@ public class WindowTaskbarIcon implements TaskbarIcon
     }
 
     @Override
-    public void execute()
+    public boolean execute()
     {
         // TODO make window visible or invisible
         this.windowManager.focusWindow(this.windowId);
+        return true;
     }
 
     @Override

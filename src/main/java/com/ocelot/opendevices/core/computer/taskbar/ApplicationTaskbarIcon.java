@@ -36,19 +36,15 @@ public class ApplicationTaskbarIcon implements TaskbarIcon
     }
 
     @Override
-    public void execute()
+    public boolean execute()
     {
         if (!this.computer.supportsProcesses())
         {
             OpenDevices.LOGGER.warn("Attempted to execute process from taskbar icon for device '" + this.computer.getClass() + "' that does not support processes.");
-            return;
+            return false;
         }
 
-        if (this.computer.canExecuteProcess(this.applicationId) && this.computer.executeProcess(this.applicationId) != null)
-        {
-            Minecraft.getInstance().getSoundHandler().play(SimpleSound.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
-            // TODO send notification that process failed to execute
-        }
+        return this.computer.canExecuteProcess(this.applicationId) && this.computer.executeProcess(this.applicationId) != null;
     }
 
     @Override

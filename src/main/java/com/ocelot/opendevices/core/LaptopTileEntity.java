@@ -25,7 +25,9 @@ import net.minecraft.nbt.ListNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
@@ -66,7 +68,6 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
         this.startingProcesses = new HashSet<>();
         this.executionQueue = new ConcurrentLinkedQueue<>();
 
-        this.randomizeAddress();
         this.settings = new CompoundNBT();
         this.desktop = new LaptopDesktop();
         this.windowManager = new LaptopWindowManager(this);
@@ -83,7 +84,8 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
         }
     }
 
-    public void randomizeAddress()
+    @Override
+    protected void randomizeAddress()
     {
         this.address = UUID.randomUUID();
     }
@@ -91,6 +93,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
     @Override
     public void tick()
     {
+        super.tick();
         if (this.hasWorld())
         {
             if (this.isClient())
@@ -312,7 +315,8 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
     @Override
     public void save(CompoundNBT nbt)
     {
-        nbt.putUniqueId("address", this.address);
+        if (this.address != null)
+            nbt.putUniqueId("address", this.address);
         nbt.put("settings", this.settings);
         nbt.put("desktop", this.desktop.serializeNBT());
         nbt.put("windowManager", this.windowManager.serializeNBT());
@@ -333,7 +337,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
     @Override
     public void load(CompoundNBT nbt)
     {
-        this.address = nbt.getUniqueId("address");
+        this.address = nbt.hasUniqueId("address") ? nbt.getUniqueId("address") : null;
         this.settings = nbt.getCompound("settings");
         this.desktop.deserializeNBT(nbt.getCompound("desktop"));
         this.windowManager.deserializeNBT(nbt.getCompound("windowManager"));

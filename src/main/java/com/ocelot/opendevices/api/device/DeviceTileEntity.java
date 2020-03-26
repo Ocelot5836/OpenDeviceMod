@@ -4,6 +4,7 @@ import com.ocelot.opendevices.core.LaptopTileEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
+import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.common.util.Constants;
@@ -14,7 +15,7 @@ import net.minecraftforge.common.util.Constants;
  * @author Ocelot
  * @see LaptopTileEntity
  */
-public abstract class DeviceTileEntity extends TileEntity
+public abstract class DeviceTileEntity extends TileEntity implements ITickableTileEntity
 {
     public DeviceTileEntity(TileEntityType<?> type)
     {
@@ -33,6 +34,10 @@ public abstract class DeviceTileEntity extends TileEntity
         }
     }
 
+    protected void randomizeAddress()
+    {
+    }
+
     /**
      * Use this to save any information that should be saved on destroy. Otherwise use {@link DeviceTileEntity#write(CompoundNBT)}.
      *
@@ -46,6 +51,41 @@ public abstract class DeviceTileEntity extends TileEntity
      * @param nbt The tag to read the data from
      */
     public abstract void load(CompoundNBT nbt);
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void tick()
+    {
+        if (this.world != null && !this.world.isRemote() && this instanceof Device)
+        {
+            Device device = (Device) this;
+            if (device.getAddress() == null)
+            {
+                this.randomizeAddress();
+                DeviceManager deviceManager = DeviceManager.get(this.world);
+                if (!deviceManager.exists(device.getAddress()))
+                {
+                    deviceManager.add(device, (DeviceSerializer<? super Device>) device.getSerializer());
+                }
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void validate()
+    {
+        super.validate();
+        if (this.world != null && !this.world.isRemote() && this instanceof Device)
+        {
+            Device device = (Device) this;
+            if (device.getAddress() == null)
+                return;
+            DeviceManager deviceManager = DeviceManager.get(this.world);
+            if (!deviceManager.exists(device.getAddress()))
+                deviceManager.add(device, (DeviceSerializer<? super Device>) device.getSerializer());
+        }
+    }
 
     @Override
     public void read(CompoundNBT nbt)

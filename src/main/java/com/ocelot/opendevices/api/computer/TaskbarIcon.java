@@ -16,7 +16,7 @@ public interface TaskbarIcon extends INBTSerializable<CompoundNBT>
     /**
      * Called when this icon is activated.
      */
-    void execute();
+    boolean execute();
 
     /**
      * @return The title of the window

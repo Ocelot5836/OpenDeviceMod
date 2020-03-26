@@ -32,28 +32,6 @@ public class DeviceBlock extends ModBlock
         super(id, properties, itemProperties);
     }
 
-    protected void randomizeAddress(Device device, World world, BlockPos pos)
-    {
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean isMoving)
-    {
-        if (!world.isRemote())
-        {
-            TileEntity tileEntity = world.getTileEntity(pos);
-            if (tileEntity instanceof Device)
-            {
-                Device device = (Device) tileEntity;
-                DeviceManager deviceManager = DeviceManager.get(world);
-                if (deviceManager.exists(device.getAddress()))
-                    this.randomizeAddress(device, world, pos);
-                deviceManager.add(device, (DeviceSerializer<? super Device>) device.getSerializer());
-            }
-        }
-    }
-
     @Override
     public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving)
     {
