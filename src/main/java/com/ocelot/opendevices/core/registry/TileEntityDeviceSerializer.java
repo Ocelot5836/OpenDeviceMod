@@ -19,7 +19,7 @@ public class TileEntityDeviceSerializer extends ForgeRegistryEntry<DeviceSeriali
     @Override
     public TileEntityDevice read(World world, UUID address, CompoundNBT nbt)
     {
-        if (!nbt.hasUniqueId("pos") || !nbt.contains("dimension", Constants.NBT.TAG_INT))
+        if (!nbt.contains("pos", Constants.NBT.TAG_LONG) || !nbt.contains("dimension", Constants.NBT.TAG_INT))
             return null;
         if (world.getDimension().getType().getId() != nbt.getInt("dimension"))
             return null;
@@ -39,7 +39,7 @@ public class TileEntityDeviceSerializer extends ForgeRegistryEntry<DeviceSeriali
     @Override
     public boolean canRead(World world, UUID address, CompoundNBT nbt)
     {
-        if (!nbt.hasUniqueId("pos") || !nbt.contains("dimension", Constants.NBT.TAG_INT))
+        if (!nbt.contains("pos", Constants.NBT.TAG_LONG) || !nbt.contains("dimension", Constants.NBT.TAG_INT))
             return false;
         if (world.getDimension().getType().getId() != nbt.getInt("dimension"))
             return false;
