@@ -64,9 +64,7 @@ public abstract class DeviceTileEntity extends TileEntity
         {
             Device device = (Device) this;
             DeviceManager deviceManager = DeviceManager.get(this.world);
-            if (device.getAddress() == null)
-                this.randomizeAddress();
-            if (!deviceManager.exists(device.getAddress()))
+            if (device.getAddress() != null && !deviceManager.exists(device.getAddress()))
                 deviceManager.add(device, (DeviceSerializer<? super Device>) device.getSerializer());
         }
     }
