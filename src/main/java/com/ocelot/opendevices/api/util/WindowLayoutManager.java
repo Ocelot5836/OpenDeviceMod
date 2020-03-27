@@ -25,7 +25,7 @@ import java.util.function.Supplier;
  * @see Layout
  * @see Window
  */
-public class WindowLayoutManager implements INBTSerializable<ListNBT>
+public class WindowLayoutManager implements INBTSerializable<CompoundNBT>
 {
     private Executor executor;
     private Runnable markDirty;
@@ -180,16 +180,45 @@ public class WindowLayoutManager implements INBTSerializable<ListNBT>
     }
 
     @Override
-    public ListNBT serializeNBT()
+    public CompoundNBT serializeNBT()
     {
-        return this.writeCurrentLayouts();
+        CompoundNBT nbt = new CompoundNBT();
+        nbt.put("layouts", this.writeCurrentLayouts());
+        ListNBT layoutsNbt = new ListNBT();
+        this.currentLayouts.forEach((windowId, layoutId) ->
+        {
+            CompoundNBT layoutNbt = new CompoundNBT();
+            Layout currentLayout = this.getCurrentLayout(windowId);
+            if (currentLayout != null && currentLayout.getValueSerializer() != null)
+            {
+                layoutNbt.putUniqueId("windowId", windowId);
+                layoutNbt.put("data", currentLayout.getValueSerializer().save());
+                layoutsNbt.add(layoutNbt);
+            }
+        });
+        nbt.put("layoutsData", layoutsNbt);
+        return nbt;
     }
 
     @Override
-    public void deserializeNBT(ListNBT nbt)
+    public void deserializeNBT(CompoundNBT nbt)
     {
-        this.readCurrentLayouts(nbt);
-        this.executor.execute(() -> this.markDirty.run());
+        this.readCurrentLayouts(nbt.getList("layouts", Constants.NBT.TAG_COMPOUND));
+        ListNBT layoutsNbt = nbt.getList("layoutsData", Constants.NBT.TAG_COMPOUND);
+        for (int i = 0; i < layoutsNbt.size(); i++)
+        {
+            CompoundNBT layoutNbt = layoutsNbt.getCompound(i);
+            UUID windowId = layoutNbt.getUniqueId("windowId");
+            if (layoutNbt.contains("data", Constants.NBT.TAG_COMPOUND))
+            {
+                CompoundNBT data = layoutNbt.getCompound("data");
+                Layout currentLayout = this.getCurrentLayout(windowId);
+                if (currentLayout != null && currentLayout.getValueSerializer() != null)
+                {
+                    currentLayout.getValueSerializer().load(data);
+                }
+            }
+        }
     }
 
     /**
@@ -207,10 +236,10 @@ public class WindowLayoutManager implements INBTSerializable<ListNBT>
                 {
                     CompoundNBT layoutNbt = new CompoundNBT();
                     Layout currentLayout = this.getCurrentLayout(windowId);
-                    if (currentLayout != null && currentLayout.getClientSerializer() != null)
+                    if (currentLayout != null && currentLayout.getValueSerializer() != null)
                     {
                         layoutNbt.putUniqueId("windowId", windowId);
-                        layoutNbt.put("data", currentLayout.getClientSerializer().serializeNBT());
+                        layoutNbt.put("data", currentLayout.getValueSerializer().serializeNBT());
                         layoutsNbt.add(layoutNbt);
                     }
                 }));
@@ -237,9 +266,9 @@ public class WindowLayoutManager implements INBTSerializable<ListNBT>
                 {
                     CompoundNBT data = layoutNbt.getCompound("data");
                     Layout currentLayout = this.getCurrentLayout(windowId);
-                    if (currentLayout != null && currentLayout.getClientSerializer() != null)
+                    if (currentLayout != null && currentLayout.getValueSerializer() != null)
                     {
-                        currentLayout.getClientSerializer().deserializeNBT(data);
+                        currentLayout.getValueSerializer().deserializeNBT(data);
                     }
                 }
             }

@@ -142,7 +142,7 @@ public class ButtonComponent extends StandardComponent
             syncHelper.addSerializer("textColor", nbt -> nbt.putInt("textColor", this.textColor), nbt -> this.textColor = nbt.getInt("textColor"));
             syncHelper.addSerializer("hoveredTextColor", nbt -> nbt.putInt("hoveredTextColor", this.hoveredTextColor), nbt -> this.hoveredTextColor = nbt.getInt("hoveredTextColor"));
         }
-        this.setClientSerializer(syncHelper);
+        this.setValueSerializer(syncHelper);
     }
 
     private void updateTextCache()
@@ -183,12 +183,12 @@ public class ButtonComponent extends StandardComponent
         if (!this.explicitWidth)
         {
             this.width = width;
-            this.getClientSerializer().markDirty("width");
+            this.getValueSerializer().markDirty("width");
         }
         if (!this.explicitHeight)
         {
             this.height = height;
-            this.getClientSerializer().markDirty("height");
+            this.getValueSerializer().markDirty("height");
         }
     }
 
@@ -335,7 +335,7 @@ public class ButtonComponent extends StandardComponent
     public ButtonComponent removeIcon()
     {
         this.iconLocation = null;
-        this.getClientSerializer().markDirty("icon");
+        this.getValueSerializer().markDirty("icon");
         this.updateSize();
         return this;
     }
@@ -534,7 +534,7 @@ public class ButtonComponent extends StandardComponent
     public ButtonComponent setX(float x)
     {
         this.x = x;
-        this.getClientSerializer().markDirty("x");
+        this.getValueSerializer().markDirty("x");
         return this;
     }
 
@@ -546,7 +546,7 @@ public class ButtonComponent extends StandardComponent
     public ButtonComponent setY(float y)
     {
         this.y = y;
-        this.getClientSerializer().markDirty("y");
+        this.getValueSerializer().markDirty("y");
         return this;
     }
 
@@ -560,8 +560,8 @@ public class ButtonComponent extends StandardComponent
     {
         this.x = x;
         this.y = y;
-        this.getClientSerializer().markDirty("x");
-        this.getClientSerializer().markDirty("y");
+        this.getValueSerializer().markDirty("x");
+        this.getValueSerializer().markDirty("y");
         return this;
     }
 
@@ -574,7 +574,7 @@ public class ButtonComponent extends StandardComponent
     {
         this.width = width;
         this.explicitWidth = true;
-        this.getClientSerializer().markDirty("width");
+        this.getValueSerializer().markDirty("width");
         return this;
     }
 
@@ -587,7 +587,7 @@ public class ButtonComponent extends StandardComponent
     {
         this.height = height;
         this.explicitHeight = true;
-        this.getClientSerializer().markDirty("height");
+        this.getValueSerializer().markDirty("height");
         return this;
     }
 
@@ -603,8 +603,8 @@ public class ButtonComponent extends StandardComponent
         this.height = height;
         this.explicitWidth = true;
         this.explicitHeight = true;
-        this.getClientSerializer().markDirty("width");
-        this.getClientSerializer().markDirty("height");
+        this.getValueSerializer().markDirty("width");
+        this.getValueSerializer().markDirty("height");
         this.markDirty();
         return this;
     }
@@ -630,7 +630,7 @@ public class ButtonComponent extends StandardComponent
     {
         this.fontRenderer = Minecraft.getInstance().getFontResourceManager().getFontRenderer(fontRenderer);
         this.fontRendererLocation = fontRenderer;
-        this.getClientSerializer().markDirty("fontRenderer");
+        this.getValueSerializer().markDirty("fontRenderer");
         this.updateTextCache();
         this.updateSize();
         return this;
@@ -644,7 +644,7 @@ public class ButtonComponent extends StandardComponent
     public ButtonComponent setText(ITextComponent text)
     {
         this.text = text;
-        this.getClientSerializer().markDirty("text");
+        this.getValueSerializer().markDirty("text");
         this.updateTextCache();
         this.updateSize();
         return this;
@@ -659,7 +659,7 @@ public class ButtonComponent extends StandardComponent
     public ButtonComponent setTooltipDelay(TimeUnit unit, long tooltipDelay)
     {
         this.tooltipDelay = Math.max(0, unit.toMillis(tooltipDelay));
-        this.getClientSerializer().markDirty("tooltipDelay");
+        this.getValueSerializer().markDirty("tooltipDelay");
         return this;
     }
 
@@ -709,7 +709,7 @@ public class ButtonComponent extends StandardComponent
         this.iconHeight = height;
         this.iconSourceWidth = sourceWidth;
         this.iconSourceHeight = sourceHeight;
-        this.getClientSerializer().markDirty("icon");
+        this.getValueSerializer().markDirty("icon");
         this.updateSize();
         return this;
     }
@@ -722,7 +722,7 @@ public class ButtonComponent extends StandardComponent
     public ButtonComponent setState(ButtonState state)
     {
         this.state = state;
-        this.getClientSerializer().markDirty("state");
+        this.getValueSerializer().markDirty("state");
         return this;
     }
 
@@ -738,9 +738,9 @@ public class ButtonComponent extends StandardComponent
         this.buttonColor = color;
         this.disabledButtonColor = disabledColor;
         this.hoveredButtonColor = hoveredColor;
-        this.getClientSerializer().markDirty("buttonColor");
-        this.getClientSerializer().markDirty("disabledButtonColor");
-        this.getClientSerializer().markDirty("hoveredButtonColor");
+        this.getValueSerializer().markDirty("buttonColor");
+        this.getValueSerializer().markDirty("disabledButtonColor");
+        this.getValueSerializer().markDirty("hoveredButtonColor");
         return this;
     }
 
@@ -756,9 +756,9 @@ public class ButtonComponent extends StandardComponent
         this.textColor = color;
         this.disabledTextColor = disabledColor;
         this.hoveredTextColor = hoveredColor;
-        this.getClientSerializer().markDirty("textColor");
-        this.getClientSerializer().markDirty("disabledTextColor");
-        this.getClientSerializer().markDirty("hoveredTextColor");
+        this.getValueSerializer().markDirty("textColor");
+        this.getValueSerializer().markDirty("disabledTextColor");
+        this.getValueSerializer().markDirty("hoveredTextColor");
         return this;
     }
 

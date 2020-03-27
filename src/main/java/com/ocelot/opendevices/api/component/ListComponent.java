@@ -38,7 +38,7 @@ public class ListComponent<E> extends StandardComponent implements List<E>
 
     public ListComponent(float x, float y, int width, int height, int visibleHeight)
     {
-        this.setClientSerializer(this.createSyncHelper());
+        this.setValueSerializer(this.createSyncHelper());
         this.x = x;
         this.y = y;
         this.width = width;
@@ -172,7 +172,7 @@ public class ListComponent<E> extends StandardComponent implements List<E>
     public ListComponent<E> setVisible(boolean visible)
     {
         this.visible = visible;
-        this.getClientSerializer().markDirty("visible");
+        this.getValueSerializer().markDirty("visible");
         return this;
     }
 
@@ -197,8 +197,8 @@ public class ListComponent<E> extends StandardComponent implements List<E>
     {
         this.scroll = MathHelper.clamp(this.scroll, 0, this.height - this.visibleHeight);
         this.nextScroll = this.scroll;
-        this.getClientSerializer().markDirty("scroll");
-        this.getClientSerializer().markDirty("nextScroll");
+        this.getValueSerializer().markDirty("scroll");
+        this.getValueSerializer().markDirty("nextScroll");
         return this;
     }
 
@@ -210,7 +210,7 @@ public class ListComponent<E> extends StandardComponent implements List<E>
     public ListComponent<E> setScrollSpeed(float scrollSpeed)
     {
         this.scrollSpeed = Math.max(scrollSpeed, 0);
-        this.getClientSerializer().markDirty("scrollSpeed");
+        this.getValueSerializer().markDirty("scrollSpeed");
         return this;
     }
 
@@ -254,7 +254,7 @@ public class ListComponent<E> extends StandardComponent implements List<E>
     public boolean add(E e)
     {
         boolean value = this.items.add(e);
-        this.getClientSerializer().markDirty("items");
+        this.getValueSerializer().markDirty("items");
         return value;
     }
 
@@ -262,7 +262,7 @@ public class ListComponent<E> extends StandardComponent implements List<E>
     public boolean remove(Object o)
     {
         boolean value = this.items.remove(o);
-        this.getClientSerializer().markDirty("items");
+        this.getValueSerializer().markDirty("items");
         return value;
     }
 
@@ -276,7 +276,7 @@ public class ListComponent<E> extends StandardComponent implements List<E>
     public boolean addAll(Collection<? extends E> c)
     {
         boolean value = this.items.addAll(c);
-        this.getClientSerializer().markDirty("items");
+        this.getValueSerializer().markDirty("items");
         return value;
     }
 
@@ -284,7 +284,7 @@ public class ListComponent<E> extends StandardComponent implements List<E>
     public boolean addAll(int index, Collection<? extends E> c)
     {
         boolean value = this.items.addAll(index, c);
-        this.getClientSerializer().markDirty("items");
+        this.getValueSerializer().markDirty("items");
         return value;
     }
 
@@ -292,7 +292,7 @@ public class ListComponent<E> extends StandardComponent implements List<E>
     public boolean removeAll(Collection<?> c)
     {
         boolean value = this.items.removeAll(c);
-        this.getClientSerializer().markDirty("items");
+        this.getValueSerializer().markDirty("items");
         return value;
     }
 
@@ -300,7 +300,7 @@ public class ListComponent<E> extends StandardComponent implements List<E>
     public boolean retainAll(Collection<?> c)
     {
         boolean value = this.items.retainAll(c);
-        this.getClientSerializer().markDirty("items");
+        this.getValueSerializer().markDirty("items");
         return value;
     }
 
@@ -308,7 +308,7 @@ public class ListComponent<E> extends StandardComponent implements List<E>
     public void clear()
     {
         this.items.clear();
-        this.getClientSerializer().markDirty("items");
+        this.getValueSerializer().markDirty("items");
     }
 
     @Override
@@ -321,7 +321,7 @@ public class ListComponent<E> extends StandardComponent implements List<E>
     public E set(int index, E element)
     {
         E value = this.items.set(index, element);
-        this.getClientSerializer().markDirty("items");
+        this.getValueSerializer().markDirty("items");
         return value;
     }
 
@@ -329,14 +329,14 @@ public class ListComponent<E> extends StandardComponent implements List<E>
     public void add(int index, E element)
     {
         this.items.add(index, element);
-        this.getClientSerializer().markDirty("items");
+        this.getValueSerializer().markDirty("items");
     }
 
     @Override
     public E remove(int index)
     {
         E value = this.items.remove(index);
-        this.getClientSerializer().markDirty("items");
+        this.getValueSerializer().markDirty("items");
         return value;
     }
 

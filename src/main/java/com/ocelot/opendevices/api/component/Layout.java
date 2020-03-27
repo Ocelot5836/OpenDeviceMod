@@ -6,7 +6,6 @@ import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.api.util.SyncHelper;
 import com.ocelot.opendevices.api.util.TooltipRenderer;
 import net.minecraft.nbt.ListNBT;
-import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.common.util.Constants;
 
 import java.util.ArrayList;
@@ -43,7 +42,7 @@ public class Layout extends StandardComponent
 
     public Layout(float x, float y, int width, int height)
     {
-        this.setClientSerializer(this.createSyncHelper());
+        this.setValueSerializer(this.createSyncHelper());
         this.x = x;
         this.y = y;
         this.width = width;
@@ -332,7 +331,7 @@ public class Layout extends StandardComponent
     public Layout setVisible(boolean visible)
     {
         this.visible = visible;
-        this.getClientSerializer().markDirty("visible");
+        this.getValueSerializer().markDirty("visible");
         return this;
     }
 

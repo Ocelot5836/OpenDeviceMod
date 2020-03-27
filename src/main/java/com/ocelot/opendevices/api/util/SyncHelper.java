@@ -1,9 +1,7 @@
 package com.ocelot.opendevices.api.util;
 
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.api.handler.ClickListener;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraftforge.common.util.INBTSerializable;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -14,7 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public class SyncHelper implements ClientSerializer
+public class SyncHelper implements ValueSerializer
 {
     private Runnable markDirty;
     private Set<String> modifiedFields;
@@ -48,6 +46,28 @@ public class SyncHelper implements ClientSerializer
         this.modifiedFields.add(key);
         if (this.markDirty != null)
             this.markDirty.run();
+    }
+
+    @Override
+    public CompoundNBT save()
+    {
+        CompoundNBT nbt = new CompoundNBT();
+        this.serializers.forEach((fieldName, serializer) -> serializer.getLeft().accept(nbt));
+        return nbt;
+    }
+
+    @Override
+    public void load(CompoundNBT nbt)
+    {
+        nbt.keySet().forEach(fieldName ->
+        {
+            if (!this.serializers.containsKey(fieldName))
+            {
+                OpenDevices.LOGGER.warn("Could not deserialize field '" + fieldName + "' as it does not have a serializer.");
+                return;
+            }
+            this.serializers.get(fieldName).getRight().accept(nbt);
+        });
     }
 
     @Override

@@ -181,8 +181,8 @@ public class ScrollableLayout extends Layout
                 if (this.scroll != scroll)
                 {
                     this.nextScroll -= finalScroll;
-                    this.getClientSerializer().markDirty("scroll");
-                    this.getClientSerializer().markDirty("nextScroll");
+                    this.getValueSerializer().markDirty("scroll");
+                    this.getValueSerializer().markDirty("nextScroll");
                     return true;
                 }
             }
@@ -291,7 +291,7 @@ public class ScrollableLayout extends Layout
     public ScrollableLayout setScrollbarColor(int scrollbarColor)
     {
         this.scrollbarColor = scrollbarColor;
-        this.getClientSerializer().markDirty("scrollbarColor");
+        this.getValueSerializer().markDirty("scrollbarColor");
         return this;
     }
 
@@ -304,8 +304,8 @@ public class ScrollableLayout extends Layout
     {
         this.scroll = MathHelper.clamp(this.scroll, 0, this.physicalHeight - this.getHeight());
         this.nextScroll = this.scroll;
-        this.getClientSerializer().markDirty("scroll");
-        this.getClientSerializer().markDirty("nextScroll");
+        this.getValueSerializer().markDirty("scroll");
+        this.getValueSerializer().markDirty("nextScroll");
         return this;
     }
 
@@ -317,7 +317,7 @@ public class ScrollableLayout extends Layout
     public ScrollableLayout setScrollSpeed(float scrollSpeed)
     {
         this.scrollSpeed = Math.max(scrollSpeed, 0);
-        this.getClientSerializer().markDirty("scrollSpeed");
+        this.getValueSerializer().markDirty("scrollSpeed");
         return this;
     }
 
