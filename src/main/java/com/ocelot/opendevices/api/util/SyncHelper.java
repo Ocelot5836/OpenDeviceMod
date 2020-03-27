@@ -78,7 +78,6 @@ public class SyncHelper implements ClientSerializer
                 return;
             }
             this.serializers.get(fieldName).getRight().accept(nbt);
-            this.modifiedFields.add(fieldName);
         });
     }
 }

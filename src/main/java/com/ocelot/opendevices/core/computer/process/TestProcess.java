@@ -74,7 +74,8 @@ public class TestProcess implements Application<Computer>
         {
             this.layoutManager.update();
         }
-        else if (this.dirty)
+
+        if (this.dirty)
         {
             this.dirty = false;
             this.synchronizeClients();
