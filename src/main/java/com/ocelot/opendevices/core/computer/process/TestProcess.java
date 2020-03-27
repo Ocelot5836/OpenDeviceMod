@@ -128,7 +128,7 @@ public class TestProcess implements Application<Computer>
     @Override
     public void deserializeNBT(CompoundNBT nbt)
     {
-        this.layoutManager.deserializeNBT(nbt.getList("layoutManager", Constants.NBT.TAG_COMPOUND));
+        this.layoutManager.deserializeNBT(nbt.getCompound("layoutManager"));
         this.window.deserializeNBT(nbt.getCompound("window"));
         this.window2.deserializeNBT(nbt.getCompound("window2"));
     }
