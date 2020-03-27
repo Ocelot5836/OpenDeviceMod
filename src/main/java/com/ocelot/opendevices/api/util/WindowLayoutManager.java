@@ -114,6 +114,7 @@ public class WindowLayoutManager implements INBTSerializable<CompoundNBT>
     /**
      * Updates the containing layout info for the client.
      */
+    @OnlyIn(Dist.CLIENT)
     public void update()
     {
         if (this.markDirty != null)
@@ -187,13 +188,15 @@ public class WindowLayoutManager implements INBTSerializable<CompoundNBT>
         this.currentLayouts.forEach((windowId, layoutId) ->
         {
             CompoundNBT layoutNbt = new CompoundNBT();
-            Layout currentLayout = this.getCurrentLayout(windowId);
-            if (currentLayout != null && currentLayout.getValueSerializer() != null)
-            {
-                layoutNbt.putUniqueId("windowId", windowId);
-                layoutNbt.put("data", currentLayout.getValueSerializer().save());
-                layoutsNbt.add(layoutNbt);
-            }
+            // TODO record NBT to save
+
+            //            Layout currentLayout = this.getCurrentLayout(windowId);
+            //            if (currentLayout != null && currentLayout.getValueSerializer() != null)
+            //            {
+            //                layoutNbt.putUniqueId("windowId", windowId);
+            //                layoutNbt.put("data", currentLayout.getValueSerializer().save());
+            //                layoutsNbt.add(layoutNbt);
+            //            }
         });
         nbt.put("layoutsData", layoutsNbt);
         return nbt;
@@ -211,11 +214,13 @@ public class WindowLayoutManager implements INBTSerializable<CompoundNBT>
             if (layoutNbt.contains("data", Constants.NBT.TAG_COMPOUND))
             {
                 CompoundNBT data = layoutNbt.getCompound("data");
-                Layout currentLayout = this.getCurrentLayout(windowId);
-                if (currentLayout != null && currentLayout.getValueSerializer() != null)
-                {
-                    currentLayout.getValueSerializer().load(data);
-                }
+                // TODO record NBT to save
+                
+                //                Layout currentLayout = this.getCurrentLayout(windowId);
+                //                if (currentLayout != null && currentLayout.getValueSerializer() != null)
+                //                {
+                //                    currentLayout.getValueSerializer().load(data);
+                //                }
             }
         }
     }
