@@ -250,7 +250,7 @@ public class LaptopWindowManager implements WindowManager, INBTSerializable<Comp
     @Override
     public void requestCloseProcessWindows(UUID processId)
     {
-        this.requestCloseWindows(this.windows.stream().filter(window -> window.getProcessId().equals(processId)).map(LaptopWindow::getId).collect(Collectors.toSet()));
+        this.requestCloseWindows(this.windows.stream().filter(window -> window.getProcessId().equals(processId)).map(LaptopWindow::getId).toArray(UUID[]::new));
     }
 
     @Override
