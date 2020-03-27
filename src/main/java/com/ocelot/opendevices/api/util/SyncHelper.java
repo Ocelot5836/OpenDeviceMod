@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
+// TODO make fields sync with client properly
 public class SyncHelper implements ValueSerializer
 {
     private Runnable markDirty;
@@ -44,8 +45,15 @@ public class SyncHelper implements ValueSerializer
             return;
         }
 
-        if (this.modifiedFields.add(key) && this.markDirty != null)
+        this.modifiedFields.add(key);
+        if (this.markDirty != null)
             this.markDirty.run();
+    }
+
+    @Override
+    public void discardChanges()
+    {
+        this.modifiedFields.clear();
     }
 
     @Override
@@ -89,7 +97,6 @@ public class SyncHelper implements ValueSerializer
     @Override
     public void deserializeNBT(CompoundNBT nbt)
     {
-        this.modifiedFields.clear();
         nbt.keySet().forEach(fieldName ->
         {
             if (!this.serializers.containsKey(fieldName))

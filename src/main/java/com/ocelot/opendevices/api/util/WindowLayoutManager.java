@@ -114,7 +114,6 @@ public class WindowLayoutManager implements INBTSerializable<CompoundNBT>
     /**
      * Updates the containing layout info for the client.
      */
-    @OnlyIn(Dist.CLIENT)
     public void update()
     {
         if (this.markDirty != null)
@@ -240,6 +239,7 @@ public class WindowLayoutManager implements INBTSerializable<CompoundNBT>
                     {
                         layoutNbt.putUniqueId("windowId", windowId);
                         layoutNbt.put("data", currentLayout.getValueSerializer().serializeNBT());
+                        currentLayout.getValueSerializer().discardChanges();
                         layoutsNbt.add(layoutNbt);
                     }
                 }));

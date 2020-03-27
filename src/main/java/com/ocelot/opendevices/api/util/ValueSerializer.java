@@ -18,6 +18,11 @@ public interface ValueSerializer extends INBTSerializable<CompoundNBT>
     void markDirty(String key);
 
     /**
+     * Discards any changes that have been made.
+     */
+    void discardChanges();
+
+    /**
      * Writes all values to NBT.
      *
      * @return The tag full of data

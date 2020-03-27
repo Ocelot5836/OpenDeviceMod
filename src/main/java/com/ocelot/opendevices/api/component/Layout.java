@@ -344,7 +344,7 @@ public class Layout extends StandardComponent
             {
                 if (component.isDirty())
                 {
-                    this.markDirty();
+                    this.getValueSerializer().markDirty("components");
                     break;
                 }
             }
