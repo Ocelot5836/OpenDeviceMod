@@ -1,9 +1,7 @@
 package com.ocelot.opendevices.api.computer;
 
-import com.ocelot.opendevices.api.computer.window.Window;
-
 /**
- * <p>Represents the most abstract form of a task bar for the {@link Computer}. Displays information such as tray items, pinned apps, etc.</p>
+ * <p>Represents the most abstract form of a task bar for a {@link Computer}. Displays information such as tray items, pinned apps, etc.</p>
  *
  * @author Ocelot
  * @see Computer
@@ -16,9 +14,14 @@ public interface TaskBar
     boolean isEnlarged();
 
     /**
-     * @return The windows that are currently displayed on the task bar
+     * @return The icons displayed on the task bar
      */
-    Window[] getDisplayedWindows();
+    TaskbarIcon[] getDisplayedIcons();
+
+    /**
+     * @return The icons displayed in the tray
+     */
+    TrayIcon[] getTrayIcons();
 
     /**
      * @return The height of the task bar

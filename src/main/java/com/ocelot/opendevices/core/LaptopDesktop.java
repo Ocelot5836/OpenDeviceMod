@@ -4,9 +4,11 @@ import com.ocelot.opendevices.api.DeviceDesktopBackgrounds;
 import com.ocelot.opendevices.api.computer.desktop.Desktop;
 import com.ocelot.opendevices.api.computer.desktop.DesktopBackground;
 import com.ocelot.opendevices.api.computer.desktop.DesktopBackgroundType;
+import com.ocelot.opendevices.api.util.ImageFit;
 import com.ocelot.opendevices.core.computer.desktop.LaptopOnlineDesktopBackground;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.INBTSerializable;
+import org.lwjgl.system.NativeResource;
 
 import javax.annotation.Nullable;
 
@@ -17,7 +19,7 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
     public LaptopDesktop()
     {
         this.background = DeviceDesktopBackgrounds.DEFAULT.get();
-        this.background = new LaptopOnlineDesktopBackground("https://api.battlefieldsmc.net/api/launcher/images/welcome.png");
+        this.background = new LaptopOnlineDesktopBackground("https://api.battlefieldsmc.net/api/launcher/images/welcome.png", ImageFit.STRETCH);
     }
 
     public void update()

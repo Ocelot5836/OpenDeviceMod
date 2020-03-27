@@ -1,6 +1,7 @@
 package com.ocelot.opendevices.api;
 
 import com.ocelot.opendevices.api.computer.desktop.LocalDesktopBackground;
+import com.ocelot.opendevices.api.util.ImageFit;
 import com.ocelot.opendevices.core.computer.desktop.LaptopLocalDesktopBackground;
 
 import java.util.function.Supplier;
@@ -12,5 +13,5 @@ import java.util.function.Supplier;
  */
 public class DeviceDesktopBackgrounds
 {
-    public static final Supplier<LocalDesktopBackground> DEFAULT = () -> new LaptopLocalDesktopBackground(DeviceConstants.DEFAULT_BACKGROUND_LOCATION, 0, 0, DeviceConstants.LAPTOP_GUI_WIDTH / 2f, DeviceConstants.LAPTOP_GUI_HEIGHT / 2f, DeviceConstants.LAPTOP_GUI_WIDTH / 2, DeviceConstants.LAPTOP_GUI_HEIGHT / 2);
+    public static final Supplier<LocalDesktopBackground> DEFAULT = () -> new LaptopLocalDesktopBackground(DeviceConstants.DEFAULT_BACKGROUND_LOCATION, 0, 0, DeviceConstants.LAPTOP_GUI_WIDTH / 2f, DeviceConstants.LAPTOP_GUI_HEIGHT / 2f, DeviceConstants.LAPTOP_GUI_WIDTH / 2, DeviceConstants.LAPTOP_GUI_HEIGHT / 2, ImageFit.STRETCH);
 }

@@ -1,7 +1,7 @@
 package com.ocelot.opendevices.core.registry;
 
-import com.ocelot.opendevices.api.device.TileEntityDevice;
 import com.ocelot.opendevices.api.device.DeviceSerializer;
+import com.ocelot.opendevices.api.device.TileEntityDevice;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -31,7 +31,7 @@ public class TileEntityDeviceSerializer extends ForgeRegistryEntry<DeviceSeriali
     public CompoundNBT write(ServerWorld world, TileEntityDevice device)
     {
         CompoundNBT nbt = new CompoundNBT();
-        nbt.putLong("pos", device.getPos().toLong());
+        nbt.putLong("pos", device.getDevicePos().toLong());
         nbt.putInt("dimension", world.getDimension().getType().getId());
         return nbt;
     }

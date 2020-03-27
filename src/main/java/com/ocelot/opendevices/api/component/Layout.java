@@ -27,8 +27,9 @@ public class Layout extends StandardComponent
     private float y;
     private int width;
     private int height;
+    private boolean visible;
 
-    private List<Component> components;
+    protected List<Component> components;
 
     public Layout()
     {
@@ -42,12 +43,23 @@ public class Layout extends StandardComponent
 
     public Layout(float x, float y, int width, int height)
     {
+        this.setClientSerializer(this.createSyncHelper());
         this.x = x;
         this.y = y;
         this.width = MathHelper.clamp(width, DeviceConstants.LAPTOP_MIN_APPLICATION_WIDTH, DeviceConstants.LAPTOP_MAX_APPLICATION_WIDTH + 2);
         this.height = MathHelper.clamp(height, DeviceConstants.LAPTOP_MIN_APPLICATION_HEIGHT, DeviceConstants.LAPTOP_MAX_APPLICATION_HEIGHT + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + 2);
+        this.visible = true;
+
         this.components = new ArrayList<>();
 
+        if (width < DeviceConstants.LAPTOP_MIN_APPLICATION_WIDTH || width > DeviceConstants.LAPTOP_MAX_APPLICATION_WIDTH || height > DeviceConstants.LAPTOP_MAX_APPLICATION_HEIGHT || height < DeviceConstants.LAPTOP_MIN_APPLICATION_HEIGHT)
+        {
+            OpenDevices.LOGGER.warn("Layouts must be between " + DeviceConstants.LAPTOP_MIN_APPLICATION_WIDTH + "x" + DeviceConstants.LAPTOP_MIN_APPLICATION_HEIGHT + " and " + DeviceConstants.LAPTOP_MAX_APPLICATION_WIDTH + "x" + DeviceConstants.LAPTOP_MAX_APPLICATION_HEIGHT + ". Clamping size to screen.");
+        }
+    }
+
+    protected SyncHelper createSyncHelper()
+    {
         SyncHelper syncHelper = new SyncHelper(this::markDirty);
         {
             syncHelper.addSerializer("components", nbt ->
@@ -68,13 +80,9 @@ public class Layout extends StandardComponent
                     this.components.get(i).deserializeNBT(componentsNbt.getCompound(i));
                 }
             });
+            syncHelper.addSerializer("visible", nbt -> nbt.putBoolean("visible", this.visible), nbt -> this.visible = nbt.getBoolean("visible"));
         }
-        this.setClientSerializer(syncHelper);
-
-        if (width < DeviceConstants.LAPTOP_MIN_APPLICATION_WIDTH || width > DeviceConstants.LAPTOP_MAX_APPLICATION_WIDTH || height > DeviceConstants.LAPTOP_MAX_APPLICATION_HEIGHT || height < DeviceConstants.LAPTOP_MIN_APPLICATION_HEIGHT)
-        {
-            OpenDevices.LOGGER.warn("Layouts must be between " + DeviceConstants.LAPTOP_MIN_APPLICATION_WIDTH + "x" + DeviceConstants.LAPTOP_MIN_APPLICATION_HEIGHT + " and " + DeviceConstants.LAPTOP_MAX_APPLICATION_WIDTH + "x" + DeviceConstants.LAPTOP_MAX_APPLICATION_HEIGHT + ". Clamping size to screen.");
-        }
+        return syncHelper;
     }
 
     /**
@@ -110,31 +118,37 @@ public class Layout extends StandardComponent
     @Override
     public void update()
     {
-        this.components.forEach(Component::update);
+        if (this.visible)
+        {
+            this.components.forEach(Component::update);
+        }
     }
 
     @Override
-    public void render(float posX, float posY, int mouseX, int mouseY, float partialTicks)
+    public void render(float posX, float posY, int mouseX, int mouseY, boolean main, float partialTicks)
     {
-        RenderUtil.pushScissor(posX + this.getX(), posY + this.getY(), this.getWidth(), this.getHeight());
-        this.components.forEach(component ->
+        if (this.visible)
         {
-            if (component.getX() + component.getWidth() >= this.x && component.getX() < this.x + this.width && component.getY() + component.getHeight() >= this.y && component.getY() < this.y + this.height)
+            RenderUtil.pushScissor(posX + this.getX(), posY + this.getY(), this.getWidth(), this.getHeight());
+            this.components.forEach(component ->
             {
-                component.render(this.getX() + posX, this.getY() + posY, mouseX, mouseY, partialTicks);
-            }
-        });
-        RenderUtil.popScissor();
+                if ((component.getX() + component.getWidth() >= this.getX() || component.getX() < this.getX() + this.getWidth()) && (component.getY() + component.getHeight() >= this.getY() || component.getY() < this.getY() + this.getHeight()))
+                {
+                    component.render(this.getX() + posX, this.getY() + posY, mouseX, mouseY, main, partialTicks);
+                }
+            });
+            RenderUtil.popScissor();
+        }
     }
 
     @Override
     public void renderOverlay(TooltipRenderer renderer, float posX, float posY, int mouseX, int mouseY, float partialTicks)
     {
-        if (this.isHovered(mouseX - (int) posX, mouseY - (int) posY))
+        if (this.visible && this.isHovered(mouseX - (int) posX, mouseY - (int) posY))
         {
             this.components.forEach(component ->
             {
-                if (component.getX() + component.getWidth() >= this.x && component.getX() < this.x + this.width && component.getY() + component.getHeight() >= this.y && component.getY() < this.y + this.height)
+                if ((component.getX() + component.getWidth() >= this.getX() || component.getX() < this.getX() + this.getWidth()) && (component.getY() + component.getHeight() >= this.getY() || component.getY() < this.getY() + this.getHeight()))
                 {
                     component.renderOverlay(renderer, this.getX() + posX, this.getY() + posY, mouseX, mouseY, partialTicks);
                 }
@@ -145,7 +159,7 @@ public class Layout extends StandardComponent
     @Override
     public boolean onMousePressed(double mouseX, double mouseY, int mouseButton)
     {
-        if (this.isHovered(mouseX, mouseY))
+        if (this.visible && this.isHovered(mouseX, mouseY))
         {
             for (Component component : this.components)
             {
@@ -161,11 +175,14 @@ public class Layout extends StandardComponent
     @Override
     public boolean onMouseReleased(double mouseX, double mouseY, int mouseButton)
     {
-        for (Component component : this.components)
+        if (this.visible)
         {
-            if (component.onMouseReleased(mouseX - this.x, mouseY - this.y, mouseButton))
+            for (Component component : this.components)
             {
-                return true;
+                if (component.onMouseReleased(mouseX - this.x, mouseY - this.y, mouseButton))
+                {
+                    return true;
+                }
             }
         }
         return false;
@@ -174,11 +191,14 @@ public class Layout extends StandardComponent
     @Override
     public boolean onMouseScrolled(double mouseX, double mouseY, double amount)
     {
-        for (Component component : this.components)
+        if (this.visible && this.isHovered(mouseX, mouseY))
         {
-            if (component.onMouseScrolled(mouseX - this.x, mouseY - this.y, amount))
+            for (Component component : this.components)
             {
-                return true;
+                if (component.onMouseScrolled(mouseX - this.x, mouseY - this.y, amount))
+                {
+                    return true;
+                }
             }
         }
         return false;
@@ -187,17 +207,23 @@ public class Layout extends StandardComponent
     @Override
     public void onMouseMoved(double mouseX, double mouseY)
     {
-        this.components.forEach(component -> component.onMouseMoved(mouseX - this.x, mouseY - this.y));
+        if (this.visible)
+        {
+            this.components.forEach(component -> component.onMouseMoved(mouseX - this.x, mouseY - this.y));
+        }
     }
 
     @Override
     public boolean onMouseDragged(double mouseX, double mouseY, int mouseButton, double deltaX, double deltaY)
     {
-        for (Component component : this.components)
+        if (this.visible)
         {
-            if (component.onMouseDragged(mouseX - this.x, mouseY - this.y, mouseButton, deltaX, deltaY))
+            for (Component component : this.components)
             {
-                return true;
+                if (component.onMouseDragged(mouseX - this.x, mouseY - this.y, mouseButton, deltaX, deltaY))
+                {
+                    return true;
+                }
             }
         }
         return false;
@@ -206,11 +232,14 @@ public class Layout extends StandardComponent
     @Override
     public boolean onKeyPressed(int keyCode, int scanCode, int mods)
     {
-        for (Component component : this.components)
+        if (this.visible)
         {
-            if (component.onKeyPressed(keyCode, scanCode, mods))
+            for (Component component : this.components)
             {
-                return true;
+                if (component.onKeyPressed(keyCode, scanCode, mods))
+                {
+                    return true;
+                }
             }
         }
         return false;
@@ -219,11 +248,14 @@ public class Layout extends StandardComponent
     @Override
     public boolean onKeyReleased(int keyCode, int scanCode, int mods)
     {
-        for (Component component : this.components)
+        if (this.visible)
         {
-            if (component.onKeyPressed(keyCode, scanCode, mods))
+            for (Component component : this.components)
             {
-                return true;
+                if (component.onKeyPressed(keyCode, scanCode, mods))
+                {
+                    return true;
+                }
             }
         }
         return false;
@@ -232,13 +264,19 @@ public class Layout extends StandardComponent
     @Override
     public void onGainFocus()
     {
-        this.components.forEach(Component::onGainFocus);
+        if (this.visible)
+        {
+            this.components.forEach(Component::onGainFocus);
+        }
     }
 
     @Override
     public void onLostFocus()
     {
-        this.components.forEach(Component::onLostFocus);
+        if (this.visible)
+        {
+            this.components.forEach(Component::onLostFocus);
+        }
     }
 
     @Override
@@ -281,6 +319,26 @@ public class Layout extends StandardComponent
     public int getHeight()
     {
         return height;
+    }
+
+    /**
+     * @return Whether or not this component can be seen and interacted with
+     */
+    public boolean isVisible()
+    {
+        return visible;
+    }
+
+    /**
+     * Marks this component as able to be seen or not.
+     *
+     * @param visible Whether or not this component is visible
+     */
+    public Layout setVisible(boolean visible)
+    {
+        this.visible = visible;
+        this.getClientSerializer().markDirty("visible");
+        return this;
     }
 
     @Override

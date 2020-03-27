@@ -22,14 +22,24 @@ import com.ocelot.opendevices.api.util.TooltipRenderer;
 public class ApplicationWindowRenderer<D extends Computer, T extends Application<D>> implements ProcessWindowRenderer<D, T>
 {
     @Override
-    public void render(T application, Window window, int posX, int posY, int mouseX, int mouseY, float partialTicks)
+    public void update(T application, Window window)
+    {
+        Layout layout = application.getLayout(window.getId());
+        if (layout != null)
+        {
+            layout.update();
+        }
+    }
+
+    @Override
+    public void render(T application, Window window, int posX, int posY, int mouseX, int mouseY, boolean main, float partialTicks)
     {
         Layout layout = application.getLayout(window.getId());
         if (layout != null)
         {
             float contentX = window.getInterpolatedX(partialTicks) + 1;
             float contentY = window.getInterpolatedY(partialTicks) + 1 + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT;
-            layout.render(posX + contentX, posY + contentY, mouseX, mouseY, partialTicks);
+            layout.render(posX + contentX, posY + contentY, mouseX, mouseY, main, partialTicks);
         }
     }
 

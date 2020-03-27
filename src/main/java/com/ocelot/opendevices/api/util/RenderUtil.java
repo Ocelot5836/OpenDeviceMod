@@ -51,7 +51,7 @@ public class RenderUtil
             double scale = framebufferScale == 0 ? window.getGuiScaleFactor() : framebufferScale;
             int frameHeight = framebufferHeight == 0 ? window.getFramebufferHeight() : framebufferHeight;
             enableScissor();
-            glScissor((int) (scissor.x * scale), (int) (frameHeight - scissor.y * scale - scissor.height * scale), (int) Math.max(0, scissor.width * scale), (int) Math.max(0, scissor.height * scale));
+            glScissor((int) (scissor.x * scale), (int) (frameHeight - (int) (scissor.y + scissor.height) * scale), (int) Math.max(0, scissor.width * scale), (int) Math.max(0, scissor.height * scale));
         }
         else
         {
@@ -75,7 +75,7 @@ public class RenderUtil
      * @param width  The x size of the rectangle
      * @param height The y size of the rectangle
      */
-    public static void pushScissor(double x, double y, double width, double height)
+    public static void pushScissor(float x, float y, float width, float height)
     {
         if (SCISSOR_STACK.size() > 0)
         {
@@ -124,31 +124,107 @@ public class RenderUtil
         return ((int) (COLOR_GET_BUFFER.get(3) * 0xff) << 24) & 0xff | ((int) (COLOR_GET_BUFFER.get(0) * 0xff) << 16) & 0xff | ((int) (COLOR_GET_BUFFER.get(1) * 0xff) << 8) & 0xff | (int) (COLOR_GET_BUFFER.get(2) * 0xff) & 0xff;
     }
 
+    /**
+     * @deprecated Use {@link ShapeRenderer}
+     */
     public static void drawRectWithTexture(float x, float y, float u, float v, float width, float height, float textureWidth, float textureHeight)
     {
         drawRectWithTexture(x, y, 0, u, v, width, height, textureWidth, textureHeight, 256, 256);
     }
 
+    /**
+     * @deprecated Use {@link ShapeRenderer}
+     */
     public static void drawRectWithTexture(float x, float y, float u, float v, float width, float height, float textureWidth, float textureHeight, int sourceWidth, int sourceHeight)
     {
         drawRectWithTexture(x, y, 0, u, v, width, height, textureWidth, textureHeight, sourceWidth, sourceHeight);
     }
 
+    /**
+     * @deprecated Use {@link ShapeRenderer}
+     */
     public static void drawRectWithTexture(float x, float y, float z, float u, float v, float width, float height, float textureWidth, float textureHeight)
     {
         drawRectWithTexture(x, y, z, u, v, width, height, textureWidth, textureHeight, 256, 256);
     }
 
+    /**
+     * @deprecated Use {@link ShapeRenderer}
+     */
     public static void drawRectWithTexture(float x, float y, float z, float width, float height, TextureAtlasSprite sprite)
     {
         drawRectWithTexture(x, y, z, sprite.getMinU(), sprite.getMinV(), width, height, sprite.getMaxU() - sprite.getMinU(), sprite.getMaxV() - sprite.getMinV(), 1, 1);
     }
 
+    /**
+     * @deprecated Use {@link ShapeRenderer}
+     */
     public static void drawRectWithTexture(float x, float y, float width, float height, TextureAtlasSprite sprite)
     {
         drawRectWithTexture(x, y, 0, sprite.getMinU(), sprite.getMinV(), width, height, sprite.getMaxU() - sprite.getMinU(), sprite.getMaxV() - sprite.getMinV(), 1, 1);
     }
 
+    public static void drawRectWithTexture(float x, float y, float u, float v, float width, float height, float textureWidth, float textureHeight, int sourceWidth, int sourceHeight, ImageFit fit)
+    {
+        drawRectWithTexture(x, y, 0, u, v, width, height, textureWidth, textureHeight, sourceWidth, sourceHeight, fit);
+    }
+
+    public static void drawRectWithTexture(float x, float y, float z, float u, float v, float width, float height, float textureWidth, float textureHeight, int sourceWidth, int sourceHeight, ImageFit fit)
+    {
+        switch (fit)
+        {
+            case FILL:
+            {
+                float w1 = height / (textureHeight / textureWidth);
+                float w2 = width * (textureWidth / w1);
+                ShapeRenderer.drawRectWithTexture(x + Math.max((width - w1) / 2, 0), y, z, u - Math.min((w2 - textureWidth) / 2, 0), v, Math.min(width, w1), height, Math.min(textureWidth, w2), textureHeight, sourceWidth, sourceHeight);
+                break;
+            }
+            case STRETCH:
+            {
+                ShapeRenderer.drawRectWithTexture(x, y, z, u, v, width, height, textureWidth, textureHeight, sourceWidth, sourceHeight);
+                break;
+            }
+            case TILE:
+            {
+                float scaleWidth = 1.0F / sourceWidth;
+                float scaleHeight = 1.0F / sourceHeight;
+                Tessellator tessellator = Tessellator.getInstance();
+                BufferBuilder buffer = tessellator.getBuffer();
+                buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+
+                for (int tileY = 0; tileY < Math.ceil(height / textureHeight); tileY++)
+                {
+                    for (int tileX = 0; tileX < Math.ceil(width / textureWidth); tileX++)
+                    {
+                        buffer.pos(x + tileX * textureWidth, y + tileY * textureHeight + textureHeight, z).tex(u * scaleWidth, (v + textureHeight) * scaleHeight).endVertex();
+                        buffer.pos(x + tileX * textureWidth + textureWidth, y + tileY * textureHeight + textureHeight, z).tex((u + textureWidth) * scaleWidth, (v + textureHeight) * scaleHeight).endVertex();
+                        buffer.pos(x + tileX * textureWidth + textureWidth, y + tileY * textureHeight, z).tex((u + textureWidth) * scaleWidth, v * scaleHeight).endVertex();
+                        buffer.pos(x + tileX * textureWidth, y + tileY * textureHeight, z).tex(u * scaleWidth, v * scaleHeight).endVertex();
+                    }
+                }
+
+                tessellator.draw();
+                break;
+            }
+            case CENTER:
+            {
+                float x1 = (width - textureWidth) / 2;
+                float y1 = (height - textureHeight) / 2;
+                ShapeRenderer.drawRectWithTexture(x + Math.max(0, x1), y + Math.max(0, y1), z, u - Math.min(0, x1), v - Math.min(0, y1), Math.min(width, textureWidth), Math.min(height, textureHeight), Math.min(width, textureWidth), Math.min(height, textureHeight), sourceWidth, sourceHeight);
+                break;
+            }
+            case SPAN:
+            {
+                ShapeRenderer.drawRectWithTexture(x, y, z, u, v, width, height, textureWidth / (textureWidth / textureHeight), textureHeight, sourceWidth, sourceHeight);
+                break;
+            }
+        }
+    }
+
+    /**
+     * @deprecated Use {@link ShapeRenderer}
+     */
     public static void drawRectWithTexture(float x, float y, float z, float u, float v, float width, float height, float textureWidth, float textureHeight, int sourceWidth, int sourceHeight)
     {
         float scaleWidth = 1.0F / sourceWidth;
@@ -163,79 +239,79 @@ public class RenderUtil
         tessellator.draw();
     }
 
-    public static void drawSizedRectWithTexture(float x, float y, float u, float v, float width, float height, float tileWidth, float tileHeight)
-    {
-        drawSizedRectWithTexture(x, y, 0, u, v, width, height, tileWidth, tileHeight, 256, 256);
-    }
-
-    public static void drawSizedRectWithTexture(float x, float y, float u, float v, float width, float height, float tileWidth, float tileHeight, int sourceWidth, int sourceHeight)
-    {
-        drawSizedRectWithTexture(x, y, 0, u, v, width, height, tileWidth, tileHeight, sourceWidth, sourceHeight);
-    }
-
-    public static void drawSizedRectWithTexture(float x, float y, float z, float u, float v, float width, float height, float tileWidth, float tileHeight)
-    {
-        drawSizedRectWithTexture(x, y, z, u, v, width, height, tileWidth, tileHeight, 256, 256);
-    }
-
-    public static void drawSizedRectWithTexture(float x, float y, float z, float u, float v, float width, float height, float tileWidth, float tileHeight, int sourceWidth, int sourceHeight)
-    {
-        float scaleWidth = 1.0F / sourceWidth;
-        float scaleHeight = 1.0F / sourceHeight;
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-
-        /* Corners */
-        buffer.pos(x, y + tileHeight, z).tex(u * scaleWidth, (v + tileHeight) * scaleHeight).endVertex();
-        buffer.pos(x + tileWidth, y + tileHeight, z).tex((u + tileWidth) * scaleWidth, (v + tileHeight) * scaleHeight).endVertex();
-        buffer.pos(x + tileWidth, y, z).tex((u + tileWidth) * scaleWidth, v * scaleHeight).endVertex();
-        buffer.pos(x, y, z).tex(u * scaleWidth, v * scaleHeight).endVertex();
-
-        buffer.pos(x + width - tileWidth, y + tileHeight, z).tex((u + tileWidth * 2) * scaleWidth, (v + tileHeight) * scaleHeight).endVertex();
-        buffer.pos(x + width, y + tileHeight, z).tex((u + tileWidth * 3) * scaleWidth, (v + tileHeight) * scaleHeight).endVertex();
-        buffer.pos(x + width, y, z).tex((u + tileWidth * 3) * scaleWidth, v * scaleHeight).endVertex();
-        buffer.pos(x + width - tileWidth, y, z).tex((u + tileWidth * 2) * scaleWidth, v * scaleHeight).endVertex();
-
-        buffer.pos(x, y + height, z).tex(u * scaleWidth, (v + tileHeight * 3) * scaleHeight).endVertex();
-        buffer.pos(x + tileWidth, y + height, z).tex((u + tileWidth) * scaleWidth, (v + tileHeight * 3) * scaleHeight).endVertex();
-        buffer.pos(x + tileWidth, y + height - tileHeight, z).tex((u + tileWidth) * scaleWidth, (v + tileHeight * 2) * scaleHeight).endVertex();
-        buffer.pos(x, y + height - tileHeight, z).tex(u * scaleWidth, (v + tileHeight * 2) * scaleHeight).endVertex();
-
-        buffer.pos(x + width - tileWidth, y + height, z).tex((u + tileWidth * 2) * scaleWidth, (v + tileHeight * 3) * scaleHeight).endVertex();
-        buffer.pos(x + width, y + height, z).tex((u + tileWidth * 3) * scaleWidth, (v + tileHeight * 3) * scaleHeight).endVertex();
-        buffer.pos(x + width, y + height - tileHeight, z).tex((u + tileWidth * 3) * scaleWidth, (v + tileHeight * 2) * scaleHeight).endVertex();
-        buffer.pos(x + width - tileWidth, y + height - tileHeight, z).tex((u + tileWidth * 2) * scaleWidth, (v + tileHeight * 2) * scaleHeight).endVertex();
-
-        /* Edges */
-        buffer.pos(x + tileWidth, y + tileHeight, z).tex((u + tileWidth) * scaleWidth, (v + tileHeight) * scaleHeight).endVertex();
-        buffer.pos(x + width - tileWidth, y + tileHeight, z).tex((u + tileWidth * 2) * scaleWidth, (v + tileHeight) * scaleHeight).endVertex();
-        buffer.pos(x + width - tileWidth, y, z).tex((u + tileWidth * 2) * scaleWidth, v * scaleHeight).endVertex();
-        buffer.pos(x + tileWidth, y, z).tex((u + tileWidth) * scaleWidth, v * scaleHeight).endVertex();
-
-        buffer.pos(x + width - tileWidth, y + height - tileHeight, z).tex((u + tileWidth * 2) * scaleWidth, (v + tileHeight * 2) * scaleHeight).endVertex();
-        buffer.pos(x + width, y + height - tileHeight, z).tex((u + tileWidth * 3) * scaleWidth, (v + tileHeight * 2) * scaleHeight).endVertex();
-        buffer.pos(x + width, y + tileHeight, z).tex((u + tileWidth * 3) * scaleWidth, (v + tileHeight) * scaleHeight).endVertex();
-        buffer.pos(x + width - tileWidth, y + tileHeight, z).tex((u + tileWidth * 2) * scaleWidth, (v + tileHeight) * scaleHeight).endVertex();
-
-        buffer.pos(x + tileWidth, y + height, z).tex((u + tileWidth) * scaleWidth, (v + tileHeight * 3) * scaleHeight).endVertex();
-        buffer.pos(x + width - tileWidth, y + height, z).tex((u + tileWidth * 2) * scaleWidth, (v + tileHeight * 3) * scaleHeight).endVertex();
-        buffer.pos(x + width - tileWidth, y + height - tileHeight, z).tex((u + tileWidth * 2) * scaleWidth, (v + tileHeight * 2) * scaleHeight).endVertex();
-        buffer.pos(x + tileWidth, y + height - tileHeight, z).tex((u + tileWidth) * scaleWidth, (v + tileHeight * 2) * scaleHeight).endVertex();
-
-        buffer.pos(x, y + height - tileHeight, z).tex(u * scaleWidth, (v + tileHeight * 2) * scaleHeight).endVertex();
-        buffer.pos(x + tileWidth, y + height - tileHeight, z).tex((u + tileWidth) * scaleWidth, (v + tileHeight * 2) * scaleHeight).endVertex();
-        buffer.pos(x + tileWidth, y + tileHeight, z).tex((u + tileWidth) * scaleWidth, (v + tileHeight) * scaleHeight).endVertex();
-        buffer.pos(x, y + tileHeight, z).tex(u * scaleWidth, (v + tileHeight) * scaleHeight).endVertex();
-
-        /* Center */
-        buffer.pos(x + tileWidth, y + height - tileHeight, z).tex((u + tileWidth) * scaleWidth, (v + tileHeight * 2) * scaleHeight).endVertex();
-        buffer.pos(x + width - tileWidth, y + height - tileHeight, z).tex((u + tileWidth * 2) * scaleWidth, (v + tileHeight * 2) * scaleHeight).endVertex();
-        buffer.pos(x + width - tileWidth, y + tileHeight, z).tex((u + tileWidth * 2) * scaleWidth, (v + tileHeight) * scaleHeight).endVertex();
-        buffer.pos(x + tileWidth, y + tileHeight, z).tex((u + tileWidth) * scaleWidth, (v + tileHeight) * scaleHeight).endVertex();
-
-        tessellator.draw();
-    }
+    //    public static void drawSizedRectWithTexture(float x, float y, float u, float v, float width, float height, float tileWidth, float tileHeight)
+    //    {
+    //        drawSizedRectWithTexture(x, y, 0, u, v, width, height, tileWidth, tileHeight, 256, 256);
+    //    }
+    //
+    //    public static void drawSizedRectWithTexture(float x, float y, float u, float v, float width, float height, float tileWidth, float tileHeight, int sourceWidth, int sourceHeight)
+    //    {
+    //        drawSizedRectWithTexture(x, y, 0, u, v, width, height, tileWidth, tileHeight, sourceWidth, sourceHeight);
+    //    }
+    //
+    //    public static void drawSizedRectWithTexture(float x, float y, float z, float u, float v, float width, float height, float tileWidth, float tileHeight)
+    //    {
+    //        drawSizedRectWithTexture(x, y, z, u, v, width, height, tileWidth, tileHeight, 256, 256);
+    //    }
+    //
+    //    public static void drawSizedRectWithTexture(float x, float y, float z, float u, float v, float width, float height, float tileWidth, float tileHeight, int sourceWidth, int sourceHeight)
+    //    {
+    //        float scaleWidth = 1.0F / sourceWidth;
+    //        float scaleHeight = 1.0F / sourceHeight;
+    //        Tessellator tessellator = Tessellator.getInstance();
+    //        BufferBuilder buffer = tessellator.getBuffer();
+    //        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+    //
+    //        /* Corners */
+    //        buffer.pos(x, y + tileHeight, z).tex(u * scaleWidth, (v + tileHeight) * scaleHeight).endVertex();
+    //        buffer.pos(x + tileWidth, y + tileHeight, z).tex((u + tileWidth) * scaleWidth, (v + tileHeight) * scaleHeight).endVertex();
+    //        buffer.pos(x + tileWidth, y, z).tex((u + tileWidth) * scaleWidth, v * scaleHeight).endVertex();
+    //        buffer.pos(x, y, z).tex(u * scaleWidth, v * scaleHeight).endVertex();
+    //
+    //        buffer.pos(x + width - tileWidth, y + tileHeight, z).tex((u + tileWidth * 2) * scaleWidth, (v + tileHeight) * scaleHeight).endVertex();
+    //        buffer.pos(x + width, y + tileHeight, z).tex((u + tileWidth * 3) * scaleWidth, (v + tileHeight) * scaleHeight).endVertex();
+    //        buffer.pos(x + width, y, z).tex((u + tileWidth * 3) * scaleWidth, v * scaleHeight).endVertex();
+    //        buffer.pos(x + width - tileWidth, y, z).tex((u + tileWidth * 2) * scaleWidth, v * scaleHeight).endVertex();
+    //
+    //        buffer.pos(x, y + height, z).tex(u * scaleWidth, (v + tileHeight * 3) * scaleHeight).endVertex();
+    //        buffer.pos(x + tileWidth, y + height, z).tex((u + tileWidth) * scaleWidth, (v + tileHeight * 3) * scaleHeight).endVertex();
+    //        buffer.pos(x + tileWidth, y + height - tileHeight, z).tex((u + tileWidth) * scaleWidth, (v + tileHeight * 2) * scaleHeight).endVertex();
+    //        buffer.pos(x, y + height - tileHeight, z).tex(u * scaleWidth, (v + tileHeight * 2) * scaleHeight).endVertex();
+    //
+    //        buffer.pos(x + width - tileWidth, y + height, z).tex((u + tileWidth * 2) * scaleWidth, (v + tileHeight * 3) * scaleHeight).endVertex();
+    //        buffer.pos(x + width, y + height, z).tex((u + tileWidth * 3) * scaleWidth, (v + tileHeight * 3) * scaleHeight).endVertex();
+    //        buffer.pos(x + width, y + height - tileHeight, z).tex((u + tileWidth * 3) * scaleWidth, (v + tileHeight * 2) * scaleHeight).endVertex();
+    //        buffer.pos(x + width - tileWidth, y + height - tileHeight, z).tex((u + tileWidth * 2) * scaleWidth, (v + tileHeight * 2) * scaleHeight).endVertex();
+    //
+    //        /* Edges */
+    //        buffer.pos(x + tileWidth, y + tileHeight, z).tex((u + tileWidth) * scaleWidth, (v + tileHeight) * scaleHeight).endVertex();
+    //        buffer.pos(x + width - tileWidth, y + tileHeight, z).tex((u + tileWidth * 2) * scaleWidth, (v + tileHeight) * scaleHeight).endVertex();
+    //        buffer.pos(x + width - tileWidth, y, z).tex((u + tileWidth * 2) * scaleWidth, v * scaleHeight).endVertex();
+    //        buffer.pos(x + tileWidth, y, z).tex((u + tileWidth) * scaleWidth, v * scaleHeight).endVertex();
+    //
+    //        buffer.pos(x + width - tileWidth, y + height - tileHeight, z).tex((u + tileWidth * 2) * scaleWidth, (v + tileHeight * 2) * scaleHeight).endVertex();
+    //        buffer.pos(x + width, y + height - tileHeight, z).tex((u + tileWidth * 3) * scaleWidth, (v + tileHeight * 2) * scaleHeight).endVertex();
+    //        buffer.pos(x + width, y + tileHeight, z).tex((u + tileWidth * 3) * scaleWidth, (v + tileHeight) * scaleHeight).endVertex();
+    //        buffer.pos(x + width - tileWidth, y + tileHeight, z).tex((u + tileWidth * 2) * scaleWidth, (v + tileHeight) * scaleHeight).endVertex();
+    //
+    //        buffer.pos(x + tileWidth, y + height, z).tex((u + tileWidth) * scaleWidth, (v + tileHeight * 3) * scaleHeight).endVertex();
+    //        buffer.pos(x + width - tileWidth, y + height, z).tex((u + tileWidth * 2) * scaleWidth, (v + tileHeight * 3) * scaleHeight).endVertex();
+    //        buffer.pos(x + width - tileWidth, y + height - tileHeight, z).tex((u + tileWidth * 2) * scaleWidth, (v + tileHeight * 2) * scaleHeight).endVertex();
+    //        buffer.pos(x + tileWidth, y + height - tileHeight, z).tex((u + tileWidth) * scaleWidth, (v + tileHeight * 2) * scaleHeight).endVertex();
+    //
+    //        buffer.pos(x, y + height - tileHeight, z).tex(u * scaleWidth, (v + tileHeight * 2) * scaleHeight).endVertex();
+    //        buffer.pos(x + tileWidth, y + height - tileHeight, z).tex((u + tileWidth) * scaleWidth, (v + tileHeight * 2) * scaleHeight).endVertex();
+    //        buffer.pos(x + tileWidth, y + tileHeight, z).tex((u + tileWidth) * scaleWidth, (v + tileHeight) * scaleHeight).endVertex();
+    //        buffer.pos(x, y + tileHeight, z).tex(u * scaleWidth, (v + tileHeight) * scaleHeight).endVertex();
+    //
+    //        /* Center */
+    //        buffer.pos(x + tileWidth, y + height - tileHeight, z).tex((u + tileWidth) * scaleWidth, (v + tileHeight * 2) * scaleHeight).endVertex();
+    //        buffer.pos(x + width - tileWidth, y + height - tileHeight, z).tex((u + tileWidth * 2) * scaleWidth, (v + tileHeight * 2) * scaleHeight).endVertex();
+    //        buffer.pos(x + width - tileWidth, y + tileHeight, z).tex((u + tileWidth * 2) * scaleWidth, (v + tileHeight) * scaleHeight).endVertex();
+    //        buffer.pos(x + tileWidth, y + tileHeight, z).tex((u + tileWidth) * scaleWidth, (v + tileHeight) * scaleHeight).endVertex();
+    //
+    //        tessellator.draw();
+    //    }
 
     public static void drawStringClipped(FontRenderer fontRenderer, String text, float x, float y, int width, int color, boolean shadow)
     {
@@ -291,12 +367,12 @@ public class RenderUtil
 
     private static class Scissor
     {
-        private double x;
-        private double y;
-        private double width;
-        private double height;
+        private float x;
+        private float y;
+        private float width;
+        private float height;
 
-        Scissor(double x, double y, double width, double height)
+        Scissor(float x, float y, float width, float height)
         {
             this.x = x;
             this.y = y;

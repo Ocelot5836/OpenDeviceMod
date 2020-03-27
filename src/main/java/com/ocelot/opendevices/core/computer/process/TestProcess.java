@@ -1,10 +1,10 @@
 package com.ocelot.opendevices.core.computer.process;
 
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.api.component.Layout;
-import com.ocelot.opendevices.api.computer.Computer;
 import com.ocelot.opendevices.api.application.AppInfo;
 import com.ocelot.opendevices.api.application.Application;
+import com.ocelot.opendevices.api.component.Layout;
+import com.ocelot.opendevices.api.computer.Computer;
 import com.ocelot.opendevices.api.computer.window.WindowHandle;
 import com.ocelot.opendevices.api.device.process.DeviceProcess;
 import com.ocelot.opendevices.api.util.WindowLayoutManager;
@@ -34,7 +34,7 @@ public class TestProcess implements Application<Computer>
     {
         this.computer = computer;
         this.processId = processId;
-        this.layoutManager = new WindowLayoutManager(this.computer, () -> this.dirty = true, TestProcessLayoutSupplier::new);
+        this.layoutManager = new WindowLayoutManager(this.computer, () -> this.dirty = true, () -> new TestProcessLayoutSupplier(this));
         this.window = new WindowHandle(this.computer.getWindowManager(), this.computer.getTaskBar(), this.processId);
         this.window2 = new WindowHandle(this.computer.getWindowManager(), this.computer.getTaskBar(), this.processId);
     }
@@ -43,19 +43,24 @@ public class TestProcess implements Application<Computer>
     public void init()
     {
         AppInfo info = this.getInfo();
-        if (this.window.create())
+
+        if (!this.window.exists() && !this.window2.exists())
         {
-            this.window.center();
-            this.layoutManager.setCurrentLayout(this.window.getWindowId(), TEST_LAYOUT);
+            if (this.window.create())
+            {
+                this.window.center();
+                this.layoutManager.setCurrentLayout(this.window.getWindowId(), TEST_LAYOUT);
+            }
+            if (this.window2.create())
+            {
+                this.window2.center();
+                this.layoutManager.setCurrentLayout(this.window2.getWindowId(), TEST_LAYOUT2);
+            }
         }
+
         this.window.setTitle(info.getName().getFormattedText() + " v" + info.getVersion());
         this.window.setIcon(info.getIcon());
 
-        if (this.window2.create())
-        {
-            this.window2.center();
-            this.layoutManager.setCurrentLayout(this.window2.getWindowId(), TEST_LAYOUT2);
-        }
         this.window2.setTitle("Authors: " + Arrays.toString(Arrays.stream(info.getAuthors()).map(ITextComponent::getFormattedText).toArray(String[]::new)));
 
         this.dirty = false;

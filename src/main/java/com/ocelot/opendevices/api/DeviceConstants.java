@@ -13,7 +13,7 @@ public class DeviceConstants
     private DeviceConstants() {}
 
     public static final boolean DEVELOPER_MODE = true;
-    public static final int MAX_OPEN_APPS = 5;
+    public static final int MAX_COMPUTER_PROCESSES = 10;
 
     public static final ResourceLocation LAPTOP_GUI = new ResourceLocation(OpenDevices.MOD_ID, "textures/gui/laptop.png");
     public static final int LAPTOP_GUI_BORDER = 10;

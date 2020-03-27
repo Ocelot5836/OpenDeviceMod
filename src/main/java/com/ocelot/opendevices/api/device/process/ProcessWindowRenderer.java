@@ -15,6 +15,14 @@ import com.ocelot.opendevices.api.util.TooltipRenderer;
 public interface ProcessWindowRenderer<D extends Device, T extends DeviceProcess<D>>
 {
     /**
+     * Updates the contents of the specified window.
+     *
+     * @param process The process the window belongs to
+     * @param window  The window being rendered
+     */
+    void update(T process, Window window);
+
+    /**
      * Renders the contents of the specified window.
      *
      * @param process      The process the window belongs to
@@ -23,9 +31,10 @@ public interface ProcessWindowRenderer<D extends Device, T extends DeviceProcess
      * @param posY         The y position of the desktop
      * @param mouseX       The x position of the mouse
      * @param mouseY       The y position of the mouse
+     * @param main         Whether or not this is the main window rendering
      * @param partialTicks The percentage from last tick and this tick
      */
-    void render(T process, Window window, int posX, int posY, int mouseX, int mouseY, float partialTicks);
+    void render(T process, Window window, int posX, int posY, int mouseX, int mouseY, boolean main, float partialTicks);
 
     /**
      * Renders the overlay contents of the specified window.

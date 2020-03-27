@@ -1,6 +1,7 @@
 package com.ocelot.opendevices.block;
 
 import com.ocelot.opendevices.OpenDevices;
+import com.ocelot.opendevices.api.device.Device;
 import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.api.util.ShapeHelper;
 import com.ocelot.opendevices.core.LaptopTileEntity;
@@ -49,6 +50,15 @@ public class LaptopBlock extends DeviceBlock implements IWaterLoggable
         this.setDefaultState(this.getStateContainer().getBaseState().with(HORIZONTAL_FACING, Direction.NORTH).with(SCREEN, false).with(WATERLOGGED, false));
         DeviceBlocks.register(this, new BlockItem(this, new Item.Properties().maxStackSize(1).group(OpenDevices.TAB)));
         this.color = color;
+    }
+
+    @Override
+    protected void randomizeAddress(Device device)
+    {
+        if (device instanceof LaptopTileEntity)
+        {
+            ((LaptopTileEntity) device).randomizeAddress();
+        }
     }
 
     @Override

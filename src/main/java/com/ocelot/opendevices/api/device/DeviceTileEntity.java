@@ -6,6 +6,8 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IWorld;
 import net.minecraftforge.common.util.Constants;
 
 /**
@@ -22,31 +24,11 @@ public abstract class DeviceTileEntity extends TileEntity
     }
 
     /**
-     * Syncs this device address with the server.
+     * Randomizes the address of this device.
      */
-    @SuppressWarnings("unchecked")
-    protected void setAddress(boolean remove)
+    protected void randomizeAddress()
     {
-        if (this instanceof Device && this.world != null && !this.world.isRemote())
-        {
-            DeviceManager deviceManager = DeviceManager.get(this.world);
-            if (remove)
-            {
-                deviceManager.remove(((Device) this).getAddress());
-            }
-            else
-            {
-                if (deviceManager.exists(((Device) this).getAddress()))
-                    this.randomizeAddress();
-                deviceManager.add((Device) this, (DeviceSerializer<? super Device>) ((Device) this).getSerializer());
-            }
-        }
     }
-
-    /**
-     * Randomizes the address of this device if needed.
-     */
-    protected abstract void randomizeAddress();
 
     /**
      * Notifies the world that an update has occurred. Should be called whenever something should be saved to file.
@@ -58,20 +40,6 @@ public abstract class DeviceTileEntity extends TileEntity
         {
             this.world.notifyBlockUpdate(this.pos, this.getBlockState(), this.getBlockState(), 3);
         }
-    }
-
-    @Override
-    public void onLoad()
-    {
-        this.setAddress(false);
-        super.onLoad();
-    }
-
-    @Override
-    public void remove()
-    {
-        this.setAddress(true);
-        super.remove();
     }
 
     /**
@@ -88,6 +56,29 @@ public abstract class DeviceTileEntity extends TileEntity
      */
     public abstract void load(CompoundNBT nbt);
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public void onLoad()
+    {
+        if (this.world != null && !this.world.isRemote() && this instanceof Device)
+        {
+            Device device = (Device) this;
+            DeviceManager deviceManager = DeviceManager.get(this.world);
+            if (device.getAddress() != null && !deviceManager.exists(device.getAddress()))
+                deviceManager.add(device, (DeviceSerializer<? super Device>) device.getSerializer());
+        }
+    }
+
+    @Override
+    public void remove()
+    {
+        super.remove();
+        if (this.world != null && !this.world.isRemote() && this instanceof Device)
+        {
+            DeviceManager.get(this.world).remove(((Device) this).getAddress());
+        }
+    }
+
     @Override
     public void read(CompoundNBT nbt)
     {
@@ -96,9 +87,7 @@ public abstract class DeviceTileEntity extends TileEntity
         if (nbt.contains("device", Constants.NBT.TAG_COMPOUND))
         {
             CompoundNBT data = nbt.getCompound("device");
-            this.setAddress(true);
             this.load(data);
-            this.setAddress(false);
         }
     }
 
@@ -112,6 +101,16 @@ public abstract class DeviceTileEntity extends TileEntity
         nbt.put("device", data);
 
         return nbt;
+    }
+
+    public IWorld getDeviceWorld()
+    {
+        return world;
+    }
+
+    public BlockPos getDevicePos()
+    {
+        return this.pos;
     }
 
     @Override

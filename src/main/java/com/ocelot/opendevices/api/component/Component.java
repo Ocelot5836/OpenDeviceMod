@@ -6,8 +6,6 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.INBTSerializable;
 import org.lwjgl.glfw.GLFW;
 
-import javax.annotation.Nullable;
-
 /**
  * <p>Components are the building blocks of the rendering API in windows by default. These don't have to be used but they allow an in-built application engine.</p>
  *
@@ -35,9 +33,10 @@ public interface Component extends INBTSerializable<CompoundNBT>
      * @param posY         The y position of the window
      * @param mouseX       The x position of the mouse
      * @param mouseY       The y position of the mouse
+     * @param main         Whether or not this is the main rendering
      * @param partialTicks The percentage from last tick and this tick
      */
-    void render(float posX, float posY, int mouseX, int mouseY, float partialTicks);
+    void render(float posX, float posY, int mouseX, int mouseY, boolean main, float partialTicks);
 
     /**
      * Renders the overlay contents of this component.
@@ -215,6 +214,7 @@ public interface Component extends INBTSerializable<CompoundNBT>
 
     /**
      * Marks this component as needing to be synced or not.
+     *
      * @param dirty Whether or not this component should be synced
      */
     void setDirty(boolean dirty);

@@ -1,7 +1,6 @@
 package com.ocelot.opendevices.api.computer.desktop;
 
 import net.minecraft.util.ResourceLocation;
-import org.lwjgl.system.NativeResource;
 
 import javax.annotation.Nullable;
 
@@ -10,18 +9,21 @@ import javax.annotation.Nullable;
  *
  * @author Ocelot
  */
-public interface OnlineDesktopBackground extends DesktopBackground, NativeResource
+public interface OnlineDesktopBackground extends DesktopBackground
 {
+    @Nullable
+    @Override
+    ResourceLocation getLocation();
+
     /**
      * Requests this image from URL if not already requesting.
      */
     void request();
 
     /**
-     * @return The location of the desktop background texture
+     * @return The progress of the spinner
      */
-    @Nullable
-    ResourceLocation getLocation();
+    int getProgress();
 
     @Override
     default DesktopBackgroundType getType()

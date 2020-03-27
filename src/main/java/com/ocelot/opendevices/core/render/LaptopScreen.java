@@ -4,12 +4,14 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.computer.Computer;
+import com.ocelot.opendevices.api.computer.TaskbarIcon;
 import com.ocelot.opendevices.api.computer.window.Window;
 import com.ocelot.opendevices.api.device.process.DeviceProcess;
 import com.ocelot.opendevices.api.device.process.ProcessInputHandler;
 import com.ocelot.opendevices.api.device.process.ProcessInputRegistry;
 import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.api.util.RenderUtil;
+import com.ocelot.opendevices.api.util.ShapeRenderer;
 import com.ocelot.opendevices.api.util.TooltipRenderer;
 import com.ocelot.opendevices.core.LaptopTaskBar;
 import com.ocelot.opendevices.core.LaptopTileEntity;
@@ -17,12 +19,14 @@ import com.ocelot.opendevices.core.LaptopWindowManager;
 import com.ocelot.opendevices.core.computer.LaptopWindow;
 import com.ocelot.opendevices.core.task.CloseLaptopTask;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
@@ -44,10 +48,6 @@ public class LaptopScreen extends Screen implements TooltipRenderer
     {
         super(new TranslationTextComponent("screen." + OpenDevices.MOD_ID + ".laptop"));
         this.laptop = laptop;
-        if (this.laptop.getProcessIds().isEmpty())
-        {
-            this.laptop.executeProcess(new ResourceLocation(OpenDevices.MOD_ID, "test"));
-        }
     }
 
     @Override
@@ -81,25 +81,29 @@ public class LaptopScreen extends Screen implements TooltipRenderer
         FontRenderer fontRenderer = minecraft.fontRenderer;
 
         this.renderBackground();
-        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.color4f(1, 1, 1, 1);
 
         minecraft.textureManager.bindTexture(DeviceConstants.LAPTOP_GUI);
 
         {
+            BufferBuilder buffer = ShapeRenderer.begin();
+
             /* Screen Corners */
-            this.blit(this.posX, this.posY, 0, 0, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER); // TOP-LEFT
-            this.blit(this.posX + DeviceConstants.LAPTOP_GUI_WIDTH - DeviceConstants.LAPTOP_GUI_BORDER, this.posY, DeviceConstants.LAPTOP_GUI_BORDER + 1, 0, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER); // TOP-RIGHT
-            this.blit(this.posX + DeviceConstants.LAPTOP_GUI_WIDTH - DeviceConstants.LAPTOP_GUI_BORDER, this.posY + DeviceConstants.LAPTOP_GUI_HEIGHT - DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER + 1, DeviceConstants.LAPTOP_GUI_BORDER + 1, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER); // BOTTOM-RIGHT
-            this.blit(this.posX, this.posY + DeviceConstants.LAPTOP_GUI_HEIGHT - DeviceConstants.LAPTOP_GUI_BORDER, 0, DeviceConstants.LAPTOP_GUI_BORDER + 1, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER); // BOTTOM-LEFT
+            ShapeRenderer.drawRectWithTexture(buffer, this.posX, this.posY, 0, 0, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER);
+            ShapeRenderer.drawRectWithTexture(buffer, this.posX + DeviceConstants.LAPTOP_GUI_WIDTH - DeviceConstants.LAPTOP_GUI_BORDER, this.posY, DeviceConstants.LAPTOP_GUI_BORDER + 1, 0, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER);
+            ShapeRenderer.drawRectWithTexture(buffer, this.posX, this.posY + DeviceConstants.LAPTOP_GUI_HEIGHT - DeviceConstants.LAPTOP_GUI_BORDER, 0, DeviceConstants.LAPTOP_GUI_BORDER + 1, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER);
+            ShapeRenderer.drawRectWithTexture(buffer, this.posX + DeviceConstants.LAPTOP_GUI_WIDTH - DeviceConstants.LAPTOP_GUI_BORDER, this.posY + DeviceConstants.LAPTOP_GUI_HEIGHT - DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER + 1, DeviceConstants.LAPTOP_GUI_BORDER + 1, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER);
 
             /* Screen Edges */
-            RenderUtil.drawRectWithTexture(this.posX + DeviceConstants.LAPTOP_GUI_BORDER, this.posY, DeviceConstants.LAPTOP_GUI_BORDER, 0, DeviceConstants.LAPTOP_SCREEN_WIDTH, DeviceConstants.LAPTOP_GUI_BORDER, 1, DeviceConstants.LAPTOP_GUI_BORDER); // TOP
-            RenderUtil.drawRectWithTexture(this.posX + DeviceConstants.LAPTOP_GUI_WIDTH - DeviceConstants.LAPTOP_GUI_BORDER, this.posY + DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER + 1, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_SCREEN_HEIGHT, DeviceConstants.LAPTOP_GUI_BORDER, 1); // RIGHT
-            RenderUtil.drawRectWithTexture(this.posX + DeviceConstants.LAPTOP_GUI_BORDER, this.posY + DeviceConstants.LAPTOP_GUI_HEIGHT - DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER + 1, DeviceConstants.LAPTOP_SCREEN_WIDTH, DeviceConstants.LAPTOP_GUI_BORDER, 1, DeviceConstants.LAPTOP_GUI_BORDER); // BOTTOM
-            RenderUtil.drawRectWithTexture(this.posX, this.posY + DeviceConstants.LAPTOP_GUI_BORDER, 0, DeviceConstants.LAPTOP_GUI_BORDER + 1, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_SCREEN_HEIGHT, DeviceConstants.LAPTOP_GUI_BORDER, 1); // LEFT
+            ShapeRenderer.drawRectWithTexture(buffer, this.posX + DeviceConstants.LAPTOP_GUI_BORDER, this.posY, DeviceConstants.LAPTOP_GUI_BORDER, 0, DeviceConstants.LAPTOP_SCREEN_WIDTH, DeviceConstants.LAPTOP_GUI_BORDER, 1, DeviceConstants.LAPTOP_GUI_BORDER);
+            ShapeRenderer.drawRectWithTexture(buffer, this.posX + DeviceConstants.LAPTOP_GUI_WIDTH - DeviceConstants.LAPTOP_GUI_BORDER, this.posY + DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER + 1, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_SCREEN_HEIGHT, DeviceConstants.LAPTOP_GUI_BORDER, 1);
+            ShapeRenderer.drawRectWithTexture(buffer, this.posX + DeviceConstants.LAPTOP_GUI_BORDER, this.posY + DeviceConstants.LAPTOP_GUI_HEIGHT - DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER + 1, DeviceConstants.LAPTOP_SCREEN_WIDTH, DeviceConstants.LAPTOP_GUI_BORDER, 1, DeviceConstants.LAPTOP_GUI_BORDER); // BOTTOM
+            ShapeRenderer.drawRectWithTexture(buffer, this.posX, this.posY + DeviceConstants.LAPTOP_GUI_BORDER, 0, DeviceConstants.LAPTOP_GUI_BORDER + 1, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_SCREEN_HEIGHT, DeviceConstants.LAPTOP_GUI_BORDER, 1); // LEFT
 
             /* Screen Center */
-            RenderUtil.drawRectWithTexture(this.posX + DeviceConstants.LAPTOP_GUI_BORDER, posY + DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_SCREEN_WIDTH, DeviceConstants.LAPTOP_SCREEN_HEIGHT, 1, 1);
+            ShapeRenderer.drawRectWithTexture(buffer, this.posX + DeviceConstants.LAPTOP_GUI_BORDER, posY + DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_SCREEN_WIDTH, DeviceConstants.LAPTOP_SCREEN_HEIGHT, 1, 1);
+
+            ShapeRenderer.end();
         }
 
         RenderUtil.framebufferHeight = 0;
@@ -245,21 +249,19 @@ public class LaptopScreen extends Screen implements TooltipRenderer
         }
         else
         {
-            Window[] displayedWindows = taskBar.getDisplayedWindows();
+            TaskbarIcon[] displayedIcons = taskBar.getDisplayedIcons();
             int size = taskBar.isEnlarged() ? 2 : 1;
 
-            Window hoveredWindow = null;
-            for (int i = 0; i < displayedWindows.length; i++)
+            for (int i = 0; i < displayedIcons.length; i++)
             {
-                Window window = displayedWindows[i];
+                TaskbarIcon window = displayedIcons[i];
                 if (RenderUtil.isMouseInside(mouseX - (this.posX + DeviceConstants.LAPTOP_GUI_BORDER), mouseY - (this.posY + DeviceConstants.LAPTOP_GUI_BORDER), 2 + (8 * size + 5) * i, DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 2, 2 + (8 * size + 5) * i + 12 * size, DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 2 + 12 * size))
                 {
-                    hoveredWindow = window;
+                    if (window.execute())
+                        Minecraft.getInstance().getSoundHandler().play(SimpleSound.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                     break;
                 }
             }
-
-            windowManager.focusWindow(hoveredWindow != null ? hoveredWindow.getId() : null);
         }
 
         return super.mouseClicked(mouseX, mouseY, mouseButton);
@@ -304,7 +306,7 @@ public class LaptopScreen extends Screen implements TooltipRenderer
             LaptopWindowManager windowManager = this.laptop.getWindowManager();
             LaptopWindow focusedWindow = windowManager.getFocusedWindow();
 
-            if (focusedWindow != null && focusedWindow.isWithinContent(mouseX, mouseY, Minecraft.getInstance().getRenderPartialTicks()))
+            if (focusedWindow != null && focusedWindow.isWithinContent(mouseX - (this.posX + DeviceConstants.LAPTOP_GUI_BORDER), mouseY - (this.posY + DeviceConstants.LAPTOP_GUI_BORDER), Minecraft.getInstance().getRenderPartialTicks()))
             {
                 DeviceProcess<Computer> focusedProcess = this.laptop.getProcess(focusedWindow.getProcessId());
                 if (focusedProcess != null)

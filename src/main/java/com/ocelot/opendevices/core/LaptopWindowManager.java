@@ -121,8 +121,8 @@ public class LaptopWindowManager implements WindowManager, INBTSerializable<Comp
                 OpenDevices.LOGGER.warn("Could not close window with id '" + windowId + "' as it does not exist. Skipping!");
                 continue;
             }
-            if (this.focusedWindowId != null && window.getId() == windowId)
-                this.focusedWindowId = null;
+            if (this.focusedWindowId != null && window.getId().equals(windowId))
+                this.focusWindow(null);
             this.windows.removeElement(window);
             this.closingWindows.remove(windowId);
             this.laptop.getTaskBar().removeWindow(window);
@@ -250,7 +250,7 @@ public class LaptopWindowManager implements WindowManager, INBTSerializable<Comp
     @Override
     public void requestCloseProcessWindows(UUID processId)
     {
-        this.requestCloseWindows(this.windows.stream().filter(window -> window.getProcessId().equals(processId)).map(LaptopWindow::getId).collect(Collectors.toSet()));
+        this.requestCloseWindows(this.windows.stream().filter(window -> window.getProcessId().equals(processId)).map(LaptopWindow::getId).toArray(UUID[]::new));
     }
 
     @Override

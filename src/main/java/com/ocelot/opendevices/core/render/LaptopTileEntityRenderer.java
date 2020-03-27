@@ -117,6 +117,7 @@ public class LaptopTileEntityRenderer extends TileEntityRenderer<LaptopTileEntit
 
                     {
                         GlStateManager.color4f(1, 1, 1, 1);
+                        // TODO render something instead of the laptop when too far away (screensaver maybe?)
                         LaptopRenderer.render(te, minecraft, minecraft.fontRenderer, 0, 0, DeviceConstants.LAPTOP_SCREEN_WIDTH, DeviceConstants.LAPTOP_SCREEN_HEIGHT, -Integer.MAX_VALUE, -Integer.MAX_VALUE, partialTicks);
                     }
 

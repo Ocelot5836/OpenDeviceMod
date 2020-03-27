@@ -66,6 +66,18 @@ public class WindowHandle implements INBTSerializable<CompoundNBT>
     }
 
     /**
+     * Closes this window if there is one. Does not request close!
+     */
+    public void requestClose()
+    {
+        if (this.windowId != null)
+        {
+            this.windowManager.requestCloseWindows(this.windowId);
+            this.windowId = null;
+        }
+    }
+
+    /**
      * @return The id of this window or null if there is no window
      */
     @Nullable

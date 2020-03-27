@@ -1,7 +1,11 @@
 package com.ocelot.opendevices.block;
 
+import com.ocelot.opendevices.api.device.Device;
+import com.ocelot.opendevices.api.device.DeviceManager;
+import com.ocelot.opendevices.api.device.DeviceSerializer;
 import com.ocelot.opendevices.api.device.DeviceTileEntity;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -10,8 +14,9 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.INameable;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+
+import javax.annotation.Nullable;
 
 public class DeviceBlock extends ModBlock
 {
@@ -28,6 +33,31 @@ public class DeviceBlock extends ModBlock
     public DeviceBlock(String id, Properties properties, Item.Properties itemProperties)
     {
         super(id, properties, itemProperties);
+    }
+
+    /**
+     * Randomizes the address of the specified address.
+     *
+     * @param device The device to randomize
+     */
+    protected void randomizeAddress(Device device)
+    {
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack)
+    {
+        TileEntity te = world.getTileEntity(pos);
+        if (!world.isRemote() && te instanceof Device)
+        {
+            Device device = (Device) te;
+            DeviceManager deviceManager = DeviceManager.get(world);
+            if (device.getAddress() == null || deviceManager.exists(device.getAddress()))
+                this.randomizeAddress(device);
+            if (!deviceManager.exists(device.getAddress()))
+                deviceManager.add(device, (DeviceSerializer<? super Device>) device.getSerializer());
+        }
     }
 
     public void onBlockHarvested(World world, BlockPos pos, BlockState state, PlayerEntity player)

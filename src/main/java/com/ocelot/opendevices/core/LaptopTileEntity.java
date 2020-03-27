@@ -13,6 +13,7 @@ import com.ocelot.opendevices.api.device.process.DeviceProcess;
 import com.ocelot.opendevices.api.device.process.ProcessSerializer;
 import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.core.registry.DeviceProcessRegistryEntry;
+import com.ocelot.opendevices.core.render.LaptopRenderer;
 import com.ocelot.opendevices.core.task.ExecuteProcessTask;
 import com.ocelot.opendevices.core.task.SyncProcessTask;
 import com.ocelot.opendevices.core.task.SyncSettingsTask;
@@ -24,7 +25,10 @@ import net.minecraft.nbt.ListNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.world.IWorld;
+import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
@@ -65,7 +69,6 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
         this.startingProcesses = new HashSet<>();
         this.executionQueue = new ConcurrentLinkedQueue<>();
 
-        this.randomizeAddress();
         this.settings = new CompoundNBT();
         this.desktop = new LaptopDesktop();
         this.windowManager = new LaptopWindowManager(this);
@@ -83,12 +86,20 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
     }
 
     @Override
+    public void randomizeAddress()
+    {
+        this.address = UUID.randomUUID();
+    }
+
+    @Override
     public void tick()
     {
         if (this.hasWorld())
         {
             if (this.isClient())
             {
+                LaptopRenderer.update(this);
+
                 this.lastRotation = this.rotation;
                 if (!this.open)
                 {
@@ -153,6 +164,12 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
 
     public boolean syncExecuteProcess(ResourceLocation processName, UUID processId)
     {
+        if (!this.canExecuteProcess(processName))
+        {
+            OpenDevices.LOGGER.warn("Could not execute process with name '" + processName + "' for Laptop as there are more than the maximum processes running. Skipping!");
+            return false;
+        }
+
         DeviceProcessRegistryEntry entry = DeviceRegistries.PROCESSES.getValue(processName);
 
         if (entry == null)
@@ -201,10 +218,21 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
     }
 
     @Override
+    public boolean canExecuteProcess(ResourceLocation processId)
+    {
+        return this.processes.size() < DeviceConstants.MAX_COMPUTER_PROCESSES;
+    }
+
+    @Override
     public UUID executeProcess(ResourceLocation processName)
     {
-        UUID processId = UUID.randomUUID();
+        if (!this.canExecuteProcess(processName))
+        {
+            OpenDevices.LOGGER.warn("Could not execute process with name '" + processName + "' for Laptop as there are more than the maximum processes running. Skipping!");
+            return null;
+        }
 
+        UUID processId = UUID.randomUUID();
         if (this.isClient())
         {
             TaskManager.sendToServer(new ExecuteProcessTask(this.getPos(), processName, processId), TaskManager.TaskReceiver.SENDER_AND_NEARBY);
@@ -215,6 +243,10 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
             {
                 this.initProcess(processId);
                 TaskManager.sendToTracking(new ExecuteProcessTask(this.getPos(), processName, processId), this.getWorld(), this.getPos());
+            }
+            else
+            {
+                return null;
             }
         }
 
@@ -281,15 +313,10 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
     }
 
     @Override
-    protected void randomizeAddress()
-    {
-        this.address = UUID.randomUUID();
-    }
-
-    @Override
     public void save(CompoundNBT nbt)
     {
-        nbt.putUniqueId("address", this.address);
+        if (this.address != null)
+            nbt.putUniqueId("address", this.address);
         nbt.put("settings", this.settings);
         nbt.put("desktop", this.desktop.serializeNBT());
         nbt.put("windowManager", this.windowManager.serializeNBT());
@@ -310,14 +337,14 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
     @Override
     public void load(CompoundNBT nbt)
     {
-        this.address = nbt.getUniqueId("address");
+        this.address = nbt.hasUniqueId("address") ? nbt.getUniqueId("address") : null;
         this.settings = nbt.getCompound("settings");
         this.desktop.deserializeNBT(nbt.getCompound("desktop"));
         this.windowManager.deserializeNBT(nbt.getCompound("windowManager"));
         this.taskBar.deserializeNBT(nbt.getCompound("taskBar"));
 
         ListNBT processesNbt = nbt.getList("processes", Constants.NBT.TAG_COMPOUND);
-        for (int i = 0; i < processesNbt.size(); i++)
+        for (int i = 0; i < Math.min(processesNbt.size(), DeviceConstants.MAX_COMPUTER_PROCESSES); i++)
         {
             DeviceProcess<Computer> process = ProcessSerializer.read(Computer.class, this, processesNbt.getCompound(i));
             if (process != null)
@@ -329,15 +356,6 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
                     this.initProcess(processId);
                 }
             }
-        }
-    }
-
-    public void syncSettings(CompoundNBT nbt)
-    {
-        this.settings.merge(nbt);
-        if (!this.isClient())
-        {
-            this.markDirty();
         }
     }
 
@@ -372,6 +390,15 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
             {
                 TaskManager.sendToTracking(new SyncSettingsTask(this.getAddress(), nbt), this.world, this.getPos());
             }
+        }
+    }
+
+    public void syncSettings(CompoundNBT nbt)
+    {
+        this.settings.merge(nbt);
+        if (!this.isClient())
+        {
+            this.markDirty();
         }
     }
 

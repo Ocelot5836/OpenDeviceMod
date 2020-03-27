@@ -51,7 +51,7 @@ public class SyncProcessTask extends Task
         if (device instanceof LaptopTileEntity)
         {
             LaptopTileEntity laptop = (LaptopTileEntity) device;
-            if (laptop.syncProcess(this.processId, this.data))
+            if (laptop.getUser() != null && laptop.getUser().getUniqueID().equals(player.getUniqueID()) && laptop.syncProcess(this.processId, this.data))
             {
                 this.setSuccessful();
             }

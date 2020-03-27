@@ -23,7 +23,7 @@ import java.util.function.Consumer;
  */
 public class OnlineRequest
 {
-    private static final ExecutorService POOL = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), r -> new Thread(r, "Online Request Thread"));
+    private static final ExecutorService POOL = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), task -> new Thread(task, "Online Request Pool"));
 
     static
     {

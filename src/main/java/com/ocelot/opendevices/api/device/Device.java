@@ -25,10 +25,21 @@ public interface Device extends Executor
     }
 
     /**
+     * Checks to see if a new process can be executed.
+     *
+     * @param processId The id of the process to check
+     * @return Whether or not this process can execute the specified process
+     */
+    default boolean canExecuteProcess(ResourceLocation processId)
+    {
+        return this.supportsProcesses();
+    }
+
+    /**
      * Creates and starts a new process.
      *
      * @param processId The id of the process to start
-     * @return The id assigned to the process
+     * @return The id assigned to the process or null if the process could not be created
      * @throws IllegalArgumentException      If the process registered under that id is either null or not for this device
      * @throws UnsupportedOperationException If this devices does not support processes. Can be checked by using {@link #supportsProcesses()}
      */
@@ -62,7 +73,7 @@ public interface Device extends Executor
     /**
      * @return The world the laptop is in
      */
-    IWorld getWorld();
+    IWorld getDeviceWorld();
 
     /**
      * @return The unique address id of this device. Used for communication between devices
@@ -105,7 +116,7 @@ public interface Device extends Executor
      */
     default boolean isClient()
     {
-        return this.getWorld() != null && this.getWorld().isRemote();
+        return this.getDeviceWorld() != null && this.getDeviceWorld().isRemote();
     }
 
     /**
