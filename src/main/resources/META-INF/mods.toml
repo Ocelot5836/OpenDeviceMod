@@ -24,7 +24,7 @@ displayURL="https://mrcrayfish.com/" #optional
 # A file name (in the root of the mod JAR) containing a logo for display
 # logoFile="examplemod.png" #optional
 # A text field displayed in the mod UI
-credits="Special thanks to the original mod author MrCrayfish https://mrcrayfish.com/. Thank you to MinecraftDoodler for helping with textures. Cheers to these people for donating during the development: Mastef Chief, Haunted Corpse, Jake Crowley, fabbe50, PlayDashGaming, jack jook, Hunstagamez, Techyy YT, MinecraftDoodler, Norge100YT, Cyberman2208, CreepergamingsMC" #optional
+credits="Special thanks to the original mod author MrCrayfish https://mrcrayfish.com/. Thank you to MinecraftDoodler for helping with textures." #optional
 # A text field displayed in the mod UI
 authors="Ocelot5836" #optional
 # The description text for the mod (multi line!) (#mandatory)
