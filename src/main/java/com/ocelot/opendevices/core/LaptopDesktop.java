@@ -8,7 +8,6 @@ import com.ocelot.opendevices.api.util.ImageFit;
 import com.ocelot.opendevices.core.computer.desktop.LaptopOnlineDesktopBackground;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.INBTSerializable;
-import org.lwjgl.system.NativeResource;
 
 import javax.annotation.Nullable;
 

@@ -10,7 +10,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.fml.DistExecutor;
-import org.lwjgl.system.NativeResource;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -367,17 +366,28 @@ public class ImageComponent extends StandardComponent
      *
      * @author Ocelot
      */
-    public interface ImageProvider extends NativeResource, INBTSerializable<CompoundNBT>
+    public interface ImageProvider extends INBTSerializable<CompoundNBT>
     {
         /**
          * Called each update to update the contents.
          */
-        void update();
+        default void update()
+        {
+        }
 
         /**
          * Requests this image to be loaded. Only called if {@link #getLocation()} returns null.
          */
-        void request();
+        default void request()
+        {
+        }
+
+        /**
+         * Frees resources used by this image.
+         */
+        default void free()
+        {
+        }
 
         /**
          * @return The location of the image to render or null if this image is not yet ready to render
@@ -450,16 +460,6 @@ public class ImageComponent extends StandardComponent
             this.textureHeight = textureHeight;
             this.sourceWidth = sourceWidth;
             this.sourceHeight = sourceHeight;
-        }
-
-        @Override
-        public void request()
-        {
-        }
-
-        @Override
-        public void update()
-        {
         }
 
         @Nullable
@@ -564,16 +564,6 @@ public class ImageComponent extends StandardComponent
             this.icon = icon;
         }
 
-        @Override
-        public void request()
-        {
-        }
-
-        @Override
-        public void update()
-        {
-        }
-
         @Nullable
         @Override
         public ResourceLocation getLocation()
@@ -624,11 +614,6 @@ public class ImageComponent extends StandardComponent
         }
 
         @Override
-        public void free()
-        {
-        }
-
-        @Override
         public CompoundNBT serializeNBT()
         {
             return IIcon.serializeNBT(this.icon);
@@ -674,11 +659,6 @@ public class ImageComponent extends StandardComponent
             this.sourceWidth = 1;
             this.sourceHeight = 1;
             this.cacheTime = unit.toMillis(cacheTime);
-        }
-
-        @Override
-        public void update()
-        {
         }
 
         @Override
