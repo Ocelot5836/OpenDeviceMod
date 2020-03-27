@@ -343,7 +343,10 @@ public class Layout extends StandardComponent
             for (Component component : this.components)
             {
                 if (component.isDirty())
+                {
                     this.markDirty();
+                    break;
+                }
             }
         }
         return super.isDirty();

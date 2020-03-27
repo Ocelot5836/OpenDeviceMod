@@ -1,6 +1,7 @@
 package com.ocelot.opendevices.api.util;
 
 import com.ocelot.opendevices.OpenDevices;
+import io.netty.util.internal.ConcurrentSet;
 import net.minecraft.nbt.CompoundNBT;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -43,8 +44,7 @@ public class SyncHelper implements ValueSerializer
             return;
         }
 
-        this.modifiedFields.add(key);
-        if (this.markDirty != null)
+        if (this.modifiedFields.add(key) && this.markDirty != null)
             this.markDirty.run();
     }
 
