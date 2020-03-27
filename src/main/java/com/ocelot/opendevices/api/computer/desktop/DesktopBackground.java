@@ -4,7 +4,6 @@ import com.ocelot.opendevices.api.util.ImageFit;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.INBTSerializable;
-import org.lwjgl.system.NativeResource;
 
 /**
  * <p>An image that is rendered on the back of the desktop.</p>
@@ -12,12 +11,19 @@ import org.lwjgl.system.NativeResource;
  * @author Ocelot
  * @see DesktopBackgroundType
  */
-public interface DesktopBackground extends NativeResource, INBTSerializable<CompoundNBT>
+public interface DesktopBackground extends INBTSerializable<CompoundNBT>
 {
     /**
      * Called every tick to update the background.
      */
     default void update()
+    {
+    }
+
+    /**
+     * Frees resources used by this background.
+     */
+    default void free()
     {
     }
 
