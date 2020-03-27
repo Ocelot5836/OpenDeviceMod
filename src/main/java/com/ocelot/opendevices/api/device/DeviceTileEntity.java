@@ -4,9 +4,10 @@ import com.ocelot.opendevices.core.LaptopTileEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IWorld;
 import net.minecraftforge.common.util.Constants;
 
 /**
@@ -15,11 +16,18 @@ import net.minecraftforge.common.util.Constants;
  * @author Ocelot
  * @see LaptopTileEntity
  */
-public abstract class DeviceTileEntity extends TileEntity implements ITickableTileEntity
+public abstract class DeviceTileEntity extends TileEntity
 {
     public DeviceTileEntity(TileEntityType<?> type)
     {
         super(type);
+    }
+
+    /**
+     * Randomizes the address of this device.
+     */
+    protected void randomizeAddress()
+    {
     }
 
     /**
@@ -32,10 +40,6 @@ public abstract class DeviceTileEntity extends TileEntity implements ITickableTi
         {
             this.world.notifyBlockUpdate(this.pos, this.getBlockState(), this.getBlockState(), 3);
         }
-    }
-
-    protected void randomizeAddress()
-    {
     }
 
     /**
@@ -54,36 +58,26 @@ public abstract class DeviceTileEntity extends TileEntity implements ITickableTi
 
     @SuppressWarnings("unchecked")
     @Override
-    public void tick()
+    public void onLoad()
     {
         if (this.world != null && !this.world.isRemote() && this instanceof Device)
         {
             Device device = (Device) this;
+            DeviceManager deviceManager = DeviceManager.get(this.world);
             if (device.getAddress() == null)
-            {
                 this.randomizeAddress();
-                DeviceManager deviceManager = DeviceManager.get(this.world);
-                if (!deviceManager.exists(device.getAddress()))
-                {
-                    deviceManager.add(device, (DeviceSerializer<? super Device>) device.getSerializer());
-                }
-            }
+            if (!deviceManager.exists(device.getAddress()))
+                deviceManager.add(device, (DeviceSerializer<? super Device>) device.getSerializer());
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public void validate()
+    public void remove()
     {
-        super.validate();
+        super.remove();
         if (this.world != null && !this.world.isRemote() && this instanceof Device)
         {
-            Device device = (Device) this;
-            if (device.getAddress() == null)
-                return;
-            DeviceManager deviceManager = DeviceManager.get(this.world);
-            if (!deviceManager.exists(device.getAddress()))
-                deviceManager.add(device, (DeviceSerializer<? super Device>) device.getSerializer());
+            DeviceManager.get(this.world).remove(((Device) this).getAddress());
         }
     }
 
@@ -109,6 +103,16 @@ public abstract class DeviceTileEntity extends TileEntity implements ITickableTi
         nbt.put("device", data);
 
         return nbt;
+    }
+
+    public IWorld getDeviceWorld()
+    {
+        return world;
+    }
+
+    public BlockPos getDevicePos()
+    {
+        return this.pos;
     }
 
     @Override

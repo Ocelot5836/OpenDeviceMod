@@ -5,6 +5,7 @@ import com.ocelot.opendevices.api.device.DeviceManager;
 import com.ocelot.opendevices.api.device.DeviceSerializer;
 import com.ocelot.opendevices.api.device.DeviceTileEntity;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -14,6 +15,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.INameable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+
+import javax.annotation.Nullable;
 
 public class DeviceBlock extends ModBlock
 {
@@ -32,21 +35,29 @@ public class DeviceBlock extends ModBlock
         super(id, properties, itemProperties);
     }
 
-    @Override
-    public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving)
+    /**
+     * Randomizes the address of the specified address.
+     *
+     * @param device The device to randomize
+     */
+    protected void randomizeAddress(Device device)
     {
-        if (state.getBlock() != newState.getBlock())
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack)
+    {
+        TileEntity te = world.getTileEntity(pos);
+        if (!world.isRemote() && te instanceof Device)
         {
-            if (!world.isRemote())
-            {
-                TileEntity tileEntity = world.getTileEntity(pos);
-                if (tileEntity instanceof Device)
-                {
-                    DeviceManager.get(world).remove(((Device) tileEntity).getAddress());
-                }
-            }
+            Device device = (Device) te;
+            DeviceManager deviceManager = DeviceManager.get(world);
+            if (device.getAddress() == null || deviceManager.exists(device.getAddress()))
+                this.randomizeAddress(device);
+            if (!deviceManager.exists(device.getAddress()))
+                deviceManager.add(device, (DeviceSerializer<? super Device>) device.getSerializer());
         }
-        super.onReplaced(state, world, pos, newState, isMoving);
     }
 
     public void onBlockHarvested(World world, BlockPos pos, BlockState state, PlayerEntity player)

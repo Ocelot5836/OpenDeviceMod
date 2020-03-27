@@ -86,7 +86,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
     }
 
     @Override
-    protected void randomizeAddress()
+    public void randomizeAddress()
     {
         this.address = UUID.randomUUID();
     }
@@ -94,7 +94,6 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
     @Override
     public void tick()
     {
-        super.tick();
         if (this.hasWorld())
         {
             if (this.isClient())
@@ -454,18 +453,6 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
         if (this.user == null || this.world == null)
             return null;
         return this.world.getPlayerByUuid(this.user);
-    }
-
-    @Override
-    public IWorld getDeviceWorld()
-    {
-        return world;
-    }
-
-    @Override
-    public BlockPos getDevicePos()
-    {
-        return this.pos;
     }
 
     @Override
