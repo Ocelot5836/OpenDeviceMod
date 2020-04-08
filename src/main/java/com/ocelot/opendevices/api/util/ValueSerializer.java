@@ -8,7 +8,7 @@ import net.minecraftforge.common.util.INBTSerializable;
  *
  * @author Ocelot
  */
-public interface ValueSerializer extends INBTSerializable<CompoundNBT>
+public interface ValueSerializer
 {
     /**
      * Marks the specified value as changed.
@@ -23,16 +23,30 @@ public interface ValueSerializer extends INBTSerializable<CompoundNBT>
     void discardChanges();
 
     /**
+     * Writes all values queued to be sent to the client  to NBT.
+     *
+     * @return The tag full of data
+     */
+    CompoundNBT writeClient();
+
+    /**
+     * Loads all values queued to be sent to the client from NBT.
+     *
+     * @param nbt The tag full of data
+     */
+    void readClient(CompoundNBT nbt);
+
+    /**
      * Writes all values to NBT.
      *
      * @return The tag full of data
      */
-    CompoundNBT save();
+    CompoundNBT write();
 
     /**
      * Loads all values from NBT.
      *
      * @param nbt The tag full of data
      */
-    void load(CompoundNBT nbt);
+    void read(CompoundNBT nbt);
 }

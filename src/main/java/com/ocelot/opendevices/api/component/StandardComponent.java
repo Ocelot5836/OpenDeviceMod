@@ -48,7 +48,7 @@ public abstract class StandardComponent extends AbstractGui implements Component
     @Override
     public CompoundNBT serializeNBT()
     {
-        return this.valueSerializer != null ? this.valueSerializer.serializeNBT() : new CompoundNBT();
+        return this.valueSerializer != null ? this.valueSerializer.write() : new CompoundNBT();
     }
 
     @Override
@@ -56,7 +56,7 @@ public abstract class StandardComponent extends AbstractGui implements Component
     {
         if (this.valueSerializer != null)
         {
-            this.valueSerializer.deserializeNBT(nbt);
+            this.valueSerializer.read(nbt);
         }
     }
 }

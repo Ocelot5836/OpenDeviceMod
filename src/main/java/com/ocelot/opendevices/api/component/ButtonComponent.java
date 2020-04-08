@@ -17,6 +17,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.StringUtils;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
 import java.util.Base64;
@@ -114,7 +115,8 @@ public class ButtonComponent extends StandardComponent
             syncHelper.addSerializer("icon", nbt ->
             {
                 CompoundNBT iconNbt = new CompoundNBT();
-                iconNbt.putString("location", this.iconLocation.toString());
+                if (this.iconLocation != null)
+                    iconNbt.putString("location", this.iconLocation.toString());
                 iconNbt.putInt("u", this.iconU);
                 iconNbt.putInt("v", this.iconV);
                 iconNbt.putInt("width", this.iconWidth);
@@ -125,7 +127,7 @@ public class ButtonComponent extends StandardComponent
             }, nbt ->
             {
                 CompoundNBT iconNbt = nbt.getCompound("icon");
-                this.iconLocation = new ResourceLocation(iconNbt.getString("location"));
+                this.iconLocation = iconNbt.contains("location", Constants.NBT.TAG_STRING) ? new ResourceLocation(iconNbt.getString("location")) : null;
                 this.iconU = iconNbt.getInt("u");
                 this.iconV = iconNbt.getInt("v");
                 this.iconWidth = iconNbt.getInt("width");

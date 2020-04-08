@@ -1,8 +1,9 @@
 package com.ocelot.opendevices.api.util;
 
 import com.ocelot.opendevices.OpenDevices;
-import io.netty.util.internal.ConcurrentSet;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraftforge.common.util.Constants;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -13,16 +14,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
-// TODO make fields sync with client properly
 public class SyncHelper implements ValueSerializer
 {
     private Runnable markDirty;
+    private Set<String> markedFields;
     private Set<String> modifiedFields;
     private Map<String, Pair<Consumer<CompoundNBT>, Consumer<CompoundNBT>>> serializers;
 
     public SyncHelper(@Nullable Runnable markDirty)
     {
         this.markDirty = markDirty;
+        this.markedFields = new HashSet<>();
         this.modifiedFields = new HashSet<>();
         this.serializers = new HashMap<>();
     }
@@ -45,6 +47,7 @@ public class SyncHelper implements ValueSerializer
             return;
         }
 
+        this.markedFields.add(key);
         this.modifiedFields.add(key);
         if (this.markDirty != null)
             this.markDirty.run();
@@ -53,36 +56,14 @@ public class SyncHelper implements ValueSerializer
     @Override
     public void discardChanges()
     {
-        this.modifiedFields.clear();
+        this.markedFields.clear();
     }
 
     @Override
-    public CompoundNBT save()
+    public CompoundNBT writeClient()
     {
         CompoundNBT nbt = new CompoundNBT();
-        this.serializers.forEach((fieldName, serializer) -> serializer.getLeft().accept(nbt));
-        return nbt;
-    }
-
-    @Override
-    public void load(CompoundNBT nbt)
-    {
-        nbt.keySet().forEach(fieldName ->
-        {
-            if (!this.serializers.containsKey(fieldName))
-            {
-                OpenDevices.LOGGER.warn("Could not deserialize field '" + fieldName + "' as it does not have a serializer.");
-                return;
-            }
-            this.serializers.get(fieldName).getRight().accept(nbt);
-        });
-    }
-
-    @Override
-    public CompoundNBT serializeNBT()
-    {
-        CompoundNBT nbt = new CompoundNBT();
-        this.modifiedFields.forEach(fieldName ->
+        this.markedFields.forEach(fieldName ->
         {
             if (!this.serializers.containsKey(fieldName))
             {
@@ -95,7 +76,7 @@ public class SyncHelper implements ValueSerializer
     }
 
     @Override
-    public void deserializeNBT(CompoundNBT nbt)
+    public void readClient(CompoundNBT nbt)
     {
         nbt.keySet().forEach(fieldName ->
         {
@@ -106,5 +87,49 @@ public class SyncHelper implements ValueSerializer
             }
             this.serializers.get(fieldName).getRight().accept(nbt);
         });
+    }
+
+    @Override
+    public CompoundNBT write()
+    {
+        CompoundNBT nbt = new CompoundNBT();
+        ListNBT modifiedFieldsNbt = new ListNBT();
+        this.modifiedFields.forEach(fieldName ->
+        {
+            if (!this.serializers.containsKey(fieldName))
+            {
+                OpenDevices.LOGGER.warn("Could not serialize field '" + fieldName + "' as it does not have a serializer.");
+                return;
+            }
+            CompoundNBT fieldNbt = new CompoundNBT();
+            fieldNbt.putString("fieldName", fieldName);
+
+            CompoundNBT fieldDataNbt = new CompoundNBT();
+            this.serializers.get(fieldName).getLeft().accept(fieldDataNbt);
+            fieldNbt.put("data", fieldDataNbt);
+
+            modifiedFieldsNbt.add(fieldNbt);
+        });
+        nbt.put("modifiedFields", modifiedFieldsNbt);
+        return nbt;
+    }
+
+    @Override
+    public void read(CompoundNBT nbt)
+    {
+        ListNBT modifiedFieldsNbt = nbt.getList("modifiedFields", Constants.NBT.TAG_COMPOUND);
+        for (int i = 0; i < modifiedFieldsNbt.size(); i++)
+        {
+            CompoundNBT fieldNbt = modifiedFieldsNbt.getCompound(i);
+            String fieldName = fieldNbt.getString("fieldName");
+            CompoundNBT data = fieldNbt.getCompound("data");
+            if (!this.serializers.containsKey(fieldName))
+            {
+                OpenDevices.LOGGER.warn("Could not deserialize field '" + fieldName + "' as it does not have a serializer.");
+                return;
+            }
+            this.modifiedFields.add(fieldName);
+            this.serializers.get(fieldName).getRight().accept(data);
+        }
     }
 }

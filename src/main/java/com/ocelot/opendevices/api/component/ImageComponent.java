@@ -74,9 +74,15 @@ public class ImageComponent extends StandardComponent
             syncHelper.addSerializer("imageFit", nbt -> nbt.putByte("imageFit", this.imageFit.serialize()), nbt -> this.imageFit = ImageFit.deserialize(nbt.getByte("imageFit")));
             syncHelper.addSerializer("imageProvider", nbt ->
             {
-                nbt.putString("imageProviderType", this.imageProvider.getType().getRegistryName());
-                nbt.put("imageProvider", this.imageProvider.serializeNBT());
-            }, nbt -> this.imageProvider = ImageType.byName(nbt.getString("imageProviderType")).apply(nbt.getCompound("imageProvider")));
+                CompoundNBT imageProviderNbt = new CompoundNBT();
+                imageProviderNbt.putString("type", this.imageProvider.getType().getRegistryName());
+                imageProviderNbt.put("data", this.imageProvider.serializeNBT());
+                nbt.put("imageProvider", imageProviderNbt);
+            }, nbt ->
+            {
+                CompoundNBT imageProviderNbt = nbt.getCompound("imageProvider");
+                this.imageProvider = ImageType.byName(imageProviderNbt.getString("type")).apply(imageProviderNbt.getCompound("data"));
+            });
         }
         return syncHelper;
     }
