@@ -51,7 +51,7 @@ public class RenderUtil
             double scale = framebufferScale == 0 ? window.getGuiScaleFactor() : framebufferScale;
             int frameHeight = framebufferHeight == 0 ? window.getFramebufferHeight() : framebufferHeight;
             enableScissor();
-            glScissor((int) (scissor.x * scale), (int) (frameHeight - (int) (scissor.y + scissor.height) * scale), (int) Math.max(0, scissor.width * scale), (int) Math.max(0, scissor.height * scale));
+            glScissor((int) (scissor.x * scale), (int) (frameHeight - (scissor.y + scissor.height) * scale), (int) Math.max(0, scissor.width * scale), (int) Math.max(0, scissor.height * scale));
         }
         else
         {
