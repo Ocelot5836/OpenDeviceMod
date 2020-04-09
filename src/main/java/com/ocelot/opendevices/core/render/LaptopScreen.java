@@ -4,7 +4,8 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.computer.Computer;
-import com.ocelot.opendevices.api.computer.TaskbarIcon;
+import com.ocelot.opendevices.api.computer.taskbar.TaskbarIcon;
+import com.ocelot.opendevices.api.computer.taskbar.TrayItem;
 import com.ocelot.opendevices.api.computer.window.Window;
 import com.ocelot.opendevices.api.device.process.DeviceProcess;
 import com.ocelot.opendevices.api.device.process.ProcessInputHandler;
@@ -31,6 +32,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.Collections;
@@ -196,7 +198,7 @@ public class LaptopScreen extends Screen implements TooltipRenderer
         LaptopWindow[] windows = windowManager.getWindows();
         boolean loseFocus = true;
 
-        if (!RenderUtil.isMouseInside(mouseX, mouseY, this.posX + DeviceConstants.LAPTOP_GUI_BORDER, this.posY + DeviceConstants.LAPTOP_GUI_BORDER + DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight(), this.posX + DeviceConstants.LAPTOP_GUI_BORDER + DeviceConstants.LAPTOP_SCREEN_WIDTH, this.posY + DeviceConstants.LAPTOP_GUI_BORDER + DeviceConstants.LAPTOP_SCREEN_HEIGHT))
+        if (!RenderUtil.isMouseInside(mouseX, mouseY, this.posX + DeviceConstants.LAPTOP_GUI_BORDER, this.posY + DeviceConstants.LAPTOP_GUI_BORDER + DeviceConstants.LAPTOP_SCREEN_HEIGHT - DeviceConstants.LAPTOP_TASK_BAR_HEIGHT, DeviceConstants.LAPTOP_SCREEN_WIDTH, DeviceConstants.LAPTOP_SCREEN_HEIGHT))
         {
             if (this.draggingWindow == null)
             {
@@ -250,14 +252,31 @@ public class LaptopScreen extends Screen implements TooltipRenderer
         else
         {
             TaskbarIcon[] displayedIcons = taskBar.getDisplayedIcons();
-            int size = taskBar.isEnlarged() ? 2 : 1;
+            TrayItem[] trayItems = taskBar.getTrayItems();
+            int height = DeviceConstants.LAPTOP_TASK_BAR_HEIGHT;
 
             for (int i = 0; i < displayedIcons.length; i++)
             {
                 TaskbarIcon window = displayedIcons[i];
-                if (RenderUtil.isMouseInside(mouseX - (this.posX + DeviceConstants.LAPTOP_GUI_BORDER), mouseY - (this.posY + DeviceConstants.LAPTOP_GUI_BORDER), 2 + (8 * size + 5) * i, DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 2, 2 + (8 * size + 5) * i + 12 * size, DeviceConstants.LAPTOP_SCREEN_HEIGHT - taskBar.getHeight() + 2 + 12 * size))
+                double iconX = 13 * i;
+                double iconY = (height - 8) / 2f;
+                if (RenderUtil.isMouseInside(mouseX - (this.posX + DeviceConstants.LAPTOP_GUI_BORDER), mouseY - (this.posY + DeviceConstants.LAPTOP_GUI_BORDER), iconX + iconY - 2, DeviceConstants.LAPTOP_SCREEN_HEIGHT - height + iconY - 2, 12, 12))
                 {
                     if (window.execute())
+                        Minecraft.getInstance().getSoundHandler().play(SimpleSound.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                    break;
+                }
+            }
+
+            for (int i = 0; i < trayItems.length; i++)
+            {
+                TrayItem trayItem = trayItems[i];
+                String name = trayItem.getInfo().getName().getFormattedText();
+                double iconX = 10 * i;
+                double iconY = (height - 8) / 2f;
+                if (!StringUtils.isEmpty(name) && RenderUtil.isMouseInside(mouseX - (this.posX + DeviceConstants.LAPTOP_GUI_BORDER), mouseY - (this.posY + DeviceConstants.LAPTOP_GUI_BORDER), DeviceConstants.LAPTOP_SCREEN_WIDTH - 8 - (iconX + iconY), DeviceConstants.LAPTOP_SCREEN_HEIGHT - height + iconY, 8, 8))
+                {
+                    if (trayItem.getInfo().getClickListener().apply(this.laptop))
                         Minecraft.getInstance().getSoundHandler().play(SimpleSound.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                     break;
                 }

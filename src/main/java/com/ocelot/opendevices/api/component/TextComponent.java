@@ -152,7 +152,7 @@ public class TextComponent extends StandardComponent
         {
             Line line = this.lines.get(i);
             int yOffset = i * this.fontRenderer.FONT_HEIGHT;
-            if (RenderUtil.isMouseInside(mouseX, mouseY, this.x, this.y + yOffset, this.x + line.width, this.y + yOffset + this.fontRenderer.FONT_HEIGHT))
+            if (RenderUtil.isMouseInside(mouseX, mouseY, this.x, this.y + yOffset, line.width, this.fontRenderer.FONT_HEIGHT))
             {
                 double x = this.x;
                 for (ITextComponent lineComponent : line.textComponent)

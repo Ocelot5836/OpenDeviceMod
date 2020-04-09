@@ -32,11 +32,11 @@ public class WindowLayoutManager implements INBTSerializable<CompoundNBT>
     private Map<UUID, Integer> currentLayouts;
     private Map<UUID, CompoundNBT> currentLayoutsData;
     @OnlyIn(Dist.CLIENT)
-    private Supplier<Function<Integer, Layout>> layoutProvider;
+    private LayoutProvider layoutProvider;
     @OnlyIn(Dist.CLIENT)
     private Map<Integer, Layout> cachedLayouts;
 
-    public WindowLayoutManager(Executor executor, @Nullable Runnable markDirty, Supplier<Function<Integer, Layout>> layoutProvider)
+    public WindowLayoutManager(Executor executor, @Nullable Runnable markDirty, Supplier<LayoutProvider> layoutProvider)
     {
         this.executor = executor;
         this.markDirty = markDirty;
@@ -44,7 +44,7 @@ public class WindowLayoutManager implements INBTSerializable<CompoundNBT>
         this.currentLayoutsData = new HashMap<>();
         DistExecutor.runWhenOn(Dist.CLIENT, () -> () ->
         {
-            this.layoutProvider = layoutProvider;
+            this.layoutProvider = layoutProvider.get();
             this.cachedLayouts = new HashMap<>();
         });
     }
@@ -91,7 +91,7 @@ public class WindowLayoutManager implements INBTSerializable<CompoundNBT>
                 Layout layout = this.getLayout(layoutId);
                 if (layout != null)
                     layout.onLayoutLoad();
-                Layout cachedLayout = this.layoutProvider.get().apply(layoutId);
+                Layout cachedLayout = this.layoutProvider.create(layoutId);
                 cachedLayout.setDirty(false);
                 if (cachedLayout.getValueSerializer() != null)
                 {
@@ -282,5 +282,22 @@ public class WindowLayoutManager implements INBTSerializable<CompoundNBT>
                 }
             }
         });
+    }
+
+    /**
+     * <p>Creates a new layout for the id provided.</p>
+     *
+     * @author Ocelot
+     */
+    @OnlyIn(Dist.CLIENT)
+    public interface LayoutProvider
+    {
+        /**
+         * Generates a new layout for the client using the specified id.
+         *
+         * @param id The id of the layout
+         * @return The new layout instance
+         */
+        Layout create(int id);
     }
 }

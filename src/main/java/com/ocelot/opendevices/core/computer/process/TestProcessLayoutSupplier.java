@@ -2,6 +2,7 @@ package com.ocelot.opendevices.core.computer.process;
 
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.component.*;
+import com.ocelot.opendevices.api.util.WindowLayoutManager;
 import com.ocelot.opendevices.api.util.icon.Alphabet;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemStack;
@@ -10,7 +11,7 @@ import net.minecraft.util.text.StringTextComponent;
 import java.util.Locale;
 import java.util.function.Function;
 
-public class TestProcessLayoutSupplier implements Function<Integer, Layout>
+public class TestProcessLayoutSupplier implements WindowLayoutManager.LayoutProvider
 {
     private TestProcess process;
 
@@ -20,7 +21,7 @@ public class TestProcessLayoutSupplier implements Function<Integer, Layout>
     }
 
     @Override
-    public Layout apply(Integer id)
+    public Layout create(int id)
     {
         Layout layout1 = new Layout();
         for (int i = 0; i < 2; i++)

@@ -5,14 +5,11 @@ import com.ocelot.opendevices.api.IconManager;
 import com.ocelot.opendevices.api.application.AppInfo;
 import com.ocelot.opendevices.api.application.ApplicationManager;
 import com.ocelot.opendevices.api.computer.Computer;
-import com.ocelot.opendevices.api.computer.TaskbarIcon;
-import com.ocelot.opendevices.api.computer.TaskbarIconType;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.SimpleSound;
+import com.ocelot.opendevices.api.computer.taskbar.TaskbarIcon;
+import com.ocelot.opendevices.api.computer.taskbar.TaskbarIconType;
 import net.minecraft.client.renderer.texture.MissingTextureSprite;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvents;
 
 import javax.annotation.Nullable;
 

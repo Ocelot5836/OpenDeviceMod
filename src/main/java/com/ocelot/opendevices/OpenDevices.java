@@ -1,12 +1,14 @@
 package com.ocelot.opendevices;
 
 import com.mrcrayfish.filters.Filters;
-import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.DeviceRegistries;
 import com.ocelot.opendevices.api.IconManager;
 import com.ocelot.opendevices.api.application.Application;
 import com.ocelot.opendevices.api.application.ApplicationManager;
+import com.ocelot.opendevices.api.component.Layout;
+import com.ocelot.opendevices.api.computer.Computer;
 import com.ocelot.opendevices.api.computer.settings.LaptopSetting;
+import com.ocelot.opendevices.api.computer.taskbar.TrayItem;
 import com.ocelot.opendevices.api.device.ApplicationInputHandler;
 import com.ocelot.opendevices.api.device.ApplicationWindowRenderer;
 import com.ocelot.opendevices.api.device.DeviceSerializer;
@@ -16,10 +18,7 @@ import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.api.util.OnlineImageCache;
 import com.ocelot.opendevices.core.EventHandler;
 import com.ocelot.opendevices.core.computer.process.TestProcess;
-import com.ocelot.opendevices.core.registry.ApplicationRegistryEntry;
-import com.ocelot.opendevices.core.registry.DeviceProcessRegistryEntry;
-import com.ocelot.opendevices.core.registry.TaskRegistryEntry;
-import com.ocelot.opendevices.core.registry.WindowIconRegistryEntry;
+import com.ocelot.opendevices.core.registry.*;
 import com.ocelot.opendevices.core.render.LaptopTileEntityRenderer;
 import com.ocelot.opendevices.init.DeviceBlocks;
 import com.ocelot.opendevices.init.DeviceItems;
@@ -34,6 +33,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModList;
@@ -42,6 +42,8 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.forgespi.language.ModFileScanData;
+import net.minecraftforge.registries.IForgeRegistryEntry;
+import net.minecraftforge.registries.RegistryBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.Type;
@@ -52,6 +54,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -77,8 +82,9 @@ public class OpenDevices
 
     public OpenDevices()
     {
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::init);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::initClient);
+        IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
+        modBus.addListener(this::init);
+        modBus.addListener(this::initClient);
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(new EventHandler());
         DistExecutor.runWhenOn(Dist.CLIENT, () -> IconManager::init);
@@ -91,6 +97,7 @@ public class OpenDevices
 
     private void initClient(FMLClientSetupEvent event)
     {
+        // TODO automatically use application instances when no custom renderer is applied
         ProcessInputRegistry.bindInputHandler(TestProcess.class, new ApplicationInputHandler<>());
         ProcessInputRegistry.bindWindowRenderer(TestProcess.class, new ApplicationWindowRenderer<>());
 
@@ -113,6 +120,25 @@ public class OpenDevices
     @Mod.EventBusSubscriber(modid = OpenDevices.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
     public static class RegistryEvents
     {
+        @SuppressWarnings("unchecked")
+        @SubscribeEvent
+        public static void registerRegistries(RegistryEvent.NewRegistry event)
+        {
+            makeRegistry("settings", LaptopSetting.class).create();
+            makeRegistry("tasks", TaskRegistryEntry.class).create();
+            makeRegistry("processes", DeviceProcessRegistryEntry.class).create();
+            makeRegistry("applications", ApplicationRegistryEntry.class).create();
+            makeRegistry("device_serializers", DeviceSerializer.class).disableSync().create();
+            makeRegistry("window_icons", WindowIconRegistryEntry.class).disableSaving().create();
+            makeRegistry("desktop_backgrounds", DesktopBackgroundRegistryEntry.class).disableSaving().create();
+            makeRegistry("tray_items", TrayItemRegistryEntry.class).disableSaving().create();
+        }
+
+        private static <T extends IForgeRegistryEntry<T>> RegistryBuilder<T> makeRegistry(String name, Class<T> type)
+        {
+            return new RegistryBuilder<T>().setName(new ResourceLocation(OpenDevices.MOD_ID, name)).setType(type);
+        }
+
         @SubscribeEvent
         public static void registerItems(RegistryEvent.Register<Item> event)
         {
@@ -286,7 +312,38 @@ public class OpenDevices
         @SubscribeEvent
         public static void registerWindowIcons(RegistryEvent.Register<WindowIconRegistryEntry> event)
         {
-            event.getRegistry().registerAll(DeviceRegistries.APPLICATIONS.getKeys().stream().map(registryName -> new WindowIconRegistryEntry(ApplicationManager.getAppInfo(registryName).getIcon()).setRegistryName(registryName)).toArray(WindowIconRegistryEntry[]::new));
+            event.getRegistry().registerAll(DeviceRegistries.APPLICATIONS.getKeys().stream().map(registryName -> new WindowIconRegistryEntry(ApplicationManager.getAppInfo(registryName).getIcon()).setRegistryName(registryName + "_application")).toArray(WindowIconRegistryEntry[]::new));
+            event.getRegistry().registerAll(DeviceRegistries.TRAY_ITEMS.getKeys().stream().map(registryName -> new WindowIconRegistryEntry(ApplicationManager.getTrayIconInfo(registryName).getIcon()).setRegistryName(registryName + "_tray_item")).toArray(WindowIconRegistryEntry[]::new));
+        }
+
+        @SuppressWarnings("unchecked")
+        @SubscribeEvent
+        public static void registerTrayIcons(RegistryEvent.Register<TrayItemRegistryEntry> event)
+        {
+            Set<ModFileScanData.AnnotationData> annotations = OpenDevices.annotationScanData.stream().filter(it -> it.getTargetType() == ElementType.FIELD && it.getAnnotationType().equals(Type.getType(TrayItem.Register.class))).collect(Collectors.toSet());
+
+            for (ModFileScanData.AnnotationData data : annotations)
+            {
+                ResourceLocation registryName = new ResourceLocation((String) data.getAnnotationData().get("value"));
+
+                String className = data.getClassType().getClassName();
+                String fieldName = data.getMemberName();
+                try
+                {
+                    Class<?> clazz = Class.forName(className);
+                    Field field = clazz.getField(fieldName);
+                    Function<Computer, Boolean> trayItem = (Function<Computer, Boolean>) field.get(null);
+
+                    if (registryName.getPath().isEmpty())
+                        throw new IllegalArgumentException("Tray Icon: " + clazz + " does not have a valid registry name. Skipping!");
+
+                    event.getRegistry().register(new TrayItemRegistryEntry(trayItem).setRegistryName(registryName));
+                }
+                catch (Exception e)
+                {
+                    OpenDevices.LOGGER.error("Could not register tray icon field " + fieldName + " in " + className + ". Skipping!", e);
+                }
+            }
         }
     }
 }

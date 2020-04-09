@@ -1,8 +1,6 @@
 package com.ocelot.opendevices.api;
 
-import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.application.Application;
-import com.ocelot.opendevices.api.computer.desktop.DesktopBackground;
 import com.ocelot.opendevices.api.computer.settings.LaptopSetting;
 import com.ocelot.opendevices.api.device.DeviceSerializer;
 import com.ocelot.opendevices.api.device.process.DeviceProcess;
@@ -10,12 +8,7 @@ import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.core.RegistryCache;
 import com.ocelot.opendevices.core.registry.*;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.IForgeRegistryEntry;
-import net.minecraftforge.registries.RegistryBuilder;
 import net.minecraftforge.registries.RegistryManager;
 
 import javax.annotation.Nullable;
@@ -25,16 +18,16 @@ import javax.annotation.Nullable;
  *
  * @author Ocelot
  */
-@Mod.EventBusSubscriber(modid = OpenDevices.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class DeviceRegistries
 {
-    public static IForgeRegistry<LaptopSetting<?>> SETTINGS = null;
-    public static IForgeRegistry<TaskRegistryEntry> TASKS = null;
-    public static IForgeRegistry<DeviceProcessRegistryEntry> PROCESSES = null;
-    public static IForgeRegistry<ApplicationRegistryEntry> APPLICATIONS = null;
-    public static IForgeRegistry<DeviceSerializer<?>> DEVICE_SERIALIZERS = null;
-    public static IForgeRegistry<WindowIconRegistryEntry> WINDOW_ICONS = null;
-    public static IForgeRegistry<DesktopBackgroundRegistryEntry> DESKTOP_BACKGROUNDS = null;
+    public static IForgeRegistry<LaptopSetting<?>> SETTINGS;
+    public static IForgeRegistry<TaskRegistryEntry> TASKS;
+    public static IForgeRegistry<DeviceProcessRegistryEntry> PROCESSES;
+    public static IForgeRegistry<ApplicationRegistryEntry> APPLICATIONS;
+    public static IForgeRegistry<DeviceSerializer<?>> DEVICE_SERIALIZERS;
+    public static IForgeRegistry<WindowIconRegistryEntry> WINDOW_ICONS;
+    public static IForgeRegistry<DesktopBackgroundRegistryEntry> DESKTOP_BACKGROUNDS;
+    public static IForgeRegistry<TrayItemRegistryEntry> TRAY_ITEMS;
 
     private static final RegistryCache<TaskRegistryEntry, Class<? extends Task>> TASKS_CACHE;
     private static final RegistryCache<DeviceProcessRegistryEntry, Class<? extends DeviceProcess<?>>> PROCESSES_CACHE;
@@ -42,25 +35,6 @@ public class DeviceRegistries
 
     static
     {
-        TASKS_CACHE = new RegistryCache<>(() -> TASKS.getEntries(), TaskRegistryEntry::getClazz);
-        PROCESSES_CACHE = new RegistryCache<>(() -> PROCESSES.getEntries(), DeviceProcessRegistryEntry::getClazz);
-        APPLICATIONS_CACHE = new RegistryCache<>(() -> APPLICATIONS.getEntries(), ApplicationRegistryEntry::getClazz);
-    }
-
-    private DeviceRegistries() {}
-
-    @SuppressWarnings("unchecked")
-    @SubscribeEvent
-    public static void registerRegistries(RegistryEvent.NewRegistry event)
-    {
-        makeRegistry("settings", LaptopSetting.class).create();
-        makeRegistry("tasks", TaskRegistryEntry.class).create();
-        makeRegistry("processes", DeviceProcessRegistryEntry.class).create();
-        makeRegistry("applications", ApplicationRegistryEntry.class).create();
-        makeRegistry("device_serializers", DeviceSerializer.class).create();
-        makeRegistry("window_icons", WindowIconRegistryEntry.class).create();
-        makeRegistry("desktop_backgrounds", DesktopBackgroundRegistryEntry.class).create();
-
         SETTINGS = RegistryManager.ACTIVE.getRegistry(LaptopSetting.class);
         TASKS = RegistryManager.ACTIVE.getRegistry(TaskRegistryEntry.class);
         PROCESSES = RegistryManager.ACTIVE.getRegistry(DeviceProcessRegistryEntry.class);
@@ -68,7 +42,14 @@ public class DeviceRegistries
         DEVICE_SERIALIZERS = RegistryManager.ACTIVE.getRegistry(DeviceSerializer.class);
         WINDOW_ICONS = RegistryManager.ACTIVE.getRegistry(WindowIconRegistryEntry.class);
         DESKTOP_BACKGROUNDS = RegistryManager.ACTIVE.getRegistry(DesktopBackgroundRegistryEntry.class);
+        TRAY_ITEMS = RegistryManager.ACTIVE.getRegistry(TrayItemRegistryEntry.class);
+
+        TASKS_CACHE = new RegistryCache<>(() -> TASKS.getEntries(), TaskRegistryEntry::getClazz);
+        PROCESSES_CACHE = new RegistryCache<>(() -> PROCESSES.getEntries(), DeviceProcessRegistryEntry::getClazz);
+        APPLICATIONS_CACHE = new RegistryCache<>(() -> APPLICATIONS.getEntries(), ApplicationRegistryEntry::getClazz);
     }
+
+    private DeviceRegistries() {}
 
     /**
      * Checks the cached registry values for the specified value.
@@ -117,10 +98,5 @@ public class DeviceRegistries
     public static ResourceLocation getApplicationRegistryName(Class<? extends Application> value)
     {
         return APPLICATIONS_CACHE.getRegistryName(value);
-    }
-
-    private static <T extends IForgeRegistryEntry<T>> RegistryBuilder<T> makeRegistry(String name, Class<T> type)
-    {
-        return new RegistryBuilder<T>().setName(new ResourceLocation(OpenDevices.MOD_ID, name)).setType(type);
     }
 }

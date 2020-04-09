@@ -184,7 +184,7 @@ public interface Component extends INBTSerializable<CompoundNBT>
      */
     default boolean isHovered(double mouseX, double mouseY)
     {
-        return RenderUtil.isMouseInside(mouseX, mouseY, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight());
+        return RenderUtil.isMouseInside(mouseX, mouseY, this.getX(), this.getY(), this.getWidth(), this.getHeight());
     }
 
     /**

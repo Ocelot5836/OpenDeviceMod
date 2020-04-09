@@ -330,9 +330,9 @@ public class RenderUtil
         return fontRenderer.getStringWidth(text) > width ? fontRenderer.trimStringToWidth(text, width - fontRenderer.getStringWidth("...")) + "..." : text;
     }
 
-    public static boolean isMouseInside(double mouseX, double mouseY, double x1, double y1, double x2, double y2)
+    public static boolean isMouseInside(double mouseX, double mouseY, double x, double y, double width, double height)
     {
-        return mouseX >= x1 && mouseX < x2 && mouseY >= y1 && mouseY < y2;
+        return mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + height;
     }
 
     public static String timeToString(long time)

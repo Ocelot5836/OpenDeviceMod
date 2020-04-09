@@ -1,11 +1,11 @@
 package com.ocelot.opendevices.api.computer;
 
+import com.ocelot.opendevices.api.computer.taskbar.TaskBar;
 import com.ocelot.opendevices.api.device.TileEntityDevice;
 import com.ocelot.opendevices.api.device.process.DeviceProcess;
 import com.ocelot.opendevices.api.computer.desktop.Desktop;
 import com.ocelot.opendevices.api.computer.settings.LaptopSetting;
 import com.ocelot.opendevices.api.computer.window.WindowManager;
-import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.Nullable;
 import java.util.UUID;

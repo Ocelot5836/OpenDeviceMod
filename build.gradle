@@ -124,7 +124,7 @@ dependencies {
     runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}")
 
     // Filters
-    compileOnly fg.deobf("filters:Filters-${filters_version}:1.14.4:deobf")
+    compileOnly "filters:Filters-${filters_version}:1.14.4:deobf"
 
     // Patchouli
     compile fg.deobf("vazkii.patchouli:Patchouli:${mc_version}-${patchouli_version}")
