@@ -1,7 +1,7 @@
 package com.ocelot.opendevices.core.computer.process;
 
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.api.DeviceTrayIcons;
+import com.ocelot.opendevices.api.DeviceTrayItems;
 import com.ocelot.opendevices.api.application.AppInfo;
 import com.ocelot.opendevices.api.application.Application;
 import com.ocelot.opendevices.api.component.Layout;
@@ -38,7 +38,7 @@ public class TestProcess implements Application<Computer>
         this.layoutManager = new WindowLayoutManager(this.computer, () -> this.dirty = true, () -> new TestProcessLayoutSupplier(this));
         this.window = new WindowHandle(this.computer.getWindowManager(), this.computer.getTaskBar(), this.processId);
         this.window2 = new WindowHandle(this.computer.getWindowManager(), this.computer.getTaskBar(), this.processId);
-        this.trayItem = new TrayItemHandle(this.computer.getTaskBar(), DeviceTrayIcons.TEST);
+        this.trayItem = new TrayItemHandle(this.computer.getTaskBar(), DeviceTrayItems.TEST);
     }
 
     @Override
