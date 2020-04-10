@@ -1,10 +1,14 @@
 package com.ocelot.opendevices.api.component;
 
 import com.google.common.collect.ImmutableList;
+import com.ocelot.opendevices.OpenDevices;
+import com.ocelot.opendevices.api.util.ScrollHandler;
 import com.ocelot.opendevices.api.util.SyncHelper;
 import com.ocelot.opendevices.api.util.TooltipRenderer;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.common.util.Constants;
 
 import java.util.*;
 import java.util.function.Function;
@@ -18,23 +22,20 @@ import java.util.function.Function;
  */
 public class ListComponent<E> extends StandardComponent implements List<E>
 {
+    public static final float MAX_SCROLL = 2f;
+
     private float x;
     private float y;
-    private int width;
-    private int height;
-    private int visibleHeight;
+    private final int width;
+    private final int height;
+    private final int visibleHeight;
+    private final ScrollHandler scrollHandler;
     private boolean visible;
 
     private Renderer<E> renderer;
-    private List<E> items;
+    private final List<E> items;
     private Function<E, CompoundNBT> serializer;
     private Function<CompoundNBT, E> deserializer;
-
-    private float scroll;
-    private float scrollSpeed;
-
-    private float lastScroll;
-    private float nextScroll;
 
     public ListComponent(float x, float y, int width, int height, int visibleHeight)
     {
@@ -44,6 +45,7 @@ public class ListComponent<E> extends StandardComponent implements List<E>
         this.width = width;
         this.height = Math.min(visibleHeight, height);
         this.visibleHeight = visibleHeight;
+        this.scrollHandler = new ScrollHandler(() -> this.getValueSerializer().markDirty("scroll"), height, visibleHeight);
         this.visible = true;
 
         this.renderer = null;
@@ -56,7 +58,38 @@ public class ListComponent<E> extends StandardComponent implements List<E>
     {
         SyncHelper syncHelper = new SyncHelper(this::markDirty);
         {
+            syncHelper.addSerializer("x", nbt -> nbt.putFloat("x", this.x), nbt -> this.x = nbt.getFloat("x"));
+            syncHelper.addSerializer("y", nbt -> nbt.putFloat("y", this.y), nbt -> this.y = nbt.getFloat("y"));
+            syncHelper.addSerializer("scroll", nbt -> nbt.put("scroll", this.scrollHandler.serializeNBT()), nbt -> this.scrollHandler.deserializeNBT(nbt.getCompound("scroll")));
             syncHelper.addSerializer("visible", nbt -> nbt.putBoolean("visible", this.visible), nbt -> this.visible = nbt.getBoolean("visible"));
+
+            syncHelper.addSerializer("items", nbt ->
+            {
+                if (this.serializer == null)
+                {
+                    OpenDevices.LOGGER.warn("No serializer was defined for component with " + this.items + ".");
+                    return;
+                }
+
+                ListNBT itemsNbt = new ListNBT();
+                this.items.forEach(item -> itemsNbt.add(this.serializer.apply(item)));
+                nbt.put("items", itemsNbt);
+            }, nbt ->
+            {
+                if (this.deserializer == null)
+                {
+                    OpenDevices.LOGGER.warn("No deserializer was defined for list component with " + this.items + ".");
+                    return;
+                }
+
+                this.items.clear();
+
+                ListNBT itemsNbt = nbt.getList("items", Constants.NBT.TAG_COMPOUND);
+                for (int i = 0; i < itemsNbt.size(); i++)
+                {
+                    this.items.add(this.deserializer.apply(itemsNbt.getCompound(i)));
+                }
+            });
         }
         return syncHelper;
     }
@@ -64,22 +97,45 @@ public class ListComponent<E> extends StandardComponent implements List<E>
     @Override
     public void update()
     {
-        if (this.renderer != null)
-        {
-            this.items.forEach(item -> this.renderer.update(this, item));
-        }
+        this.scrollHandler.update();
     }
 
     @Override
     public void render(float posX, float posY, int mouseX, int mouseY, boolean main, float partialTicks)
     {
+        if (this.visible)
+        {
 
+        }
     }
 
     @Override
     public void renderOverlay(TooltipRenderer renderer, float posX, float posY, int mouseX, int mouseY, float partialTicks)
     {
+        if (this.visible)
+        {
 
+        }
+    }
+
+    @Override
+    public boolean onMouseScrolled(double mouseX, double mouseY, double amount)
+    {
+        if (this.isHovered(mouseX, mouseY) && this.height > this.visibleHeight)
+        {
+            float delta = this.scrollHandler.getNextScroll() - this.scrollHandler.getScroll();
+            float scrollAmount = (float) Math.min(Math.abs(amount), MAX_SCROLL) * this.scrollHandler.getScrollSpeed();
+            float newScroll = Math.abs(delta) + scrollAmount;
+            float finalScroll = (amount < 0 ? -1 : 1) * newScroll;
+            float scroll = MathHelper.clamp(this.scrollHandler.getScroll() - finalScroll, 0, this.height - this.visibleHeight);
+            if (this.scrollHandler.getScroll() != scroll)
+            {
+                this.scrollHandler.scroll(finalScroll);
+                this.getValueSerializer().markDirty("scroll");
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -138,30 +194,11 @@ public class ListComponent<E> extends StandardComponent implements List<E>
     }
 
     /**
-     * @return The position of the scroll bar
+     * @return The manager for scrolling
      */
-    public float getScroll()
+    public ScrollHandler getScrollHandler()
     {
-        return scroll;
-    }
-
-    /**
-     * Calculates the position of the scroll bar based on where is was last tick and now.
-     *
-     * @param partialTicks The percentage from last tick to this tick
-     * @return The position of the scroll bar interpolated over the specified value
-     */
-    public float getInterpolatedScroll(float partialTicks)
-    {
-        return this.lastScroll + (this.scroll - this.lastScroll) * partialTicks;
-    }
-
-    /**
-     * @return The speed at which scrolling takes place
-     */
-    public float getScrollSpeed()
-    {
-        return scrollSpeed;
+        return scrollHandler;
     }
 
     /**
@@ -186,32 +223,6 @@ public class ListComponent<E> extends StandardComponent implements List<E>
     {
         this.serializer = serializer;
         this.deserializer = deserializer;
-    }
-
-    /**
-     * Sets the position of the scroll bar.
-     *
-     * @param scroll The new scroll value
-     */
-    public ListComponent<E> setScroll(float scroll)
-    {
-        this.scroll = MathHelper.clamp(this.scroll, 0, this.height - this.visibleHeight);
-        this.nextScroll = this.scroll;
-        this.getValueSerializer().markDirty("scroll");
-        this.getValueSerializer().markDirty("nextScroll");
-        return this;
-    }
-
-    /**
-     * Sets the speed at which scrolling occurs.
-     *
-     * @param scrollSpeed The new scrolling speed
-     */
-    public ListComponent<E> setScrollSpeed(float scrollSpeed)
-    {
-        this.scrollSpeed = Math.max(scrollSpeed, 0);
-        this.getValueSerializer().markDirty("scrollSpeed");
-        return this;
     }
 
     @Override
@@ -379,10 +390,39 @@ public class ListComponent<E> extends StandardComponent implements List<E>
      */
     public interface Renderer<T>
     {
-        void update(ListComponent<T> component, T item);
+        /**
+         * Updates the specified item within the list.
+         *
+         * @param list The component holding the item
+         * @param item The item to be updated
+         */
+        void update(ListComponent<T> list, T item);
 
-        void render(ListComponent<T> component, T item, float posX, float posY, int width, int height, float partialTicks);
+        /**
+         * Renders the specified item within the list.
+         *
+         * @param list         The component holding the item
+         * @param item         The item to render
+         * @param posX         The x position of the box
+         * @param posY         The y position of the box
+         * @param width        The width of the box
+         * @param height       The height of the box
+         * @param partialTicks The percentage from last update and this update
+         */
+        void render(ListComponent<T> list, T item, float posX, float posY, int width, int height, float partialTicks);
 
+        /**
+         * Renders the tooltip of the specified item within the list.
+         *
+         * @param renderer     The renderer used to draw tooltips
+         * @param list         The component holding the item
+         * @param item         The item to render
+         * @param posX         The x position of the box
+         * @param posY         The y position of the box
+         * @param width        The width of the box
+         * @param height       The height of the box
+         * @param partialTicks The percentage from last update and this update
+         */
         void renderOverlay(TooltipRenderer renderer, ListComponent<T> list, T item, float posX, float posY, int width, int height, float partialTicks);
     }
 }

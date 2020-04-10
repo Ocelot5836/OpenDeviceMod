@@ -12,8 +12,8 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 /**
- * <p>Allows the rendering of tooltips while bypassing {@link Screen}.</p>
- * <p>Mainly used in the API to allow the rendering of tooltips without the overhead of screen.</p>
+ * <p>Allows the rendering of tooltips while hiding {@link Screen}.</p>
+ * <p>Mainly used in the API to limit the scope of visibility of screen methods.</p>
  *
  * @author Ocelot
  * @see Screen

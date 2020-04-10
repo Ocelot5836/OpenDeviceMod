@@ -24,11 +24,11 @@ public class Layout extends StandardComponent
 {
     private float x;
     private float y;
-    private int width;
-    private int height;
+    private final int width;
+    private final int height;
     private boolean visible;
 
-    protected List<Component> components;
+    protected final List<Component> components;
 
     public Layout()
     {
