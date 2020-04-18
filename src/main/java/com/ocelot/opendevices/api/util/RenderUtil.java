@@ -167,42 +167,6 @@ public class RenderUtil
     }
 
     /**
-     * Draws the specified string of text to fit within the specified width.
-     *
-     * @param fontRenderer The font renderer to use
-     * @param text         The text to trim
-     * @param x            The x position of the text
-     * @param y            The y position of the text
-     * @param width        The max width the text can be before trimming occurs
-     * @param color        The color of the text
-     * @param shadow       Whether or not to draw a shadow
-     */
-    public static void drawStringClipped(FontRenderer fontRenderer, String text, float x, float y, int width, int color, boolean shadow)
-    {
-        if (shadow)
-        {
-            fontRenderer.drawStringWithShadow(clipStringToWidth(fontRenderer, text, width), x, y, color);
-        }
-        else
-        {
-            fontRenderer.drawString(clipStringToWidth(fontRenderer, text, width), x, y, color);
-        }
-    }
-
-    /**
-     * Clips the provided string to fit within the provided width.
-     *
-     * @param fontRenderer The font renderer to use
-     * @param text         The text to trim
-     * @param width        The max width the text can be before trimming occurs
-     * @return The string clipped to the width
-     */
-    public static String clipStringToWidth(FontRenderer fontRenderer, String text, int width)
-    {
-        return fontRenderer.getStringWidth(text) > width ? fontRenderer.trimStringToWidth(text, width - fontRenderer.getStringWidth("...")) + "..." : text;
-    }
-
-    /**
      * Checks to see if the mouse is within the provided bounds.
      *
      * @param mouseX The x position of the mouse
@@ -216,19 +180,6 @@ public class RenderUtil
     public static boolean isMouseInside(double mouseX, double mouseY, double x, double y, double width, double height)
     {
         return mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + height;
-    }
-
-    /**
-     * Converts Minecraft world time to a 24 hour format.
-     *
-     * @param time The current world time
-     * @return The formatted time
-     */
-    public static String timeToString(long time)
-    {
-        int hours = (int) ((Math.floor(time / 1000.0) + 7) % 24);
-        int minutes = (int) Math.floor((time % 1000) / 1000.0 * 60);
-        return String.format("%02d:%02d", hours, minutes);
     }
 
     /**
