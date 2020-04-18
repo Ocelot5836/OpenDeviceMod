@@ -1,7 +1,7 @@
 package com.ocelot.opendevices.api.computer.window;
 
 import com.ocelot.opendevices.api.DeviceConstants;
-import com.ocelot.opendevices.api.computer.TaskBar;
+import com.ocelot.opendevices.api.computer.taskbar.TaskBar;
 import com.ocelot.opendevices.api.device.process.DeviceProcess;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
@@ -91,7 +91,7 @@ public class WindowHandle implements INBTSerializable<CompoundNBT>
      */
     public void center()
     {
-        this.setPosition((DeviceConstants.LAPTOP_SCREEN_WIDTH - this.getWidth()) / 2f, (DeviceConstants.LAPTOP_SCREEN_HEIGHT - this.taskBar.getHeight() - (this.getHeight() + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + 2)) / 2f);
+        this.setPosition((DeviceConstants.LAPTOP_SCREEN_WIDTH - this.getWidth()) / 2f, (DeviceConstants.LAPTOP_SCREEN_HEIGHT - DeviceConstants.LAPTOP_TASK_BAR_HEIGHT - (this.getHeight() + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + 2)) / 2f);
     }
 
     /**

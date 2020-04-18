@@ -6,7 +6,6 @@ import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.api.util.SyncHelper;
 import com.ocelot.opendevices.api.util.TooltipRenderer;
 import net.minecraft.nbt.ListNBT;
-import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.common.util.Constants;
 
 import java.util.ArrayList;
@@ -25,11 +24,11 @@ public class Layout extends StandardComponent
 {
     private float x;
     private float y;
-    private int width;
-    private int height;
+    private final int width;
+    private final int height;
     private boolean visible;
 
-    protected List<Component> components;
+    protected final List<Component> components;
 
     public Layout()
     {
@@ -43,19 +42,14 @@ public class Layout extends StandardComponent
 
     public Layout(float x, float y, int width, int height)
     {
-        this.setClientSerializer(this.createSyncHelper());
+        this.setValueSerializer(this.createSyncHelper());
         this.x = x;
         this.y = y;
-        this.width = MathHelper.clamp(width, DeviceConstants.LAPTOP_MIN_APPLICATION_WIDTH, DeviceConstants.LAPTOP_MAX_APPLICATION_WIDTH + 2);
-        this.height = MathHelper.clamp(height, DeviceConstants.LAPTOP_MIN_APPLICATION_HEIGHT, DeviceConstants.LAPTOP_MAX_APPLICATION_HEIGHT + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + 2);
+        this.width = width;
+        this.height = height;
         this.visible = true;
 
         this.components = new ArrayList<>();
-
-        if (width < DeviceConstants.LAPTOP_MIN_APPLICATION_WIDTH || width > DeviceConstants.LAPTOP_MAX_APPLICATION_WIDTH || height > DeviceConstants.LAPTOP_MAX_APPLICATION_HEIGHT || height < DeviceConstants.LAPTOP_MIN_APPLICATION_HEIGHT)
-        {
-            OpenDevices.LOGGER.warn("Layouts must be between " + DeviceConstants.LAPTOP_MIN_APPLICATION_WIDTH + "x" + DeviceConstants.LAPTOP_MIN_APPLICATION_HEIGHT + " and " + DeviceConstants.LAPTOP_MAX_APPLICATION_WIDTH + "x" + DeviceConstants.LAPTOP_MAX_APPLICATION_HEIGHT + ". Clamping size to screen.");
-        }
     }
 
     protected SyncHelper createSyncHelper()
@@ -337,7 +331,7 @@ public class Layout extends StandardComponent
     public Layout setVisible(boolean visible)
     {
         this.visible = visible;
-        this.getClientSerializer().markDirty("visible");
+        this.getValueSerializer().markDirty("visible");
         return this;
     }
 
@@ -349,7 +343,10 @@ public class Layout extends StandardComponent
             for (Component component : this.components)
             {
                 if (component.isDirty())
-                    this.markDirty();
+                {
+                    this.getValueSerializer().markDirty("components");
+                    break;
+                }
             }
         }
         return super.isDirty();

@@ -48,7 +48,7 @@ public class ImageComponent extends StandardComponent
 
     public ImageComponent(float x, float y, int width, int height, ImageProvider imageProvider)
     {
-        this.setClientSerializer(this.createSyncHelper());
+        this.setValueSerializer(this.createSyncHelper());
         this.x = x;
         this.y = y;
         this.width = width;
@@ -74,9 +74,15 @@ public class ImageComponent extends StandardComponent
             syncHelper.addSerializer("imageFit", nbt -> nbt.putByte("imageFit", this.imageFit.serialize()), nbt -> this.imageFit = ImageFit.deserialize(nbt.getByte("imageFit")));
             syncHelper.addSerializer("imageProvider", nbt ->
             {
-                nbt.putString("imageProviderType", this.imageProvider.getType().getRegistryName());
-                nbt.put("imageProvider", this.imageProvider.serializeNBT());
-            }, nbt -> this.imageProvider = ImageType.byName(nbt.getString("imageProviderType")).apply(nbt.getCompound("imageProvider")));
+                CompoundNBT imageProviderNbt = new CompoundNBT();
+                imageProviderNbt.putString("type", this.imageProvider.getType().getRegistryName());
+                imageProviderNbt.put("data", this.imageProvider.serializeNBT());
+                nbt.put("imageProvider", imageProviderNbt);
+            }, nbt ->
+            {
+                CompoundNBT imageProviderNbt = nbt.getCompound("imageProvider");
+                this.imageProvider = ImageType.byName(imageProviderNbt.getString("type")).apply(imageProviderNbt.getCompound("data"));
+            });
         }
         return syncHelper;
     }
@@ -202,7 +208,7 @@ public class ImageComponent extends StandardComponent
     public ImageComponent setX(float x)
     {
         this.x = x;
-        this.getClientSerializer().markDirty("x");
+        this.getValueSerializer().markDirty("x");
         return this;
     }
 
@@ -214,7 +220,7 @@ public class ImageComponent extends StandardComponent
     public ImageComponent setY(float y)
     {
         this.y = y;
-        this.getClientSerializer().markDirty("y");
+        this.getValueSerializer().markDirty("y");
         return this;
     }
 
@@ -228,8 +234,8 @@ public class ImageComponent extends StandardComponent
     {
         this.x = x;
         this.y = y;
-        this.getClientSerializer().markDirty("x");
-        this.getClientSerializer().markDirty("y");
+        this.getValueSerializer().markDirty("x");
+        this.getValueSerializer().markDirty("y");
         return this;
     }
 
@@ -241,7 +247,7 @@ public class ImageComponent extends StandardComponent
     public ImageComponent setWidth(int width)
     {
         this.width = width;
-        this.getClientSerializer().markDirty("width");
+        this.getValueSerializer().markDirty("width");
         return this;
     }
 
@@ -253,7 +259,7 @@ public class ImageComponent extends StandardComponent
     public ImageComponent setHeight(int height)
     {
         this.height = height;
-        this.getClientSerializer().markDirty("height");
+        this.getValueSerializer().markDirty("height");
         return this;
     }
 
@@ -267,7 +273,7 @@ public class ImageComponent extends StandardComponent
     {
         this.width = width;
         this.height = height;
-        this.getClientSerializer().markDirty("height");
+        this.getValueSerializer().markDirty("height");
         return this;
     }
 
@@ -279,7 +285,7 @@ public class ImageComponent extends StandardComponent
     public ImageComponent setBackgroundColor(int backgroundColor)
     {
         this.backgroundColor = backgroundColor;
-        this.getClientSerializer().markDirty("backgroundColor");
+        this.getValueSerializer().markDirty("backgroundColor");
         return this;
     }
 
@@ -291,7 +297,7 @@ public class ImageComponent extends StandardComponent
     public ImageComponent setVisible(boolean visible)
     {
         this.visible = visible;
-        this.getClientSerializer().markDirty("visible");
+        this.getValueSerializer().markDirty("visible");
         return this;
     }
 
@@ -303,7 +309,7 @@ public class ImageComponent extends StandardComponent
     public ImageComponent setImageFit(ImageFit imageFit)
     {
         this.imageFit = imageFit;
-        this.getClientSerializer().markDirty("imageFit");
+        this.getValueSerializer().markDirty("imageFit");
         return this;
     }
 

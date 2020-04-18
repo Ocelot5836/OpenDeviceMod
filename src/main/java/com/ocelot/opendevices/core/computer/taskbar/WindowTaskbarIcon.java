@@ -1,8 +1,8 @@
 package com.ocelot.opendevices.core.computer.taskbar;
 
 import com.ocelot.opendevices.api.computer.Computer;
-import com.ocelot.opendevices.api.computer.TaskbarIcon;
-import com.ocelot.opendevices.api.computer.TaskbarIconType;
+import com.ocelot.opendevices.api.computer.taskbar.TaskbarIcon;
+import com.ocelot.opendevices.api.computer.taskbar.TaskbarIconType;
 import com.ocelot.opendevices.api.computer.window.Window;
 import com.ocelot.opendevices.api.computer.window.WindowManager;
 import net.minecraft.client.renderer.texture.MissingTextureSprite;

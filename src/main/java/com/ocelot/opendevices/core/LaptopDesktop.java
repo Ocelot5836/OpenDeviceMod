@@ -18,7 +18,7 @@ public class LaptopDesktop implements Desktop, INBTSerializable<CompoundNBT>
     public LaptopDesktop()
     {
         this.background = DeviceDesktopBackgrounds.DEFAULT.get();
-        this.background = new LaptopOnlineDesktopBackground("https://api.battlefieldsmc.net/api/launcher/images/welcome.png", ImageFit.STRETCH);
+        this.background = new LaptopOnlineDesktopBackground("https://cdn.discordapp.com/attachments/696148787000901655/696324530389516358/SPOILER_Background.png", ImageFit.FILL);
     }
 
     public void update()

@@ -1,8 +1,8 @@
-package com.ocelot.opendevices.api.computer;
+package com.ocelot.opendevices.api.computer.taskbar;
 
+import com.ocelot.opendevices.api.computer.Computer;
 import com.ocelot.opendevices.core.computer.taskbar.ApplicationTaskbarIcon;
 import com.ocelot.opendevices.core.computer.taskbar.WindowTaskbarIcon;
-import net.minecraft.nbt.CompoundNBT;
 
 import java.util.function.Function;
 

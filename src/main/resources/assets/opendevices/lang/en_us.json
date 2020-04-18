@@ -66,9 +66,11 @@
 	"screen.opendevices.laptop.dev_windows": "%s Windows Opened",
 
 	"container.opendevices.component_builder": "Component Builder",
-	
-	"app.opendevices.test.name": "Test Application",
+
+	"app.opendevices.test.title": "Test Application",
 	"app.opendevices.test.desc": "An application designed for testing windows and UI.",
+
+	"tray_item.opendevices.test.title": "Test Tray Item",
 
 	"gui.tag_filter.opendevices.devices.laptops": "Laptops",
 

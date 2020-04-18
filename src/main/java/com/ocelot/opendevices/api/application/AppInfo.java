@@ -1,7 +1,6 @@
 package com.ocelot.opendevices.api.application;
 
-import com.ocelot.opendevices.core.computer.ApplicationInfo;
-import net.minecraft.client.renderer.texture.MissingTextureSprite;
+import com.ocelot.opendevices.core.computer.AppInfoImpl;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -20,7 +19,7 @@ public interface AppInfo
     /**
      * Application info that is used when there is an error fetching info
      */
-    AppInfo EMPTY = new ApplicationInfo(new StringTextComponent("Missing Name"), new StringTextComponent("Missing Description"), new ITextComponent[0], "Missing Version", null);
+    AppInfo EMPTY = new AppInfoImpl(new StringTextComponent("Missing Name"), new StringTextComponent("Missing Description"), new ITextComponent[0], "Missing Version", null);
 
     /**
      * @return The name of the application

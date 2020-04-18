@@ -37,10 +37,8 @@ public interface DeviceProcess<T extends Device> extends INBTSerializable<Compou
 
     /**
      * Called when this process is terminated by the device.
-     *
-     * @param forced Whether or not this process self-terminated
      */
-    default void onTerminate(boolean forced) {}
+    default void onTerminate() {}
 
     /**
      * @return Whether or not this process has completed execution

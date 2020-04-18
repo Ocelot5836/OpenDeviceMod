@@ -108,7 +108,7 @@ public interface Window
     {
         float windowX = this.getInterpolatedX(partialTicks);
         float windowY = this.getInterpolatedY(partialTicks);
-        return RenderUtil.isMouseInside(x, y, windowX, windowY, windowX + this.getWidth(), windowY + this.getHeight());
+        return RenderUtil.isMouseInside(x, y, windowX, windowY, this.getWidth(), this.getHeight());
     }
 
     /**
@@ -123,7 +123,7 @@ public interface Window
     {
         float windowX = this.getInterpolatedX(partialTicks);
         float windowY = this.getInterpolatedY(partialTicks);
-        return RenderUtil.isMouseInside(x, y, windowX + 1, windowY + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + 1, windowX + this.getWidth() - 1, windowY + this.getHeight() - 1);
+        return RenderUtil.isMouseInside(x, y, windowX + 1, windowY + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT + 1, this.getWidth() - 2, this.getHeight() - DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT - 2);
     }
 
     /**
@@ -138,7 +138,7 @@ public interface Window
     {
         float windowX = this.getInterpolatedX(partialTicks);
         float windowY = this.getInterpolatedY(partialTicks);
-        return RenderUtil.isMouseInside(x, y, windowX, windowY + 1, windowX + this.getWidth() - DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE - 1, windowY + DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT);
+        return RenderUtil.isMouseInside(x, y, windowX, windowY + 1, this.getWidth() - DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE - 1, DeviceConstants.LAPTOP_WINDOW_BAR_HEIGHT - 1);
     }
 
     /**
@@ -153,6 +153,6 @@ public interface Window
     {
         float windowX = this.getInterpolatedX(partialTicks) + this.getWidth() - DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE - 1;
         float windowY = this.getInterpolatedY(partialTicks) + 1;
-        return RenderUtil.isMouseInside(x, y, windowX, windowY, windowX + DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE, windowY + DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE);
+        return RenderUtil.isMouseInside(x, y, windowX, windowY, DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE, DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE);
     }
 }

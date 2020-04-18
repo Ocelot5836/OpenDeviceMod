@@ -1,0 +1,6 @@
+{
+	"name": {
+		"translate": "tray_item.opendevices.test.title"
+	},
+	"icon": "opendevices:tray_item/icon/test"
+}

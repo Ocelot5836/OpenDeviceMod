@@ -4,7 +4,9 @@ import com.ocelot.opendevices.api.application.AppInfo;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
-public class ApplicationInfo implements AppInfo
+import javax.annotation.Nullable;
+
+public class AppInfoImpl implements AppInfo
 {
     private ITextComponent name;
     private ITextComponent description;
@@ -12,7 +14,7 @@ public class ApplicationInfo implements AppInfo
     private String version;
     private ResourceLocation icon;
 
-    public ApplicationInfo(ITextComponent name, ITextComponent description, ITextComponent[] authors, String version, ResourceLocation icon)
+    public AppInfoImpl(ITextComponent name, ITextComponent description, ITextComponent[] authors, String version, ResourceLocation icon)
     {
         this.name = name;
         this.description = description;
@@ -45,6 +47,7 @@ public class ApplicationInfo implements AppInfo
         return version;
     }
 
+    @Nullable
     @Override
     public ResourceLocation getIcon()
     {

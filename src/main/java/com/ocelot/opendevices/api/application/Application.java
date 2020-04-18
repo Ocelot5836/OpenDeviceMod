@@ -37,15 +37,4 @@ public interface Application<T extends Device> extends DeviceProcess<T>
     {
         return ApplicationManager.getAppInfo(this.getClass());
     }
-
-    /**
-     * Registers a new type of application for the {@link Computer}. Allows the detection of a {@link DeviceProcess} as actually being an application.
-     *
-     * @author Ocelot
-     * @see Computer
-     */
-    @Target(ElementType.TYPE)
-    @interface Register
-    {
-    }
 }

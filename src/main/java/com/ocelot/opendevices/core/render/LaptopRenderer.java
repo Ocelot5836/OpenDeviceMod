@@ -8,12 +8,13 @@ import com.ocelot.opendevices.api.IconManager;
 import com.ocelot.opendevices.api.LaptopSettings;
 import com.ocelot.opendevices.api.component.SpinnerComponent;
 import com.ocelot.opendevices.api.computer.Computer;
-import com.ocelot.opendevices.api.computer.TaskBar;
-import com.ocelot.opendevices.api.computer.TaskbarIcon;
 import com.ocelot.opendevices.api.computer.desktop.Desktop;
 import com.ocelot.opendevices.api.computer.desktop.DesktopBackground;
 import com.ocelot.opendevices.api.computer.desktop.LocalDesktopBackground;
 import com.ocelot.opendevices.api.computer.desktop.OnlineDesktopBackground;
+import com.ocelot.opendevices.api.computer.taskbar.TaskBar;
+import com.ocelot.opendevices.api.computer.taskbar.TaskbarIcon;
+import com.ocelot.opendevices.api.computer.taskbar.TrayItem;
 import com.ocelot.opendevices.api.computer.window.Window;
 import com.ocelot.opendevices.api.computer.window.WindowManager;
 import com.ocelot.opendevices.api.device.process.DeviceProcess;
@@ -163,7 +164,7 @@ public class LaptopRenderer
             textureManager.bindTexture(DeviceConstants.WINDOW_LOCATION);
             int color = computer.readSetting(LaptopSettings.TASKBAR_COLOR);
             int highlightColor = computer.readSetting(LaptopSettings.TASKBAR_HIGHLIGHT_COLOR);
-            int height = taskBar.getHeight();
+            int height = DeviceConstants.LAPTOP_TASK_BAR_HEIGHT;
 
             RenderUtil.glColor(color);
             {
@@ -188,23 +189,40 @@ public class LaptopRenderer
             }
             GlStateManager.color4f(1, 1, 1, 1);
 
-            /* Window Icons */
+            /* Task bar Icons */
             {
                 TaskbarIcon[] displayedIcons = taskBar.getDisplayedIcons();
-                int size = taskBar.isEnlarged() ? 2 : 1;
 
                 for (int i = 0; i < displayedIcons.length; i++)
                 {
                     TaskbarIcon taskbarIcon = displayedIcons[i];
                     TextureAtlasSprite icon = IconManager.getWindowIcon(taskbarIcon.getIconSprite());
+                    double iconX = 13 * i;
+                    double iconY = (height - 8) / 2f;
                     textureManager.bindTexture(IconManager.LOCATION_WINDOW_ICONS_TEXTURE);
-                    ShapeRenderer.drawRectWithTexture(posX + 4 + (8 * size + 5) * i, posY + screenHeight - taskBar.getHeight() + 4, 8 * size, 8 * size, icon);
+                    ShapeRenderer.drawRectWithTexture(posX + iconY + iconX, posY + screenHeight - height + iconY, 8, 8, icon);
                     if (taskbarIcon.isActive())
                     {
                         textureManager.bindTexture(DeviceConstants.WINDOW_LOCATION);
                         RenderUtil.glColor(highlightColor);
-                        ShapeRenderer.drawRectWithTexture(posX + 2 + (8 * size + 5) * i, posY + screenHeight - taskBar.getHeight() + 2, 3, 15, 12 * size, 12 * size, 12, 12, 256, 256);
+                        ShapeRenderer.drawRectWithTexture(posX + iconX + iconY - 2, posY + screenHeight - height + iconY - 2, 3, 15, 12, 12, 12, 12);
                     }
+                    GlStateManager.color4f(1, 1, 1, 1);
+                }
+            }
+
+            /* Tray Icons */
+            {
+                TrayItem[] trayItems = taskBar.getTrayItems();
+
+                for (int i = 0; i < trayItems.length; i++)
+                {
+                    TrayItem trayItem = trayItems[i];
+                    TextureAtlasSprite icon = IconManager.getWindowIcon(trayItem.getInfo().getIcon());
+                    double iconX = 10 * i;
+                    double iconY = (height - 8) / 2f;
+                    textureManager.bindTexture(IconManager.LOCATION_WINDOW_ICONS_TEXTURE);
+                    ShapeRenderer.drawRectWithTexture(posX + screenWidth - 8 - (iconX + iconY), posY + screenHeight - height + iconY, 8, 8, icon);
                     GlStateManager.color4f(1, 1, 1, 1);
                 }
             }
@@ -221,13 +239,15 @@ public class LaptopRenderer
         /* Task bar */
         {
             TaskbarIcon[] displayedIcons = taskBar.getDisplayedIcons();
-            int size = taskBar.isEnlarged() ? 2 : 1;
+            int height = DeviceConstants.LAPTOP_TASK_BAR_HEIGHT;
 
             for (int i = 0; i < displayedIcons.length; i++)
             {
                 TaskbarIcon taskbarIcon = displayedIcons[i];
                 String name = taskbarIcon.getName();
-                if (!StringUtils.isEmpty(name) && RenderUtil.isMouseInside(mouseX, mouseY, posX + 2 + (8 * size + 5) * i, posY + screenHeight - taskBar.getHeight() + 2, posX + 2 + (8 * size + 5) * i + 12 * size, posY + screenHeight - taskBar.getHeight() + 2 + 12 * size))
+                double iconX = 13 * i;
+                double iconY = (height - 8) / 2f;
+                if (!StringUtils.isEmpty(name) && RenderUtil.isMouseInside(mouseX, mouseY, posX + iconX + iconY - 2, posY + screenHeight - height + iconY - 2, 12, 12))
                 {
                     List<String> tooltip = new ArrayList<>();
                     tooltip.add(name);
@@ -248,6 +268,31 @@ public class LaptopRenderer
                             }
                         }
                         tooltip.add(TextFormatting.DARK_GRAY + taskbarIcon.getType().name().toLowerCase(Locale.ROOT));
+                    }
+                    renderer.renderTooltip(tooltip, mouseX, mouseY);
+                    return;
+                }
+            }
+        }
+
+        /* Tray Icons */
+        {
+            TrayItem[] trayItems = taskBar.getTrayItems();
+            int height = DeviceConstants.LAPTOP_TASK_BAR_HEIGHT;
+
+            for (int i = 0; i < trayItems.length; i++)
+            {
+                TrayItem trayItem = trayItems[i];
+                String name = trayItem.getInfo().getName().getFormattedText();
+                double iconX = 10 * i;
+                double iconY = (height - 8) / 2f;
+                if (!StringUtils.isEmpty(name) && RenderUtil.isMouseInside(mouseX, mouseY, posX + screenWidth - 8 - (iconX + iconY), posY + screenHeight - height + iconY, 8, 8))
+                {
+                    List<String> tooltip = new ArrayList<>();
+                    tooltip.add(name);
+                    if (flag.isAdvanced())
+                    {
+                        tooltip.add(TextFormatting.DARK_GRAY + String.valueOf(trayItem.getRegistryName()));
                     }
                     renderer.renderTooltip(tooltip, mouseX, mouseY);
                     return;

@@ -66,7 +66,7 @@ public class TextComponent extends StandardComponent
 
     public TextComponent(float x, float y, int maxWidth, ResourceLocation fontRenderer, Collection<ITextComponent> texts)
     {
-        this.setClientSerializer(this.createSyncHelper());
+        this.setValueSerializer(this.createSyncHelper());
         this.x = x;
         this.y = y;
         this.maxWidth = maxWidth;
@@ -152,7 +152,7 @@ public class TextComponent extends StandardComponent
         {
             Line line = this.lines.get(i);
             int yOffset = i * this.fontRenderer.FONT_HEIGHT;
-            if (RenderUtil.isMouseInside(mouseX, mouseY, this.x, this.y + yOffset, this.x + line.width, this.y + yOffset + this.fontRenderer.FONT_HEIGHT))
+            if (RenderUtil.isMouseInside(mouseX, mouseY, this.x, this.y + yOffset, line.width, this.fontRenderer.FONT_HEIGHT))
             {
                 double x = this.x;
                 for (ITextComponent lineComponent : line.textComponent)
@@ -352,7 +352,7 @@ public class TextComponent extends StandardComponent
     public TextComponent setX(float x)
     {
         this.x = x;
-        this.getClientSerializer().markDirty("x");
+        this.getValueSerializer().markDirty("x");
         return this;
     }
 
@@ -364,7 +364,7 @@ public class TextComponent extends StandardComponent
     public TextComponent setY(float y)
     {
         this.y = y;
-        this.getClientSerializer().markDirty("y");
+        this.getValueSerializer().markDirty("y");
         return this;
     }
 
@@ -378,8 +378,8 @@ public class TextComponent extends StandardComponent
     {
         this.x = x;
         this.y = y;
-        this.getClientSerializer().markDirty("x");
-        this.getClientSerializer().markDirty("y");
+        this.getValueSerializer().markDirty("x");
+        this.getValueSerializer().markDirty("y");
         return this;
     }
 
@@ -392,7 +392,7 @@ public class TextComponent extends StandardComponent
     {
         this.maxWidth = maxWidth;
         this.rebuildText();
-        this.getClientSerializer().markDirty("maxWidth");
+        this.getValueSerializer().markDirty("maxWidth");
         return this;
     }
 
@@ -406,7 +406,7 @@ public class TextComponent extends StandardComponent
         this.fontRendererLocation = fontRenderer;
         this.fontRenderer = Minecraft.getInstance().getFontResourceManager().getFontRenderer(fontRenderer);
         this.rebuildText();
-        this.getClientSerializer().markDirty("fontRenderer");
+        this.getValueSerializer().markDirty("fontRenderer");
         return this;
     }
 
@@ -432,7 +432,7 @@ public class TextComponent extends StandardComponent
         if (text != null)
             text.forEach(this::addLine);
         this.rebuildText();
-        this.getClientSerializer().markDirty("text");
+        this.getValueSerializer().markDirty("text");
         return this;
     }
 
@@ -445,7 +445,7 @@ public class TextComponent extends StandardComponent
     public TextComponent setTooltipDelay(TimeUnit unit, long tooltipDelay)
     {
         this.tooltipDelay = Math.max(0, unit.toMillis(tooltipDelay));
-        this.getClientSerializer().markDirty("tooltipDelay");
+        this.getValueSerializer().markDirty("tooltipDelay");
         return this;
     }
 
@@ -457,7 +457,7 @@ public class TextComponent extends StandardComponent
     public TextComponent setRenderShadow(boolean renderShadow)
     {
         this.renderShadow = renderShadow;
-        this.getClientSerializer().markDirty("renderShadow");
+        this.getValueSerializer().markDirty("renderShadow");
         return this;
     }
 
@@ -469,7 +469,7 @@ public class TextComponent extends StandardComponent
     public TextComponent setVisible(boolean visible)
     {
         this.visible = visible;
-        this.getClientSerializer().markDirty("visible");
+        this.getValueSerializer().markDirty("visible");
         return this;
     }
 

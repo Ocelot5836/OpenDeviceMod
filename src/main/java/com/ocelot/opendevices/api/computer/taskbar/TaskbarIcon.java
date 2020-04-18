@@ -1,4 +1,4 @@
-package com.ocelot.opendevices.api.computer;
+package com.ocelot.opendevices.api.computer.taskbar;
 
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;

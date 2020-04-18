@@ -3,9 +3,12 @@ package com.ocelot.opendevices.api.application;
 import com.google.gson.*;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceRegistries;
-import com.ocelot.opendevices.core.computer.ApplicationInfo;
+import com.ocelot.opendevices.api.computer.Computer;
+import com.ocelot.opendevices.api.computer.taskbar.TrayItemInfo;
+import com.ocelot.opendevices.core.computer.AppInfoImpl;
+import com.ocelot.opendevices.core.computer.TrayItemInfoImpl;
 import com.ocelot.opendevices.core.registry.ApplicationRegistryEntry;
-import net.minecraft.client.renderer.texture.TextureManager;
+import com.ocelot.opendevices.core.registry.TrayItemRegistryEntry;
 import net.minecraft.util.EnumTypeAdapterFactory;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
@@ -25,9 +28,12 @@ import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
- * <p>Manages the loading and parsing of {@link AppInfo} JSONs.</p>
+ * <p>Manages the loading and parsing of {@link AppInfo} and {@link TrayItemInfo} JSONs.</p>
  *
  * @author Ocelot
  * @see AppInfo
@@ -35,8 +41,9 @@ import java.util.Map;
 @Mod.EventBusSubscriber(modid = OpenDevices.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ApplicationManager
 {
-    private static final Gson GSON = new GsonBuilder().registerTypeHierarchyAdapter(ITextComponent.class, new ITextComponent.Serializer()).registerTypeHierarchyAdapter(Style.class, new Style.Serializer()).registerTypeAdapterFactory(new EnumTypeAdapterFactory()).registerTypeAdapter(AppInfo.class, new AppInfoDeserializer()).registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer()).create();
+    private static final Gson GSON = new GsonBuilder().registerTypeHierarchyAdapter(ITextComponent.class, new ITextComponent.Serializer()).registerTypeHierarchyAdapter(Style.class, new Style.Serializer()).registerTypeAdapterFactory(new EnumTypeAdapterFactory()).registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer()).registerTypeAdapter(AppInfoImpl.class, new AppInfoDeserializer()).registerTypeAdapter(TrayItemInfoImpl.class, new TrayIconInfoDeserializer()).create();
     private static final Map<ResourceLocation, AppInfo> APP_INFO = new HashMap<>();
+    private static final Map<ResourceLocation, TrayItemInfo> TRAY_ITEM_INFO = new HashMap<>();
 
     private static AppInfo loadAppInfo(ResourceLocation registryName) throws IOException
     {
@@ -44,15 +51,24 @@ public class ApplicationManager
         InputStream stream = ApplicationManager.class.getResourceAsStream(path);
         if (stream == null)
             throw new FileNotFoundException("Could not locate app info file for '" + registryName + "' at '" + path + "'");
-        return GSON.fromJson(IOUtils.toString(stream, StandardCharsets.UTF_8), AppInfo.class);
+        return GSON.fromJson(IOUtils.toString(stream, StandardCharsets.UTF_8), AppInfoImpl.class);
+    }
+
+    private static TrayItemInfo loadTrayIconInfo(Function<Computer, Boolean> clickListener, ResourceLocation registryName) throws IOException
+    {
+        String path = "/data/" + registryName.getNamespace() + "/tray_items/" + registryName.getPath() + ".json";
+        InputStream stream = ApplicationManager.class.getResourceAsStream(path);
+        if (stream == null)
+            throw new FileNotFoundException("Could not locate tray icon info file for '" + registryName + "' at '" + path + "'");
+        return GSON.fromJson(IOUtils.toString(stream, StandardCharsets.UTF_8), TrayItemInfoImpl.class).setClickListener(clickListener);
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void registerApplications(RegistryEvent.Register<ApplicationRegistryEntry> event)
     {
-        for (Map.Entry<ResourceLocation, ApplicationRegistryEntry> applicationEntry : event.getRegistry().getEntries())
+        for (Map.Entry<ResourceLocation, ApplicationRegistryEntry> entry : event.getRegistry().getEntries())
         {
-            ResourceLocation registryName = applicationEntry.getKey();
+            ResourceLocation registryName = entry.getKey();
 
             try
             {
@@ -61,6 +77,24 @@ public class ApplicationManager
             catch (Exception e)
             {
                 OpenDevices.LOGGER.error("Could not load app info JSON for application '" + registryName + "'. Using Missing App Info!", e);
+            }
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void registerTrayItems(RegistryEvent.Register<TrayItemRegistryEntry> event)
+    {
+        for (Map.Entry<ResourceLocation, TrayItemRegistryEntry> entry : event.getRegistry().getEntries())
+        {
+            ResourceLocation registryName = entry.getKey();
+
+            try
+            {
+                TRAY_ITEM_INFO.put(registryName, loadTrayIconInfo(entry.getValue().getClickListener(), registryName));
+            }
+            catch (Exception e)
+            {
+                OpenDevices.LOGGER.error("Could not load tray icon info JSON for tray icon '" + registryName + "'. Using Missing Tray Icon Info!", e);
             }
         }
     }
@@ -88,10 +122,21 @@ public class ApplicationManager
         return APP_INFO.getOrDefault(registryName, AppInfo.EMPTY);
     }
 
-    private static class AppInfoDeserializer implements JsonDeserializer<AppInfo>
+    /**
+     * Checks the loaded tray icon infos for the specified tray icon.
+     *
+     * @param registryName The id of the tray icon to get the info for
+     * @return The info found or {@link TrayItemInfo#EMPTY} if there was no associated info
+     */
+    public static TrayItemInfo getTrayIconInfo(ResourceLocation registryName)
+    {
+        return TRAY_ITEM_INFO.getOrDefault(registryName, TrayItemInfo.EMPTY);
+    }
+
+    private static class AppInfoDeserializer implements JsonDeserializer<AppInfoImpl>
     {
         @Override
-        public AppInfo deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
+        public AppInfoImpl deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
         {
             JsonObject jsonObject = json.getAsJsonObject();
 
@@ -105,7 +150,19 @@ public class ApplicationManager
             String version = JSONUtils.deserializeClass(jsonObject, "version", context, String.class);
             ResourceLocation icon = JSONUtils.deserializeClass(jsonObject, "icon", null, context, ResourceLocation.class);
 
-            return new ApplicationInfo(name, description, !author.getFormattedText().isEmpty() ? new ITextComponent[]{author} : authors, version, icon);
+            return new AppInfoImpl(name, description, !author.getFormattedText().isEmpty() ? new ITextComponent[]{author} : authors, version, icon);
+        }
+    }
+
+    private static class TrayIconInfoDeserializer implements JsonDeserializer<TrayItemInfoImpl>
+    {
+        @Override
+        public TrayItemInfoImpl deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
+        {
+            JsonObject jsonObject = json.getAsJsonObject();
+            ITextComponent name = JSONUtils.deserializeClass(jsonObject, "name", context, ITextComponent.class);
+            ResourceLocation icon = JSONUtils.deserializeClass(jsonObject, "icon", null, context, ResourceLocation.class);
+            return new TrayItemInfoImpl(name, icon);
         }
     }
 }

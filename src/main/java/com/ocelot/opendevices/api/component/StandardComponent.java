@@ -1,10 +1,8 @@
 package com.ocelot.opendevices.api.component;
 
-import com.ocelot.opendevices.api.util.ClientSerializer;
+import com.ocelot.opendevices.api.util.ValueSerializer;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.nbt.CompoundNBT;
-
-import javax.annotation.Nullable;
 
 /**
  * <p>Manages common component aspects for {@link Component}.</p>
@@ -14,7 +12,7 @@ import javax.annotation.Nullable;
  */
 public abstract class StandardComponent extends AbstractGui implements Component
 {
-    private ClientSerializer clientSerializer;
+    private ValueSerializer valueSerializer;
     private boolean dirty;
 
     @Override
@@ -26,9 +24,9 @@ public abstract class StandardComponent extends AbstractGui implements Component
     /**
      * @return The current client serializer of null if it has not been set
      */
-    public ClientSerializer getClientSerializer()
+    public ValueSerializer getValueSerializer()
     {
-        return clientSerializer;
+        return valueSerializer;
     }
 
     @Override
@@ -40,25 +38,25 @@ public abstract class StandardComponent extends AbstractGui implements Component
     /**
      * Sets the client serializer to the provided value.
      *
-     * @param clientSerializer The client serializer
+     * @param valueSerializer The client serializer
      */
-    protected void setClientSerializer(ClientSerializer clientSerializer)
+    protected void setValueSerializer(ValueSerializer valueSerializer)
     {
-        this.clientSerializer = clientSerializer;
+        this.valueSerializer = valueSerializer;
     }
 
     @Override
     public CompoundNBT serializeNBT()
     {
-        return this.clientSerializer != null ? this.clientSerializer.serializeNBT() : new CompoundNBT();
+        return this.valueSerializer != null ? this.valueSerializer.write() : new CompoundNBT();
     }
 
     @Override
     public void deserializeNBT(CompoundNBT nbt)
     {
-        if (this.clientSerializer != null)
+        if (this.valueSerializer != null)
         {
-            this.clientSerializer.deserializeNBT(nbt);
+            this.valueSerializer.read(nbt);
         }
     }
 }

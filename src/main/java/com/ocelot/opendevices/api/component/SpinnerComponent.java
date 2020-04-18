@@ -51,7 +51,7 @@ public class SpinnerComponent extends StandardComponent
             syncHelper.addSerializer("progress", nbt -> nbt.putInt("progress", this.progress), nbt -> this.progress = nbt.getInt("progress"));
             syncHelper.addSerializer("paused", nbt -> nbt.putBoolean("paused", this.paused), nbt -> this.paused = nbt.getBoolean("paused"));
         }
-        this.setClientSerializer(syncHelper);
+        this.setValueSerializer(syncHelper);
     }
 
     @Override
@@ -153,7 +153,7 @@ public class SpinnerComponent extends StandardComponent
     public SpinnerComponent setX(float x)
     {
         this.x = x;
-        this.getClientSerializer().markDirty("x");
+        this.getValueSerializer().markDirty("x");
         return this;
     }
 
@@ -165,7 +165,7 @@ public class SpinnerComponent extends StandardComponent
     public SpinnerComponent setY(float y)
     {
         this.y = y;
-        this.getClientSerializer().markDirty("y");
+        this.getValueSerializer().markDirty("y");
         return this;
     }
 
@@ -179,8 +179,8 @@ public class SpinnerComponent extends StandardComponent
     {
         this.x = x;
         this.y = y;
-        this.getClientSerializer().markDirty("x");
-        this.getClientSerializer().markDirty("y");
+        this.getValueSerializer().markDirty("x");
+        this.getValueSerializer().markDirty("y");
         return this;
     }
 
@@ -192,7 +192,7 @@ public class SpinnerComponent extends StandardComponent
     public SpinnerComponent setColor(int color)
     {
         this.color = color;
-        this.getClientSerializer().markDirty("color");
+        this.getValueSerializer().markDirty("color");
         return this;
     }
 
@@ -204,7 +204,7 @@ public class SpinnerComponent extends StandardComponent
     public SpinnerComponent setVisible(boolean visible)
     {
         this.visible = visible;
-        this.getClientSerializer().markDirty("visible");
+        this.getValueSerializer().markDirty("visible");
         return this;
     }
 
@@ -216,7 +216,7 @@ public class SpinnerComponent extends StandardComponent
     public SpinnerComponent setBackgroundVisible(boolean backgroundVisible)
     {
         this.backgroundVisible = backgroundVisible;
-        this.getClientSerializer().markDirty("backgroundVisible");
+        this.getValueSerializer().markDirty("backgroundVisible");
         return this;
     }
 
@@ -228,8 +228,8 @@ public class SpinnerComponent extends StandardComponent
     public SpinnerComponent setPaused(boolean paused)
     {
         this.paused = paused;
-        this.getClientSerializer().markDirty("progress");
-        this.getClientSerializer().markDirty("paused");
+        this.getValueSerializer().markDirty("progress");
+        this.getValueSerializer().markDirty("paused");
         return this;
     }
 

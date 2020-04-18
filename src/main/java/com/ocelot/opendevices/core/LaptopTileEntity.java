@@ -25,10 +25,7 @@ import net.minecraft.nbt.ListNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
@@ -196,6 +193,9 @@ public class LaptopTileEntity extends DeviceTileEntity implements Computer, ITic
             OpenDevices.LOGGER.warn("Could not terminate process with id '" + processId + "' for Laptop as it does not exist. Skipping!");
             return false;
         }
+
+        if (!this.isClient())
+            process.onTerminate();
 
         this.windowManager.closeProcessWindows(processId);
         this.processes.remove(processId);
