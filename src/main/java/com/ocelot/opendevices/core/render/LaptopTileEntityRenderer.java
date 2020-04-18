@@ -46,9 +46,6 @@ public class LaptopTileEntityRenderer extends TileEntityRenderer<LaptopTileEntit
     @Override
     public void render(LaptopTileEntity te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay)
     {
-        if (true)
-            return;
-
         Minecraft minecraft = Minecraft.getInstance();
         BlockState state = te.getBlockState();
         IBakedModel screenModel = Models.LAPTOP_SCREEN.getModel();
