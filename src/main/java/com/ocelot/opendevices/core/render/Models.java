@@ -5,18 +5,24 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-@Mod.EventBusSubscriber(value = Dist.CLIENT, modid = OpenDevices.MOD_ID)
+import java.util.Locale;
+
+@Mod.EventBusSubscriber(value = Dist.CLIENT, modid = OpenDevices.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public enum Models
 {
-    LAPTOP_SCREEN(new ResourceLocation(OpenDevices.MOD_ID, "block/laptop_screen"));
+    LAPTOP_SCREEN;
 
-    private final ResourceLocation location;
+    private ResourceLocation location;
+
+    Models()
+    {
+        this(null);
+    }
 
     Models(ResourceLocation location)
     {
@@ -25,6 +31,8 @@ public enum Models
 
     public IBakedModel getModel()
     {
+        if (this.location == null)
+            this.location = new ResourceLocation(OpenDevices.MOD_ID, "custom/" + this.name().toLowerCase(Locale.ROOT));
         return Minecraft.getInstance().getModelManager().getModel(this.location);
     }
 
