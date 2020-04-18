@@ -11,9 +11,9 @@ import java.util.function.Supplier;
 
 public class RegistryCache<T, V>
 {
-    private Supplier<Set<Map.Entry<ResourceLocation, T>>> registerGetter;
-    private Function<T, V> converter;
-    private Map<V, ResourceLocation> cache;
+    private final Supplier<Set<Map.Entry<ResourceLocation, T>>> registerGetter;
+    private final Function<T, V> converter;
+    private final Map<V, ResourceLocation> cache;
 
     public RegistryCache(Supplier<Set<Map.Entry<ResourceLocation, T>>> registerGetter, Function<T, V> converter)
     {

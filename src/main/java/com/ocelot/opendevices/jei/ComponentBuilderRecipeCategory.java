@@ -1,7 +1,7 @@
 package com.ocelot.opendevices.jei;
 
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.core.render.ComponentBuilderBoardTextureManager;
+import com.ocelot.opendevices.api.IconManager;
 import com.ocelot.opendevices.crafting.ComponentBuilderRecipe;
 import com.ocelot.opendevices.init.DeviceBlocks;
 import com.ocelot.opendevices.init.DeviceItems;
@@ -110,8 +110,8 @@ public class ComponentBuilderRecipeCategory implements IRecipeCategory<Component
     @Override
     public void draw(ComponentBuilderRecipe recipe, double mouseX, double mouseY)
     {
-        Minecraft.getInstance().getTextureManager().bindTexture(ComponentBuilderBoardTextureManager.LOCATION);
-        blit(0, 0, 0, 64, 64, ComponentBuilderBoardTextureManager.getBoardTexture(Arrays.stream(recipe.getRecipeInput().getMatchingStacks()).findFirst().orElse(ItemStack.EMPTY).getItem()));
-        blit(0, 0, 0, 64, 64, ComponentBuilderBoardTextureManager.getLayoutTexture(recipe.getLayout()));
+        Minecraft.getInstance().getTextureManager().bindTexture(IconManager.LOCATION_OPENDEVICES_GUI_ATLAS);
+        blit(0, 0, 0, 64, 64, IconManager.getBoardTexture(Arrays.stream(recipe.getRecipeInput().getMatchingStacks()).findFirst().orElse(ItemStack.EMPTY).getItem()));
+        blit(0, 0, 0, 64, 64, IconManager.getLayoutTexture(recipe.getLayout()));
     }
 }

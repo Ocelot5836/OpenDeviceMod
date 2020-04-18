@@ -1,10 +1,10 @@
 package com.ocelot.opendevices.container;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.ocelot.opendevices.OpenDevices;
+import com.ocelot.opendevices.api.IconManager;
 import com.ocelot.opendevices.api.registry.ComponentBuilderBoardLayout;
 import com.ocelot.opendevices.api.task.TaskManager;
-import com.ocelot.opendevices.core.render.ComponentBuilderBoardTextureManager;
 import com.ocelot.opendevices.core.task.SetComponentBuilderLayoutTask;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
@@ -59,15 +59,15 @@ public class ComponentBuilderScreen extends ContainerScreen<ComponentBuilderCont
         assert this.minecraft != null;
 
         this.renderBackground();
-        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         this.minecraft.getTextureManager().bindTexture(CONTAINER_TEXTURE);
         this.blit(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
 
         if (this.container.hasCircuitBoard())
         {
-            this.minecraft.getTextureManager().bindTexture(ComponentBuilderBoardTextureManager.LOCATION);
-            blit(this.guiLeft + 7, this.guiTop + 17, 0, 64, 64, ComponentBuilderBoardTextureManager.getBoardTexture(this.container.getInputAreaInventory().getStackInSlot(0).getItem()));
-            blit(this.guiLeft + 7, this.guiTop + 17, 0, 64, 64, ComponentBuilderBoardTextureManager.getLayoutTexture(this.container.getLayout()));
+            this.minecraft.getTextureManager().bindTexture(IconManager.LOCATION_OPENDEVICES_GUI_ATLAS);
+            blit(this.guiLeft + 7, this.guiTop + 17, 0, 64, 64, IconManager.getBoardTexture(this.container.getInputAreaInventory().getStackInSlot(0).getItem()));
+            blit(this.guiLeft + 7, this.guiTop + 17, 0, 64, 64, IconManager.getLayoutTexture(this.container.getLayout()));
         }
     }
 }

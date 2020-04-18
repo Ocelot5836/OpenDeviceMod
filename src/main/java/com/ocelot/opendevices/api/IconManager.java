@@ -1,10 +1,14 @@
 package com.ocelot.opendevices.api;
 
 import com.ocelot.opendevices.OpenDevices;
+import com.ocelot.opendevices.api.registry.ComponentBuilderBoardLayout;
+import com.ocelot.opendevices.core.registry.ComponentBuilderBoardTexture;
 import com.ocelot.opendevices.core.registry.WindowIconRegistryEntry;
 import com.ocelot.opendevices.core.render.sprite.OpenDevicesSpriteUploader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.item.Item;
 import net.minecraft.resources.IReloadableResourceManager;
 import net.minecraft.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
@@ -31,6 +35,8 @@ public class IconManager
     {
         uploader.registerSprite(IconManager.DEFAULT_WINDOW_ICON);
         DeviceRegistries.WINDOW_ICONS.getValues().stream().map(WindowIconRegistryEntry::getLocation).filter(Objects::nonNull).distinct().forEach(uploader::registerSprite);
+        DeviceRegistries.COMPONENT_BUILDER_BOARD_TEXTURES.getValues().stream().map(ComponentBuilderBoardTexture::getTextureLocation).filter(Objects::nonNull).distinct().forEach(uploader::registerSprite);
+        DeviceRegistries.COMPONENT_BUILDER_BOARD_LAYOUTS.getValues().stream().map(ComponentBuilderBoardLayout::getTextureLocation).filter(Objects::nonNull).distinct().forEach(uploader::registerSprite);
     }
 
     /**
@@ -63,5 +69,30 @@ public class IconManager
     public static TextureAtlasSprite getWindowIcon(@Nullable ResourceLocation icon)
     {
         return openDevicesSpriteUploader.getSprite(icon == null ? DEFAULT_WINDOW_ICON : icon);
+    }
+
+    /**
+     * Checks the texture map for the board texture from the specified item.
+     *
+     * @param item The item to get the sprite from
+     * @return The sprite for the specified key
+     */
+    @OnlyIn(Dist.CLIENT)
+    public static TextureAtlasSprite getBoardTexture(Item item)
+    {
+        ResourceLocation texture = DeviceRegistries.getBoardTextureLocation(item);
+        return openDevicesSpriteUploader.getSprite(texture == null ? TextureManager.RESOURCE_LOCATION_EMPTY : texture);
+    }
+
+    /**
+     * Checks the texture map for the specified layout texture.
+     *
+     * @param layout The layout to get the sprite from
+     * @return The sprite for the specified key
+     */
+    @OnlyIn(Dist.CLIENT)
+    public static TextureAtlasSprite getLayoutTexture(ComponentBuilderBoardLayout layout)
+    {
+        return openDevicesSpriteUploader.getSprite(layout == null ? TextureManager.RESOURCE_LOCATION_EMPTY : layout.getTextureLocation());
     }
 }
