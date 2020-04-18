@@ -14,12 +14,17 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
+import java.io.File;
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
+import java.util.Locale;
 
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_COMPONENTS;
 import static org.lwjgl.opengl.GL11C.*;
+import static org.lwjgl.stb.STBImageWrite.*;
 
 /**
- * TODO documentation
+ * <p>Contains misc utilities helpful for rendering.</p>
  *
  * @author MrCrayfish, Ocelot
  */
@@ -72,11 +77,42 @@ public class RenderUtil
         return ((int) (COLOR_GET_BUFFER.get(3) * 0xff) << 24) & 0xff | ((int) (COLOR_GET_BUFFER.get(0) * 0xff) << 16) & 0xff | ((int) (COLOR_GET_BUFFER.get(1) * 0xff) << 8) & 0xff | (int) (COLOR_GET_BUFFER.get(2) * 0xff) & 0xff;
     }
 
+    /**
+     * Draws a quad onto the screen with the specified parameters.
+     *
+     * @param x             The x position to start
+     * @param y             The y position to start
+     * @param u             The x position on the texture to start
+     * @param v             The y position on the texture to start
+     * @param width         The x size of the quad
+     * @param height        The y size of the quad
+     * @param textureWidth  The x size of the selection area on the texture
+     * @param textureHeight The y size on the selection area on the texture
+     * @param sourceWidth   The width of the texture source
+     * @param sourceHeight  The height of the texture source
+     * @param fit           How the image should be transformed
+     */
     public static void drawRectWithTexture(float x, float y, float u, float v, float width, float height, float textureWidth, float textureHeight, int sourceWidth, int sourceHeight, ImageFit fit)
     {
         drawRectWithTexture(x, y, 0, u, v, width, height, textureWidth, textureHeight, sourceWidth, sourceHeight, fit);
     }
 
+    /**
+     * Draws a quad onto the screen with the specified parameters.
+     *
+     * @param x             The x position to start
+     * @param y             The y position to start
+     * @param z             The z position to start
+     * @param u             The x position on the texture to start
+     * @param v             The y position on the texture to start
+     * @param width         The x size of the quad
+     * @param height        The y size of the quad
+     * @param textureWidth  The x size of the selection area on the texture
+     * @param textureHeight The y size on the selection area on the texture
+     * @param sourceWidth   The width of the texture source
+     * @param sourceHeight  The height of the texture source
+     * @param fit           How the image should be transformed
+     */
     public static void drawRectWithTexture(float x, float y, float z, float u, float v, float width, float height, float textureWidth, float textureHeight, int sourceWidth, int sourceHeight, ImageFit fit)
     {
         switch (fit)
@@ -130,6 +166,17 @@ public class RenderUtil
         }
     }
 
+    /**
+     * Draws the specified string of text to fit within the specified width.
+     *
+     * @param fontRenderer The font renderer to use
+     * @param text         The text to trim
+     * @param x            The x position of the text
+     * @param y            The y position of the text
+     * @param width        The max width the text can be before trimming occurs
+     * @param color        The color of the text
+     * @param shadow       Whether or not to draw a shadow
+     */
     public static void drawStringClipped(FontRenderer fontRenderer, String text, float x, float y, int width, int color, boolean shadow)
     {
         if (shadow)
@@ -142,16 +189,41 @@ public class RenderUtil
         }
     }
 
+    /**
+     * Clips the provided string to fit within the provided width.
+     *
+     * @param fontRenderer The font renderer to use
+     * @param text         The text to trim
+     * @param width        The max width the text can be before trimming occurs
+     * @return The string clipped to the width
+     */
     public static String clipStringToWidth(FontRenderer fontRenderer, String text, int width)
     {
         return fontRenderer.getStringWidth(text) > width ? fontRenderer.trimStringToWidth(text, width - fontRenderer.getStringWidth("...")) + "..." : text;
     }
 
+    /**
+     * Checks to see if the mouse is within the provided bounds.
+     *
+     * @param mouseX The x position of the mouse
+     * @param mouseY The y position of the mouse
+     * @param x      The x position of the box
+     * @param y      The y position of the box
+     * @param width  The width of the box
+     * @param height The height of the box
+     * @return Whether or not the mouse is within the specified box
+     */
     public static boolean isMouseInside(double mouseX, double mouseY, double x, double y, double width, double height)
     {
         return mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + height;
     }
 
+    /**
+     * Converts Minecraft world time to a 24 hour format.
+     *
+     * @param time The current world time
+     * @return The formatted time
+     */
     public static String timeToString(long time)
     {
         int hours = (int) ((Math.floor(time / 1000.0) + 7) % 24);
@@ -159,8 +231,72 @@ public class RenderUtil
         return String.format("%02d:%02d", hours, minutes);
     }
 
+    /**
+     * Sets the GL color to the provided int in the format of 0xAARRGGBB.
+     *
+     * @param color The color to use
+     */
     public static void glColor(int color)
     {
         RenderSystem.color4f(((color >> 16) & 0xff) / 255f, ((color >> 8) & 0xff) / 255f, (color & 0xff) / 255f, ((color >> 24) & 0xff) / 255f);
+    }
+
+    /**
+     * Writes the bound texture to file in the running folder.
+     *
+     * @param location The location to save the file
+     * @param format   The format to use
+     */
+    public static void saveBoundTextureToFile(String location, ImageFormat format)
+    {
+        File file = new File(Minecraft.getInstance().gameDir, location);
+        if (file.getParentFile() != null)
+            file.getParentFile().mkdirs();
+
+        String fileName = location + "." + format.name().toLowerCase(Locale.ROOT);
+        int width = glGetTexLevelParameteri(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH);
+        int height = glGetTexLevelParameteri(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT);
+        int components = glGetTexLevelParameteri(GL_TEXTURE_2D, 0, GL_TEXTURE_COMPONENTS);
+        int componentsCount = getNumComponents(components);
+
+        ByteBuffer image = BufferUtils.createByteBuffer(width * height * componentsCount);
+        glGetTexImage(GL_TEXTURE_2D, 0, components, GL_UNSIGNED_BYTE, image);
+
+        switch (format)
+        {
+            case PNG:
+            {
+                stbi_write_png(fileName, width, height, componentsCount, image, 0);
+            }
+            case TGA:
+            {
+                stbi_write_tga(fileName, width, height, componentsCount, image);
+            }
+            case BMP:
+            {
+                stbi_write_bmp(fileName, width, height, componentsCount, image);
+            }
+            case JPG:
+            {
+                stbi_write_jpg(fileName, width, height, componentsCount, image, 100);
+            }
+        }
+    }
+
+    /**
+     * Converts the GL type of components to channels.
+     *
+     * @param components The GL type
+     * @return The channels in the type
+     */
+    public static int getNumComponents(int components)
+    {
+        if (components == GL_RED || components == GL_GREEN || components == GL_BLUE || components == GL_ALPHA)
+            return 1;
+        if (components == GL_RGB)
+            return 3;
+        if (components == GL_RGBA)
+            return 4;
+        return 0;
     }
 }
