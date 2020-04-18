@@ -1,5 +1,6 @@
 {
     "__comment": "Model generated using MrCrayfish's Model Creator (https://mrcrayfish.com/tools?id=mc)",
+    "parent": "block/orientable",
     "textures": {
         "0": "block/cauldron_side",
         "1": "block/cauldron_inner"
@@ -20,13 +21,18 @@
             "translation": [ 0, 0, -7.25 ],
             "scale": [ 1.0, 1.0, 1.0 ]
         },
+        "head": {
+            "rotation": [ 0, 180, 0 ],
+            "translation": [ 0, 14, 0 ],
+            "scale": [ 1.0, 1.0, 1.0 ]
+        },
         "thirdperson_righthand": {
-            "rotation": [ 75, 45, 0 ],
-            "translation": [ 0, 2.5, 0 ],
+            "rotation": [ 75, 315, 0 ],
+            "translation": [ 0, 2.5, 2.5 ],
             "scale": [ 0.375, 0.375, 0.375 ]
         },
         "firstperson_righthand": {
-            "rotation": [ 0, 45, 0 ],
+            "rotation": [ 0, 315, 0 ],
             "translation": [ 0, 2.5, 0 ],
             "scale": [ 0.4, 0.4, 0.4 ]
         }
