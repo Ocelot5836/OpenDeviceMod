@@ -209,7 +209,7 @@ public class LaptopRenderer
                     TextureAtlasSprite icon = IconManager.getWindowIcon(taskbarIcon.getIconSprite());
                     double iconX = 13 * i;
                     double iconY = (height - 8) / 2f;
-                    textureManager.bindTexture(IconManager.LOCATION_WINDOW_ICONS_TEXTURE);
+                    textureManager.bindTexture(IconManager.LOCATION_OPENDEVICES_TEXTURES);
                     ShapeRenderer.drawRectWithTexture(posX + iconY + iconX, posY + screenHeight - height + iconY, 8, 8, icon);
                     if (taskbarIcon.isActive())
                     {
@@ -231,7 +231,7 @@ public class LaptopRenderer
                     TextureAtlasSprite icon = IconManager.getWindowIcon(trayItem.getInfo().getIcon());
                     double iconX = 10 * i;
                     double iconY = (height - 8) / 2f;
-                    textureManager.bindTexture(IconManager.LOCATION_WINDOW_ICONS_TEXTURE);
+                    textureManager.bindTexture(IconManager.LOCATION_OPENDEVICES_TEXTURES);
                     ShapeRenderer.drawRectWithTexture(posX + screenWidth - 8 - (iconX + iconY), posY + screenHeight - height + iconY, 8, 8, icon);
                     RenderSystem.color4f(1, 1, 1, 1);
                 }

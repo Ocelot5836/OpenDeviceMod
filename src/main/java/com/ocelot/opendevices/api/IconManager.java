@@ -1,7 +1,7 @@
 package com.ocelot.opendevices.api;
 
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.core.render.sprite.WindowIconSpriteUploader;
+import com.ocelot.opendevices.core.render.sprite.OpenDevicesSpriteUploader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.IReloadableResourceManager;
@@ -15,11 +15,11 @@ import net.minecraftforge.eventbus.api.IEventBus;
 
 public class IconManager
 {
-    public static final ResourceLocation LOCATION_WINDOW_ICONS_TEXTURE = new ResourceLocation(OpenDevices.MOD_ID, "atlas/app_icons.png");
+    public static final ResourceLocation LOCATION_OPENDEVICES_TEXTURES = new ResourceLocation(OpenDevices.MOD_ID, "atlas/app_icons.png");
     public static final ResourceLocation DEFAULT_WINDOW_ICON = new ResourceLocation(OpenDevices.MOD_ID, "app/icon/default");
 
     @OnlyIn(Dist.CLIENT)
-    private static WindowIconSpriteUploader windowIconSpriteUploader;
+    private static OpenDevicesSpriteUploader openDevicesSpriteUploader;
 
     private IconManager() {}
 
@@ -32,14 +32,13 @@ public class IconManager
         bus.addListener(EventPriority.NORMAL, false, ColorHandlerEvent.Block.class, event ->
         {
             Minecraft minecraft = Minecraft.getInstance();
-            WindowIconSpriteUploader spriteUploader = new WindowIconSpriteUploader(minecraft.textureManager);
+            OpenDevicesSpriteUploader spriteUploader = new OpenDevicesSpriteUploader(minecraft.textureManager);
             IResourceManager resourceManager = minecraft.getResourceManager();
             if (resourceManager instanceof IReloadableResourceManager)
             {
-                IReloadableResourceManager reloadableResourceManager = (IReloadableResourceManager) resourceManager;
-                reloadableResourceManager.addReloadListener(spriteUploader);
+                ((IReloadableResourceManager) resourceManager).addReloadListener(spriteUploader);
             }
-            windowIconSpriteUploader = spriteUploader;
+            openDevicesSpriteUploader = spriteUploader;
         });
     }
 
@@ -52,6 +51,6 @@ public class IconManager
     @OnlyIn(Dist.CLIENT)
     public static TextureAtlasSprite getWindowIcon(ResourceLocation icon)
     {
-        return windowIconSpriteUploader.getSprite(icon == null ? DEFAULT_WINDOW_ICON : icon);
+        return openDevicesSpriteUploader.getSprite(icon == null ? DEFAULT_WINDOW_ICON : icon);
     }
 }

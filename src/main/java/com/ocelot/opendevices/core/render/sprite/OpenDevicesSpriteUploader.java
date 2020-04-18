@@ -13,20 +13,18 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import static com.ocelot.opendevices.api.IconManager.DEFAULT_WINDOW_ICON;
-
 @OnlyIn(Dist.CLIENT)
-public class WindowIconSpriteUploader extends SpriteUploader
+public class OpenDevicesSpriteUploader extends SpriteUploader
 {
-    public WindowIconSpriteUploader(TextureManager textureManager)
+    public OpenDevicesSpriteUploader(TextureManager textureManager)
     {
-        super(textureManager, IconManager.LOCATION_WINDOW_ICONS_TEXTURE, "");
+        super(textureManager, IconManager.LOCATION_OPENDEVICES_TEXTURES, "");
     }
 
     @Override
     protected Stream<ResourceLocation> getResourceLocations()
     {
-        return Stream.concat(DeviceRegistries.WINDOW_ICONS.getValues().stream().map(WindowIconRegistryEntry::getLocation).filter(Objects::nonNull), Stream.of(DEFAULT_WINDOW_ICON));
+        return Stream.concat(DeviceRegistries.WINDOW_ICONS.getValues().stream().map(WindowIconRegistryEntry::getLocation).filter(Objects::nonNull).distinct(), Stream.of(IconManager.DEFAULT_WINDOW_ICON));
     }
 
     @Override
