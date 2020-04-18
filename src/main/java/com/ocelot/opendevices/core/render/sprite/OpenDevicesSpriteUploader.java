@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 @OnlyIn(Dist.CLIENT)
 public class OpenDevicesSpriteUploader extends SpriteUploader
 {
-    private final Set<ResourceLocation> registeredSprites = new HashSet();
+    private final Set<ResourceLocation> registeredSprites = new HashSet<>();
 
     public OpenDevicesSpriteUploader(TextureManager textureManager)
     {
@@ -32,7 +32,7 @@ public class OpenDevicesSpriteUploader extends SpriteUploader
     @Override
     protected Stream<ResourceLocation> getResourceLocations()
     {
-        return Collections.unmodifiableSet(this.registeredSprites).stream();//Stream.concat(DeviceRegistries.WINDOW_ICONS.getValues().stream().map(WindowIconRegistryEntry::getLocation).filter(Objects::nonNull).distinct(), Stream.of(IconManager.DEFAULT_WINDOW_ICON));
+        return Collections.unmodifiableSet(this.registeredSprites).stream();
     }
 
     @Override
