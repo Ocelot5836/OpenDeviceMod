@@ -54,10 +54,10 @@ public class ScrollHandler implements INBTSerializable<CompoundNBT>
         {
             this.scroll += delta * TRANSITION_SPEED;
         }
-        if (this.scroll < 0 || this.scroll >= this.height - this.visibleHeight)
-        {
+        if (this.scroll < 0)
             this.setScroll(0);
-        }
+        if (this.scroll >= this.height - this.visibleHeight)
+            this.setScroll(this.height - this.visibleHeight);
     }
 
     /**

@@ -1,13 +1,13 @@
 package com.ocelot.opendevices.api.device;
 
 import com.ocelot.opendevices.api.DeviceConstants;
+import com.ocelot.opendevices.api.application.Application;
 import com.ocelot.opendevices.api.component.Layout;
 import com.ocelot.opendevices.api.computer.Computer;
-import com.ocelot.opendevices.api.application.Application;
 import com.ocelot.opendevices.api.computer.window.Window;
 import com.ocelot.opendevices.api.device.process.DeviceProcess;
 import com.ocelot.opendevices.api.device.process.ProcessWindowRenderer;
-import com.ocelot.opendevices.api.util.TooltipRenderer;
+import io.github.ocelot.client.TooltipRenderer;
 
 /**
  * <p>A basic implementation of {@link ProcessWindowRenderer} that renders {@link Application} layouts.</p>

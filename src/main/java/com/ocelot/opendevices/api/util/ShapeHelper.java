@@ -10,6 +10,7 @@ import net.minecraft.util.math.shapes.VoxelShape;
  * @author Ocelot
  * @see VoxelShape
  */
+@Deprecated
 public class ShapeHelper
 {
     private ShapeHelper() {}

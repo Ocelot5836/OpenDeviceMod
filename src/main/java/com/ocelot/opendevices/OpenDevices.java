@@ -87,7 +87,7 @@ public class OpenDevices
         modBus.addListener(this::initClient);
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(new EventHandler());
-        DistExecutor.runWhenOn(Dist.CLIENT, () -> IconManager::init);
+        DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> IconManager.init(modBus));
     }
 
     private void init(FMLCommonSetupEvent event)
@@ -112,7 +112,7 @@ public class OpenDevices
     {
         if (event.getWorld().isRemote())
         {
-            LaptopTileEntityRenderer.INSTANCE.delete();
+            LaptopTileEntityRenderer.delete();
             OnlineImageCache.clear();
         }
     }

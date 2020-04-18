@@ -1,6 +1,8 @@
 package com.ocelot.opendevices.core.render;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.DeviceRegistries;
@@ -21,13 +23,12 @@ import com.ocelot.opendevices.api.device.process.DeviceProcess;
 import com.ocelot.opendevices.api.device.process.ProcessInputRegistry;
 import com.ocelot.opendevices.api.device.process.ProcessWindowRenderer;
 import com.ocelot.opendevices.api.util.RenderUtil;
-import com.ocelot.opendevices.api.util.ShapeRenderer;
-import com.ocelot.opendevices.api.util.TooltipRenderer;
 import com.ocelot.opendevices.core.computer.taskbar.ApplicationTaskbarIcon;
 import com.ocelot.opendevices.core.computer.taskbar.WindowTaskbarIcon;
+import io.github.ocelot.client.ShapeRenderer;
+import io.github.ocelot.client.TooltipRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.texture.MissingTextureSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -90,7 +91,10 @@ public class LaptopRenderer
         WindowManager windowManager = computer.getWindowManager();
         TaskBar taskBar = computer.getTaskBar();
 
-        GlStateManager.color4f(1, 1, 1, 1);
+        RenderSystem.color4f(1, 1, 1, 1);
+        RenderSystem.enableBlend();
+        RenderSystem.disableAlphaTest();
+        RenderSystem.defaultBlendFunc();
 
         /* Desktop Background */
         {
@@ -123,15 +127,17 @@ public class LaptopRenderer
             }
         }
 
+        RenderSystem.disableBlend();
+        RenderSystem.enableAlphaTest();
+
         /* Desktop Text */
         {
             int color = computer.readSetting(LaptopSettings.DESKTOP_TEXT_COLOR);
             if (DeviceConstants.DEVELOPER_MODE)
             {
                 fontRenderer.drawStringWithShadow(I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.dev_version", MOD_VERSION), posX + 5, posY + 5, color);
-                fontRenderer.drawStringWithShadow(I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.dev_fps", Minecraft.getDebugFPS()), posX + 5, posY + 18, color);
-                fontRenderer.drawStringWithShadow(I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.dev_processes", computer.getProcessIds().size()), posX + 5, posY + 31, color);
-                fontRenderer.drawStringWithShadow(I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.dev_windows", computer.getWindowManager().getWindows().length), posX + 5, posY + 44, color);
+                fontRenderer.drawStringWithShadow(I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.dev_processes", computer.getProcessIds().size()), posX + 5, posY + 18, color);
+                fontRenderer.drawStringWithShadow(I18n.format("screen." + OpenDevices.MOD_ID + ".laptop.dev_windows", computer.getWindowManager().getWindows().length), posX + 5, posY + 31, color);
             }
             else
             {
@@ -159,6 +165,10 @@ public class LaptopRenderer
             }
         }
 
+        RenderSystem.enableBlend();
+        RenderSystem.disableAlphaTest();
+        RenderSystem.defaultBlendFunc();
+
         /* Task bar */
         {
             textureManager.bindTexture(DeviceConstants.WINDOW_LOCATION);
@@ -168,7 +178,7 @@ public class LaptopRenderer
 
             RenderUtil.glColor(color);
             {
-                BufferBuilder buffer = ShapeRenderer.begin();
+                IVertexBuilder buffer = ShapeRenderer.begin();
 
                 /* Corners */
                 ShapeRenderer.drawRectWithTexture(buffer, posX, posY + screenHeight - height, 0, 15, 1, 1, 1, 1);
@@ -187,7 +197,7 @@ public class LaptopRenderer
 
                 ShapeRenderer.end();
             }
-            GlStateManager.color4f(1, 1, 1, 1);
+            RenderSystem.color4f(1, 1, 1, 1);
 
             /* Task bar Icons */
             {
@@ -199,7 +209,7 @@ public class LaptopRenderer
                     TextureAtlasSprite icon = IconManager.getWindowIcon(taskbarIcon.getIconSprite());
                     double iconX = 13 * i;
                     double iconY = (height - 8) / 2f;
-                    textureManager.bindTexture(IconManager.LOCATION_WINDOW_ICONS_TEXTURE);
+                    textureManager.bindTexture(IconManager.LOCATION_OPENDEVICES_GUI_ATLAS);
                     ShapeRenderer.drawRectWithTexture(posX + iconY + iconX, posY + screenHeight - height + iconY, 8, 8, icon);
                     if (taskbarIcon.isActive())
                     {
@@ -207,7 +217,7 @@ public class LaptopRenderer
                         RenderUtil.glColor(highlightColor);
                         ShapeRenderer.drawRectWithTexture(posX + iconX + iconY - 2, posY + screenHeight - height + iconY - 2, 3, 15, 12, 12, 12, 12);
                     }
-                    GlStateManager.color4f(1, 1, 1, 1);
+                    RenderSystem.color4f(1, 1, 1, 1);
                 }
             }
 
@@ -221,12 +231,15 @@ public class LaptopRenderer
                     TextureAtlasSprite icon = IconManager.getWindowIcon(trayItem.getInfo().getIcon());
                     double iconX = 10 * i;
                     double iconY = (height - 8) / 2f;
-                    textureManager.bindTexture(IconManager.LOCATION_WINDOW_ICONS_TEXTURE);
+                    textureManager.bindTexture(IconManager.LOCATION_OPENDEVICES_GUI_ATLAS);
                     ShapeRenderer.drawRectWithTexture(posX + screenWidth - 8 - (iconX + iconY), posY + screenHeight - height + iconY, 8, 8, icon);
-                    GlStateManager.color4f(1, 1, 1, 1);
+                    RenderSystem.color4f(1, 1, 1, 1);
                 }
             }
         }
+
+        RenderSystem.disableBlend();
+        RenderSystem.enableAlphaTest();
     }
 
     public static void renderOverlay(TooltipRenderer renderer, Computer computer, int posX, int posY, int screenWidth, int screenHeight, int mouseX, int mouseY, float partialTicks, ITooltipFlag flag)
@@ -234,7 +247,7 @@ public class LaptopRenderer
         WindowManager windowManager = computer.getWindowManager();
         TaskBar taskBar = computer.getTaskBar();
 
-        GlStateManager.color4f(1, 1, 1, 1);
+        RenderSystem.color4f(1, 1, 1, 1);
 
         /* Task bar */
         {
@@ -327,10 +340,13 @@ public class LaptopRenderer
         float windowY = window.getInterpolatedY(partialTicks) + 1;
 
         GlStateManager.enableBlend();
-        GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 
+        RenderSystem.enableBlend();
+        RenderSystem.disableAlphaTest();
+        RenderSystem.defaultBlendFunc();
         ShapeRenderer.drawRectWithTexture(windowX + posX, windowY + posY, 26 + (!enabled ? 0 : window.isWithinButton(mouseX - posX, mouseY - posY, partialTicks) ? 2 : 1) * DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE, 0, DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE, DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE, DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE, DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE);
+        RenderSystem.disableBlend();
+        RenderSystem.enableAlphaTest();
     }
 
     private static void renderWindow(int posX, int posY, Window window, int color, int borderColor, float partialTicks)
@@ -344,7 +360,7 @@ public class LaptopRenderer
         int windowHeight = window.getHeight();
 
         {
-            BufferBuilder buffer = ShapeRenderer.begin();
+            IVertexBuilder buffer = ShapeRenderer.begin();
 
             /* Corners */
             ShapeRenderer.drawRectWithTexture(buffer, posX + windowX, posY + windowY, 0, 0, 1, 13, 1, 13);
@@ -358,13 +374,23 @@ public class LaptopRenderer
             ShapeRenderer.drawRectWithTexture(buffer, posX + windowX + 1, posY + windowY + windowHeight - 1, 1, 14, windowWidth - 2, 1, 13, 1);
             ShapeRenderer.drawRectWithTexture(buffer, posX + windowX, posY + windowY + 13, 0, 13, 1, windowHeight - 14, 1, 1);
 
+            RenderSystem.enableBlend();
+            RenderSystem.disableAlphaTest();
+            RenderSystem.defaultBlendFunc();
             ShapeRenderer.end();
+            RenderSystem.disableBlend();
+            RenderSystem.enableAlphaTest();
         }
 
         /* Center */
         RenderUtil.glColor(color);
+        RenderSystem.enableBlend();
+        RenderSystem.disableAlphaTest();
+        RenderSystem.defaultBlendFunc();
         ShapeRenderer.drawRectWithTexture(posX + windowX + 1, posY + windowY + 13, 1, 13, windowWidth - 2, windowHeight - 14, 13, 1);
+        RenderSystem.disableBlend();
+        RenderSystem.enableAlphaTest();
 
-        GlStateManager.color4f(1, 1, 1, 1);
+        RenderSystem.color4f(1, 1, 1, 1);
     }
 }

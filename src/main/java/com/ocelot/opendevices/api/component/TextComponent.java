@@ -5,7 +5,7 @@ import com.ocelot.opendevices.api.computer.Computer;
 import com.ocelot.opendevices.api.handler.ComponentClickListener;
 import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.api.util.SyncHelper;
-import com.ocelot.opendevices.api.util.TooltipRenderer;
+import io.github.ocelot.client.TooltipRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.RenderComponentsUtil;
@@ -106,7 +106,7 @@ public class TextComponent extends StandardComponent
     private void serializeText(CompoundNBT nbt)
     {
         ListNBT textList = new ListNBT();
-        this.text.forEach(text -> textList.add(new StringNBT(new String(Base64.getEncoder().encode(ITextComponent.Serializer.toJson(text).getBytes())))));
+        this.text.forEach(text -> textList.add(StringNBT.valueOf(new String(Base64.getEncoder().encode(ITextComponent.Serializer.toJson(text).getBytes())))));
         nbt.put("text", textList);
     }
 

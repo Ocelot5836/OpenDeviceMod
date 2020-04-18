@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.util.ScrollHandler;
 import com.ocelot.opendevices.api.util.SyncHelper;
-import com.ocelot.opendevices.api.util.TooltipRenderer;
+import io.github.ocelot.client.TooltipRenderer;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.math.MathHelper;

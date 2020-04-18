@@ -5,7 +5,7 @@ import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.api.util.ScrollHandler;
 import com.ocelot.opendevices.api.util.SyncHelper;
-import com.ocelot.opendevices.api.util.TooltipRenderer;
+import io.github.ocelot.client.TooltipRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.math.MathHelper;

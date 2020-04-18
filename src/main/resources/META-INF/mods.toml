@@ -6,7 +6,7 @@
 # The name of the mod loader type to load - for regular FML @Mod mods it should be javafml
 modLoader="javafml" #mandatory
 # A version range to match for said mod loader - for regular FML @Mod it will be the forge version
-loaderVersion="[28,)" #mandatory (26 is current forge version)
+loaderVersion="[31,)" #mandatory (26 is current forge version)
 # A URL to refer people to when problems occur with this mod
 issueTrackerURL="https://github.com/Ocelot5836/OpenDeviceMod/issues" #optional
 # A list of mods - how many allowed here is determined by the individual mod loader
@@ -14,13 +14,13 @@ issueTrackerURL="https://github.com/Ocelot5836/OpenDeviceMod/issues" #optional
 # The modid of the mod
 modId="opendevices" #mandatory
 # The version number of the mod - there's a few well known ${} variables useable here or just hardcode it
-version="0.1.0-pre" #mandatory
+version="${file.jarVersion}" #mandatory
  # A display name for the mod
 displayName="Open Device Mod" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification <here>
 updateJSONURL="https://raw.githubusercontent.com/Ocelot5836/storage/master/mods/device-mod/opendevices/update.json" #optional
 # A URL for the "homepage" for this mod, displayed in the mod UI
-displayURL="https://mrcrayfish.com/" #optional
+# displayURL="https://mrcrayfish.com/" #optional TODO add the curse link here
 # A file name (in the root of the mod JAR) containing a logo for display
 # logoFile="examplemod.png" #optional
 # A text field displayed in the mod UI
@@ -28,9 +28,7 @@ credits="Special thanks to the original mod author MrCrayfish https://mrcrayfish
 # A text field displayed in the mod UI
 authors="Ocelot5836" #optional
 # The description text for the mod (multi line!) (#mandatory)
-description='''
-Adds working electronic devices into Minecraft!
-'''
+description="Adds working electronic devices into Minecraft!"
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
 [[dependencies.opendevices]] #optional
     # the modid of the dependency
@@ -38,7 +36,7 @@ Adds working electronic devices into Minecraft!
     # Does this dependency have to exist - if not, ordering below must be specified
     mandatory=true #mandatory
     # The version range of the dependency
-    versionRange="[28,)" #mandatory
+    versionRange="[31,)" #mandatory
     # An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
     ordering="NONE"
     # Side this dependency is applied on - BOTH, CLIENT or SERVER
@@ -47,12 +45,12 @@ Adds working electronic devices into Minecraft!
 [[dependencies.opendevices]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.14.4]"
+    versionRange="[1.15.2]"
     ordering="NONE"
     side="BOTH"
 [[dependencies.opendevices]]
     modId="filters"
     mandatory=false
-    versionRange="[1.0.0,1.1.1]"
+    versionRange="[1.0.0,)"
     ordering="AFTER"
     side="CLIENT"

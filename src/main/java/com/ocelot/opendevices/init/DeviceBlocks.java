@@ -55,7 +55,7 @@ public class DeviceBlocks
     @OnlyIn(Dist.CLIENT)
     public static void initClient()
     {
-        ClientRegistry.bindTileEntitySpecialRenderer(LaptopTileEntity.class, LaptopTileEntityRenderer.INSTANCE);
+        ClientRegistry.bindTileEntityRenderer(TE_LAPTOP, LaptopTileEntityRenderer::new);
     }
 
     public static Block register(Block block, Item.Properties itemProperties)

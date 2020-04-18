@@ -1,7 +1,7 @@
 package com.ocelot.opendevices.api.component;
 
 import com.ocelot.opendevices.api.util.RenderUtil;
-import com.ocelot.opendevices.api.util.TooltipRenderer;
+import io.github.ocelot.client.TooltipRenderer;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.INBTSerializable;
 import org.lwjgl.glfw.GLFW;
