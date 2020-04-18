@@ -21,6 +21,11 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
+/**
+ * <p>Manages the texture map containing all textures used internally.</p>
+ *
+ * @author Ocelot
+ */
 public class IconManager
 {
     public static final ResourceLocation LOCATION_OPENDEVICES_GUI_ATLAS = new ResourceLocation(OpenDevices.MOD_ID, "atlas/textures.png");
