@@ -1,6 +1,7 @@
 package com.ocelot.opendevices.api.util;
 
 import com.ocelot.opendevices.OpenDevices;
+import io.github.ocelot.common.OnlineRequest;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.MissingTextureSprite;
@@ -69,6 +70,21 @@ public class OnlineImageCache
             OpenDevices.LOGGER.error("Could not read image with hash '" + hash + "' from cache.", e);
             return null;
         }
+    }
+
+    private static void catchError(Exception e, String url, BiConsumer<ResourceLocation, CachedImage> callback, Consumer<Exception> errorCallback)
+    {
+        if (errorCallback != null)
+        {
+            errorCallback.accept(e);
+        }
+        else
+        {
+            OpenDevices.LOGGER.error("Could not load cache image from '" + url + "'. Using missing texture sprite.", e);
+        }
+        requestedUrls.remove(url);
+        erroredUrls.add(url);
+        callback.accept(MissingTextureSprite.getLocation(), MISSING_CACHE);
     }
 
     /**
@@ -150,19 +166,9 @@ public class OnlineImageCache
             }
             catch (Exception e)
             {
-                if (errorCallback != null)
-                {
-                    errorCallback.accept(e);
-                }
-                else
-                {
-                    OpenDevices.LOGGER.error("Could not load cache image from '" + url + "'. Using missing texture sprite.", e);
-                }
-                requestedUrls.remove(url);
-                erroredUrls.add(url);
-                callback.accept(MissingTextureSprite.getLocation(), MISSING_CACHE);
+                catchError(e, url, callback, errorCallback);
             }
-        });
+        }, e -> catchError(e, url, callback, errorCallback));
     }
 
     /**
@@ -202,17 +208,17 @@ public class OnlineImageCache
     }
 
     /**
-     * <p>An image that has been downloaded from the internet and cached to file.</p>
+     * <p>An image that has been downloaded from the internet and written to file.</p>
      *
      * @author Ocelot
      */
     public static class CachedImage
     {
-        private int width;
-        private int height;
-        private NativeImage.PixelFormat format;
-        private File file;
-        private long expires;
+        private final int width;
+        private final int height;
+        private final NativeImage.PixelFormat format;
+        private final File file;
+        private final long expires;
 
         private CachedImage(int width, int height, NativeImage.PixelFormat format, File file, long expires)
         {
