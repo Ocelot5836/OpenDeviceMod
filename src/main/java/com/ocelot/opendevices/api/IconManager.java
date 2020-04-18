@@ -1,6 +1,7 @@
 package com.ocelot.opendevices.api;
 
 import com.ocelot.opendevices.OpenDevices;
+import com.ocelot.opendevices.core.registry.WindowIconRegistryEntry;
 import com.ocelot.opendevices.core.render.sprite.OpenDevicesSpriteUploader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -13,15 +14,24 @@ import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
 
+import javax.annotation.Nullable;
+import java.util.Objects;
+
 public class IconManager
 {
-    public static final ResourceLocation LOCATION_OPENDEVICES_TEXTURES = new ResourceLocation(OpenDevices.MOD_ID, "atlas/app_icons.png");
+    public static final ResourceLocation LOCATION_OPENDEVICES_GUI_ATLAS = new ResourceLocation(OpenDevices.MOD_ID, "atlas/textures.png");
     public static final ResourceLocation DEFAULT_WINDOW_ICON = new ResourceLocation(OpenDevices.MOD_ID, "app/icon/default");
 
     @OnlyIn(Dist.CLIENT)
     private static OpenDevicesSpriteUploader openDevicesSpriteUploader;
 
     private IconManager() {}
+
+    private static void registerSprites(OpenDevicesSpriteUploader uploader)
+    {
+        uploader.registerSprite(IconManager.DEFAULT_WINDOW_ICON);
+        DeviceRegistries.WINDOW_ICONS.getValues().stream().map(WindowIconRegistryEntry::getLocation).filter(Objects::nonNull).distinct().forEach(uploader::registerSprite);
+    }
 
     /**
      * Core Usage Only.
@@ -33,6 +43,7 @@ public class IconManager
         {
             Minecraft minecraft = Minecraft.getInstance();
             OpenDevicesSpriteUploader spriteUploader = new OpenDevicesSpriteUploader(minecraft.textureManager);
+            registerSprites(spriteUploader);
             IResourceManager resourceManager = minecraft.getResourceManager();
             if (resourceManager instanceof IReloadableResourceManager)
             {
@@ -49,7 +60,7 @@ public class IconManager
      * @return The sprite for the specified key
      */
     @OnlyIn(Dist.CLIENT)
-    public static TextureAtlasSprite getWindowIcon(ResourceLocation icon)
+    public static TextureAtlasSprite getWindowIcon(@Nullable ResourceLocation icon)
     {
         return openDevicesSpriteUploader.getSprite(icon == null ? DEFAULT_WINDOW_ICON : icon);
     }
