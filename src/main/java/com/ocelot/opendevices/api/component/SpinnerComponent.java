@@ -4,7 +4,8 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.api.util.SyncHelper;
-import com.ocelot.opendevices.api.util.TooltipRenderer;
+import io.github.ocelot.client.ShapeRenderer;
+import io.github.ocelot.client.TooltipRenderer;
 import net.minecraft.client.Minecraft;
 
 /**
@@ -246,9 +247,9 @@ public class SpinnerComponent extends StandardComponent
     {
         Minecraft.getInstance().getTextureManager().bindTexture(DeviceConstants.COMPONENTS_LOCATION);
         RenderUtil.glColor(backgroundColor);
-        RenderUtil.drawRectWithTexture(x, y, 0, 0, SIZE, SIZE, SIZE, SIZE, 256, 256);
+        ShapeRenderer.drawRectWithTexture(x, y, 0, 0, SIZE, SIZE, SIZE, SIZE, 256, 256);
         RenderUtil.glColor(color);
-        RenderUtil.drawRectWithTexture(x, y, (progress % 8) * SIZE, (int) (1 + progress / 8f) * SIZE, SIZE, SIZE, SIZE, SIZE, 256, 256);
+        ShapeRenderer.drawRectWithTexture(x, y, (progress % 8) * SIZE, (int) (1 + progress / 8f) * SIZE, SIZE, SIZE, SIZE, SIZE, 256, 256);
         GlStateManager.color4f(1, 1, 1, 1);
     }
 }

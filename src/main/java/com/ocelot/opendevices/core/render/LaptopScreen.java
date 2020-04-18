@@ -1,6 +1,7 @@
 package com.ocelot.opendevices.core.render;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.computer.Computer;
@@ -12,13 +13,14 @@ import com.ocelot.opendevices.api.device.process.ProcessInputHandler;
 import com.ocelot.opendevices.api.device.process.ProcessInputRegistry;
 import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.api.util.RenderUtil;
-import com.ocelot.opendevices.api.util.ShapeRenderer;
-import com.ocelot.opendevices.api.util.TooltipRenderer;
+import io.github.ocelot.client.ShapeRenderer;
 import com.ocelot.opendevices.core.LaptopTaskBar;
 import com.ocelot.opendevices.core.LaptopTileEntity;
 import com.ocelot.opendevices.core.LaptopWindowManager;
 import com.ocelot.opendevices.core.computer.LaptopWindow;
 import com.ocelot.opendevices.core.task.CloseLaptopTask;
+import io.github.ocelot.client.ScissorHelper;
+import io.github.ocelot.client.TooltipRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.gui.FontRenderer;
@@ -88,7 +90,7 @@ public class LaptopScreen extends Screen implements TooltipRenderer
         minecraft.textureManager.bindTexture(DeviceConstants.LAPTOP_GUI);
 
         {
-            BufferBuilder buffer = ShapeRenderer.begin();
+            IVertexBuilder buffer = ShapeRenderer.begin();
 
             /* Screen Corners */
             ShapeRenderer.drawRectWithTexture(buffer, this.posX, this.posY, 0, 0, DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_GUI_BORDER);
@@ -108,8 +110,8 @@ public class LaptopScreen extends Screen implements TooltipRenderer
             ShapeRenderer.end();
         }
 
-        RenderUtil.framebufferHeight = 0;
-        RenderUtil.framebufferScale = 0;
+        ScissorHelper.framebufferHeight = 0;
+        ScissorHelper.framebufferScale = 0;
 
         /* Renders the Content */
         LaptopRenderer.render(this.laptop, minecraft, fontRenderer, this.posX + DeviceConstants.LAPTOP_GUI_BORDER, this.posY + DeviceConstants.LAPTOP_GUI_BORDER, DeviceConstants.LAPTOP_SCREEN_WIDTH, DeviceConstants.LAPTOP_SCREEN_HEIGHT, mouseX, mouseY, partialTicks);

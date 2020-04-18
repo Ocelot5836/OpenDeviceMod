@@ -2,7 +2,7 @@ package com.ocelot.opendevices.api.device.process;
 
 import com.ocelot.opendevices.api.computer.window.Window;
 import com.ocelot.opendevices.api.device.Device;
-import com.ocelot.opendevices.api.util.TooltipRenderer;
+import io.github.ocelot.client.TooltipRenderer;
 
 /**
  * <p>Allows the rendering of data for windows attached to processes. Should only be bound on the client side!</p>

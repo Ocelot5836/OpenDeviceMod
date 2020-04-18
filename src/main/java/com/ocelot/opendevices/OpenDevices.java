@@ -5,7 +5,6 @@ import com.ocelot.opendevices.api.DeviceRegistries;
 import com.ocelot.opendevices.api.IconManager;
 import com.ocelot.opendevices.api.application.Application;
 import com.ocelot.opendevices.api.application.ApplicationManager;
-import com.ocelot.opendevices.api.component.Layout;
 import com.ocelot.opendevices.api.computer.Computer;
 import com.ocelot.opendevices.api.computer.settings.LaptopSetting;
 import com.ocelot.opendevices.api.computer.taskbar.TrayItem;
@@ -54,9 +53,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -87,7 +84,7 @@ public class OpenDevices
         modBus.addListener(this::initClient);
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(new EventHandler());
-        DistExecutor.runWhenOn(Dist.CLIENT, () -> IconManager::init);
+        DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> IconManager.init(modBus));
     }
 
     private void init(FMLCommonSetupEvent event)
@@ -112,7 +109,7 @@ public class OpenDevices
     {
         if (event.getWorld().isRemote())
         {
-            LaptopTileEntityRenderer.INSTANCE.delete();
+            LaptopTileEntityRenderer.delete();
             OnlineImageCache.clear();
         }
     }

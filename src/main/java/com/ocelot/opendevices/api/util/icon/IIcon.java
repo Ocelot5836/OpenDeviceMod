@@ -1,8 +1,10 @@
 package com.ocelot.opendevices.api.util.icon;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.util.RenderUtil;
+import io.github.ocelot.client.ShapeRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
@@ -78,9 +80,9 @@ public interface IIcon
      */
     default void render(float x, float y)
     {
-        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         Minecraft.getInstance().getTextureManager().bindTexture(this.getIconLocation());
-        RenderUtil.drawRectWithTexture(x, y, this.getU(), this.getV(), this.getWidth(), this.getHeight(), this.getWidth(), this.getHeight(), this.getSourceWidth(), this.getSourceHeight());
+        ShapeRenderer.drawRectWithTexture(x, y, this.getU(), this.getV(), this.getWidth(), this.getHeight(), this.getWidth(), this.getHeight(), this.getSourceWidth(), this.getSourceHeight());
     }
 
     /**

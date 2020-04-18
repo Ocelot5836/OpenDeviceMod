@@ -21,6 +21,7 @@ import net.minecraft.item.DyeColor;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -39,14 +40,13 @@ import java.util.Objects;
 public class LaptopBlock extends DeviceBlock implements IWaterLoggable
 {
     public static final VoxelShape[] SHAPES = createShapes();
-    public static final BooleanProperty SCREEN = BooleanProperty.create("screen");
 
     private DyeColor color;
 
     public LaptopBlock(DyeColor color)
     {
         super(color.getTranslationKey() + "_laptop", Block.Properties.create(Material.MISCELLANEOUS, color));
-        this.setDefaultState(this.getStateContainer().getBaseState().with(HORIZONTAL_FACING, Direction.NORTH).with(SCREEN, false).with(WATERLOGGED, false));
+        this.setDefaultState(this.getStateContainer().getBaseState().with(HORIZONTAL_FACING, Direction.NORTH).with(WATERLOGGED, false));
         DeviceBlocks.register(this, new DeviceBlockItem(this));
         this.color = color;
     }
@@ -73,7 +73,7 @@ public class LaptopBlock extends DeviceBlock implements IWaterLoggable
     }
 
     @Override
-    public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult result)
+    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult result)
     {
         if (world.getTileEntity(pos) instanceof LaptopTileEntity)
         {
@@ -81,7 +81,7 @@ public class LaptopBlock extends DeviceBlock implements IWaterLoggable
             {
                 LaptopTileEntity te = (LaptopTileEntity) world.getTileEntity(pos);
                 assert te != null;
-                if (player.isSneaking())
+                if (player.isCrouching())
                 {
                     te.toggleOpen(player);
                 }
@@ -106,9 +106,9 @@ public class LaptopBlock extends DeviceBlock implements IWaterLoggable
                     }
                 }
             }
-            return true;
+            return ActionResultType.SUCCESS;
         }
-        return false;
+        return ActionResultType.FAIL;
     }
 
     @Override
@@ -126,7 +126,7 @@ public class LaptopBlock extends DeviceBlock implements IWaterLoggable
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder)
     {
-        builder.add(HORIZONTAL_FACING, SCREEN, WATERLOGGED);
+        builder.add(HORIZONTAL_FACING, WATERLOGGED);
     }
 
     public DyeColor getColor()

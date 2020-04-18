@@ -1,8 +1,13 @@
 package com.ocelot.opendevices.api.component;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import com.ocelot.opendevices.api.util.*;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.ocelot.opendevices.api.util.ImageFit;
+import com.ocelot.opendevices.api.util.OnlineImageCache;
+import com.ocelot.opendevices.api.util.RenderUtil;
+import com.ocelot.opendevices.api.util.SyncHelper;
 import com.ocelot.opendevices.api.util.icon.IIcon;
+import io.github.ocelot.client.TooltipRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.nbt.CompoundNBT;
@@ -110,6 +115,9 @@ public class ImageComponent extends StandardComponent
     {
         if (this.visible)
         {
+            RenderSystem.enableBlend();
+            RenderSystem.disableAlphaTest();
+            RenderSystem.defaultBlendFunc();
             if (this.imageProvider.getLocation() != null)
             {
                 Minecraft.getInstance().getTextureManager().bindTexture(this.imageProvider.getLocation());
@@ -124,6 +132,8 @@ public class ImageComponent extends StandardComponent
                 SpinnerComponent.renderProgress((this.width - SpinnerComponent.SIZE) / 2f, (this.height - SpinnerComponent.SIZE) / 2f, 0, 0xFFFFFFFF, this.progress);
                 GlStateManager.popMatrix();
             }
+            RenderSystem.disableBlend();
+            RenderSystem.enableAlphaTest();
         }
     }
 

@@ -1,6 +1,8 @@
 package com.ocelot.opendevices.init;
 
 import com.ocelot.opendevices.OpenDevices;
+import com.ocelot.opendevices.api.device.DeviceTileEntity;
+import com.ocelot.opendevices.block.DeviceBlock;
 import com.ocelot.opendevices.block.LaptopBlock;
 import com.ocelot.opendevices.core.LaptopTileEntity;
 import com.ocelot.opendevices.core.render.LaptopTileEntityRenderer;
@@ -48,7 +50,7 @@ public class DeviceBlocks
     @OnlyIn(Dist.CLIENT)
     public static void initClient()
     {
-        ClientRegistry.bindTileEntitySpecialRenderer(LaptopTileEntity.class, LaptopTileEntityRenderer.INSTANCE);
+        ClientRegistry.bindTileEntityRenderer(TE_LAPTOP, LaptopTileEntityRenderer::new);
     }
 
     public static Block register(Block block, Item.Properties itemProperties)

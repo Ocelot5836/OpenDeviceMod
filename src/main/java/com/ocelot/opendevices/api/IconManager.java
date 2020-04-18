@@ -5,13 +5,20 @@ import com.ocelot.opendevices.core.render.sprite.WindowIconSpriteUploader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.IReloadableResourceManager;
+import net.minecraft.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.ColorHandlerEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.IEventBus;
 
 public class IconManager
 {
-    public static final ResourceLocation LOCATION_WINDOW_ICONS_TEXTURE = new ResourceLocation(OpenDevices.MOD_ID, "textures/atlas/app_icons.png");
+    public static final ResourceLocation LOCATION_WINDOW_ICONS_TEXTURE = new ResourceLocation(OpenDevices.MOD_ID, "atlas/app_icons.png");
     public static final ResourceLocation DEFAULT_WINDOW_ICON = new ResourceLocation(OpenDevices.MOD_ID, "app/icon/default");
 
+    @OnlyIn(Dist.CLIENT)
     private static WindowIconSpriteUploader windowIconSpriteUploader;
 
     private IconManager() {}
@@ -19,15 +26,20 @@ public class IconManager
     /**
      * Core Usage Only.
      */
-    public static void init()
+    @OnlyIn(Dist.CLIENT)
+    public static void init(IEventBus bus)
     {
-        Minecraft minecraft = Minecraft.getInstance();
-        IReloadableResourceManager resourceManager = (IReloadableResourceManager) minecraft.getResourceManager();
-        resourceManager.addReloadListener((stage, iResourceManager, preparationsProfiler, reloadProfiler, backgroundExecutor, gameExecutor) ->
+        bus.addListener(EventPriority.NORMAL, false, ColorHandlerEvent.Block.class, event ->
         {
-            if (windowIconSpriteUploader == null)
-                windowIconSpriteUploader = new WindowIconSpriteUploader(minecraft.textureManager);
-            return windowIconSpriteUploader.reload(stage, iResourceManager, preparationsProfiler, reloadProfiler, backgroundExecutor, gameExecutor);
+            Minecraft minecraft = Minecraft.getInstance();
+            WindowIconSpriteUploader spriteUploader = new WindowIconSpriteUploader(minecraft.textureManager);
+            IResourceManager resourceManager = minecraft.getResourceManager();
+            if (resourceManager instanceof IReloadableResourceManager)
+            {
+                IReloadableResourceManager reloadableResourceManager = (IReloadableResourceManager) resourceManager;
+                reloadableResourceManager.addReloadListener(spriteUploader);
+            }
+            windowIconSpriteUploader = spriteUploader;
         });
     }
 
@@ -37,6 +49,7 @@ public class IconManager
      * @param icon The key of the icon
      * @return The sprite for the specified key
      */
+    @OnlyIn(Dist.CLIENT)
     public static TextureAtlasSprite getWindowIcon(ResourceLocation icon)
     {
         return windowIconSpriteUploader.getSprite(icon == null ? DEFAULT_WINDOW_ICON : icon);

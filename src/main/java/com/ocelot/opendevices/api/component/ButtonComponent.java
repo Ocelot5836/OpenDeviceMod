@@ -1,13 +1,14 @@
 package com.ocelot.opendevices.api.component;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.handler.ClickListener;
 import com.ocelot.opendevices.api.util.RenderUtil;
-import com.ocelot.opendevices.api.util.ShapeRenderer;
 import com.ocelot.opendevices.api.util.SyncHelper;
-import com.ocelot.opendevices.api.util.TooltipRenderer;
 import com.ocelot.opendevices.api.util.icon.IIcon;
+import io.github.ocelot.client.ShapeRenderer;
+import io.github.ocelot.client.TooltipRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.gui.FontRenderer;
@@ -224,7 +225,7 @@ public class ButtonComponent extends StandardComponent
             Minecraft.getInstance().getTextureManager().bindTexture(DeviceConstants.COMPONENTS_LOCATION);
             RenderUtil.glColor(this.disabledButtonColor);
             {
-                BufferBuilder buffer = ShapeRenderer.begin();
+                IVertexBuilder buffer = ShapeRenderer.begin();
 
                 /* Corners */
                 ShapeRenderer.drawRectWithTexture(buffer, posX + this.x, posY + this.y, 96, 12, 2, 2);
@@ -250,7 +251,7 @@ public class ButtonComponent extends StandardComponent
             RenderUtil.glColor(this.state == ButtonState.DISABLED ? this.disabledButtonColor : hovered ? this.hoveredButtonColor : this.buttonColor);
             if (this.state != ButtonState.DISABLED)
             {
-                BufferBuilder buffer = ShapeRenderer.begin();
+                IVertexBuilder buffer = ShapeRenderer.begin();
 
                 /* Corners */
                 ShapeRenderer.drawRectWithTexture(buffer, posX + this.x + 1, posY + this.y + 1, 102, 13, 1, 1);
