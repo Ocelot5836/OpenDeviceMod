@@ -25,6 +25,8 @@ import com.ocelot.opendevices.api.device.process.ProcessWindowRenderer;
 import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.core.computer.taskbar.ApplicationTaskbarIcon;
 import com.ocelot.opendevices.core.computer.taskbar.WindowTaskbarIcon;
+import io.github.ocelot.client.FontHelper;
+import io.github.ocelot.client.ScissorHelper;
 import io.github.ocelot.client.ShapeRenderer;
 import io.github.ocelot.client.TooltipRenderer;
 import net.minecraft.client.Minecraft;
@@ -152,7 +154,7 @@ public class LaptopRenderer
             int borderColor = window.getId().equals(windowManager.getFocusedWindowId()) ? computer.readSetting(LaptopSettings.FOCUSED_WINDOW_COLOR) : computer.readSetting(LaptopSettings.WINDOW_COLOR);
             renderWindow(posX, posY, window, computer.readSetting(LaptopSettings.WINDOW_COLOR), borderColor, partialTicks);
             renderCloseButton(posX, posY, mouseX, mouseY, window, !windowManager.isCloseRequested(window.getId()), computer.readSetting(LaptopSettings.WINDOW_BUTTON_COLOR), partialTicks);
-            RenderUtil.drawStringClipped(fontRenderer, window.getTitle(), posX + window.getInterpolatedX(partialTicks) + 3, posY + window.getInterpolatedY(partialTicks) + 3, window.getWidth() - DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE - 6, computer.readSetting(LaptopSettings.DESKTOP_TEXT_COLOR), false);
+            FontHelper.drawStringClipped(fontRenderer, window.getTitle(), posX + window.getInterpolatedX(partialTicks) + 3, posY + window.getInterpolatedY(partialTicks) + 3, window.getWidth() - DeviceConstants.LAPTOP_WINDOW_BUTTON_SIZE - 6, computer.readSetting(LaptopSettings.DESKTOP_TEXT_COLOR), false);
 
             DeviceProcess<Computer> process = computer.getProcess(window.getProcessId());
             if (process != null)
@@ -161,6 +163,11 @@ public class LaptopRenderer
                 if (renderer != null)
                 {
                     renderer.render(process, window, posX, posY, mouseX, mouseY, window.getId().equals(windowManager.getTopWindowId()), partialTicks);
+                    if(!ScissorHelper.isEmpty())
+                    {
+                        OpenDevices.LOGGER.error("Widnow " + window.getId() + " did not pop it's scissor!");
+                        ScissorHelper.clear();
+                    }
                 }
             }
         }

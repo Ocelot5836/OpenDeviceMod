@@ -3,13 +3,13 @@ package com.ocelot.opendevices.block;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.device.Device;
 import com.ocelot.opendevices.api.task.TaskManager;
-import com.ocelot.opendevices.api.util.ShapeHelper;
 import com.ocelot.opendevices.core.LaptopTileEntity;
 import com.ocelot.opendevices.core.task.UpdateLaptopUserTask;
 import com.ocelot.opendevices.init.DeviceBlocks;
 import com.ocelot.opendevices.init.DeviceMessages;
 import com.ocelot.opendevices.network.MessageOpenGui;
 import com.ocelot.opendevices.network.handler.MessageHandler;
+import io.github.ocelot.common.VoxelShapeHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.IWaterLoggable;
@@ -19,7 +19,6 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
-import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
@@ -27,10 +26,8 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.shapes.IBooleanFunction;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
@@ -42,7 +39,7 @@ public class LaptopBlock extends DeviceBlock implements IWaterLoggable
 {
     public static final VoxelShape[] SHAPES = createShapes();
 
-    private DyeColor color;
+    private final DyeColor color;
 
     public LaptopBlock(DyeColor color)
     {
@@ -144,20 +141,12 @@ public class LaptopBlock extends DeviceBlock implements IWaterLoggable
     {
         VoxelShape[] shapes = new VoxelShape[8];
 
+        VoxelShapeHelper.Builder openBuilder = new VoxelShapeHelper.Builder().append(Block.makeCuboidShape(1, 3, 0, 15, 15, 2), Block.makeCuboidShape(1, 1, 0, 15, 4, 12));
+        VoxelShapeHelper.Builder closedBuilder = new VoxelShapeHelper.Builder().append(Block.makeCuboidShape(1, 3, 0, 15, 15, 2));
         for (int i = 0; i < shapes.length; i++)
         {
-            int index = i % 4;
-            boolean open = i >= 4;
-            Direction direction = Direction.byHorizontalIndex(index);
-
-            if (open)
-            {
-                shapes[i] = VoxelShapes.combineAndSimplify(ShapeHelper.makeCuboidShape(1, 0, 1, 15, 2, 15, direction), ShapeHelper.makeCuboidShape(1, 2, 1, 15, 13, 4, direction), IBooleanFunction.OR);
-            }
-            else
-            {
-                shapes[i] = ShapeHelper.makeCuboidShape(1, 0, 3, 15, 2, 15, direction);
-            }
+            Direction direction = Direction.byHorizontalIndex(i % 4);
+            shapes[i] = i >= 4 ? openBuilder.rotate(direction).build() : closedBuilder.rotate(direction).build();
         }
         return shapes;
     }

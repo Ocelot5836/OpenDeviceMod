@@ -133,11 +133,6 @@ public class Layout extends StandardComponent
                 }
             });
             ScissorHelper.pop();
-            if(!ScissorHelper.isEmpty())
-            {
-                OpenDevices.LOGGER.error("A component did not pop it's scissor!");
-                ScissorHelper.clear();
-            }
         }
     }
 

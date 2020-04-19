@@ -79,11 +79,6 @@ public class ScrollableLayout extends Layout
             }
         });
         ScissorHelper.pop();
-        if(!ScissorHelper.isEmpty())
-        {
-            OpenDevices.LOGGER.error("A component did not pop it's scissor!");
-            ScissorHelper.clear();
-        }
 
         if (this.scrollbarColor != 0 && this.scrollHandler.getMaxScroll() > 0)
         {
