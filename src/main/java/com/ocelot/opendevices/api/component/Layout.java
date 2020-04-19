@@ -4,6 +4,7 @@ import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.api.util.SyncHelper;
+import io.github.ocelot.client.ScissorHelper;
 import io.github.ocelot.client.TooltipRenderer;
 import net.minecraft.nbt.ListNBT;
 import net.minecraftforge.common.util.Constants;
@@ -123,7 +124,7 @@ public class Layout extends StandardComponent
     {
         if (this.visible)
         {
-            RenderUtil.pushScissor(posX + this.getX(), posY + this.getY(), this.getWidth(), this.getHeight());
+            ScissorHelper.push(posX + this.getX(), posY + this.getY(), this.getWidth(), this.getHeight());
             this.components.forEach(component ->
             {
                 if ((component.getX() + component.getWidth() >= this.getX() || component.getX() < this.getX() + this.getWidth()) && (component.getY() + component.getHeight() >= this.getY() || component.getY() < this.getY() + this.getHeight()))
@@ -131,7 +132,12 @@ public class Layout extends StandardComponent
                     component.render(this.getX() + posX, this.getY() + posY, mouseX, mouseY, main, partialTicks);
                 }
             });
-            RenderUtil.popScissor();
+            ScissorHelper.pop();
+            if(!ScissorHelper.isEmpty())
+            {
+                OpenDevices.LOGGER.error("A component did not pop it's scissor!");
+                ScissorHelper.clear();
+            }
         }
     }
 

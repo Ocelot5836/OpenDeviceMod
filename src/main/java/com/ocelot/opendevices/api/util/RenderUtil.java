@@ -36,32 +36,6 @@ public class RenderUtil
     private RenderUtil() {}
 
     /**
-     * Makes it so all rendering calls will only be displayed in the specified rectangle.
-     *
-     * @param x      The x position of the rectangle
-     * @param y      The y position of the rectangle
-     * @param width  The x size of the rectangle
-     * @param height The y size of the rectangle
-     */
-    @Deprecated
-    public static void pushScissor(float x, float y, float width, float height)
-    {
-        ScissorHelper.enableScissor();
-        ScissorHelper.push(x, y, width, height);
-    }
-
-    /**
-     * Clears the current scissor and restores the previous value.
-     */
-    @Deprecated
-    public static void popScissor()
-    {
-        ScissorHelper.pop();
-        if (ScissorHelper.isEmpty())
-            ScissorHelper.disableScissor();
-    }
-
-    /**
      * Fetches the color of the pixel at the specified position of the currently bound frame buffer.
      *
      * @param x The x position to fetch from

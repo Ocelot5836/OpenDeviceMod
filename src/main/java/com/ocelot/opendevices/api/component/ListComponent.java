@@ -2,12 +2,11 @@ package com.ocelot.opendevices.api.component;
 
 import com.google.common.collect.ImmutableList;
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.api.util.ScrollHandler;
 import com.ocelot.opendevices.api.util.SyncHelper;
 import io.github.ocelot.client.TooltipRenderer;
+import io.github.ocelot.common.ScrollHandler;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
-import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.common.util.Constants;
 
 import java.util.*;
@@ -121,19 +120,10 @@ public class ListComponent<E> extends StandardComponent implements List<E>
     @Override
     public boolean onMouseScrolled(double mouseX, double mouseY, double amount)
     {
-        if (this.isHovered(mouseX, mouseY) && this.height > this.visibleHeight)
+        if (this.isHovered(mouseX, mouseY) && this.scrollHandler.getMaxScroll() > 0 && this.scrollHandler.mouseScrolled(MAX_SCROLL, amount))
         {
-            float delta = this.scrollHandler.getNextScroll() - this.scrollHandler.getScroll();
-            float scrollAmount = (float) Math.min(Math.abs(amount), MAX_SCROLL) * this.scrollHandler.getScrollSpeed();
-            float newScroll = Math.abs(delta) + scrollAmount;
-            float finalScroll = (amount < 0 ? -1 : 1) * newScroll;
-            float scroll = MathHelper.clamp(this.scrollHandler.getScroll() - finalScroll, 0, this.height - this.visibleHeight);
-            if (this.scrollHandler.getScroll() != scroll)
-            {
-                this.scrollHandler.scroll(finalScroll);
-                this.getValueSerializer().markDirty("scroll");
-                return true;
-            }
+            this.getValueSerializer().markDirty("scroll");
+            return true;
         }
         return false;
     }
@@ -211,6 +201,16 @@ public class ListComponent<E> extends StandardComponent implements List<E>
         this.visible = visible;
         this.getValueSerializer().markDirty("visible");
         return this;
+    }
+
+    /**
+     * Sets the renderer for the items.
+     *
+     * @param renderer The new item renderer
+     */
+    public void setRenderer(Renderer<E> renderer)
+    {
+        this.renderer = renderer;
     }
 
     /**

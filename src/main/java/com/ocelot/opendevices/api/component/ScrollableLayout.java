@@ -1,11 +1,12 @@
 package com.ocelot.opendevices.api.component;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceConstants;
-import com.ocelot.opendevices.api.util.RenderUtil;
-import com.ocelot.opendevices.api.util.ScrollHandler;
 import com.ocelot.opendevices.api.util.SyncHelper;
+import io.github.ocelot.client.ScissorHelper;
 import io.github.ocelot.client.TooltipRenderer;
+import io.github.ocelot.common.ScrollHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.math.MathHelper;
@@ -18,10 +19,12 @@ import net.minecraft.util.math.MathHelper;
  */
 public class ScrollableLayout extends Layout
 {
-    public static final float MAX_SCROLL = 2f;
+    public static final int DEFAULT_SCROLLBAR_COLOR = 0x5AFFFFFF;
+    public static final double MAX_SCROLL = 2f;
 
     private final int physicalHeight;
     private final ScrollHandler scrollHandler;
+    private int scrollbarColor;
 
     private boolean selected;
 
@@ -40,6 +43,7 @@ public class ScrollableLayout extends Layout
         super(x, y, width, Math.min(visibleHeight, height));
         this.physicalHeight = height;
         this.scrollHandler = new ScrollHandler(() -> this.getValueSerializer().markDirty("scroll"), height, visibleHeight);
+        this.scrollbarColor = DEFAULT_SCROLLBAR_COLOR;
 
         this.selected = false;
     }
@@ -66,7 +70,7 @@ public class ScrollableLayout extends Layout
     {
         float interpolatedScroll = this.scrollHandler.getInterpolatedScroll(partialTicks);
 
-        RenderUtil.pushScissor(posX + this.getX(), posY + this.getY(), this.getWidth(), this.getHeight());
+        ScissorHelper.push(posX + this.getX(), posY + this.getY(), this.getWidth(), this.getHeight());
         this.components.forEach(component ->
         {
             if ((component.getX() + component.getWidth() >= this.getX() || component.getX() < this.getX() + this.getWidth()) && (component.getY() + component.getHeight() - interpolatedScroll >= this.getY() || component.getY() - interpolatedScroll < this.getY() + this.getHeight()))
@@ -74,17 +78,22 @@ public class ScrollableLayout extends Layout
                 component.render(posX + this.getX(), posY + this.getY() - interpolatedScroll, mouseX, mouseY, main && this.isHovered(mouseX - (int) posX, mouseY - (int) posY), partialTicks);
             }
         });
-        RenderUtil.popScissor();
+        ScissorHelper.pop();
+        if(!ScissorHelper.isEmpty())
+        {
+            OpenDevices.LOGGER.error("A component did not pop it's scissor!");
+            ScissorHelper.clear();
+        }
 
-        if (this.scrollHandler.getScrollbarColor() != 0 && this.physicalHeight > this.getHeight())
+        if (this.scrollbarColor != 0 && this.scrollHandler.getMaxScroll() > 0)
         {
             int scrollBarHeight = Math.max(20, (int) (this.getHeight() / (float) this.physicalHeight * (float) this.getHeight()));
             float scrollPercentage = MathHelper.clamp(interpolatedScroll / (float) (this.physicalHeight - this.getHeight()), 0.0F, 1.0F);
             float scrollBarY = (this.getHeight() - scrollBarHeight) * scrollPercentage;
-            GlStateManager.pushMatrix();
-            GlStateManager.translatef(posX + this.getX() + this.getWidth() - 5, posY + this.getY() + scrollBarY, 0);
-            Screen.fill(0, 0, 3, scrollBarHeight, this.scrollHandler.getScrollbarColor());
-            GlStateManager.popMatrix();
+            RenderSystem.pushMatrix();
+            RenderSystem.translatef(posX + this.getX() + this.getWidth() - 5, posY + this.getY() + scrollBarY, 0);
+            Screen.fill(0, 0, 3, scrollBarHeight, this.scrollbarColor);
+            RenderSystem.popMatrix();
         }
     }
 
@@ -148,19 +157,10 @@ public class ScrollableLayout extends Layout
                 }
             }
 
-            if (this.physicalHeight > this.getHeight())
+            if (this.scrollHandler.getMaxScroll() > 0 && this.scrollHandler.mouseScrolled(MAX_SCROLL, amount))
             {
-                float delta = this.scrollHandler.getNextScroll() - this.scrollHandler.getScroll();
-                float scrollAmount = (float) Math.min(Math.abs(amount), MAX_SCROLL) * this.scrollHandler.getScrollSpeed();
-                float newScroll = Math.abs(delta) + scrollAmount;
-                float finalScroll = (amount < 0 ? -1 : 1) * newScroll;
-                float scroll = MathHelper.clamp(this.scrollHandler.getScroll() - finalScroll, 0, this.physicalHeight - this.getHeight());
-                if (this.scrollHandler.getScroll() != scroll)
-                {
-                    this.scrollHandler.scroll(finalScroll);
-                    this.getValueSerializer().markDirty("scroll");
-                    return true;
-                }
+                this.getValueSerializer().markDirty("scroll");
+                return true;
             }
         }
         return false;
@@ -231,6 +231,17 @@ public class ScrollableLayout extends Layout
     public ScrollableLayout setVisible(boolean visible)
     {
         super.setVisible(visible);
+        return this;
+    }
+
+    /**
+     * Sets the color of the scroll bar if there is enough scroll
+     *
+     * @param scrollbarColor The new color of the scroll bar
+     */
+    public ScrollableLayout setScrollbarColor(int scrollbarColor)
+    {
+        this.scrollbarColor = scrollbarColor;
         return this;
     }
 }
