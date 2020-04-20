@@ -163,9 +163,9 @@ public class LaptopRenderer
                 if (renderer != null)
                 {
                     renderer.render(process, window, posX, posY, mouseX, mouseY, window.getId().equals(windowManager.getTopWindowId()), partialTicks);
-                    if(!ScissorHelper.isEmpty())
+                    if (!ScissorHelper.isEmpty())
                     {
-                        OpenDevices.LOGGER.error("Widnow " + window.getId() + " did not pop it's scissor!");
+                        OpenDevices.LOGGER.error("Window " + window.getId() + " did not pop it's scissor!");
                         ScissorHelper.clear();
                     }
                 }
