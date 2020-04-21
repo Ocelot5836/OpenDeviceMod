@@ -95,8 +95,7 @@ public class LaptopRenderer
 
         RenderSystem.color4f(1, 1, 1, 1);
         RenderSystem.enableBlend();
-        RenderSystem.disableAlphaTest();
-        RenderSystem.defaultBlendFunc();
+        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
 
         /* Desktop Background */
         {
@@ -173,8 +172,7 @@ public class LaptopRenderer
         }
 
         RenderSystem.enableBlend();
-        RenderSystem.disableAlphaTest();
-        RenderSystem.defaultBlendFunc();
+        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
 
         /* Task bar */
         {
@@ -246,7 +244,6 @@ public class LaptopRenderer
         }
 
         RenderSystem.disableBlend();
-        RenderSystem.enableAlphaTest();
     }
 
     public static void renderOverlay(TooltipRenderer renderer, Computer computer, int posX, int posY, int screenWidth, int screenHeight, int mouseX, int mouseY, float partialTicks, ITooltipFlag flag)

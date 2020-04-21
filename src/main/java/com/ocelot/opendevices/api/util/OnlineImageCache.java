@@ -7,6 +7,10 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.MissingTextureSprite;
 import net.minecraft.client.renderer.texture.NativeImage;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import javax.annotation.Nullable;
@@ -26,6 +30,8 @@ import java.util.function.Consumer;
  * <p>To download and cache an image, use {@link #request(String, TimeUnit, long, BiConsumer, Consumer)}.</p>
  * <p>A cached image can be tested for expiration by calling {@link #hasExpired(String)} which checks for if the image needs to be refreshed.</p>
  */
+@SuppressWarnings("unused")
+@Mod.EventBusSubscriber(value = Dist.CLIENT, modid = OpenDevices.MOD_ID)
 public class OnlineImageCache
 {
     private static final CachedImage MISSING_CACHE = new CachedImage(16, 16, NativeImage.PixelFormat.RGBA, null, 0L);
@@ -191,7 +197,8 @@ public class OnlineImageCache
     /**
      * Deletes all cached images and textures.
      */
-    public static void clear()
+    @SubscribeEvent
+    public static void clear(WorldEvent.Unload event)
     {
         OpenDevices.LOGGER.debug("Clearing Online Image Cache");
 

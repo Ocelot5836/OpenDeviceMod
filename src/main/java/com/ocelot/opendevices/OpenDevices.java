@@ -16,11 +16,9 @@ import com.ocelot.opendevices.api.device.process.ProcessInputRegistry;
 import com.ocelot.opendevices.api.registry.ComponentBuilderBoardLayout;
 import com.ocelot.opendevices.api.registry.DeviceCircuitBoardItem;
 import com.ocelot.opendevices.api.task.Task;
-import com.ocelot.opendevices.api.util.OnlineImageCache;
 import com.ocelot.opendevices.core.EventHandler;
 import com.ocelot.opendevices.core.computer.process.TestProcess;
 import com.ocelot.opendevices.core.registry.*;
-import com.ocelot.opendevices.core.render.LaptopTileEntityRenderer;
 import com.ocelot.opendevices.init.*;
 import net.minecraft.block.Block;
 import net.minecraft.inventory.container.ContainerType;
@@ -33,7 +31,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
@@ -104,16 +101,6 @@ public class OpenDevices
         if (ModList.get().isLoaded("filters"))
         {
             Filters.get().register(TAB, new ResourceLocation(MOD_ID, "devices/laptops"), new ItemStack(DeviceBlocks.RED_LAPTOP));
-        }
-    }
-
-    @SubscribeEvent
-    public void onWorldClose(WorldEvent.Unload event)
-    {
-        if (event.getWorld().isRemote())
-        {
-            LaptopTileEntityRenderer.delete();
-            OnlineImageCache.clear();
         }
     }
 
