@@ -109,7 +109,6 @@ public class OpenDevices
     {
         if (event.getWorld().isRemote())
         {
-            LaptopTileEntityRenderer.delete();
             OnlineImageCache.clear();
         }
     }
