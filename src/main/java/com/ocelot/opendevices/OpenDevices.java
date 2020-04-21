@@ -17,6 +17,7 @@ import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.core.EventHandler;
 import com.ocelot.opendevices.core.computer.process.TestProcess;
 import com.ocelot.opendevices.core.registry.*;
+import com.ocelot.opendevices.core.render.LaptopTileEntityRenderer;
 import com.ocelot.opendevices.init.DeviceBlocks;
 import com.ocelot.opendevices.init.DeviceItems;
 import com.ocelot.opendevices.init.DeviceMessages;
@@ -93,6 +94,8 @@ public class OpenDevices
 
     private void initClient(FMLClientSetupEvent event)
     {
+        LaptopTileEntityRenderer.addReloadListener();
+
         // TODO automatically use application instances when no custom renderer is applied
         ProcessInputRegistry.bindInputHandler(TestProcess.class, new ApplicationInputHandler<>());
         ProcessInputRegistry.bindWindowRenderer(TestProcess.class, new ApplicationWindowRenderer<>());

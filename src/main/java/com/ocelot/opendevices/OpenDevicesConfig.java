@@ -53,6 +53,7 @@ public class OpenDevicesConfig
         public final ForgeConfigSpec.BooleanValue drawLaptopScreens;
         public final ForgeConfigSpec.BooleanValue fadeToLaptopScreensaver;
         public final ForgeConfigSpec.IntValue laptopScreenResolution;
+        public final ForgeConfigSpec.IntValue laptopScreenSamples;
         public final ForgeConfigSpec.DoubleValue laptopScreenRenderRange;
 
         private Client(ForgeConfigSpec.Builder builder)
@@ -69,7 +70,11 @@ public class OpenDevicesConfig
             this.laptopScreenResolution = builder
                     .comment("Specifies the resolution of the Laptop screen in the world. Higher values cause more lag.")
                     .translation("config." + OpenDevices.MOD_ID + ".client.laptop.laptopScreenResolution")
-                    .defineInRange("laptopScreenResolution", 2, LaptopTileEntityRenderer.MIN_RESOLUTION, LaptopTileEntityRenderer.MAX_RESOLUTION);
+                    .defineInRange("laptopScreenResolution", 1, LaptopTileEntityRenderer.MIN_RESOLUTION, LaptopTileEntityRenderer.MAX_RESOLUTION);
+            this.laptopScreenSamples = builder
+                    .comment("Specifies the amount of samples to use for Anti-Aliasing. Higher values cause more lag.")
+                    .translation("config." + OpenDevices.MOD_ID + ".client.laptop.laptopScreenSamples")
+                    .defineInRange("laptopScreenSamples", 1, LaptopTileEntityRenderer.MIN_SAMPLES, LaptopTileEntityRenderer.MAX_SAMPLES);
             this.laptopScreenRenderRange = builder
                     .comment("Specifies how many blocks away laptop screens should render for.")
                     .translation("config." + OpenDevices.MOD_ID + ".client.laptop.laptopScreenRenderRange")
