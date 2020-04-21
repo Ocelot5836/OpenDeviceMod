@@ -148,6 +148,12 @@ dependencies {
     shade fishLib
 }
 
+reobf {
+    shadowJar {}
+}
+
+build.dependsOn reobfShadowJar
+
 // Example for how to get properties into the manifest for reading by the runtime..
 jar {
     manifest {
@@ -156,7 +162,7 @@ jar {
                 "Specification-Vendor"    : "opendevicessareus",
                 "Specification-Version"   : "1", // We are version 1 of ourselves
                 "Implementation-Title"    : project.name,
-                "Implementation-Version"  : "${version}",
+                "Implementation-Version"  : archiveVersion,
                 "Implementation-Vendor"   : "opendevicessareus",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
