@@ -45,7 +45,8 @@ public class LaptopTileEntityRenderer extends TileEntityRenderer<LaptopTileEntit
         super(rendererDispatcher);
     }
 
-    public static void delete()
+    @SubscribeEvent
+    public static void delete(WorldEvent.Unload event)
     {
         OpenDevices.LOGGER.debug("Deleting Laptop Render Cache");
 
@@ -127,12 +128,6 @@ public class LaptopTileEntityRenderer extends TileEntityRenderer<LaptopTileEntit
             RenderSystem.disableDepthTest();
         }
         matrixStack.pop();
-    }
-
-    @SubscribeEvent
-    public static void onWorldClose(WorldEvent.Unload event)
-    {
-        delete();
     }
 
     @SubscribeEvent
