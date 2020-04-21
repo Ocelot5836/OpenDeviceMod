@@ -9,7 +9,7 @@ import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.computer.Computer;
 import com.ocelot.opendevices.block.DeviceBlock;
 import com.ocelot.opendevices.core.LaptopTileEntity;
-import com.ocelot.opendevices.core.render.framebuffer.AdvancedFbo;
+import io.github.ocelot.client.framebuffer.AdvancedFbo;
 import io.github.ocelot.client.ScissorHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
