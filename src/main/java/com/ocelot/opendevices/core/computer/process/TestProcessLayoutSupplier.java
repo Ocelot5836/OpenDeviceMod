@@ -27,8 +27,8 @@ public class TestProcessLayoutSupplier implements WindowLayoutManager.LayoutProv
         for (int i = 0; i < 2; i++)
         {
             Layout layout = new ScrollableLayout(i * DeviceConstants.LAPTOP_DEFAULT_APPLICATION_WIDTH / 2f, 0, DeviceConstants.LAPTOP_DEFAULT_APPLICATION_WIDTH / 2, DeviceConstants.LAPTOP_DEFAULT_APPLICATION_HEIGHT * 2, DeviceConstants.LAPTOP_DEFAULT_APPLICATION_HEIGHT);
-            layout.addComponent(new ImageComponent(0, 0, layout.getWidth(), layout.getHeight(), ImageComponent.with(url)));
             String url = i == 0 ? "https://cdn.discordapp.com/attachments/447419834632896512/692016522578624592/unknown.png" : "https://pluspng.com/img-png/window-hd-png-open-window-png-400.png";
+            layout.addComponent(new ImageComponent(0, 0, layout.getWidth(), layout.getHeight(), ImageComponent.with(url)));
             Alphabet[] characters = Alphabet.getCharSequence(url.toUpperCase(Locale.ROOT));
             int xOffset = 0;
             int yOffset = 0;
