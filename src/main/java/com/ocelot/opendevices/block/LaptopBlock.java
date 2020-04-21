@@ -134,19 +134,20 @@ public class LaptopBlock extends DeviceBlock implements IWaterLoggable
 
     public static VoxelShape getShape(Direction direction, boolean open)
     {
-        return SHAPES[direction.getHorizontalIndex() + (open ? 4 : 0)];
+        return createShapes()[direction.getHorizontalIndex() + (open ? 4 : 0)];
     }
 
     private static VoxelShape[] createShapes()
     {
         VoxelShape[] shapes = new VoxelShape[8];
 
-        VoxelShapeHelper.Builder openBuilder = new VoxelShapeHelper.Builder().append(Block.makeCuboidShape(1, 3, 0, 15, 15, 2), Block.makeCuboidShape(1, 1, 0, 15, 4, 12));
-        VoxelShapeHelper.Builder closedBuilder = new VoxelShapeHelper.Builder().append(Block.makeCuboidShape(1, 3, 0, 15, 15, 2));
+        VoxelShapeHelper.Builder baseBuilder = new VoxelShapeHelper.Builder().append(Block.makeCuboidShape(1, 0, 3, 15, 2, 15));
+        VoxelShapeHelper.Builder backBuilder = new VoxelShapeHelper.Builder(baseBuilder).append(Block.makeCuboidShape(1, 0, 1, 15, 12, 4));
+
         for (int i = 0; i < shapes.length; i++)
         {
             Direction direction = Direction.byHorizontalIndex(i % 4);
-            shapes[i] = i >= 4 ? openBuilder.rotate(direction).build() : closedBuilder.rotate(direction).build();
+            shapes[i] = i >= 4 ? backBuilder.rotate(direction).build() : baseBuilder.rotate(direction).build();
         }
         return shapes;
     }

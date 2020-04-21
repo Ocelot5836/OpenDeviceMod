@@ -19,6 +19,7 @@ import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.core.EventHandler;
 import com.ocelot.opendevices.core.computer.process.TestProcess;
 import com.ocelot.opendevices.core.registry.*;
+import com.ocelot.opendevices.core.render.LaptopTileEntityRenderer;
 import com.ocelot.opendevices.init.*;
 import net.minecraft.block.Block;
 import net.minecraft.inventory.container.ContainerType;
@@ -35,6 +36,7 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -80,6 +82,7 @@ public class OpenDevices
     public OpenDevices()
     {
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
+        OpenDevicesConfig.init(ModLoadingContext.get());
         modBus.addListener(this::init);
         modBus.addListener(this::initClient);
         MinecraftForge.EVENT_BUS.register(this);
@@ -94,6 +97,8 @@ public class OpenDevices
 
     private void initClient(FMLClientSetupEvent event)
     {
+        LaptopTileEntityRenderer.addReloadListener();
+
         // TODO automatically use application instances when no custom renderer is applied
         ProcessInputRegistry.bindInputHandler(TestProcess.class, new ApplicationInputHandler<>());
         ProcessInputRegistry.bindWindowRenderer(TestProcess.class, new ApplicationWindowRenderer<>());

@@ -74,8 +74,16 @@
 
 	"gui.tag_filter.opendevices.devices.laptops": "Laptops",
 
+	"config.opendevices.client.laptop.drawLaptopScreens": "Draw Laptop Screens",
+	"config.opendevices.client.laptop.fadeToLaptopScreensaver": "Fade to Laptop Screen Saver",
+	"config.opendevices.client.laptop.laptopScreenResolution": "Laptop Screen Resolution",
+	"config.opendevices.client.laptop.laptopScreenRenderRange": "Laptop Screen Render Range",
+
 	"item.opendevices:crafting_guide.title": "Assembly Guide",
 	"item.opendevices:crafting_guide.landing": "Everything you need to know about creating components and assembling your first devices.",
 	"item.opendevices:laptop_manual.title": "Owner's Manual",
-	"item.opendevices:laptop_manual.landing": "Everything you need to know about the Laptop from recipes to usages."
+	"item.opendevices:laptop_manual.landing": "Everything you need to know about the Laptop from recipes to usages.",
+
+	"book.opendevices.laptop.name": "Owner's Manual",
+	"book.opendevices.laptop.landing_text": "Everything you need to know about the Laptop... and other devices that may or may not be added..."
 }

@@ -27,8 +27,9 @@ public class TestProcessLayoutSupplier implements WindowLayoutManager.LayoutProv
         for (int i = 0; i < 2; i++)
         {
             Layout layout = new ScrollableLayout(i * DeviceConstants.LAPTOP_DEFAULT_APPLICATION_WIDTH / 2f, 0, DeviceConstants.LAPTOP_DEFAULT_APPLICATION_WIDTH / 2, DeviceConstants.LAPTOP_DEFAULT_APPLICATION_HEIGHT * 2, DeviceConstants.LAPTOP_DEFAULT_APPLICATION_HEIGHT);
-            layout.addComponent(new ImageComponent(0, 0, layout.getWidth(), layout.getHeight(), ImageComponent.with(url)));
             String url = i == 0 ? "https://cdn.discordapp.com/attachments/447419834632896512/692016522578624592/unknown.png" : "https://pluspng.com/img-png/window-hd-png-open-window-png-400.png";
+            if(i == 0)
+            layout.addComponent(new ImageComponent(0, 0, layout.getWidth(), layout.getHeight(), ImageComponent.with(url)));
             Alphabet[] characters = Alphabet.getCharSequence(url.toUpperCase(Locale.ROOT));
             int xOffset = 0;
             int yOffset = 0;
@@ -42,6 +43,8 @@ public class TestProcessLayoutSupplier implements WindowLayoutManager.LayoutProv
                 layout.addComponent(new ImageComponent(xOffset, yOffset, character.getWidth(), character.getHeight(), ImageComponent.with(character)));
                 xOffset += character.getWidth();
             }
+            if(i == 1)
+                layout.addComponent(new ImageComponent(0, 0, layout.getWidth(), layout.getHeight(), ImageComponent.with(url)));
             //        SpinnerComponent spinner = new SpinnerComponent(64, 64);
             //        layout.addComponent(spinner);
             //        layout.addComponent(new TextComponent(0, 0, Minecraft.DEFAULT_FONT_RENDERER_NAME, new ItemStack(Blocks.DIAMOND_BLOCK).getTextComponent()).setClickListener((text, mouseX, mouseY, mouseButton) ->
