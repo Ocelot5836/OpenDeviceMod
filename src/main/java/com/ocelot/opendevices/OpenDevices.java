@@ -33,6 +33,7 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -77,6 +78,7 @@ public class OpenDevices
     public OpenDevices()
     {
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
+        OpenDevicesConfig.init(ModLoadingContext.get());
         modBus.addListener(this::init);
         modBus.addListener(this::initClient);
         MinecraftForge.EVENT_BUS.register(this);

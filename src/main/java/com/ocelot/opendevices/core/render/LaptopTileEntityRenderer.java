@@ -4,6 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.ocelot.opendevices.OpenDevices;
+import com.ocelot.opendevices.OpenDevicesConfig;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.computer.Computer;
 import com.ocelot.opendevices.block.DeviceBlock;
@@ -18,6 +19,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -35,6 +37,9 @@ import static org.lwjgl.opengl.GL11.*;
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = OpenDevices.MOD_ID)
 public class LaptopTileEntityRenderer extends TileEntityRenderer<LaptopTileEntity>
 {
+    public static final int MIN_RESOLUTION = 1;
+    public static final int MAX_RESOLUTION = 16;
+
     private static final Set<LaptopTileEntity> LAPTOP_SCREENS = new HashSet<>();
     private static final Vector3f NORMAL = new Vector3f();
     private static final Vector4f POSITION = new Vector4f();
@@ -45,29 +50,44 @@ public class LaptopTileEntityRenderer extends TileEntityRenderer<LaptopTileEntit
         super(rendererDispatcher);
     }
 
-    @SubscribeEvent
-    public static void delete(WorldEvent.Unload event)
+    private static void deleteFramebuffer()
     {
-        OpenDevices.LOGGER.debug("Deleting Laptop Render Cache");
-
         if (framebuffer != null)
         {
             framebuffer.deleteFramebuffer();
             framebuffer = null;
         }
+        LAPTOP_SCREENS.clear();
+    }
+
+    @SubscribeEvent
+    public static void delete(WorldEvent.Unload event)
+    {
+        OpenDevices.LOGGER.debug("Deleting Laptop Render Cache");
+        reload();
+    }
+
+    public static void reload()
+    {
+        if (!RenderSystem.isOnRenderThread())
+        {
+            RenderSystem.recordRenderCall(LaptopTileEntityRenderer::deleteFramebuffer);
+        }
+        else
+        {
+            deleteFramebuffer();
+        }
     }
 
     private static void renderLaptopScreen(Computer computer, MatrixStack matrixStack, Minecraft minecraft, BlockState state, float screenAngle, int combinedLight, float partialTicks)
     {
-        //         TODO fix screen rendering
         matrixStack.push();
         {
-            //TODO add a setting to change the scale
-            float scale = 2f;
+            int scale = MathHelper.clamp(OpenDevicesConfig.CLIENT.laptopScreenResolution.get(), MIN_RESOLUTION, MAX_RESOLUTION);
 
             if (framebuffer == null)
             {
-                framebuffer = new Framebuffer((int) (DeviceConstants.LAPTOP_SCREEN_WIDTH * scale), (int) (DeviceConstants.LAPTOP_SCREEN_HEIGHT * scale), true, Minecraft.IS_RUNNING_ON_MAC);
+                framebuffer = new Framebuffer(DeviceConstants.LAPTOP_SCREEN_WIDTH * scale, DeviceConstants.LAPTOP_SCREEN_HEIGHT * scale, true, Minecraft.IS_RUNNING_ON_MAC);
             }
 
             RenderSystem.disableLighting();
@@ -78,7 +98,7 @@ public class LaptopTileEntityRenderer extends TileEntityRenderer<LaptopTileEntit
             RenderSystem.matrixMode(GL_PROJECTION);
             RenderSystem.pushMatrix();
             RenderSystem.loadIdentity();
-            RenderSystem.ortho(0.0D, framebuffer.framebufferWidth / scale, framebuffer.framebufferHeight / scale, 0.0D, 0.3D, 20000.0D);
+            RenderSystem.ortho(0.0D, (float) framebuffer.framebufferWidth / (float) scale, (float) framebuffer.framebufferHeight / (float) scale, 0.0D, 0.3D, 20000.0D);
             RenderSystem.matrixMode(GL_MODELVIEW);
             RenderSystem.pushMatrix();
             RenderSystem.loadIdentity();
@@ -138,21 +158,21 @@ public class LaptopTileEntityRenderer extends TileEntityRenderer<LaptopTileEntit
         MatrixStack matrixStack = event.getMatrixStack();
         float partialTicks = event.getPartialTicks();
 
-        if (world == null)
-            return;
-
-        for (LaptopTileEntity te : LAPTOP_SCREENS)
+        if (world != null)
         {
-            float screenAngle = te.getScreenAngle(partialTicks);
-            if (screenAngle == 0)
-                continue;
-            Vec3d projectedView = minecraft.getRenderManager().info.getProjectedView();
-            BlockPos pos = te.getPos();
+            for (LaptopTileEntity te : LAPTOP_SCREENS)
+            {
+                float screenAngle = te.getScreenAngle(partialTicks);
+                if (screenAngle == 0)
+                    continue;
+                Vec3d projectedView = minecraft.getRenderManager().info.getProjectedView();
+                BlockPos pos = te.getPos();
 
-            matrixStack.push();
-            matrixStack.translate((double) pos.getX() - projectedView.getX(), (double) pos.getY() - projectedView.getY(), (double) pos.getZ() - projectedView.getZ());
-            renderLaptopScreen(te, matrixStack, minecraft, te.getBlockState(), screenAngle, WorldRenderer.getCombinedLight(world, te.getPos()), partialTicks);
-            matrixStack.pop();
+                matrixStack.push();
+                matrixStack.translate((double) pos.getX() - projectedView.getX(), (double) pos.getY() - projectedView.getY(), (double) pos.getZ() - projectedView.getZ());
+                renderLaptopScreen(te, matrixStack, minecraft, te.getBlockState(), screenAngle, WorldRenderer.getCombinedLight(world, te.getPos()), partialTicks);
+                matrixStack.pop();
+            }
         }
         LAPTOP_SCREENS.clear();
     }
@@ -160,8 +180,7 @@ public class LaptopTileEntityRenderer extends TileEntityRenderer<LaptopTileEntit
     @Override
     public void render(LaptopTileEntity te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay)
     {
-        // TODO add a config option to turn off screen rendering
-        if (te.getScreenAngle(partialTicks) != 0)
+        if (OpenDevicesConfig.CLIENT.drawLaptopScreens.get() && te.getScreenAngle(partialTicks) != 0)
             LAPTOP_SCREENS.add(te);
 
         Minecraft minecraft = Minecraft.getInstance();

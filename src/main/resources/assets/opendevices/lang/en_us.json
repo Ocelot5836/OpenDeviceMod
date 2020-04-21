@@ -36,6 +36,11 @@
 
 	"gui.tag_filter.opendevices.devices.laptops": "Laptops",
 
+	"config.opendevices.client.laptop.drawLaptopScreens": "Draw Laptop Screens",
+	"config.opendevices.client.laptop.fadeToLaptopScreensaver": "Fade to Laptop Screen Saver",
+	"config.opendevices.client.laptop.laptopScreenResolution": "Laptop Screen Resolution",
+	"config.opendevices.client.laptop.laptopScreenRenderRange": "Laptop Screen Render Range",
+
 	"book.opendevices.laptop.name": "Owner's Manual",
 	"book.opendevices.laptop.landing_text": "Everything you need to know about the Laptop... and other devices that may or may not be added..."
 }
