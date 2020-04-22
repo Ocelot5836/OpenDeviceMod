@@ -51,9 +51,9 @@ public class OpenDevicesConfig
     public static class Client
     {
         public final ForgeConfigSpec.BooleanValue drawLaptopScreens;
-        public final ForgeConfigSpec.BooleanValue fadeToLaptopScreensaver;
         public final ForgeConfigSpec.IntValue laptopScreenResolution;
         public final ForgeConfigSpec.IntValue laptopScreenSamples;
+        public final ForgeConfigSpec.DoubleValue laptopScreenScreensaverRange;
         public final ForgeConfigSpec.DoubleValue laptopScreenRenderRange;
 
         private Client(ForgeConfigSpec.Builder builder)
@@ -63,10 +63,6 @@ public class OpenDevicesConfig
                     .comment("Draws the contents of the Laptop into the world. May be laggy for older computers.")
                     .translation("config." + OpenDevices.MOD_ID + ".client.laptop.drawLaptopScreens")
                     .define("drawLaptopScreens", true);
-            this.fadeToLaptopScreensaver = builder
-                    .comment("Specifies whether or not the Screen Saver should fade in from the normal display or just pop in.")
-                    .translation("config." + OpenDevices.MOD_ID + ".client.laptop.fadeToLaptopScreensaver")
-                    .define("fadeToLaptopScreensaver", true);
             this.laptopScreenResolution = builder
                     .comment("Specifies the resolution of the Laptop screen in the world. Higher values cause more lag.")
                     .translation("config." + OpenDevices.MOD_ID + ".client.laptop.laptopScreenResolution")
@@ -75,10 +71,14 @@ public class OpenDevicesConfig
                     .comment("Specifies the amount of samples to use for Anti-Aliasing. Higher values cause more lag.")
                     .translation("config." + OpenDevices.MOD_ID + ".client.laptop.laptopScreenSamples")
                     .defineInRange("laptopScreenSamples", 1, LaptopTileEntityRenderer.MIN_SAMPLES, LaptopTileEntityRenderer.MAX_SAMPLES);
+            this.laptopScreenScreensaverRange = builder
+                    .comment("Specifies how many blocks away laptop screens should render screensavers for.")
+                    .translation("config." + OpenDevices.MOD_ID + ".client.laptop.laptopScreenScreensaverRange")
+                    .defineInRange("laptopScreenScreensaverRange", 3.0, 0.0, 64.0);
             this.laptopScreenRenderRange = builder
                     .comment("Specifies how many blocks away laptop screens should render for.")
                     .translation("config." + OpenDevices.MOD_ID + ".client.laptop.laptopScreenRenderRange")
-                    .defineInRange("laptopScreenRenderRange", 8.0, 2.0, 64.0);
+                    .defineInRange("laptopScreenRenderRange", 10.0, 0.0, 64.0);
             builder.pop();
         }
     }
