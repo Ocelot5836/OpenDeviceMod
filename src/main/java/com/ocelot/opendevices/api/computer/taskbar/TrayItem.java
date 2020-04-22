@@ -1,10 +1,8 @@
 package com.ocelot.opendevices.api.computer.taskbar;
 
-import com.ocelot.opendevices.api.application.ApplicationManager;
-import com.ocelot.opendevices.api.component.Layout;
+import com.ocelot.opendevices.api.computer.application.ApplicationManager;
 import net.minecraft.util.ResourceLocation;
 
-import javax.annotation.Nullable;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 import java.util.UUID;

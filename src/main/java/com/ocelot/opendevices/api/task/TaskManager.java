@@ -1,6 +1,6 @@
 package com.ocelot.opendevices.api.task;
 
-import com.ocelot.opendevices.api.DeviceRegistries;
+import com.ocelot.opendevices.api.registry.DeviceRegistries;
 import com.ocelot.opendevices.core.registry.TaskRegistryEntry;
 import com.ocelot.opendevices.init.DeviceMessages;
 import com.ocelot.opendevices.network.MessageRequest;

@@ -1,6 +1,6 @@
 package com.ocelot.opendevices.core.registry;
 
-import com.ocelot.opendevices.api.application.Application;
+import com.ocelot.opendevices.api.computer.application.Application;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
 public class ApplicationRegistryEntry extends ForgeRegistryEntry<ApplicationRegistryEntry>

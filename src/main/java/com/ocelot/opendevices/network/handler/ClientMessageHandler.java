@@ -1,8 +1,7 @@
 package com.ocelot.opendevices.network.handler;
 
-import com.ocelot.opendevices.api.DeviceRegistries;
+import com.ocelot.opendevices.api.registry.DeviceRegistries;
 import com.ocelot.opendevices.api.task.Task;
-import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.core.LaptopTileEntity;
 import com.ocelot.opendevices.core.render.LaptopScreen;
 import com.ocelot.opendevices.init.DeviceMessages;

@@ -1,15 +1,15 @@
 package com.ocelot.opendevices;
 
 import com.mrcrayfish.filters.Filters;
-import com.ocelot.opendevices.api.DeviceRegistries;
+import com.ocelot.opendevices.api.registry.DeviceRegistries;
 import com.ocelot.opendevices.api.IconManager;
-import com.ocelot.opendevices.api.application.Application;
-import com.ocelot.opendevices.api.application.ApplicationManager;
+import com.ocelot.opendevices.api.computer.application.Application;
+import com.ocelot.opendevices.api.computer.application.ApplicationManager;
 import com.ocelot.opendevices.api.computer.Computer;
 import com.ocelot.opendevices.api.computer.settings.LaptopSetting;
 import com.ocelot.opendevices.api.computer.taskbar.TrayItem;
-import com.ocelot.opendevices.api.device.ApplicationInputHandler;
-import com.ocelot.opendevices.api.device.ApplicationWindowRenderer;
+import com.ocelot.opendevices.api.computer.application.ApplicationInputHandler;
+import com.ocelot.opendevices.api.computer.application.ApplicationWindowRenderer;
 import com.ocelot.opendevices.api.device.DeviceSerializer;
 import com.ocelot.opendevices.api.device.process.DeviceProcess;
 import com.ocelot.opendevices.api.device.process.ProcessInputRegistry;

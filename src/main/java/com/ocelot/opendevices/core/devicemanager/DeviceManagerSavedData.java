@@ -1,7 +1,7 @@
 package com.ocelot.opendevices.core.devicemanager;
 
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.api.DeviceRegistries;
+import com.ocelot.opendevices.api.registry.DeviceRegistries;
 import com.ocelot.opendevices.api.device.Device;
 import com.ocelot.opendevices.api.device.DeviceManager;
 import com.ocelot.opendevices.api.device.DeviceSerializer;

@@ -1,6 +1,6 @@
 package com.ocelot.opendevices.core.computer;
 
-import com.ocelot.opendevices.api.application.AppInfo;
+import com.ocelot.opendevices.api.computer.application.AppInfo;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 

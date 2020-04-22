@@ -1,9 +1,9 @@
 package com.ocelot.opendevices.init;
 
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.network.MessageResponse;
 import com.ocelot.opendevices.network.MessageOpenGui;
 import com.ocelot.opendevices.network.MessageRequest;
+import com.ocelot.opendevices.network.MessageResponse;
 import com.ocelot.opendevices.network.handler.ClientMessageHandler;
 import com.ocelot.opendevices.network.handler.MessageHandler;
 import com.ocelot.opendevices.network.handler.ServerMessageHandler;
@@ -31,8 +31,7 @@ public class DeviceMessages
         registerMessage(MessageResponse.class, MessageResponse::encode, MessageResponse::decode, (msg, ctx) -> getHandler(ctx).handleResponseMessage(msg, ctx));
     }
 
-    private static <MSG> void registerMessage
-            (Class<MSG> messageType, BiConsumer<MSG, PacketBuffer> encoder, Function<PacketBuffer, MSG> decoder, BiConsumer<MSG, Supplier<NetworkEvent.Context>> messageConsumer)
+    private static <MSG> void registerMessage(Class<MSG> messageType, BiConsumer<MSG, PacketBuffer> encoder, Function<PacketBuffer, MSG> decoder, BiConsumer<MSG, Supplier<NetworkEvent.Context>> messageConsumer)
     {
         INSTANCE.registerMessage(index++, messageType, encoder, decoder, messageConsumer);
     }

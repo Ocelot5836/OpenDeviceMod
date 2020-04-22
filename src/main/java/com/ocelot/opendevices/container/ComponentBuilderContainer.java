@@ -1,5 +1,8 @@
 package com.ocelot.opendevices.container;
 
+import com.mojang.datafixers.util.Pair;
+import com.ocelot.opendevices.api.DeviceTags;
+import com.ocelot.opendevices.api.IconManager;
 import com.ocelot.opendevices.api.registry.ComponentBuilderBoardLayout;
 import com.ocelot.opendevices.crafting.ComponentBuilderRecipe;
 import com.ocelot.opendevices.init.*;
@@ -15,9 +18,11 @@ import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.server.SSetSlotPacket;
 import net.minecraft.util.IWorldPosCallable;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
@@ -42,8 +47,8 @@ public class ComponentBuilderContainer extends Container
             super.markDirty();
         }
     };
-    private IInventory craftingArea = new CraftingInventory(this, 3, 3);
-    private CraftResultInventory craftingResult = new CraftResultInventory()
+    private final IInventory craftingArea = new CraftingInventory(this, 3, 3);
+    private final CraftResultInventory craftingResult = new CraftResultInventory()
     {
         @Override
         public void markDirty()
@@ -91,6 +96,13 @@ public class ComponentBuilderContainer extends Container
             public boolean isItemValid(ItemStack stack)
             {
                 return stack.getItem().isIn(DeviceTags.CIRCUIT_BOARDS);
+            }
+
+            @Nullable
+            @Override
+            public Pair<ResourceLocation, ResourceLocation> func_225517_c_()
+            {
+                return Pair.of(IconManager.LOCATION_OPENDEVICES_GUI_ATLAS, IconManager.EMPTY_CIRCUIT_BOARD_SLOT);
             }
         });
 

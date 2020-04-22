@@ -1,4 +1,4 @@
-package com.ocelot.opendevices.api.application;
+package com.ocelot.opendevices.api.computer.application;
 
 import com.ocelot.opendevices.core.computer.AppInfoImpl;
 import net.minecraft.util.ResourceLocation;

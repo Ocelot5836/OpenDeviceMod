@@ -1,6 +1,6 @@
 package com.ocelot.opendevices.api.computer.taskbar;
 
-import com.ocelot.opendevices.api.application.ApplicationManager;
+import com.ocelot.opendevices.api.computer.application.ApplicationManager;
 import com.ocelot.opendevices.api.computer.Computer;
 import com.ocelot.opendevices.core.computer.TrayItemInfoImpl;
 import net.minecraft.util.ResourceLocation;

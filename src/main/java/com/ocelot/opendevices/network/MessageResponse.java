@@ -1,6 +1,6 @@
 package com.ocelot.opendevices.network;
 
-import com.ocelot.opendevices.api.DeviceRegistries;
+import com.ocelot.opendevices.api.registry.DeviceRegistries;
 import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.api.task.TaskManager;
 import net.minecraft.nbt.CompoundNBT;

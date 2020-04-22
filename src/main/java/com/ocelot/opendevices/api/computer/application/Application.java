@@ -1,13 +1,10 @@
-package com.ocelot.opendevices.api.application;
+package com.ocelot.opendevices.api.computer.application;
 
 import com.ocelot.opendevices.api.component.Layout;
-import com.ocelot.opendevices.api.computer.Computer;
 import com.ocelot.opendevices.api.device.Device;
 import com.ocelot.opendevices.api.device.process.DeviceProcess;
 
 import javax.annotation.Nullable;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Target;
 import java.util.UUID;
 
 /**

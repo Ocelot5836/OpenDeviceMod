@@ -59,15 +59,12 @@ public interface DeviceManager
      */
     static DeviceManager get(World world)
     {
-        if (world instanceof ServerWorld)
-        {
-            DeviceManagerSavedData deviceManager = ((ServerWorld) world).getServer().getWorld(DimensionType.OVERWORLD).getSavedData().getOrCreate(DeviceManagerSavedData::new, DeviceManagerSavedData.NAME);
-            deviceManager.setWorld((ServerWorld) world);
-            return deviceManager;
-        }
-        else
-        {
+        if (world.isRemote())
             return ClientDeviceManager.INSTANCE;
-        }
+        if (!(world instanceof ServerWorld))
+            throw new IllegalStateException("Server side world is not an instance of ServerWorld?");
+        DeviceManagerSavedData deviceManager = (((ServerWorld) world).getSavedData()).getOrCreate(DeviceManagerSavedData::new, DeviceManagerSavedData.NAME);
+        deviceManager.setWorld((ServerWorld) world);
+        return deviceManager;
     }
 }

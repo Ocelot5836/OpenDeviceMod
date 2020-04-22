@@ -1,7 +1,14 @@
 package com.ocelot.opendevices.api.registry;
 
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistryEntry;
+
+import java.lang.reflect.Type;
 
 public class ComponentBuilderBoardLayout extends ForgeRegistryEntry<ComponentBuilderBoardLayout>
 {
@@ -15,12 +22,14 @@ public class ComponentBuilderBoardLayout extends ForgeRegistryEntry<ComponentBui
     public static final int SLOT_7 = 0x80;
     public static final int SLOT_8 = 0x100;
 
-    private ResourceLocation textureLocation;
-    private int slotsUsed;
+    private final ResourceLocation textureLocation;
+    private final ItemStack icon;
+    private final int slotsUsed;
 
-    public ComponentBuilderBoardLayout(ResourceLocation textureLocation, int slotsUsed)
+    public ComponentBuilderBoardLayout(ResourceLocation textureLocation, ItemStack icon, int slotsUsed)
     {
         this.textureLocation = textureLocation;
+        this.icon = icon;
         this.slotsUsed = slotsUsed;
     }
 
@@ -29,8 +38,22 @@ public class ComponentBuilderBoardLayout extends ForgeRegistryEntry<ComponentBui
         return textureLocation;
     }
 
+    public ItemStack getIcon()
+    {
+        return icon;
+    }
+
     public boolean hasSlot(int slot)
     {
         return (this.slotsUsed & slot) > 0;
+    }
+
+    public static class Deserializer implements JsonDeserializer<ComponentBuilderBoardLayout>{
+        @Override
+        public ComponentBuilderBoardLayout deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
+        {
+
+            return null;
+        }
     }
 }

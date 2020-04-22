@@ -2,8 +2,8 @@ package com.ocelot.opendevices.core.computer.process;
 
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.DeviceTrayItems;
-import com.ocelot.opendevices.api.application.AppInfo;
-import com.ocelot.opendevices.api.application.Application;
+import com.ocelot.opendevices.api.computer.application.AppInfo;
+import com.ocelot.opendevices.api.computer.application.Application;
 import com.ocelot.opendevices.api.component.Layout;
 import com.ocelot.opendevices.api.computer.Computer;
 import com.ocelot.opendevices.api.computer.taskbar.TrayItemHandle;

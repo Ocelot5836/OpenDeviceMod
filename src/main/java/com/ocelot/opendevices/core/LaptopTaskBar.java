@@ -1,8 +1,7 @@
 package com.ocelot.opendevices.core;
 
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.api.DeviceRegistries;
-import com.ocelot.opendevices.api.LaptopSettings;
+import com.ocelot.opendevices.api.registry.DeviceRegistries;
 import com.ocelot.opendevices.api.computer.taskbar.TaskBar;
 import com.ocelot.opendevices.api.computer.taskbar.TaskbarIcon;
 import com.ocelot.opendevices.api.computer.taskbar.TaskbarIconType;

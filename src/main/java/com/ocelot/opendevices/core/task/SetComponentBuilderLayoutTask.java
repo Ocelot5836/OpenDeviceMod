@@ -1,7 +1,7 @@
 package com.ocelot.opendevices.core.task;
 
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.api.DeviceRegistries;
+import com.ocelot.opendevices.api.registry.DeviceRegistries;
 import com.ocelot.opendevices.api.registry.ComponentBuilderBoardLayout;
 import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.container.ComponentBuilderContainer;

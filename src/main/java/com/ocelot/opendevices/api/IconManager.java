@@ -2,6 +2,7 @@ package com.ocelot.opendevices.api;
 
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.registry.ComponentBuilderBoardLayout;
+import com.ocelot.opendevices.api.registry.DeviceRegistries;
 import com.ocelot.opendevices.core.registry.ComponentBuilderBoardTexture;
 import com.ocelot.opendevices.core.registry.WindowIconRegistryEntry;
 import com.ocelot.opendevices.core.render.sprite.OpenDevicesSpriteUploader;
@@ -22,7 +23,7 @@ import javax.annotation.Nullable;
 import java.util.Objects;
 
 /**
- * <p>Manages the texture map containing all textures used internally.</p>
+ * <p>Manages the texture map containing all textures used.</p>
  *
  * @author Ocelot
  */
@@ -30,6 +31,7 @@ public class IconManager
 {
     public static final ResourceLocation LOCATION_OPENDEVICES_GUI_ATLAS = new ResourceLocation(OpenDevices.MOD_ID, "atlas/textures.png");
     public static final ResourceLocation DEFAULT_WINDOW_ICON = new ResourceLocation(OpenDevices.MOD_ID, "app/icon/default");
+    public static final ResourceLocation EMPTY_CIRCUIT_BOARD_SLOT = new ResourceLocation(OpenDevices.MOD_ID, "item/empty_circuit_board_slot.png");
 
     @OnlyIn(Dist.CLIENT)
     private static OpenDevicesSpriteUploader openDevicesSpriteUploader;
@@ -38,7 +40,8 @@ public class IconManager
 
     private static void registerSprites(OpenDevicesSpriteUploader uploader)
     {
-        uploader.registerSprite(IconManager.DEFAULT_WINDOW_ICON);
+        uploader.registerSprite(DEFAULT_WINDOW_ICON);
+        uploader.registerSprite(EMPTY_CIRCUIT_BOARD_SLOT);
         DeviceRegistries.WINDOW_ICONS.getValues().stream().map(WindowIconRegistryEntry::getLocation).filter(Objects::nonNull).distinct().forEach(uploader::registerSprite);
         DeviceRegistries.COMPONENT_BUILDER_BOARD_TEXTURES.getValues().stream().map(ComponentBuilderBoardTexture::getTextureLocation).filter(Objects::nonNull).distinct().forEach(uploader::registerSprite);
         DeviceRegistries.COMPONENT_BUILDER_BOARD_LAYOUTS.getValues().stream().map(ComponentBuilderBoardLayout::getTextureLocation).filter(Objects::nonNull).distinct().forEach(uploader::registerSprite);

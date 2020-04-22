@@ -11,6 +11,7 @@ import java.util.function.Supplier;
  *
  * @author Ocelot
  */
+@Deprecated
 public class DeviceDesktopBackgrounds
 {
     public static final Supplier<LocalDesktopBackground> DEFAULT = () -> new LaptopLocalDesktopBackground(DeviceConstants.DEFAULT_BACKGROUND_LOCATION, 0, 0, DeviceConstants.LAPTOP_GUI_WIDTH / 2f, DeviceConstants.LAPTOP_GUI_HEIGHT / 2f, DeviceConstants.LAPTOP_GUI_WIDTH / 2, DeviceConstants.LAPTOP_GUI_HEIGHT / 2, ImageFit.STRETCH);

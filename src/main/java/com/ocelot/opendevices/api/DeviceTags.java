@@ -1,4 +1,4 @@
-package com.ocelot.opendevices.init;
+package com.ocelot.opendevices.api;
 
 import com.ocelot.opendevices.OpenDevices;
 import net.minecraft.item.Item;
@@ -6,6 +6,11 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.Tag;
 import net.minecraft.util.ResourceLocation;
 
+/**
+ * <p>Contains all item and block tags used by the mod.</p>
+ *
+ * @author Ocelot
+ */
 public class DeviceTags
 {
     public static final Tag<Item> LAPTOPS = makeWrapperTag("devices/laptops");

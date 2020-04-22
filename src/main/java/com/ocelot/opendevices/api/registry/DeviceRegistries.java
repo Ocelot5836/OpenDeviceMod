@@ -1,10 +1,9 @@
-package com.ocelot.opendevices.api;
+package com.ocelot.opendevices.api.registry;
 
-import com.ocelot.opendevices.api.application.Application;
+import com.ocelot.opendevices.api.computer.application.Application;
 import com.ocelot.opendevices.api.computer.settings.LaptopSetting;
 import com.ocelot.opendevices.api.device.DeviceSerializer;
 import com.ocelot.opendevices.api.device.process.DeviceProcess;
-import com.ocelot.opendevices.api.registry.ComponentBuilderBoardLayout;
 import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.core.RegistryCache;
 import com.ocelot.opendevices.core.registry.*;

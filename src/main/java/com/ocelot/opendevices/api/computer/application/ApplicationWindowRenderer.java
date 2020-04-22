@@ -1,7 +1,6 @@
-package com.ocelot.opendevices.api.device;
+package com.ocelot.opendevices.api.computer.application;
 
 import com.ocelot.opendevices.api.DeviceConstants;
-import com.ocelot.opendevices.api.application.Application;
 import com.ocelot.opendevices.api.component.Layout;
 import com.ocelot.opendevices.api.computer.Computer;
 import com.ocelot.opendevices.api.computer.window.Window;

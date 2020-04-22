@@ -1,8 +1,8 @@
-package com.ocelot.opendevices.api.application;
+package com.ocelot.opendevices.api.computer.application;
 
 import com.google.gson.*;
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.api.DeviceRegistries;
+import com.ocelot.opendevices.api.registry.DeviceRegistries;
 import com.ocelot.opendevices.api.computer.Computer;
 import com.ocelot.opendevices.api.computer.taskbar.TrayItemInfo;
 import com.ocelot.opendevices.core.computer.AppInfoImpl;
@@ -28,9 +28,7 @@ import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 /**
  * <p>Manages the loading and parsing of {@link AppInfo} and {@link TrayItemInfo} JSONs.</p>
@@ -38,6 +36,7 @@ import java.util.function.Supplier;
  * @author Ocelot
  * @see AppInfo
  */
+@SuppressWarnings("unused")
 @Mod.EventBusSubscriber(modid = OpenDevices.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ApplicationManager
 {
