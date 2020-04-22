@@ -9,10 +9,12 @@ import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.computer.Computer;
 import com.ocelot.opendevices.block.DeviceBlock;
 import com.ocelot.opendevices.core.LaptopTileEntity;
-import io.github.ocelot.client.framebuffer.AdvancedFbo;
+import io.github.ocelot.client.FontHelper;
 import io.github.ocelot.client.ScissorHelper;
+import io.github.ocelot.client.framebuffer.AdvancedFbo;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
@@ -95,9 +97,9 @@ public class LaptopTileEntityRenderer extends TileEntityRenderer<LaptopTileEntit
 
     private static void initFramebuffers(Minecraft minecraft, int scale)
     {
+        int samples = MathHelper.clamp(OpenDevicesConfig.CLIENT.laptopScreenSamples.get(), MIN_SAMPLES, MAX_SAMPLES);
         if (msFramebuffer == null)
         {
-            int samples = MathHelper.clamp(OpenDevicesConfig.CLIENT.laptopScreenSamples.get(), MIN_SAMPLES, MAX_SAMPLES);
             msFramebuffer = new AdvancedFbo.Builder(DeviceConstants.LAPTOP_SCREEN_WIDTH * scale, DeviceConstants.LAPTOP_SCREEN_HEIGHT * scale).addColorRenderBuffer(samples).setDepthRenderBuffer(samples).build();
             msFramebuffer.create();
         }
@@ -114,8 +116,10 @@ public class LaptopTileEntityRenderer extends TileEntityRenderer<LaptopTileEntit
         }
     }
 
-    private static void renderLaptopScreen(Computer computer, MatrixStack matrixStack, Minecraft minecraft, BlockState state, float screenAngle, int combinedLight, float partialTicks)
+    private static void renderLaptopScreen(Computer computer, MatrixStack matrixStack, Minecraft minecraft, BlockState state, double distance, float screenAngle, int combinedLight, float partialTicks)
     {
+        if(distance >= OpenDevicesConfig.CLIENT.laptopScreenRenderRange.get() * OpenDevicesConfig.CLIENT.laptopScreenRenderRange.get())
+            return;
         matrixStack.push();
         {
             int scale = MathHelper.clamp(OpenDevicesConfig.CLIENT.laptopScreenResolution.get(), MIN_RESOLUTION, MAX_RESOLUTION);
@@ -141,9 +145,28 @@ public class LaptopTileEntityRenderer extends TileEntityRenderer<LaptopTileEntit
 
             {
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-                RenderSystem.color4f(1, 1, 1, 1);
-                // TODO render something instead of the laptop when too far away (screensaver maybe?)
-                LaptopRenderer.render(computer, minecraft, minecraft.fontRenderer, 0, 0, DeviceConstants.LAPTOP_SCREEN_WIDTH, DeviceConstants.LAPTOP_SCREEN_HEIGHT, -Integer.MAX_VALUE, -Integer.MAX_VALUE, partialTicks);
+                if (distance >= OpenDevicesConfig.CLIENT.laptopScreenScreensaverRange.get() * OpenDevicesConfig.CLIENT.laptopScreenScreensaverRange.get())
+                {
+                    FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;// Minecraft.getInstance().getFontResourceManager().getFontRenderer(Minecraft.standardGalacticFontRenderer);
+                    if (fontRenderer != null && Minecraft.getInstance().player != null)
+                    {
+                        String text = Minecraft.getInstance().player.getDisplayName().getFormattedText();
+                        float textWidth = fontRenderer.getStringWidth(text);
+                        float textScale = (float) msFramebuffer.getWidth() / textWidth;
+                        RenderSystem.pushMatrix();
+                        RenderSystem.translatef(0, msFramebuffer.getHeight() / 2f, 0);
+                        RenderSystem.scalef(textScale, textScale, 1);
+                        RenderSystem.translatef(textWidth / 2, -fontRenderer.FONT_HEIGHT / 2f, 0);
+                        RenderSystem.rotatef((float) (Math.abs(Math.sin((Minecraft.getInstance().player.world.getGameTime() + partialTicks) / 12f)))*90, 0, 1, 0);
+                        RenderSystem.translatef(-textWidth / 2, 0, 0);
+                        FontHelper.drawString(fontRenderer, text, 0, 0, 0xffffffff, false);
+                        RenderSystem.popMatrix();
+                    }
+                }
+                else
+                {
+                    LaptopRenderer.render(computer, minecraft, minecraft.fontRenderer, 0, 0, DeviceConstants.LAPTOP_SCREEN_WIDTH, DeviceConstants.LAPTOP_SCREEN_HEIGHT, -Integer.MAX_VALUE, -Integer.MAX_VALUE, partialTicks);
+                }
                 Minecraft.getInstance().getRenderTypeBuffers().getBufferSource().finish();
             }
 
@@ -206,7 +229,7 @@ public class LaptopTileEntityRenderer extends TileEntityRenderer<LaptopTileEntit
 
                 matrixStack.push();
                 matrixStack.translate((double) pos.getX() - projectedView.getX(), (double) pos.getY() - projectedView.getY(), (double) pos.getZ() - projectedView.getZ());
-                renderLaptopScreen(te, matrixStack, minecraft, te.getBlockState(), screenAngle, WorldRenderer.getCombinedLight(world, te.getPos()), partialTicks);
+                renderLaptopScreen(te, matrixStack, minecraft, te.getBlockState(), pos.distanceSq(projectedView.getX(), projectedView.getY(), projectedView.getZ(), true), screenAngle, WorldRenderer.getCombinedLight(world, te.getPos()), partialTicks);
                 matrixStack.pop();
             }
         }
