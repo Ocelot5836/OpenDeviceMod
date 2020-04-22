@@ -1,6 +1,7 @@
 package com.ocelot.opendevices.core.task;
 
 import com.ocelot.opendevices.OpenDevices;
+import com.ocelot.opendevices.api.crafting.ComponentBuilderLayoutManager;
 import com.ocelot.opendevices.api.registry.DeviceRegistries;
 import com.ocelot.opendevices.api.crafting.ComponentBuilderLayout;
 import com.ocelot.opendevices.api.task.Task;
@@ -31,16 +32,16 @@ public class SetComponentBuilderLayoutTask extends Task
     public void prepareRequest(CompoundNBT nbt)
     {
         nbt.putInt("windowId", this.windowId);
-        nbt.putString("layout", String.valueOf(DeviceRegistries.COMPONENT_BUILDER_BOARD_LAYOUTS.getKey(this.layout)));
+        nbt.putString("layout", String.valueOf(this.layout.getTextureLocation()));
     }
 
     @Override
     public void processRequest(CompoundNBT nbt, World world, PlayerEntity player)
     {
         this.windowId = nbt.getInt("windowId");
-        this.layout = DeviceRegistries.COMPONENT_BUILDER_BOARD_LAYOUTS.getValue(new ResourceLocation(nbt.getString("layout")));
+        this.layout = ComponentBuilderLayoutManager.get(world).getLayout(new ResourceLocation(nbt.getString("layout")));
 
-        if (player.openContainer instanceof ComponentBuilderContainer && player.openContainer.windowId == this.windowId)
+        if (player.openContainer instanceof ComponentBuilderContainer && player.openContainer.windowId == this.windowId && this.layout != null)
         {
             ((ComponentBuilderContainer) player.openContainer).setLayout(this.layout);
             this.setSuccessful();

@@ -1,16 +1,19 @@
 package com.ocelot.opendevices.api.util;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import io.github.ocelot.client.ScissorHelper;
 import io.github.ocelot.client.ShapeRenderer;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.ForgeHooksClient;
+import net.minecraftforge.resource.IResourceType;
+import net.minecraftforge.resource.ReloadRequirements;
+import net.minecraftforge.resource.SelectiveReloadStateHandler;
+import net.minecraftforge.resource.VanillaResourceType;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
@@ -223,5 +226,15 @@ public class RenderUtil
         if (components == GL_RGBA)
             return 4;
         return 0;
+    }
+
+    /**
+     * Same as {@link ForgeHooksClient#refreshResources(Minecraft, VanillaResourceType...)} but allows for {@link IResourceType} to be used.
+     */
+    public static void refreshResources(Minecraft mc, IResourceType... types)
+    {
+        SelectiveReloadStateHandler.INSTANCE.beginReload(ReloadRequirements.include(types));
+        mc.reloadResources();
+        SelectiveReloadStateHandler.INSTANCE.endReload();
     }
 }

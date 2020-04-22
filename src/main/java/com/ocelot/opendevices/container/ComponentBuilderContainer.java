@@ -1,8 +1,6 @@
 package com.ocelot.opendevices.container;
 
-import com.mojang.datafixers.util.Pair;
 import com.ocelot.opendevices.api.DeviceTags;
-import com.ocelot.opendevices.api.IconManager;
 import com.ocelot.opendevices.api.crafting.ComponentBuilderLayout;
 import com.ocelot.opendevices.crafting.ComponentBuilderRecipe;
 import com.ocelot.opendevices.init.*;
@@ -18,14 +16,13 @@ import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.server.SSetSlotPacket;
 import net.minecraft.util.IWorldPosCallable;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvents;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
-import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 public class ComponentBuilderContainer extends Container
 {
@@ -97,13 +94,6 @@ public class ComponentBuilderContainer extends Container
             {
                 return stack.getItem().isIn(DeviceTags.CIRCUIT_BOARDS);
             }
-
-            @Nullable
-            @Override
-            public Pair<ResourceLocation, ResourceLocation> func_225517_c_()
-            {
-                return Pair.of(IconManager.LOCATION_OPENDEVICES_GUI_ATLAS, IconManager.EMPTY_CIRCUIT_BOARD_SLOT);
-            }
         });
 
         this.addSlot(new Slot(this.inputArea, 1, 146, 18)
@@ -166,7 +156,7 @@ public class ComponentBuilderContainer extends Container
                 stack.onCrafting(player.world, player, this.removeCount);
                 ComponentBuilderRecipe recipe = craftingResult.getRecipeUsed() instanceof ComponentBuilderRecipe ? ((ComponentBuilderRecipe) craftingResult.getRecipeUsed()) : null;
 
-                if (recipe != null && canCraft(recipe))
+                if (recipe != null && canCraft(player.world, recipe))
                 {
                     if (!player.world.isRemote())
                     {
@@ -216,7 +206,7 @@ public class ComponentBuilderContainer extends Container
         this.layout = layout;
     }
 
-    private static void updateRecipe(int windowId, World world, PlayerEntity player, IInventory craftingArea, CraftResultInventory resultInventory, Function<ComponentBuilderRecipe, Boolean> canCraft)
+    private static void updateRecipe(int windowId, World world, PlayerEntity player, IInventory craftingArea, CraftResultInventory resultInventory, BiFunction<World, ComponentBuilderRecipe, Boolean> canCraft)
     {
         resultInventory.setRecipeUsed(null);
         ServerPlayerEntity serverplayerentity = (ServerPlayerEntity) player;
@@ -225,7 +215,7 @@ public class ComponentBuilderContainer extends Container
         if (optional.isPresent())
         {
             ComponentBuilderRecipe recipe = optional.get();
-            if (canCraft.apply(recipe) && resultInventory.canUseRecipe(world, serverplayerentity, recipe))
+            if (canCraft.apply(world, recipe) && resultInventory.canUseRecipe(world, serverplayerentity, recipe))
             {
                 itemstack = recipe.getCraftingResult(craftingArea);
                 resultInventory.setRecipeUsed(recipe);
@@ -245,12 +235,12 @@ public class ComponentBuilderContainer extends Container
         this.posCallable.consume((world, pos) -> updateRecipe(this.windowId, world, this.player, this.craftingArea, this.craftingResult, this::canCraft));
     }
 
-    private boolean canCraft(ComponentBuilderRecipe recipe)
+    private boolean canCraft(IWorld world, ComponentBuilderRecipe recipe)
     {
         ItemStack circuitBoardStack = this.inputArea.getStackInSlot(0);
         ItemStack solderIronStack = this.inputArea.getStackInSlot(1);
         ItemStack solderStack = this.inputArea.getStackInSlot(2);
-        return recipe.getLayout() == this.layout && recipe.getRecipeInput().test(circuitBoardStack) && (this.player.isCreative() || solderIronStack.getItem() == DeviceItems.SOLDER_IRON && solderStack.getItem() == DeviceItems.SOLDER && solderStack.getCount() >= recipe.getSolderAmount());
+        return recipe.getLayout(world) == this.layout && recipe.getRecipeInput().test(circuitBoardStack) && (this.player.isCreative() || solderIronStack.getItem() == DeviceItems.SOLDER_IRON && solderStack.getItem() == DeviceItems.SOLDER && solderStack.getCount() >= recipe.getSolderAmount());
     }
 
     @Override

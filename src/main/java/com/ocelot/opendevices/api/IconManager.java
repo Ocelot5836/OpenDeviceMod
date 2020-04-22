@@ -18,9 +18,11 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.resource.SelectiveReloadStateHandler;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * <p>Manages the texture map containing all textures used.</p>
@@ -31,20 +33,19 @@ public class IconManager
 {
     public static final ResourceLocation LOCATION_OPENDEVICES_GUI_ATLAS = new ResourceLocation(OpenDevices.MOD_ID, "atlas/textures.png");
     public static final ResourceLocation DEFAULT_WINDOW_ICON = new ResourceLocation(OpenDevices.MOD_ID, "app/icon/default");
-    public static final ResourceLocation EMPTY_CIRCUIT_BOARD_SLOT = new ResourceLocation(OpenDevices.MOD_ID, "item/empty_circuit_board_slot.png");
 
     @OnlyIn(Dist.CLIENT)
     private static OpenDevicesSpriteUploader openDevicesSpriteUploader;
 
     private IconManager() {}
 
-    private static void registerSprites(OpenDevicesSpriteUploader uploader)
+    private static void registerSprites(IResourceManager resourceManager, OpenDevicesSpriteUploader uploader)
     {
         uploader.registerSprite(DEFAULT_WINDOW_ICON);
-        uploader.registerSprite(EMPTY_CIRCUIT_BOARD_SLOT);
         DeviceRegistries.WINDOW_ICONS.getValues().stream().map(WindowIconRegistryEntry::getLocation).filter(Objects::nonNull).distinct().forEach(uploader::registerSprite);
         DeviceRegistries.COMPONENT_BUILDER_BOARD_TEXTURES.getValues().stream().map(ComponentBuilderBoardTexture::getTextureLocation).filter(Objects::nonNull).distinct().forEach(uploader::registerSprite);
-        DeviceRegistries.COMPONENT_BUILDER_BOARD_LAYOUTS.getValues().stream().map(ComponentBuilderLayout::getTextureLocation).filter(Objects::nonNull).distinct().forEach(uploader::registerSprite);
+        for (ResourceLocation location : resourceManager.getAllResourceLocations("textures/component_builder_layouts", s -> s.endsWith(".png")))
+            uploader.registerSprite(location);
     }
 
     /**
@@ -57,11 +58,12 @@ public class IconManager
         {
             Minecraft minecraft = Minecraft.getInstance();
             OpenDevicesSpriteUploader spriteUploader = new OpenDevicesSpriteUploader(minecraft.textureManager);
-            registerSprites(spriteUploader);
             IResourceManager resourceManager = minecraft.getResourceManager();
+            registerSprites(resourceManager, spriteUploader);
             if (resourceManager instanceof IReloadableResourceManager)
             {
                 ((IReloadableResourceManager) resourceManager).addReloadListener(spriteUploader);
+                ((IReloadableResourceManager) resourceManager).addReloadListener((stage, resourceManager1, preparationsProfiler, reloadProfiler, backgroundExecutor, gameExecutor) -> SelectiveReloadStateHandler.INSTANCE.get().test(DeviceResourceTypes.MAIN_ATLAS) ? spriteUploader.reload(stage, resourceManager1, preparationsProfiler, reloadProfiler, backgroundExecutor, gameExecutor) : CompletableFuture.allOf());
             }
             openDevicesSpriteUploader = spriteUploader;
         });

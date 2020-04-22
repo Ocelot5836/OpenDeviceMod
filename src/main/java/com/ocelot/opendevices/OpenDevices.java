@@ -116,7 +116,6 @@ public class OpenDevices
         @SubscribeEvent
         public static void registerRegistries(RegistryEvent.NewRegistry event)
         {
-            makeRegistry("board_layouts", ComponentBuilderLayout.class).create();
             makeRegistry("board_textures", ComponentBuilderBoardTexture.class).create();
 
             makeRegistry("settings", LaptopSetting.class).create();
@@ -164,12 +163,6 @@ public class OpenDevices
         public static void registerTileEntities(RegistryEvent.Register<TileEntityType<?>> event)
         {
             event.getRegistry().registerAll(DeviceBlocks.getTileEntities());
-        }
-
-        @SubscribeEvent
-        public static void registerBoardLayouts(RegistryEvent.Register<ComponentBuilderLayout> event)
-        {
-            event.getRegistry().registerAll(DeviceBoardLayouts.getBoardLayouts());
         }
 
         @SubscribeEvent

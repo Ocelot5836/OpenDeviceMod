@@ -1,17 +1,25 @@
 package com.ocelot.opendevices.core.render.sprite;
 
+import com.ocelot.opendevices.api.DeviceResourceTypes;
 import com.ocelot.opendevices.api.IconManager;
+import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.SpriteUploader;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.profiler.IProfiler;
+import net.minecraft.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.resource.IResourceType;
+import net.minecraftforge.resource.ISelectiveResourceReloadListener;
+import net.minecraftforge.resource.VanillaResourceType;
 import org.apache.commons.lang3.Validate;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 @OnlyIn(Dist.CLIENT)
@@ -40,4 +48,5 @@ public class OpenDevicesSpriteUploader extends SpriteUploader
     {
         return super.getSprite(location);
     }
+
 }

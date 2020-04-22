@@ -1,0 +1,12 @@
+{
+	"title": "Display Name",
+	"icon": {
+		"item": "string"
+	},
+	"texture": "opendevices:test.png",
+	"layout": [
+		"###",
+		"###",
+		"###"
+	]
+}

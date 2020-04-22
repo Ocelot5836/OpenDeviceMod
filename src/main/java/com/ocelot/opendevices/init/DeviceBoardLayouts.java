@@ -1,10 +1,6 @@
 package com.ocelot.opendevices.init;
 
-import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.crafting.ComponentBuilderLayout;
-import net.minecraft.block.Blocks;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -21,7 +17,7 @@ public class DeviceBoardLayouts
 
     public static ComponentBuilderLayout register(String registryName, int activeSlots)
     {
-        ComponentBuilderLayout layout = new ComponentBuilderLayout(new ResourceLocation(OpenDevices.MOD_ID, "board_layout/" + registryName), new ItemStack(Blocks.DIAMOND_ORE), activeSlots).setRegistryName(new ResourceLocation(OpenDevices.MOD_ID, registryName));
+        ComponentBuilderLayout layout = null;//new ComponentBuilderLayout(new ResourceLocation(OpenDevices.MOD_ID, "board_layout/" + registryName), new ItemStack(Blocks.DIAMOND_ORE), activeSlots).setRegistryName(new ResourceLocation(OpenDevices.MOD_ID, registryName));
         BOARD_LAYOUTS.add(layout);
         return layout;
     }

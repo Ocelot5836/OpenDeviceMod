@@ -112,6 +112,6 @@ public class ComponentBuilderRecipeCategory implements IRecipeCategory<Component
     {
         Minecraft.getInstance().getTextureManager().bindTexture(IconManager.LOCATION_OPENDEVICES_GUI_ATLAS);
         blit(0, 0, 0, 64, 64, IconManager.getBoardTexture(Arrays.stream(recipe.getRecipeInput().getMatchingStacks()).findFirst().orElse(ItemStack.EMPTY).getItem()));
-        blit(0, 0, 0, 64, 64, IconManager.getLayoutTexture(recipe.getLayout()));
+        blit(0, 0, 0, 64, 64, IconManager.getLayoutTexture(recipe.getLayout(Minecraft.getInstance().world)));
     }
 }

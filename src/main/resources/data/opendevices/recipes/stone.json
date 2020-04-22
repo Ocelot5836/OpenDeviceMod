@@ -1,6 +1,6 @@
 {
     "type": "opendevices:component_builder",
-	"layout": "opendevices:center",
+	"layout": "opendevices:example",
 	"input": {
         "item": "opendevices:green_circuit_board"
     },

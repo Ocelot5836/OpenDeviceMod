@@ -22,7 +22,6 @@ import javax.annotation.Nullable;
  */
 public class DeviceRegistries
 {
-    public static IForgeRegistry<ComponentBuilderLayout> COMPONENT_BUILDER_BOARD_LAYOUTS;
     public static IForgeRegistry<ComponentBuilderBoardTexture> COMPONENT_BUILDER_BOARD_TEXTURES;
 
     public static IForgeRegistry<LaptopSetting<?>> SETTINGS;
@@ -41,7 +40,6 @@ public class DeviceRegistries
     private static final RegistryCache<ApplicationRegistryEntry, Class<? extends Application>> APPLICATIONS_CACHE;
 
     static{
-        COMPONENT_BUILDER_BOARD_LAYOUTS = RegistryManager.ACTIVE.getRegistry(ComponentBuilderLayout.class);
         COMPONENT_BUILDER_BOARD_TEXTURES = RegistryManager.ACTIVE.getRegistry(ComponentBuilderBoardTexture.class);
 
         SETTINGS = RegistryManager.ACTIVE.getRegistry(LaptopSetting.class);
