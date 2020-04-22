@@ -1,7 +1,7 @@
 package com.ocelot.opendevices.init;
 
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.api.registry.ComponentBuilderBoardLayout;
+import com.ocelot.opendevices.api.crafting.ComponentBuilderLayout;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -12,22 +12,22 @@ import java.util.Set;
 @Deprecated
 public class DeviceBoardLayouts
 {
-    private static Set<ComponentBuilderBoardLayout> BOARD_LAYOUTS = new HashSet<>();
+    private static Set<ComponentBuilderLayout> BOARD_LAYOUTS = new HashSet<>();
 
-    public static final ComponentBuilderBoardLayout CENTER = register("center", ComponentBuilderBoardLayout.SLOT_4);
-    public static final ComponentBuilderBoardLayout TEST_CROSS = register("test_cross", ComponentBuilderBoardLayout.SLOT_1 | ComponentBuilderBoardLayout.SLOT_3 | ComponentBuilderBoardLayout.SLOT_4 | ComponentBuilderBoardLayout.SLOT_5 | ComponentBuilderBoardLayout.SLOT_7);
-    public static final ComponentBuilderBoardLayout TEST5 = register("test5", ComponentBuilderBoardLayout.SLOT_1 | ComponentBuilderBoardLayout.SLOT_2 | ComponentBuilderBoardLayout.SLOT_3 | ComponentBuilderBoardLayout.SLOT_5 | ComponentBuilderBoardLayout.SLOT_7);
-    public static final ComponentBuilderBoardLayout TEST9 = register("test9", ComponentBuilderBoardLayout.SLOT_0 | ComponentBuilderBoardLayout.SLOT_1 | ComponentBuilderBoardLayout.SLOT_2 | ComponentBuilderBoardLayout.SLOT_3 | ComponentBuilderBoardLayout.SLOT_4 | ComponentBuilderBoardLayout.SLOT_5 | ComponentBuilderBoardLayout.SLOT_6 | ComponentBuilderBoardLayout.SLOT_7 | ComponentBuilderBoardLayout.SLOT_8);
+    public static final ComponentBuilderLayout CENTER = register("center", ComponentBuilderLayout.SLOT_4);
+    public static final ComponentBuilderLayout TEST_CROSS = register("test_cross", ComponentBuilderLayout.SLOT_1 | ComponentBuilderLayout.SLOT_3 | ComponentBuilderLayout.SLOT_4 | ComponentBuilderLayout.SLOT_5 | ComponentBuilderLayout.SLOT_7);
+    public static final ComponentBuilderLayout TEST5 = register("test5", ComponentBuilderLayout.SLOT_1 | ComponentBuilderLayout.SLOT_2 | ComponentBuilderLayout.SLOT_3 | ComponentBuilderLayout.SLOT_5 | ComponentBuilderLayout.SLOT_7);
+    public static final ComponentBuilderLayout TEST9 = register("test9", ComponentBuilderLayout.SLOT_0 | ComponentBuilderLayout.SLOT_1 | ComponentBuilderLayout.SLOT_2 | ComponentBuilderLayout.SLOT_3 | ComponentBuilderLayout.SLOT_4 | ComponentBuilderLayout.SLOT_5 | ComponentBuilderLayout.SLOT_6 | ComponentBuilderLayout.SLOT_7 | ComponentBuilderLayout.SLOT_8);
 
-    public static ComponentBuilderBoardLayout register(String registryName, int activeSlots)
+    public static ComponentBuilderLayout register(String registryName, int activeSlots)
     {
-        ComponentBuilderBoardLayout layout = new ComponentBuilderBoardLayout(new ResourceLocation(OpenDevices.MOD_ID, "board_layout/" + registryName), new ItemStack(Blocks.DIAMOND_ORE), activeSlots).setRegistryName(new ResourceLocation(OpenDevices.MOD_ID, registryName));
+        ComponentBuilderLayout layout = new ComponentBuilderLayout(new ResourceLocation(OpenDevices.MOD_ID, "board_layout/" + registryName), new ItemStack(Blocks.DIAMOND_ORE), activeSlots).setRegistryName(new ResourceLocation(OpenDevices.MOD_ID, registryName));
         BOARD_LAYOUTS.add(layout);
         return layout;
     }
 
-    public static ComponentBuilderBoardLayout[] getBoardLayouts()
+    public static ComponentBuilderLayout[] getBoardLayouts()
     {
-        return BOARD_LAYOUTS.toArray(new ComponentBuilderBoardLayout[0]);
+        return BOARD_LAYOUTS.toArray(new ComponentBuilderLayout[0]);
     }
 }

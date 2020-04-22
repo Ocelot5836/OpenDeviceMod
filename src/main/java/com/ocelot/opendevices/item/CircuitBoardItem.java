@@ -6,7 +6,7 @@ import net.minecraft.item.Item;
 
 public class CircuitBoardItem extends ModItem implements DeviceCircuitBoardItem
 {
-    private int tier;
+    private final int tier;
 
     public CircuitBoardItem(String registryName, int tier)
     {

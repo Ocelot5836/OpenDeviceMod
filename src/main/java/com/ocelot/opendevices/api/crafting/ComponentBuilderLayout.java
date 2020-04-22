@@ -1,4 +1,4 @@
-package com.ocelot.opendevices.api.registry;
+package com.ocelot.opendevices.api.crafting;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -10,7 +10,7 @@ import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import java.lang.reflect.Type;
 
-public class ComponentBuilderBoardLayout extends ForgeRegistryEntry<ComponentBuilderBoardLayout>
+public class ComponentBuilderLayout extends ForgeRegistryEntry<ComponentBuilderLayout>
 {
     public static final int SLOT_0 = 0x01;
     public static final int SLOT_1 = 0x02;
@@ -26,7 +26,7 @@ public class ComponentBuilderBoardLayout extends ForgeRegistryEntry<ComponentBui
     private final ItemStack icon;
     private final int slotsUsed;
 
-    public ComponentBuilderBoardLayout(ResourceLocation textureLocation, ItemStack icon, int slotsUsed)
+    public ComponentBuilderLayout(ResourceLocation textureLocation, ItemStack icon, int slotsUsed)
     {
         this.textureLocation = textureLocation;
         this.icon = icon;
@@ -48,9 +48,9 @@ public class ComponentBuilderBoardLayout extends ForgeRegistryEntry<ComponentBui
         return (this.slotsUsed & slot) > 0;
     }
 
-    public static class Deserializer implements JsonDeserializer<ComponentBuilderBoardLayout>{
+    public static class Deserializer implements JsonDeserializer<ComponentBuilderLayout>{
         @Override
-        public ComponentBuilderBoardLayout deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
+        public ComponentBuilderLayout deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
         {
 
             return null;

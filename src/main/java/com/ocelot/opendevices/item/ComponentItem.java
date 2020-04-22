@@ -6,7 +6,7 @@ import net.minecraft.item.Item;
 
 public class ComponentItem extends ModItem implements DeviceComponentItem
 {
-    private int tier;
+    private final int tier;
 
     public ComponentItem(String registryName, int tier)
     {

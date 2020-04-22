@@ -3,7 +3,7 @@ package com.ocelot.opendevices.container;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.IconManager;
-import com.ocelot.opendevices.api.registry.ComponentBuilderBoardLayout;
+import com.ocelot.opendevices.api.crafting.ComponentBuilderLayout;
 import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.core.task.SetComponentBuilderLayoutTask;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
@@ -32,7 +32,7 @@ public class ComponentBuilderScreen extends ContainerScreen<ComponentBuilderCont
         this.blit(this.guiLeft - 28, this.guiTop + 4 + 29 * index, 176, enabled ? 28 : 0, 32, 28);
     }
 
-    private void setBoardLayout(ComponentBuilderBoardLayout layout)
+    private void setBoardLayout(ComponentBuilderLayout layout)
     {
         if (this.container.getLayout() == layout)
             return;

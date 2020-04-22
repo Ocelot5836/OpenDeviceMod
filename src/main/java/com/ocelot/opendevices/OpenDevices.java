@@ -13,7 +13,7 @@ import com.ocelot.opendevices.api.computer.application.ApplicationWindowRenderer
 import com.ocelot.opendevices.api.device.DeviceSerializer;
 import com.ocelot.opendevices.api.device.process.DeviceProcess;
 import com.ocelot.opendevices.api.device.process.ProcessInputRegistry;
-import com.ocelot.opendevices.api.registry.ComponentBuilderBoardLayout;
+import com.ocelot.opendevices.api.crafting.ComponentBuilderLayout;
 import com.ocelot.opendevices.api.registry.DeviceCircuitBoardItem;
 import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.core.EventHandler;
@@ -116,7 +116,7 @@ public class OpenDevices
         @SubscribeEvent
         public static void registerRegistries(RegistryEvent.NewRegistry event)
         {
-            makeRegistry("board_layouts", ComponentBuilderBoardLayout.class).create();
+            makeRegistry("board_layouts", ComponentBuilderLayout.class).create();
             makeRegistry("board_textures", ComponentBuilderBoardTexture.class).create();
 
             makeRegistry("settings", LaptopSetting.class).create();
@@ -167,7 +167,7 @@ public class OpenDevices
         }
 
         @SubscribeEvent
-        public static void registerBoardLayouts(RegistryEvent.Register<ComponentBuilderBoardLayout> event)
+        public static void registerBoardLayouts(RegistryEvent.Register<ComponentBuilderLayout> event)
         {
             event.getRegistry().registerAll(DeviceBoardLayouts.getBoardLayouts());
         }

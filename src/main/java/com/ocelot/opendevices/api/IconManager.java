@@ -1,7 +1,7 @@
 package com.ocelot.opendevices.api;
 
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.api.registry.ComponentBuilderBoardLayout;
+import com.ocelot.opendevices.api.crafting.ComponentBuilderLayout;
 import com.ocelot.opendevices.api.registry.DeviceRegistries;
 import com.ocelot.opendevices.core.registry.ComponentBuilderBoardTexture;
 import com.ocelot.opendevices.core.registry.WindowIconRegistryEntry;
@@ -44,7 +44,7 @@ public class IconManager
         uploader.registerSprite(EMPTY_CIRCUIT_BOARD_SLOT);
         DeviceRegistries.WINDOW_ICONS.getValues().stream().map(WindowIconRegistryEntry::getLocation).filter(Objects::nonNull).distinct().forEach(uploader::registerSprite);
         DeviceRegistries.COMPONENT_BUILDER_BOARD_TEXTURES.getValues().stream().map(ComponentBuilderBoardTexture::getTextureLocation).filter(Objects::nonNull).distinct().forEach(uploader::registerSprite);
-        DeviceRegistries.COMPONENT_BUILDER_BOARD_LAYOUTS.getValues().stream().map(ComponentBuilderBoardLayout::getTextureLocation).filter(Objects::nonNull).distinct().forEach(uploader::registerSprite);
+        DeviceRegistries.COMPONENT_BUILDER_BOARD_LAYOUTS.getValues().stream().map(ComponentBuilderLayout::getTextureLocation).filter(Objects::nonNull).distinct().forEach(uploader::registerSprite);
     }
 
     /**
@@ -99,7 +99,7 @@ public class IconManager
      * @return The sprite for the specified key
      */
     @OnlyIn(Dist.CLIENT)
-    public static TextureAtlasSprite getLayoutTexture(ComponentBuilderBoardLayout layout)
+    public static TextureAtlasSprite getLayoutTexture(ComponentBuilderLayout layout)
     {
         return openDevicesSpriteUploader.getSprite(layout == null ? TextureManager.RESOURCE_LOCATION_EMPTY : layout.getTextureLocation());
     }

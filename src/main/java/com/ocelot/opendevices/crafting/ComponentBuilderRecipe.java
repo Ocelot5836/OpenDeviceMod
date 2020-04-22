@@ -4,7 +4,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gson.*;
 import com.ocelot.opendevices.api.registry.DeviceRegistries;
-import com.ocelot.opendevices.api.registry.ComponentBuilderBoardLayout;
+import com.ocelot.opendevices.api.crafting.ComponentBuilderLayout;
 import com.ocelot.opendevices.init.DeviceRecipes;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -29,11 +29,11 @@ public class ComponentBuilderRecipe implements IRecipe<IInventory>, IShapedRecip
     private final Ingredient recipeInput;
     private final ItemStack recipeOutput;
     private final int solderAmount;
-    private final ComponentBuilderBoardLayout layout;
+    private final ComponentBuilderLayout layout;
     private final ResourceLocation id;
     private final String group;
 
-    public ComponentBuilderRecipe(ResourceLocation id, String group, NonNullList<Ingredient> recipeItems, Ingredient recipeInput, ItemStack recipeOutput, int solderAmount, ComponentBuilderBoardLayout layout)
+    public ComponentBuilderRecipe(ResourceLocation id, String group, NonNullList<Ingredient> recipeItems, Ingredient recipeInput, ItemStack recipeOutput, int solderAmount, ComponentBuilderLayout layout)
     {
         this.recipeItems = recipeItems;
         this.recipeInput = recipeInput;
@@ -44,7 +44,7 @@ public class ComponentBuilderRecipe implements IRecipe<IInventory>, IShapedRecip
         this.group = group;
     }
 
-    public ComponentBuilderBoardLayout getLayout()
+    public ComponentBuilderLayout getLayout()
     {
         return layout;
     }
@@ -136,7 +136,7 @@ public class ComponentBuilderRecipe implements IRecipe<IInventory>, IShapedRecip
         return 3;
     }
 
-    private static NonNullList<Ingredient> deserializeIngredients(ComponentBuilderBoardLayout layout, String[] pattern, Map<String, Ingredient> keys)
+    private static NonNullList<Ingredient> deserializeIngredients(ComponentBuilderLayout layout, String[] pattern, Map<String, Ingredient> keys)
     {
         NonNullList<Ingredient> nonnulllist = NonNullList.withSize(3 * 3, Ingredient.EMPTY);
         Set<String> set = Sets.newHashSet(keys.keySet());
@@ -232,7 +232,7 @@ public class ComponentBuilderRecipe implements IRecipe<IInventory>, IShapedRecip
             ResourceLocation layoutId = new ResourceLocation(JSONUtils.getString(json, "layout"));
             if (!DeviceRegistries.COMPONENT_BUILDER_BOARD_LAYOUTS.containsKey(layoutId))
                 throw new JsonParseException("Could not find board layout with id '" + layoutId + "'");
-            ComponentBuilderBoardLayout layout = DeviceRegistries.COMPONENT_BUILDER_BOARD_LAYOUTS.getValue(layoutId);
+            ComponentBuilderLayout layout = DeviceRegistries.COMPONENT_BUILDER_BOARD_LAYOUTS.getValue(layoutId);
             String group = JSONUtils.getString(json, "group", "");
             int solderAmount = MathHelper.clamp(JSONUtils.getInt(json, "solderAmount", 1), 1, 64);
             Map<String, Ingredient> map = ComponentBuilderRecipe.deserializeKey(JSONUtils.getJsonObject(json, "key"));

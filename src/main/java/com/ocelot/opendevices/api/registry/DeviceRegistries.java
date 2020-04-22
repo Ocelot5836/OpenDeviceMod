@@ -2,6 +2,7 @@ package com.ocelot.opendevices.api.registry;
 
 import com.ocelot.opendevices.api.computer.application.Application;
 import com.ocelot.opendevices.api.computer.settings.LaptopSetting;
+import com.ocelot.opendevices.api.crafting.ComponentBuilderLayout;
 import com.ocelot.opendevices.api.device.DeviceSerializer;
 import com.ocelot.opendevices.api.device.process.DeviceProcess;
 import com.ocelot.opendevices.api.task.Task;
@@ -21,7 +22,7 @@ import javax.annotation.Nullable;
  */
 public class DeviceRegistries
 {
-    public static IForgeRegistry<ComponentBuilderBoardLayout> COMPONENT_BUILDER_BOARD_LAYOUTS;
+    public static IForgeRegistry<ComponentBuilderLayout> COMPONENT_BUILDER_BOARD_LAYOUTS;
     public static IForgeRegistry<ComponentBuilderBoardTexture> COMPONENT_BUILDER_BOARD_TEXTURES;
 
     public static IForgeRegistry<LaptopSetting<?>> SETTINGS;
@@ -40,7 +41,7 @@ public class DeviceRegistries
     private static final RegistryCache<ApplicationRegistryEntry, Class<? extends Application>> APPLICATIONS_CACHE;
 
     static{
-        COMPONENT_BUILDER_BOARD_LAYOUTS = RegistryManager.ACTIVE.getRegistry(ComponentBuilderBoardLayout.class);
+        COMPONENT_BUILDER_BOARD_LAYOUTS = RegistryManager.ACTIVE.getRegistry(ComponentBuilderLayout.class);
         COMPONENT_BUILDER_BOARD_TEXTURES = RegistryManager.ACTIVE.getRegistry(ComponentBuilderBoardTexture.class);
 
         SETTINGS = RegistryManager.ACTIVE.getRegistry(LaptopSetting.class);

@@ -2,7 +2,7 @@ package com.ocelot.opendevices.core.task;
 
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.registry.DeviceRegistries;
-import com.ocelot.opendevices.api.registry.ComponentBuilderBoardLayout;
+import com.ocelot.opendevices.api.crafting.ComponentBuilderLayout;
 import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.container.ComponentBuilderContainer;
 import net.minecraft.entity.player.PlayerEntity;
@@ -14,14 +14,14 @@ import net.minecraft.world.World;
 public class SetComponentBuilderLayoutTask extends Task
 {
     private int windowId;
-    private ComponentBuilderBoardLayout layout;
+    private ComponentBuilderLayout layout;
 
     public SetComponentBuilderLayoutTask()
     {
         this(0, null);
     }
 
-    public SetComponentBuilderLayoutTask(int windowId, ComponentBuilderBoardLayout layout)
+    public SetComponentBuilderLayoutTask(int windowId, ComponentBuilderLayout layout)
     {
         this.windowId = windowId;
         this.layout = layout;

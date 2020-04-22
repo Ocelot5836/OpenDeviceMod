@@ -3,7 +3,7 @@ package com.ocelot.opendevices.container;
 import com.mojang.datafixers.util.Pair;
 import com.ocelot.opendevices.api.DeviceTags;
 import com.ocelot.opendevices.api.IconManager;
-import com.ocelot.opendevices.api.registry.ComponentBuilderBoardLayout;
+import com.ocelot.opendevices.api.crafting.ComponentBuilderLayout;
 import com.ocelot.opendevices.crafting.ComponentBuilderRecipe;
 import com.ocelot.opendevices.init.*;
 import net.minecraft.entity.player.PlayerEntity;
@@ -29,7 +29,7 @@ import java.util.function.Function;
 
 public class ComponentBuilderContainer extends Container
 {
-    private ComponentBuilderBoardLayout layout;
+    private ComponentBuilderLayout layout;
     private IWorldPosCallable posCallable;
     private PlayerEntity player;
 
@@ -206,7 +206,7 @@ public class ComponentBuilderContainer extends Container
         }
     }
 
-    public void setLayout(ComponentBuilderBoardLayout layout)
+    public void setLayout(ComponentBuilderLayout layout)
     {
         if (!this.player.world.isRemote())
         {
@@ -368,7 +368,7 @@ public class ComponentBuilderContainer extends Container
         return inputArea;
     }
 
-    public ComponentBuilderBoardLayout getLayout()
+    public ComponentBuilderLayout getLayout()
     {
         return layout;
     }
