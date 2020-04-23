@@ -207,6 +207,7 @@ public class ComponentBuilderContainer extends Container
         if (!this.player.world.isRemote())
         {
             this.clearContainer(this.player, this.player.world, this.craftingArea);
+            this.onCraftMatrixChanged(this.craftingResult);
             this.detectAndSendChanges();
         }
         this.layout = layout;
