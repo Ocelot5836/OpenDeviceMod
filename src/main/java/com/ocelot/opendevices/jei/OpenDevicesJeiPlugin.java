@@ -2,6 +2,7 @@ package com.ocelot.opendevices.jei;
 
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.container.ComponentBuilderScreen;
+import com.ocelot.opendevices.init.DeviceBlocks;
 import com.ocelot.opendevices.init.DeviceRecipes;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
@@ -9,18 +10,19 @@ import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
+import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.renderer.Rectangle2d;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.util.ResourceLocation;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,6 +35,8 @@ public class OpenDevicesJeiPlugin implements IModPlugin
 
     private static Collection<IRecipe<?>> getRecipes(IRecipeType<?> recipeType)
     {
+        if (Minecraft.getInstance().world == null)
+            return Collections.emptySet();
         Collection<IRecipe<?>> recipes = Minecraft.getInstance().world.getRecipeManager().getRecipes();
         recipes.removeIf(recipe -> recipe.getType() != recipeType);
         return recipes;
@@ -56,6 +60,12 @@ public class OpenDevicesJeiPlugin implements IModPlugin
     public void registerRecipes(IRecipeRegistration registration)
     {
         registration.addRecipes(getRecipes(DeviceRecipes.COMPONENT_BUILDER), COMPONENT_BUILDER_CATEGORY_ID);
+    }
+
+    @Override
+    public void registerRecipeCatalysts(IRecipeCatalystRegistration registration)
+    {
+        registration.addRecipeCatalyst(new ItemStack(DeviceBlocks.COMPONENT_BUILDER), COMPONENT_BUILDER_CATEGORY_ID);
     }
 
     @Override

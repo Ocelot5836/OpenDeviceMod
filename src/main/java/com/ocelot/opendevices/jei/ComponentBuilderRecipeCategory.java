@@ -2,10 +2,12 @@ package com.ocelot.opendevices.jei;
 
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.IconManager;
+import com.ocelot.opendevices.crafting.componentbuilder.ComponentBuilderLayout;
 import com.ocelot.opendevices.crafting.componentbuilder.ComponentBuilderLayoutManager;
 import com.ocelot.opendevices.crafting.componentbuilder.ComponentBuilderRecipe;
 import com.ocelot.opendevices.init.DeviceBlocks;
 import com.ocelot.opendevices.init.DeviceItems;
+import io.github.ocelot.client.FontHelper;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -33,7 +35,7 @@ public class ComponentBuilderRecipeCategory implements IRecipeCategory<Component
 
     public ComponentBuilderRecipeCategory(IGuiHelper guiHelper)
     {
-        this.background = guiHelper.createDrawable(OpenDevicesJeiPlugin.RECIPE_GUI_OPENDEVICES, 0, 0, 156, 64);
+        this.background = guiHelper.createDrawable(OpenDevicesJeiPlugin.RECIPE_GUI_OPENDEVICES, 0, 0, 156, 74);
         this.icon = guiHelper.createDrawableIngredient(new ItemStack(DeviceBlocks.COMPONENT_BUILDER));
         this.localizedName = I18n.format("gui." + OpenDevices.MOD_ID + ".category.component_builder");
     }
@@ -92,28 +94,33 @@ public class ComponentBuilderRecipeCategory implements IRecipeCategory<Component
             for (int x = 0; x < 3; x++)
             {
                 int index = x + y * 3;
-                guiItemStacks.init(index, true, 2 + x * 21, 2 + y * 21);
+                guiItemStacks.init(index, true, 2 + x * 21, 12 + y * 21);
                 guiItemStacks.set(index, inputs.get(index));
             }
         }
 
-        guiItemStacks.init(9, true, 106, 10);
+        guiItemStacks.init(9, true, 106, 20);
         guiItemStacks.set(9, inputs.get(9));
-        guiItemStacks.init(10, false, 138, 0);
+        guiItemStacks.init(10, false, 138, 10);
         guiItemStacks.set(10, new ItemStack(DeviceItems.SOLDER_IRON));
-        guiItemStacks.init(11, false, 138, 22);
+        guiItemStacks.init(11, false, 138, 32);
         guiItemStacks.set(11, inputs.get(10));
 
-        guiItemStacks.init(0, false, 106, 36);
+        guiItemStacks.init(0, false, 106, 46);
         guiItemStacks.set(0, outputs.get(0));
     }
 
     @Override
     public void draw(ComponentBuilderRecipe recipe, double mouseX, double mouseY)
     {
-        assert Minecraft.getInstance().world != null;
-        Minecraft.getInstance().getTextureManager().bindTexture(IconManager.LOCATION_OPENDEVICES_GUI_ATLAS);
-        blit(0, 0, 0, 64, 64, IconManager.getBoardTexture(Arrays.stream(recipe.getRecipeInput().getMatchingStacks()).findFirst().orElse(ItemStack.EMPTY).getItem()));
-        blit(0, 0, 0, 64, 64, IconManager.getLayoutTexture(ComponentBuilderLayoutManager.get(Minecraft.getInstance().world).getLayout(recipe.getLayout())));
+        Minecraft minecraft = Minecraft.getInstance();
+        minecraft.getTextureManager().bindTexture(IconManager.LOCATION_OPENDEVICES_GUI_ATLAS);
+        blit(0, 10, 0, 64, 64, IconManager.getBoardTexture(Arrays.stream(recipe.getRecipeInput().getMatchingStacks()).findFirst().orElse(ItemStack.EMPTY).getItem()));
+        if (minecraft.world != null)
+        {
+            ComponentBuilderLayout layout = ComponentBuilderLayoutManager.get(minecraft.world).getLayout(recipe.getLayout());
+            blit(0, 10, 0, 64, 64, IconManager.getLayoutTexture(layout));
+            FontHelper.drawString(minecraft.fontRenderer, I18n.format("gui." + OpenDevices.MOD_ID + ".category.component_builder.layout", layout.getTitle().getFormattedText()), 0, 0, -8355712, false);
+        }
     }
 }
