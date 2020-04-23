@@ -2,8 +2,8 @@ package com.ocelot.opendevices.jei;
 
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.IconManager;
-import com.ocelot.opendevices.crafting.ComponentBuilderLayoutManager;
-import com.ocelot.opendevices.crafting.ComponentBuilderRecipe;
+import com.ocelot.opendevices.crafting.componentbuilder.ComponentBuilderLayoutManager;
+import com.ocelot.opendevices.crafting.componentbuilder.ComponentBuilderRecipe;
 import com.ocelot.opendevices.init.DeviceBlocks;
 import com.ocelot.opendevices.init.DeviceItems;
 import mezz.jei.api.constants.VanillaTypes;

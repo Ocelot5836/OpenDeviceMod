@@ -5,7 +5,7 @@ import com.ocelot.opendevices.api.registry.DeviceRegistries;
 import com.ocelot.opendevices.core.registry.ComponentBuilderBoardTexture;
 import com.ocelot.opendevices.core.registry.WindowIconRegistryEntry;
 import com.ocelot.opendevices.core.render.sprite.OpenDevicesSpriteUploader;
-import com.ocelot.opendevices.crafting.ComponentBuilderLayout;
+import com.ocelot.opendevices.crafting.componentbuilder.ComponentBuilderLayout;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;

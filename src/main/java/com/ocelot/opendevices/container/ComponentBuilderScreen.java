@@ -3,9 +3,10 @@ package com.ocelot.opendevices.container;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.IconManager;
-import com.ocelot.opendevices.crafting.ComponentBuilderLayoutManager;
 import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.core.task.SetComponentBuilderLayoutTask;
+import com.ocelot.opendevices.crafting.componentbuilder.ComponentBuilderLayout;
+import com.ocelot.opendevices.crafting.componentbuilder.ComponentBuilderLayoutManager;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
@@ -13,25 +14,31 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class ComponentBuilderScreen extends ContainerScreen<ComponentBuilderContainer>
 {
-    private static final ResourceLocation CONTAINER_TEXTURE = new ResourceLocation(OpenDevices.MOD_ID, "textures/gui/container/component_builder.png");
+    public static final ResourceLocation CONTAINER_TEXTURE = new ResourceLocation(OpenDevices.MOD_ID, "textures/gui/container/component_builder.png");
+
+    private final List<ResourceLocation> layouts;
+    private int scroll;
+    private int selectedIndex;
 
     public ComponentBuilderScreen(ComponentBuilderContainer screenContainer, PlayerInventory playerInventory, ITextComponent title)
     {
         super(screenContainer, playerInventory, title);
         this.xSize = 176;
         this.ySize = 176;
-        this.setBoardLayout(new ResourceLocation(OpenDevices.MOD_ID, "center"));
+        this.layouts = new ArrayList<>();
     }
 
-    private void renderTab(int index, @Nullable ItemStack icon, boolean enabled)
+    @Override
+    protected void init()
     {
-        assert this.minecraft != null;
-        this.minecraft.getTextureManager().bindTexture(CONTAINER_TEXTURE);
-        this.blit(this.guiLeft - 28, this.guiTop + 4 + 29 * index, 176, enabled ? 28 : 0, 32, 28);
+        super.init();
+        this.initTabs(ComponentBuilderLayoutManager.get(this.playerInventory.player.world));
     }
 
     private void setBoardLayout(ResourceLocation layout)
@@ -39,7 +46,21 @@ public class ComponentBuilderScreen extends ContainerScreen<ComponentBuilderCont
         if (this.container.getLayout() == layout)
             return;
         this.container.setLayout(layout);
-        TaskManager.sendToServer(new SetComponentBuilderLayoutTask(this.container.windowId, layout), TaskManager.TaskReceiver.SENDER_AND_NEARBY);
+        TaskManager.sendToServer(new SetComponentBuilderLayoutTask(this.container.windowId, layout), TaskManager.TaskReceiver.SENDER);
+    }
+
+    public void initTabs(ComponentBuilderLayoutManager layoutManager)
+    {
+        this.scroll = 0;
+        this.buttons.clear();
+        this.children.clear();
+        this.layouts.clear();
+        this.layouts.addAll(layoutManager.getKeys());
+        if (this.selectedIndex >= layoutManager.getKeys().size())
+            this.selectedIndex = 0;
+        for (int i = 0; i < Math.min(7, layoutManager.getKeys().size()); i++)
+            this.addButton(new ComponentBuilderLayoutTab(this, layoutManager, this.guiLeft - 21, 4 + this.guiTop + i * 24, i));
+        this.setBoardLayout(this.layouts.isEmpty() ? ComponentBuilderLayout.EMPTY_LOCATION : this.layouts.get(0));
     }
 
     @Override
@@ -70,5 +91,21 @@ public class ComponentBuilderScreen extends ContainerScreen<ComponentBuilderCont
             blit(this.guiLeft + 7, this.guiTop + 17, 0, 64, 64, IconManager.getBoardTexture(this.container.getInputAreaInventory().getStackInSlot(0).getItem()));
             blit(this.guiLeft + 7, this.guiTop + 17, 0, 64, 64, IconManager.getLayoutTexture(ComponentBuilderLayoutManager.get(Objects.requireNonNull(this.getMinecraft().world)).getLayout(this.container.getLayout())));
         }
+    }
+
+    public int getScroll()
+    {
+        return scroll;
+    }
+
+    public int getSelectedIndex()
+    {
+        return selectedIndex;
+    }
+
+    public void setSelectedIndex(int selectedIndex)
+    {
+        this.selectedIndex = selectedIndex;
+        this.setBoardLayout(this.layouts.get(selectedIndex < 0 || selectedIndex >= this.layouts.size() ? 0 : selectedIndex));
     }
 }

@@ -1,6 +1,6 @@
 package com.ocelot.opendevices.init;
 
-import com.ocelot.opendevices.crafting.ComponentBuilderLayout;
+import com.ocelot.opendevices.crafting.componentbuilder.ComponentBuilderLayout;
 
 @Deprecated
 public class DeviceBoardLayouts

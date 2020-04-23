@@ -1,4 +1,4 @@
-package com.ocelot.opendevices.crafting;
+package com.ocelot.opendevices.crafting.componentbuilder;
 
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.IWorld;

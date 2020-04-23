@@ -1,7 +1,6 @@
-package com.ocelot.opendevices.crafting;
+package com.ocelot.opendevices.crafting.componentbuilder;
 
-import com.ocelot.opendevices.api.DeviceResourceTypes;
-import com.ocelot.opendevices.api.util.RenderUtil;
+import com.ocelot.opendevices.container.ComponentBuilderScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 
@@ -24,6 +23,8 @@ public class ClientComponentBuilderLayoutManager implements ComponentBuilderLayo
     {
         this.layouts.clear();
         this.layouts.putAll(layouts);
+        if (Minecraft.getInstance().currentScreen instanceof ComponentBuilderScreen)
+            ((ComponentBuilderScreen) Minecraft.getInstance().currentScreen).initTabs(this);
     }
 
     @Override

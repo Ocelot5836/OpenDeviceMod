@@ -1,4 +1,4 @@
-package com.ocelot.opendevices.crafting;
+package com.ocelot.opendevices.crafting.componentbuilder;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;

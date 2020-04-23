@@ -1,8 +1,8 @@
 package com.ocelot.opendevices.core.task;
 
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.crafting.ComponentBuilderLayout;
-import com.ocelot.opendevices.crafting.ComponentBuilderLayoutManager;
+import com.ocelot.opendevices.crafting.componentbuilder.ComponentBuilderLayout;
+import com.ocelot.opendevices.crafting.componentbuilder.ComponentBuilderLayoutManager;
 import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.container.ComponentBuilderContainer;
 import net.minecraft.entity.player.PlayerEntity;

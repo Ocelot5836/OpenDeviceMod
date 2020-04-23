@@ -1,9 +1,9 @@
 package com.ocelot.opendevices.container;
 
 import com.ocelot.opendevices.api.DeviceTags;
-import com.ocelot.opendevices.crafting.ComponentBuilderLayout;
-import com.ocelot.opendevices.crafting.ComponentBuilderLayoutManager;
-import com.ocelot.opendevices.crafting.ComponentBuilderRecipe;
+import com.ocelot.opendevices.crafting.componentbuilder.ComponentBuilderLayout;
+import com.ocelot.opendevices.crafting.componentbuilder.ComponentBuilderLayoutManager;
+import com.ocelot.opendevices.crafting.componentbuilder.ComponentBuilderRecipe;
 import com.ocelot.opendevices.init.DeviceBlocks;
 import com.ocelot.opendevices.init.DeviceContainers;
 import com.ocelot.opendevices.init.DeviceItems;

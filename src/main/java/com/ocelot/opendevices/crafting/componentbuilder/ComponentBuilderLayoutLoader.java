@@ -1,4 +1,4 @@
-package com.ocelot.opendevices.crafting;
+package com.ocelot.opendevices.crafting.componentbuilder;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

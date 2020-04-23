@@ -1,4 +1,4 @@
-package com.ocelot.opendevices.crafting;
+package com.ocelot.opendevices.crafting.componentbuilder;
 
 import com.google.gson.*;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -163,7 +163,6 @@ public class ComponentBuilderLayout implements INBTSerializable<CompoundNBT>
                     i++;
                 }
             }
-            System.out.println("Parsed slots: '" + Integer.toBinaryString(slotsUsed) + "'");
             return slotsUsed;
         }
     }
