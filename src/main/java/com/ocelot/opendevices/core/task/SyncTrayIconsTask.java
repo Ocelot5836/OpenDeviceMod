@@ -22,7 +22,6 @@ public class SyncTrayIconsTask extends Task
 
     public SyncTrayIconsTask()
     {
-        this(null, null);
     }
 
     public SyncTrayIconsTask(UUID address, ListNBT trayItemsData)

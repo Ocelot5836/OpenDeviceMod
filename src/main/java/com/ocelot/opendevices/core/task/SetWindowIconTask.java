@@ -22,7 +22,6 @@ public class SetWindowIconTask extends Task
 
     public SetWindowIconTask()
     {
-        this(null, null, null);
     }
 
     public SetWindowIconTask(UUID address, UUID windowId, ResourceLocation icon)

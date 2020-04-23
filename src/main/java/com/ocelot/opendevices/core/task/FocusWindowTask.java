@@ -23,7 +23,6 @@ public class FocusWindowTask extends Task
 
     public FocusWindowTask()
     {
-        this(null, null);
     }
 
     public FocusWindowTask(UUID address, @Nullable UUID windowId)

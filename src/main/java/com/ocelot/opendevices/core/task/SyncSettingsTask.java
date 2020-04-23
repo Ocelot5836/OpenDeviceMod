@@ -19,7 +19,6 @@ public class SyncSettingsTask extends Task
 
     public SyncSettingsTask()
     {
-        this(null, new CompoundNBT());
     }
 
     public SyncSettingsTask(UUID address, CompoundNBT nbt)

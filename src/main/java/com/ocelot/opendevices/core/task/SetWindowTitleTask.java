@@ -23,7 +23,6 @@ public class SetWindowTitleTask extends Task
 
     public SetWindowTitleTask()
     {
-        this(null, null, null);
     }
 
     public SetWindowTitleTask(UUID address, UUID windowId, String title)

@@ -1,20 +1,19 @@
 package com.ocelot.opendevices;
 
 import com.mrcrayfish.filters.Filters;
-import com.ocelot.opendevices.api.registry.DeviceRegistries;
 import com.ocelot.opendevices.api.IconManager;
-import com.ocelot.opendevices.api.computer.application.Application;
-import com.ocelot.opendevices.api.computer.application.ApplicationManager;
 import com.ocelot.opendevices.api.computer.Computer;
+import com.ocelot.opendevices.api.computer.application.Application;
+import com.ocelot.opendevices.api.computer.application.ApplicationInputHandler;
+import com.ocelot.opendevices.api.computer.application.ApplicationManager;
+import com.ocelot.opendevices.api.computer.application.ApplicationWindowRenderer;
 import com.ocelot.opendevices.api.computer.settings.LaptopSetting;
 import com.ocelot.opendevices.api.computer.taskbar.TrayItem;
-import com.ocelot.opendevices.api.computer.application.ApplicationInputHandler;
-import com.ocelot.opendevices.api.computer.application.ApplicationWindowRenderer;
 import com.ocelot.opendevices.api.device.DeviceSerializer;
 import com.ocelot.opendevices.api.device.process.DeviceProcess;
 import com.ocelot.opendevices.api.device.process.ProcessInputRegistry;
-import com.ocelot.opendevices.api.crafting.ComponentBuilderLayout;
 import com.ocelot.opendevices.api.registry.DeviceCircuitBoardItem;
+import com.ocelot.opendevices.api.registry.DeviceRegistries;
 import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.core.EventHandler;
 import com.ocelot.opendevices.core.computer.process.TestProcess;

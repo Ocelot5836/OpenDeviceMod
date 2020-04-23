@@ -227,14 +227,4 @@ public class RenderUtil
             return 4;
         return 0;
     }
-
-    /**
-     * Same as {@link ForgeHooksClient#refreshResources(Minecraft, VanillaResourceType...)} but allows for {@link IResourceType} to be used.
-     */
-    public static void refreshResources(Minecraft mc, IResourceType... types)
-    {
-        SelectiveReloadStateHandler.INSTANCE.beginReload(ReloadRequirements.include(types));
-        mc.reloadResources();
-        SelectiveReloadStateHandler.INSTANCE.endReload();
-    }
 }

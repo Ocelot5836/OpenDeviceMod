@@ -21,7 +21,6 @@ public class UpdateLaptopUserTask extends Task
 
     public UpdateLaptopUserTask()
     {
-        this(null, null);
     }
 
     public UpdateLaptopUserTask(UUID address, UUID user)

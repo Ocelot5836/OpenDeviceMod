@@ -1,7 +1,8 @@
-package com.ocelot.opendevices.api.crafting;
+package com.ocelot.opendevices.crafting;
 
 import com.google.gson.*;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.ocelot.opendevices.OpenDevices;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -9,13 +10,19 @@ import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Type;
 import java.util.Base64;
 
 public class ComponentBuilderLayout implements INBTSerializable<CompoundNBT>
 {
+    public static final ResourceLocation EMPTY_LOCATION = new ResourceLocation(OpenDevices.MOD_ID, "missing");
+    public static final ComponentBuilderLayout EMPTY = new ComponentBuilderLayout(new TranslationTextComponent("component_builder.layout." + OpenDevices.MOD_ID + ".default"), new ResourceLocation(""), ItemStack.EMPTY, 0);
+
     public static final int SLOT_0 = 0x01;
     public static final int SLOT_1 = 0x02;
     public static final int SLOT_2 = 0x04;
@@ -31,10 +38,11 @@ public class ComponentBuilderLayout implements INBTSerializable<CompoundNBT>
     private ItemStack icon;
     private int slotsUsed;
 
-    public ComponentBuilderLayout(ITextComponent title, ResourceLocation textureLocation, ItemStack icon, int slotsUsed)
+    @Deprecated
+    public ComponentBuilderLayout(ITextComponent title, @Nullable ResourceLocation textureLocation, ItemStack icon, int slotsUsed)
     {
         this.title = title;
-        this.textureLocation = new ResourceLocation(textureLocation.getNamespace(), "textures/component_builder_layouts/" + textureLocation.getPath());
+        this.textureLocation = textureLocation == null ? null : new ResourceLocation(textureLocation.getNamespace(), "component_builder_layout/" + textureLocation.getPath());
         this.icon = icon;
         this.slotsUsed = slotsUsed;
     }
@@ -49,6 +57,7 @@ public class ComponentBuilderLayout implements INBTSerializable<CompoundNBT>
         return title;
     }
 
+    @Nullable
     public ResourceLocation getTextureLocation()
     {
         return textureLocation;
@@ -69,7 +78,8 @@ public class ComponentBuilderLayout implements INBTSerializable<CompoundNBT>
     {
         CompoundNBT nbt = new CompoundNBT();
         nbt.putString("title", new String(Base64.getEncoder().encode(ITextComponent.Serializer.toJson(this.title).getBytes())));
-        nbt.putString("textureLocation", String.valueOf(this.textureLocation));
+        if (this.textureLocation != null)
+            nbt.putString("textureLocation", String.valueOf(this.textureLocation));
         nbt.put("icon", this.icon.serializeNBT());
         nbt.putInt("slotsUsed", this.slotsUsed);
         return nbt;
@@ -79,7 +89,7 @@ public class ComponentBuilderLayout implements INBTSerializable<CompoundNBT>
     public void deserializeNBT(CompoundNBT nbt)
     {
         this.title = ITextComponent.Serializer.fromJson(new String(Base64.getDecoder().decode(nbt.getString("title"))));
-        this.textureLocation = new ResourceLocation(nbt.getString("textureLocation"));
+        this.textureLocation = nbt.contains("textureLocation", Constants.NBT.TAG_STRING) ? new ResourceLocation(nbt.getString("textureLocation")) : null;
         this.icon = ItemStack.read(nbt.getCompound("icon"));
         this.slotsUsed = nbt.getInt("slotsUsed");
     }
@@ -90,9 +100,9 @@ public class ComponentBuilderLayout implements INBTSerializable<CompoundNBT>
         public ComponentBuilderLayout deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
         {
             JsonObject jsonObject = json.getAsJsonObject();
-            ITextComponent title = JSONUtils.deserializeClass(jsonObject, "name", context, ITextComponent.class);
+            ITextComponent title = JSONUtils.deserializeClass(jsonObject, "title", context, ITextComponent.class);
             ItemStack icon = jsonObject.has("icon") ? deserializeIcon(jsonObject.get("icon").getAsJsonObject()) : ItemStack.EMPTY;
-            ResourceLocation texture = JSONUtils.deserializeClass(jsonObject, "texture", context, ResourceLocation.class);
+            ResourceLocation texture = jsonObject.has("texture") ? new ResourceLocation(JSONUtils.getString(jsonObject, "texture")) : null;
             int slots = parseSlots(jsonObject.get("layout").getAsJsonArray());
             return new ComponentBuilderLayout(title, texture, icon, slots);
         }

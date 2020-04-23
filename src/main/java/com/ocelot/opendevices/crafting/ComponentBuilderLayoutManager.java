@@ -1,8 +1,5 @@
-package com.ocelot.opendevices.api.crafting;
+package com.ocelot.opendevices.crafting;
 
-import com.ocelot.opendevices.crafting.ClientComponentBuilderLayoutManager;
-import com.ocelot.opendevices.crafting.ComponentBuilderLayoutLoader;
-import jdk.internal.jline.internal.Nullable;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.server.ServerWorld;
@@ -25,12 +22,11 @@ public interface ComponentBuilderLayoutManager
     boolean exists(ResourceLocation registryName);
 
     /**
-     * Gets the component builder layout with the specified registry name or null if it doesn't exist.
+     * Gets the component builder layout with the specified registry name or {@link ComponentBuilderLayout#EMPTY} if it doesn't exist.
      *
      * @param registryName The name to check
-     * @return The component builder layout or null if there is no layout with that id
+     * @return The component builder layout or {@link ComponentBuilderLayout#EMPTY} if there is no layout with that id
      */
-    @Nullable
     ComponentBuilderLayout getLayout(ResourceLocation registryName);
 
     /**
@@ -50,6 +46,6 @@ public interface ComponentBuilderLayoutManager
             return ClientComponentBuilderLayoutManager.INSTANCE;
         if (!(world instanceof ServerWorld))
             throw new IllegalStateException("Server side world is not an instance of ServerWorld?");
-        return ComponentBuilderLayoutLoader.INSTANCE;
+        return ComponentBuilderLayoutLoader.instance();
     }
 }

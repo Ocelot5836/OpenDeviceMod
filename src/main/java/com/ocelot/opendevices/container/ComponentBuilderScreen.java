@@ -3,7 +3,7 @@ package com.ocelot.opendevices.container;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.IconManager;
-import com.ocelot.opendevices.api.crafting.ComponentBuilderLayout;
+import com.ocelot.opendevices.crafting.ComponentBuilderLayoutManager;
 import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.core.task.SetComponentBuilderLayoutTask;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
@@ -13,6 +13,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 public class ComponentBuilderScreen extends ContainerScreen<ComponentBuilderContainer>
 {
@@ -23,6 +24,7 @@ public class ComponentBuilderScreen extends ContainerScreen<ComponentBuilderCont
         super(screenContainer, playerInventory, title);
         this.xSize = 176;
         this.ySize = 176;
+        this.setBoardLayout(new ResourceLocation(OpenDevices.MOD_ID, "center"));
     }
 
     private void renderTab(int index, @Nullable ItemStack icon, boolean enabled)
@@ -32,11 +34,12 @@ public class ComponentBuilderScreen extends ContainerScreen<ComponentBuilderCont
         this.blit(this.guiLeft - 28, this.guiTop + 4 + 29 * index, 176, enabled ? 28 : 0, 32, 28);
     }
 
-    private void setBoardLayout(ComponentBuilderLayout layout)
+    private void setBoardLayout(ResourceLocation layout)
     {
         if (this.container.getLayout() == layout)
             return;
-        TaskManager.sendToServer(new SetComponentBuilderLayoutTask(this.container.windowId, layout), TaskManager.TaskReceiver.SENDER);
+        this.container.setLayout(layout);
+        TaskManager.sendToServer(new SetComponentBuilderLayoutTask(this.container.windowId, layout), TaskManager.TaskReceiver.SENDER_AND_NEARBY);
     }
 
     @Override
@@ -56,18 +59,16 @@ public class ComponentBuilderScreen extends ContainerScreen<ComponentBuilderCont
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY)
     {
-        assert this.minecraft != null;
-
         this.renderBackground();
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        this.minecraft.getTextureManager().bindTexture(CONTAINER_TEXTURE);
+        this.getMinecraft().getTextureManager().bindTexture(CONTAINER_TEXTURE);
         this.blit(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
 
         if (this.container.hasCircuitBoard())
         {
-            this.minecraft.getTextureManager().bindTexture(IconManager.LOCATION_OPENDEVICES_GUI_ATLAS);
+            this.getMinecraft().getTextureManager().bindTexture(IconManager.LOCATION_OPENDEVICES_GUI_ATLAS);
             blit(this.guiLeft + 7, this.guiTop + 17, 0, 64, 64, IconManager.getBoardTexture(this.container.getInputAreaInventory().getStackInSlot(0).getItem()));
-            blit(this.guiLeft + 7, this.guiTop + 17, 0, 64, 64, IconManager.getLayoutTexture(this.container.getLayout()));
+            blit(this.guiLeft + 7, this.guiTop + 17, 0, 64, 64, IconManager.getLayoutTexture(ComponentBuilderLayoutManager.get(Objects.requireNonNull(this.getMinecraft().world)).getLayout(this.container.getLayout())));
         }
     }
 }

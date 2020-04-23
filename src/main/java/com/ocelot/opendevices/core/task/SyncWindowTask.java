@@ -19,7 +19,6 @@ public class SyncWindowTask extends Task
 
     public SyncWindowTask()
     {
-        this(null, null, null);
     }
 
     public SyncWindowTask(BlockPos pos, UUID windowId, CompoundNBT contentData)

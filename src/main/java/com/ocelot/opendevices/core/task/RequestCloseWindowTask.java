@@ -24,7 +24,6 @@ public class RequestCloseWindowTask extends Task
 
     public RequestCloseWindowTask()
     {
-        this(null);
     }
 
     public RequestCloseWindowTask(UUID address, UUID... windowIds)

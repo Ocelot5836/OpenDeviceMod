@@ -1,7 +1,7 @@
 package com.ocelot.opendevices.core.task;
 
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.api.crafting.ComponentBuilderLayout;
+import com.ocelot.opendevices.crafting.ComponentBuilderLayout;
 import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.crafting.ClientComponentBuilderLayoutManager;
 import net.minecraft.entity.player.PlayerEntity;
@@ -19,7 +19,6 @@ public class SyncComponentBuilderLayoutsTask extends Task
 
     public SyncComponentBuilderLayoutsTask()
     {
-        this(null);
     }
 
     public SyncComponentBuilderLayoutsTask(Map<ResourceLocation, ComponentBuilderLayout> layouts)

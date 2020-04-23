@@ -24,7 +24,6 @@ public class SetWindowPositionTask extends Task
 
     public SetWindowPositionTask()
     {
-        this(null, null, 0, 0);
     }
 
     public SetWindowPositionTask(UUID address, UUID windowId, float x, float y)

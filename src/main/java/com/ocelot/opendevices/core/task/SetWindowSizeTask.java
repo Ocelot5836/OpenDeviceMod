@@ -24,7 +24,6 @@ public class SetWindowSizeTask extends Task
 
     public SetWindowSizeTask()
     {
-        this(null, null, 0, 0);
     }
 
     public SetWindowSizeTask(UUID address, UUID windowId, int width, int height)

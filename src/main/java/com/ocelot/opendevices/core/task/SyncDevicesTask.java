@@ -16,7 +16,6 @@ public class SyncDevicesTask extends Task
 
     public SyncDevicesTask()
     {
-        this(null);
     }
 
     public SyncDevicesTask(ListNBT devices)

@@ -2,10 +2,10 @@ package com.ocelot.opendevices.crafting;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.google.gson.*;
-import com.ocelot.opendevices.api.crafting.ComponentBuilderLayoutManager;
-import com.ocelot.opendevices.api.registry.DeviceRegistries;
-import com.ocelot.opendevices.api.crafting.ComponentBuilderLayout;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 import com.ocelot.opendevices.init.DeviceRecipes;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -15,14 +15,12 @@ import net.minecraft.util.JSONUtils;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraftforge.common.crafting.IShapedRecipe;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nullable;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 public class ComponentBuilderRecipe implements IRecipe<IInventory>, IShapedRecipe<IInventory>
@@ -46,9 +44,9 @@ public class ComponentBuilderRecipe implements IRecipe<IInventory>, IShapedRecip
         this.group = group;
     }
 
-    public ComponentBuilderLayout getLayout(IWorld world)
+    public ResourceLocation getLayout()
     {
-        return ComponentBuilderLayoutManager.get(world).getLayout(this.layout);
+        return layout;
     }
 
     @Override

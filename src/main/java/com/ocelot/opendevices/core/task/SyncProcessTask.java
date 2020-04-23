@@ -22,7 +22,6 @@ public class SyncProcessTask extends Task
 
     public SyncProcessTask()
     {
-        this(null, null, null);
     }
 
     public SyncProcessTask(UUID address, UUID processId, CompoundNBT data)

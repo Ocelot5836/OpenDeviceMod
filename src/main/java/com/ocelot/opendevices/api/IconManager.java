@@ -1,11 +1,11 @@
 package com.ocelot.opendevices.api;
 
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.api.crafting.ComponentBuilderLayout;
 import com.ocelot.opendevices.api.registry.DeviceRegistries;
 import com.ocelot.opendevices.core.registry.ComponentBuilderBoardTexture;
 import com.ocelot.opendevices.core.registry.WindowIconRegistryEntry;
 import com.ocelot.opendevices.core.render.sprite.OpenDevicesSpriteUploader;
+import com.ocelot.opendevices.crafting.ComponentBuilderLayout;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -18,11 +18,10 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.resource.SelectiveReloadStateHandler;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 /**
  * <p>Manages the texture map containing all textures used.</p>
@@ -44,8 +43,7 @@ public class IconManager
         uploader.registerSprite(DEFAULT_WINDOW_ICON);
         DeviceRegistries.WINDOW_ICONS.getValues().stream().map(WindowIconRegistryEntry::getLocation).filter(Objects::nonNull).distinct().forEach(uploader::registerSprite);
         DeviceRegistries.COMPONENT_BUILDER_BOARD_TEXTURES.getValues().stream().map(ComponentBuilderBoardTexture::getTextureLocation).filter(Objects::nonNull).distinct().forEach(uploader::registerSprite);
-        for (ResourceLocation location : resourceManager.getAllResourceLocations("textures/component_builder_layouts", s -> s.endsWith(".png")))
-            uploader.registerSprite(location);
+        uploader.registerSpriteSupplier(() -> resourceManager.getAllResourceLocations("textures/component_builder_layout", s -> s.endsWith(".png")).stream().map(resourceLocation -> new ResourceLocation(resourceLocation.getNamespace(), resourceLocation.getPath().substring(9, resourceLocation.getPath().length() - 4))).collect(Collectors.toSet()));
     }
 
     /**
@@ -63,7 +61,6 @@ public class IconManager
             if (resourceManager instanceof IReloadableResourceManager)
             {
                 ((IReloadableResourceManager) resourceManager).addReloadListener(spriteUploader);
-                ((IReloadableResourceManager) resourceManager).addReloadListener((stage, resourceManager1, preparationsProfiler, reloadProfiler, backgroundExecutor, gameExecutor) -> SelectiveReloadStateHandler.INSTANCE.get().test(DeviceResourceTypes.MAIN_ATLAS) ? spriteUploader.reload(stage, resourceManager1, preparationsProfiler, reloadProfiler, backgroundExecutor, gameExecutor) : CompletableFuture.allOf());
             }
             openDevicesSpriteUploader = spriteUploader;
         });
@@ -103,6 +100,6 @@ public class IconManager
     @OnlyIn(Dist.CLIENT)
     public static TextureAtlasSprite getLayoutTexture(ComponentBuilderLayout layout)
     {
-        return openDevicesSpriteUploader.getSprite(layout == null ? TextureManager.RESOURCE_LOCATION_EMPTY : layout.getTextureLocation());
+        return openDevicesSpriteUploader.getSprite(layout == null || layout.getTextureLocation() == null ? TextureManager.RESOURCE_LOCATION_EMPTY : layout.getTextureLocation());
     }
 }

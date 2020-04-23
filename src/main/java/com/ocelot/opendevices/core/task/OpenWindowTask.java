@@ -21,7 +21,6 @@ public class OpenWindowTask extends Task
 
     public OpenWindowTask()
     {
-        this(null, null);
     }
 
     public OpenWindowTask(UUID address, CompoundNBT windowData)

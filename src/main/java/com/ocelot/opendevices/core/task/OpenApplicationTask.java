@@ -19,7 +19,6 @@ public class OpenApplicationTask extends Task
 
     public OpenApplicationTask()
     {
-        this(null, null, null);
     }
 
     public OpenApplicationTask(BlockPos pos, CompoundNBT windowData, @Nullable CompoundNBT contentData)

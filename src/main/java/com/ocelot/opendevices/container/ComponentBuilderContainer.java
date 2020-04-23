@@ -1,9 +1,13 @@
 package com.ocelot.opendevices.container;
 
 import com.ocelot.opendevices.api.DeviceTags;
-import com.ocelot.opendevices.api.crafting.ComponentBuilderLayout;
+import com.ocelot.opendevices.crafting.ComponentBuilderLayout;
+import com.ocelot.opendevices.crafting.ComponentBuilderLayoutManager;
 import com.ocelot.opendevices.crafting.ComponentBuilderRecipe;
-import com.ocelot.opendevices.init.*;
+import com.ocelot.opendevices.init.DeviceBlocks;
+import com.ocelot.opendevices.init.DeviceContainers;
+import com.ocelot.opendevices.init.DeviceItems;
+import com.ocelot.opendevices.init.DeviceRecipes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -16,6 +20,7 @@ import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.server.SSetSlotPacket;
 import net.minecraft.util.IWorldPosCallable;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
@@ -26,11 +31,11 @@ import java.util.function.BiFunction;
 
 public class ComponentBuilderContainer extends Container
 {
-    private ComponentBuilderLayout layout;
-    private IWorldPosCallable posCallable;
-    private PlayerEntity player;
+    private ResourceLocation layout;
+    private final IWorldPosCallable posCallable;
+    private final PlayerEntity player;
 
-    private IInventory inputArea = new Inventory(3)
+    private final IInventory inputArea = new Inventory(3)
     {
         @Override
         public void markDirty()
@@ -68,7 +73,7 @@ public class ComponentBuilderContainer extends Container
     public ComponentBuilderContainer(int id, PlayerInventory playerInventory, IWorldPosCallable posCallable)
     {
         super(DeviceContainers.COMPONENT_BUILDER, id);
-        this.layout = DeviceBoardLayouts.CENTER;
+        this.layout = ComponentBuilderLayout.EMPTY_LOCATION;
         this.posCallable = posCallable;
         this.player = playerInventory.player;
 
@@ -81,7 +86,7 @@ public class ComponentBuilderContainer extends Container
                     @Override
                     public boolean isEnabled()
                     {
-                        return this.getHasStack() || (ComponentBuilderContainer.this.hasCircuitBoard() && ComponentBuilderContainer.this.layout.hasSlot(1 << this.getSlotIndex()));
+                        return this.getHasStack() || (ComponentBuilderContainer.this.hasCircuitBoard() && ComponentBuilderLayoutManager.get(player.world).getLayout(ComponentBuilderContainer.this.layout).hasSlot(1 << this.getSlotIndex()));
                     }
                 });
             }
@@ -178,6 +183,7 @@ public class ComponentBuilderContainer extends Container
                     }
                 }
 
+                ComponentBuilderContainer.this.detectAndSendChanges();
                 this.removeCount = 0;
             }
         });
@@ -196,7 +202,7 @@ public class ComponentBuilderContainer extends Container
         }
     }
 
-    public void setLayout(ComponentBuilderLayout layout)
+    public void setLayout(ResourceLocation layout)
     {
         if (!this.player.world.isRemote())
         {
@@ -240,7 +246,7 @@ public class ComponentBuilderContainer extends Container
         ItemStack circuitBoardStack = this.inputArea.getStackInSlot(0);
         ItemStack solderIronStack = this.inputArea.getStackInSlot(1);
         ItemStack solderStack = this.inputArea.getStackInSlot(2);
-        return recipe.getLayout(world) == this.layout && recipe.getRecipeInput().test(circuitBoardStack) && (this.player.isCreative() || solderIronStack.getItem() == DeviceItems.SOLDER_IRON && solderStack.getItem() == DeviceItems.SOLDER && solderStack.getCount() >= recipe.getSolderAmount());
+        return recipe.getLayout().equals(this.layout) && recipe.getRecipeInput().test(circuitBoardStack) && (this.player.isCreative() || solderIronStack.getItem() == DeviceItems.SOLDER_IRON && solderStack.getItem() == DeviceItems.SOLDER && solderStack.getCount() >= recipe.getSolderAmount());
     }
 
     @Override
@@ -358,7 +364,7 @@ public class ComponentBuilderContainer extends Container
         return inputArea;
     }
 
-    public ComponentBuilderLayout getLayout()
+    public ResourceLocation getLayout()
     {
         return layout;
     }

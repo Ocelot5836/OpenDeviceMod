@@ -24,7 +24,6 @@ public class MoveWindowTask extends Task
 
     public MoveWindowTask()
     {
-        this(null, null, 0, 0);
     }
 
     public MoveWindowTask(UUID address, UUID windowId, float xDirection, float yDirection)

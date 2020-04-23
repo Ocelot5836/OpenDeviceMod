@@ -18,7 +18,6 @@ public class CloseLaptopTask extends Task
 
     public CloseLaptopTask()
     {
-        this(null);
     }
 
     public CloseLaptopTask(UUID address)

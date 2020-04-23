@@ -2,7 +2,6 @@ package com.ocelot.opendevices.api.registry;
 
 import com.ocelot.opendevices.api.computer.application.Application;
 import com.ocelot.opendevices.api.computer.settings.LaptopSetting;
-import com.ocelot.opendevices.api.crafting.ComponentBuilderLayout;
 import com.ocelot.opendevices.api.device.DeviceSerializer;
 import com.ocelot.opendevices.api.device.process.DeviceProcess;
 import com.ocelot.opendevices.api.task.Task;
@@ -39,7 +38,8 @@ public class DeviceRegistries
     private static final RegistryCache<DeviceProcessRegistryEntry, Class<? extends DeviceProcess<?>>> PROCESSES_CACHE;
     private static final RegistryCache<ApplicationRegistryEntry, Class<? extends Application>> APPLICATIONS_CACHE;
 
-    static{
+    static
+    {
         COMPONENT_BUILDER_BOARD_TEXTURES = RegistryManager.ACTIVE.getRegistry(ComponentBuilderBoardTexture.class);
 
         SETTINGS = RegistryManager.ACTIVE.getRegistry(LaptopSetting.class);

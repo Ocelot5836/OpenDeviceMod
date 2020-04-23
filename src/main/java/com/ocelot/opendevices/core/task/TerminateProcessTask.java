@@ -21,7 +21,6 @@ public class TerminateProcessTask extends Task
 
     public TerminateProcessTask()
     {
-        this(null, null);
     }
 
     public TerminateProcessTask(UUID address, UUID processId)

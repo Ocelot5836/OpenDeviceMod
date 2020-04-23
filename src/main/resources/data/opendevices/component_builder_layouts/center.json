@@ -3,10 +3,10 @@
 	"icon": {
 		"item": "string"
 	},
-	"texture": "opendevices:test_cross",
+	"texture": "opendevices:center",
 	"layout": [
+		"   ",
 		" # ",
-		"###",
-		" # "
+		"   "
 	]
 }

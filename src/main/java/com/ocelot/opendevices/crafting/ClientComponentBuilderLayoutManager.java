@@ -1,15 +1,9 @@
 package com.ocelot.opendevices.crafting;
 
 import com.ocelot.opendevices.api.DeviceResourceTypes;
-import com.ocelot.opendevices.api.crafting.ComponentBuilderLayout;
-import com.ocelot.opendevices.api.crafting.ComponentBuilderLayoutManager;
 import com.ocelot.opendevices.api.util.RenderUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.IReloadableResourceManager;
-import net.minecraft.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.ForgeHooksClient;
-import net.minecraftforge.resource.VanillaResourceType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,7 +24,6 @@ public class ClientComponentBuilderLayoutManager implements ComponentBuilderLayo
     {
         this.layouts.clear();
         this.layouts.putAll(layouts);
-        RenderUtil.refreshResources(Minecraft.getInstance(), DeviceResourceTypes.MAIN_ATLAS);
     }
 
     @Override
@@ -42,7 +35,7 @@ public class ClientComponentBuilderLayoutManager implements ComponentBuilderLayo
     @Override
     public ComponentBuilderLayout getLayout(ResourceLocation registryName)
     {
-        return this.layouts.get(registryName);
+        return this.layouts.getOrDefault(registryName, ComponentBuilderLayout.EMPTY);
     }
 
     @Override

@@ -21,7 +21,6 @@ public class ExecuteProcessTask extends Task
 
     public ExecuteProcessTask()
     {
-        this(null, null, null);
     }
 
     public ExecuteProcessTask(BlockPos pos, ResourceLocation processName, UUID processId)
