@@ -7,18 +7,22 @@ import com.ocelot.opendevices.api.task.TaskManager;
 import com.ocelot.opendevices.core.task.SetComponentBuilderLayoutTask;
 import com.ocelot.opendevices.crafting.componentbuilder.ComponentBuilderLayout;
 import com.ocelot.opendevices.crafting.componentbuilder.ComponentBuilderLayoutManager;
+import io.github.ocelot.client.TooltipRenderer;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
+import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
-public class ComponentBuilderScreen extends ContainerScreen<ComponentBuilderContainer>
+@OnlyIn(Dist.CLIENT)
+public class ComponentBuilderScreen extends ContainerScreen<ComponentBuilderContainer> implements TooltipRenderer
 {
     public static final ResourceLocation CONTAINER_TEXTURE = new ResourceLocation(OpenDevices.MOD_ID, "textures/gui/container/component_builder.png");
 
@@ -56,6 +60,7 @@ public class ComponentBuilderScreen extends ContainerScreen<ComponentBuilderCont
         this.children.clear();
         this.layouts.clear();
         this.layouts.addAll(layoutManager.getKeys());
+        this.layouts.sort(Comparator.comparingInt(a -> layoutManager.getLayout(a).getSlotsUsedCount()));
         if (this.selectedIndex >= layoutManager.getKeys().size())
             this.selectedIndex = 0;
         for (int i = 0; i < Math.min(7, layoutManager.getKeys().size()); i++)
@@ -75,6 +80,15 @@ public class ComponentBuilderScreen extends ContainerScreen<ComponentBuilderCont
     {
         this.font.drawString(this.title.getFormattedText(), 8.0F, 6.0F, 4210752);
         this.font.drawString(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float) (this.ySize - 96 + 3), 4210752);
+
+        for (Widget widget : this.buttons)
+        {
+            if (widget.isHovered())
+            {
+                widget.renderToolTip(mouseX - this.guiLeft, mouseY - this.guiTop);
+                break;
+            }
+        }
     }
 
     @Override
@@ -103,9 +117,32 @@ public class ComponentBuilderScreen extends ContainerScreen<ComponentBuilderCont
         return selectedIndex;
     }
 
+    public ResourceLocation getLayout(int index)
+    {
+        return index < 0 || index >= this.layouts.size() ? ComponentBuilderLayout.EMPTY_LOCATION : this.layouts.get(index);
+    }
+
     public void setSelectedIndex(int selectedIndex)
     {
         this.selectedIndex = selectedIndex;
-        this.setBoardLayout(this.layouts.get(selectedIndex < 0 || selectedIndex >= this.layouts.size() ? 0 : selectedIndex));
+        this.setBoardLayout(this.getLayout(selectedIndex));
+    }
+
+    @Override
+    public void renderTooltip(ItemStack stack, int posX, int posY)
+    {
+        super.renderTooltip(stack, posX, posY);
+    }
+
+    @Override
+    public void renderTooltip(String tooltip, int posX, int posY, FontRenderer fontRenderer)
+    {
+        this.renderTooltip(Collections.singletonList(tooltip), posX, posY, fontRenderer);
+    }
+
+    @Override
+    public void renderComponentHoverEffect(ITextComponent textComponent, int posX, int posY)
+    {
+        super.renderComponentHoverEffect(textComponent, posX, posY);
     }
 }

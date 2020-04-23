@@ -37,6 +37,7 @@ public class ComponentBuilderLayout implements INBTSerializable<CompoundNBT>
     private ResourceLocation textureLocation;
     private ItemStack icon;
     private int slotsUsed;
+    private int slotsUsedCount;
 
     @Deprecated
     public ComponentBuilderLayout(ITextComponent title, @Nullable ResourceLocation textureLocation, ItemStack icon, int slotsUsed)
@@ -45,6 +46,18 @@ public class ComponentBuilderLayout implements INBTSerializable<CompoundNBT>
         this.textureLocation = textureLocation == null ? null : new ResourceLocation(textureLocation.getNamespace(), "component_builder_layout/" + textureLocation.getPath());
         this.icon = icon;
         this.slotsUsed = slotsUsed;
+        this.slotsUsedCount = this.generateSlotsUsedCount();
+    }
+
+    private int generateSlotsUsedCount()
+    {
+        int count = 0;
+        for (int i = 0; i < 9; i++)
+        {
+            if (this.hasSlot(1 << i))
+                count++;
+        }
+        return count;
     }
 
     public ComponentBuilderLayout(CompoundNBT nbt)
@@ -66,6 +79,16 @@ public class ComponentBuilderLayout implements INBTSerializable<CompoundNBT>
     public ItemStack getIcon()
     {
         return icon;
+    }
+
+    public int getSlotsUsed()
+    {
+        return slotsUsed;
+    }
+
+    public int getSlotsUsedCount()
+    {
+        return slotsUsedCount;
     }
 
     public boolean hasSlot(int slot)
@@ -92,6 +115,7 @@ public class ComponentBuilderLayout implements INBTSerializable<CompoundNBT>
         this.textureLocation = nbt.contains("textureLocation", Constants.NBT.TAG_STRING) ? new ResourceLocation(nbt.getString("textureLocation")) : null;
         this.icon = ItemStack.read(nbt.getCompound("icon"));
         this.slotsUsed = nbt.getInt("slotsUsed");
+        this.slotsUsedCount = this.generateSlotsUsedCount();
     }
 
     public static class Deserializer implements JsonDeserializer<ComponentBuilderLayout>

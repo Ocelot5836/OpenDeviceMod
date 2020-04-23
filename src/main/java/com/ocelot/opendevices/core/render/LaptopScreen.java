@@ -122,24 +122,6 @@ public class LaptopScreen extends Screen implements TooltipRenderer
     }
 
     @Override
-    public void renderTooltip(ItemStack stack, int posX, int posY)
-    {
-        super.renderTooltip(stack, posX, posY);
-    }
-
-    @Override
-    public void renderTooltip(String tooltip, int posX, int posY, FontRenderer fontRenderer)
-    {
-        this.renderTooltip(Collections.singletonList(tooltip), posX, posY, fontRenderer);
-    }
-
-    @Override
-    public void renderComponentHoverEffect(ITextComponent textComponent, int posX, int posY)
-    {
-        super.renderComponentHoverEffect(textComponent, posX, posY);
-    }
-
-    @Override
     public boolean keyPressed(int keyCode, int scanCode, int mods)
     {
         if (this.draggingWindow == null)
@@ -409,5 +391,23 @@ public class LaptopScreen extends Screen implements TooltipRenderer
         {
             TaskManager.sendToServer(new CloseLaptopTask(this.laptop.getAddress()), TaskManager.TaskReceiver.NONE);
         }
+    }
+
+    @Override
+    public void renderTooltip(ItemStack stack, int posX, int posY)
+    {
+        super.renderTooltip(stack, posX, posY);
+    }
+
+    @Override
+    public void renderTooltip(String tooltip, int posX, int posY, FontRenderer fontRenderer)
+    {
+        this.renderTooltip(Collections.singletonList(tooltip), posX, posY, fontRenderer);
+    }
+
+    @Override
+    public void renderComponentHoverEffect(ITextComponent textComponent, int posX, int posY)
+    {
+        super.renderComponentHoverEffect(textComponent, posX, posY);
     }
 }
