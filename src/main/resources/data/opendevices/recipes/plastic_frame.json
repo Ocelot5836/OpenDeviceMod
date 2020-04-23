@@ -4,9 +4,8 @@
         "item": "opendevices:plastic_frame"
     },
     "pattern": [
-        "PPP",
-        "PPP",
-        "PPP"
+        "PP",
+        "PP"
     ],
     "key": {
         "P": {

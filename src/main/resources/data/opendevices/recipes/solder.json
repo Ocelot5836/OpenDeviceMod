@@ -2,7 +2,7 @@
     "type": "minecraft:crafting_shaped",
     "result": {
         "item": "opendevices:solder",
-		"count": 4
+		"count": 8
     },
     "pattern": [
         "PPP",

@@ -1,16 +1,27 @@
 {
-    "type": "minecraft:crafting_shaped",
+    "type": "minecraft:crafting_shapeless",
     "result": {
-        "item": "opendevices:plastic_block"
+        "item": "opendevices:plastic_block",
+        "count": 4
     },
-    "pattern": [
-        " P ",
-        "P P",
-        " P "
-    ],
-    "key": {
-        "P": {
+    "ingredients": [
+        {
+            "item": "opendevices:plastic_frame"
+        },
+        {
+            "item": "opendevices:plastic_frame"
+        },
+        {
+            "item": "opendevices:plastic_frame"
+        },
+        {
+            "item": "opendevices:plastic_frame"
+        },
+        {
+            "item": "opendevices:plastic_frame"
+        },
+        {
             "item": "opendevices:plastic_frame"
         }
-    }
+    ]
 }
