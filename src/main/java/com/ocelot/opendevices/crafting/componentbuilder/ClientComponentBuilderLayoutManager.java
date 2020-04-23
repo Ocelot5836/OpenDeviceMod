@@ -24,7 +24,7 @@ public class ClientComponentBuilderLayoutManager implements ComponentBuilderLayo
         this.layouts.clear();
         this.layouts.putAll(layouts);
         if (Minecraft.getInstance().currentScreen instanceof ComponentBuilderScreen)
-            ((ComponentBuilderScreen) Minecraft.getInstance().currentScreen).initTabs(this);
+            ((ComponentBuilderScreen) Minecraft.getInstance().currentScreen).initTabs(this, true);
     }
 
     @Override

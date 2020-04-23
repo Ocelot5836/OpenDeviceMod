@@ -18,13 +18,13 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import javax.annotation.Nullable;
 import java.util.*;
 
 @OnlyIn(Dist.CLIENT)
 public class ComponentBuilderScreen extends ContainerScreen<ComponentBuilderContainer> implements TooltipRenderer
 {
     public static final ResourceLocation CONTAINER_TEXTURE = new ResourceLocation(OpenDevices.MOD_ID, "textures/gui/container/component_builder.png");
+    public static final int MAX_TABS = 5;
 
     private final List<ResourceLocation> layouts;
     private int scroll;
@@ -42,7 +42,7 @@ public class ComponentBuilderScreen extends ContainerScreen<ComponentBuilderCont
     protected void init()
     {
         super.init();
-        this.initTabs(ComponentBuilderLayoutManager.get(this.playerInventory.player.world));
+        this.initTabs(ComponentBuilderLayoutManager.get(this.playerInventory.player.world), false);
     }
 
     private void setBoardLayout(ResourceLocation layout)
@@ -53,9 +53,10 @@ public class ComponentBuilderScreen extends ContainerScreen<ComponentBuilderCont
         TaskManager.sendToServer(new SetComponentBuilderLayoutTask(this.container.windowId, layout), TaskManager.TaskReceiver.SENDER);
     }
 
-    public void initTabs(ComponentBuilderLayoutManager layoutManager)
+    public void initTabs(ComponentBuilderLayoutManager layoutManager, boolean updateSelected)
     {
-        this.scroll = 0;
+        if (updateSelected)
+            this.scroll = 0;
         this.buttons.clear();
         this.children.clear();
         this.layouts.clear();
@@ -63,9 +64,22 @@ public class ComponentBuilderScreen extends ContainerScreen<ComponentBuilderCont
         this.layouts.sort(Comparator.comparingInt(a -> layoutManager.getLayout(a).getSlotsUsedCount()));
         if (this.selectedIndex >= layoutManager.getKeys().size())
             this.selectedIndex = 0;
-        for (int i = 0; i < Math.min(7, layoutManager.getKeys().size()); i++)
-            this.addButton(new ComponentBuilderLayoutTab(this, layoutManager, this.guiLeft - 21, 4 + this.guiTop + i * 24, i));
-        this.setBoardLayout(this.layouts.isEmpty() ? ComponentBuilderLayout.EMPTY_LOCATION : this.layouts.get(0));
+        this.addButton(new IconButton(this.guiLeft - 20, this.guiTop + 3, "", component ->
+        {
+            this.scroll--;
+            if (this.scroll < 0)
+                this.scroll = 0;
+        }, CONTAINER_TEXTURE, 200, 0));
+        this.addButton(new IconButton(this.guiLeft - 20, this.guiTop + this.ySize - 23, "", component ->
+        {
+            this.scroll++;
+            if (this.scroll >= this.layouts.size() - MAX_TABS)
+                this.scroll = this.layouts.size() - MAX_TABS;
+        }, CONTAINER_TEXTURE, 200, 16));
+        for (int i = 0; i < Math.min(MAX_TABS, layoutManager.getKeys().size()); i++)
+            this.addButton(new ComponentBuilderLayoutTab(this, layoutManager, this.guiLeft - 21, 28 + this.guiTop + i * 24, i));
+        if (updateSelected)
+            this.setBoardLayout(this.layouts.isEmpty() ? ComponentBuilderLayout.EMPTY_LOCATION : this.layouts.get(0));
     }
 
     @Override

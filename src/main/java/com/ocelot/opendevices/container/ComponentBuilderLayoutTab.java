@@ -37,7 +37,7 @@ public class ComponentBuilderLayoutTab extends AbstractButton
 
     private boolean isSelected()
     {
-        return this.parent.getSelectedIndex() + this.parent.getScroll() == this.index;
+        return this.parent.getSelectedIndex() == this.index + this.parent.getScroll();
     }
 
     private ComponentBuilderLayout getLayout()
@@ -84,6 +84,6 @@ public class ComponentBuilderLayoutTab extends AbstractButton
     @Override
     public void onPress()
     {
-        this.parent.setSelectedIndex(this.index - this.parent.getScroll());
+        this.parent.setSelectedIndex(this.index + this.parent.getScroll());
     }
 }
