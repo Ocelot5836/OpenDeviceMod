@@ -137,7 +137,8 @@ dependencies {
     runtimeOnly fg.deobf("mezz.jei:jei-${project.minecraft}:${project.jei}")
 
     // Filters
-    compileOnly fg.deobf("filters:Filters-${project.filters}:1.14.4:deobf")
+    // compileOnly fg.deobf("filters:Filters-${project.filters}:1.14.4:deobf")
+    // TODO update to 1.15
 
     // Patchouli
     compile fg.deobf("vazkii.patchouli:Patchouli:${project.minecraft}-${project.patchouli}")

@@ -1,6 +1,5 @@
 package com.ocelot.opendevices;
 
-import com.mrcrayfish.filters.Filters;
 import com.ocelot.opendevices.api.IconManager;
 import com.ocelot.opendevices.api.computer.Computer;
 import com.ocelot.opendevices.api.computer.application.Application;
@@ -104,7 +103,8 @@ public class OpenDevices
 
         if (ModList.get().isLoaded("filters"))
         {
-            Filters.get().register(TAB, new ResourceLocation(MOD_ID, "devices/laptops"), new ItemStack(DeviceBlocks.RED_LAPTOP));
+            OpenDevices.LOGGER.warn("Filters is currently not supported ");
+            // Filters.get().register(TAB, new ResourceLocation(MOD_ID, "devices/laptops"), new ItemStack(DeviceBlocks.RED_LAPTOP));
         }
     }
 
