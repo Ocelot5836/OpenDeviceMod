@@ -1,0 +1,12 @@
+{
+	"title": "Test 9",
+	"icon": {
+		"item": "string"
+	},
+	"texture": "opendevices:test9",
+	"layout": [
+		"###",
+		"###",
+		"###"
+	]
+}

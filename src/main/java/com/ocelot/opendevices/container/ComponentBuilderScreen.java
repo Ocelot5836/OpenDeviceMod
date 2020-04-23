@@ -14,6 +14,7 @@ import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -29,6 +30,8 @@ public class ComponentBuilderScreen extends ContainerScreen<ComponentBuilderCont
     private final List<ResourceLocation> layouts;
     private int scroll;
     private int selectedIndex;
+    private Widget upButton;
+    private Widget downButton;
 
     public ComponentBuilderScreen(ComponentBuilderContainer screenContainer, PlayerInventory playerInventory, ITextComponent title)
     {
@@ -47,7 +50,7 @@ public class ComponentBuilderScreen extends ContainerScreen<ComponentBuilderCont
 
     private void setBoardLayout(ResourceLocation layout)
     {
-        if (this.container.getLayout() == layout)
+        if (this.container.getLayout().equals(layout))
             return;
         this.container.setLayout(layout);
         TaskManager.sendToServer(new SetComponentBuilderLayoutTask(this.container.windowId, layout), TaskManager.TaskReceiver.SENDER);
@@ -55,8 +58,6 @@ public class ComponentBuilderScreen extends ContainerScreen<ComponentBuilderCont
 
     public void initTabs(ComponentBuilderLayoutManager layoutManager, boolean updateSelected)
     {
-        if (updateSelected)
-            this.scroll = 0;
         this.buttons.clear();
         this.children.clear();
         this.layouts.clear();
@@ -64,22 +65,13 @@ public class ComponentBuilderScreen extends ContainerScreen<ComponentBuilderCont
         this.layouts.sort(Comparator.comparingInt(a -> layoutManager.getLayout(a).getSlotsUsedCount()));
         if (this.selectedIndex >= layoutManager.getKeys().size())
             this.selectedIndex = 0;
-        this.addButton(new IconButton(this.guiLeft - 20, this.guiTop + 3, "", component ->
-        {
-            this.scroll--;
-            if (this.scroll < 0)
-                this.scroll = 0;
-        }, CONTAINER_TEXTURE, 200, 0));
-        this.addButton(new IconButton(this.guiLeft - 20, this.guiTop + this.ySize - 23, "", component ->
-        {
-            this.scroll++;
-            if (this.scroll >= this.layouts.size() - MAX_TABS)
-                this.scroll = this.layouts.size() - MAX_TABS;
-        }, CONTAINER_TEXTURE, 200, 16));
+        this.addButton(this.upButton = new IconButton(this.guiLeft - 20, this.guiTop + 3, "", component -> this.setScroll(this.scroll - 1), CONTAINER_TEXTURE, 200, 0));
+        this.addButton(this.downButton = new IconButton(this.guiLeft - 20, this.guiTop + this.ySize - 23, "", component -> this.setScroll(this.scroll + 1), CONTAINER_TEXTURE, 200, 16));
         for (int i = 0; i < Math.min(MAX_TABS, layoutManager.getKeys().size()); i++)
             this.addButton(new ComponentBuilderLayoutTab(this, layoutManager, this.guiLeft - 21, 28 + this.guiTop + i * 24, i));
-        if (updateSelected)
-            this.setBoardLayout(this.layouts.isEmpty() ? ComponentBuilderLayout.EMPTY_LOCATION : this.layouts.get(0));
+        if (updateSelected) this.setScroll(0);
+        else this.setScroll(this.scroll);
+        this.setBoardLayout(this.layouts.isEmpty() ? ComponentBuilderLayout.EMPTY_LOCATION : this.layouts.get(this.selectedIndex + this.scroll < 0 || this.selectedIndex + this.scroll >= this.layouts.size() ? 0 : this.selectedIndex + this.scroll));
     }
 
     @Override
@@ -121,6 +113,19 @@ public class ComponentBuilderScreen extends ContainerScreen<ComponentBuilderCont
         }
     }
 
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount)
+    {
+        if (super.mouseScrolled(mouseX, mouseY, amount))
+            return true;
+        if (mouseX - this.guiLeft >= -21 && mouseX - this.guiLeft < 0 && mouseY - this.guiTop >= 3 && mouseY - this.guiTop < this.ySize - 3)
+        {
+            this.setScroll(this.scroll + (amount < 0 ? 1 : -1));
+            return true;
+        }
+        return false;
+    }
+
     public int getScroll()
     {
         return scroll;
@@ -140,6 +145,13 @@ public class ComponentBuilderScreen extends ContainerScreen<ComponentBuilderCont
     {
         this.selectedIndex = selectedIndex;
         this.setBoardLayout(this.getLayout(selectedIndex));
+    }
+
+    public void setScroll(int scroll)
+    {
+        this.scroll = MathHelper.clamp(scroll, 0, Math.max(0, this.layouts.size() - MAX_TABS));
+        this.upButton.active = this.scroll > 0;
+        this.downButton.active = this.scroll < this.layouts.size() - MAX_TABS;
     }
 
     @Override
