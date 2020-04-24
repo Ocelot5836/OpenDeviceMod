@@ -4,7 +4,7 @@
         "item": "opendevices:cpu"
     },
     "pattern": [
-        "IQI",
+        "MIM",
         "RBR",
         "GGG"
     ],
@@ -12,8 +12,8 @@
         "I": {
             "tag": "forge:storage_blocks/iron"
         },
-        "Q": {
-            "tag": "forge:storage_blocks/quartz"
+        "M": {
+            "tag": "forge:ingots/iron"
         },
         "R": {
             "tag": "forge:dusts/redstone"
