@@ -1,0 +1,78 @@
+{
+	"credit": "Made with Blockbench",
+	"parent": "opendevices:item/template_component",
+	"texture_size": [32, 32],
+	"textures": {
+		"0": "opendevices:item/controller_chip",
+		"1": "opendevices:item/controller_chip_bottom",
+		"particle": "opendevices:item/controller_chip"
+	},
+	"elements": [
+		{
+			"name": "base",
+			"from": [3, 0, 3],
+			"to": [13, 1, 13],
+			"faces": {
+				"north": {"uv": [3, 3, 13, 3.5], "texture": "#0"},
+				"east": {"uv": [12.5, 3, 13, 13], "rotation": 90, "texture": "#0"},
+				"south": {"uv": [3, 12.5, 13, 13], "texture": "#0"},
+				"west": {"uv": [3, 3, 3.5, 13], "rotation": 270, "texture": "#0"},
+				"up": {"uv": [3, 3, 13, 13], "texture": "#0"},
+				"down": {"uv": [3, 13, 13, 3], "texture": "#1"}
+			}
+		},
+		{
+			"name": "teeth",
+			"from": [2.5, -0.5, 3.5],
+			"to": [2.5, 0.5, 12.5],
+			"faces": {
+				"east": {"uv": [3, 3.5, 2, 12.5], "rotation": 90, "texture": "#0"},
+				"west": {"uv": [2, 3.5, 3, 12.5], "rotation": 270, "texture": "#0"}
+			}
+		},
+		{
+			"name": "base",
+			"from": [2.5, 0, 3.5],
+			"to": [3, 0.5, 12.5],
+			"faces": {
+				"north": {"uv": [2.5, 3.5, 3, 4], "texture": "#0"},
+				"south": {"uv": [2.5, 12, 3, 12.5], "texture": "#0"},
+				"up": {"uv": [2.5, 3.5, 3, 12.5], "texture": "#0"},
+				"down": {"uv": [2.5, 12.5, 3, 3.5], "texture": "#0"}
+			}
+		},
+		{
+			"name": "teeth",
+			"from": [13.5, -0.5, 3.5],
+			"to": [13.5, 0.5, 12.5],
+			"faces": {
+				"east": {"uv": [3, 3.5, 2, 12.5], "rotation": 90, "texture": "#0"},
+				"west": {"uv": [2, 3.5, 3, 12.5], "rotation": 270, "texture": "#0"}
+			}
+		},
+		{
+			"name": "base",
+			"from": [13, 0, 3.5],
+			"to": [13.5, 0.5, 12.5],
+			"faces": {
+				"north": {"uv": [13, 3.5, 13.5, 4], "texture": "#0"},
+				"south": {"uv": [13, 12, 13.5, 12.5], "texture": "#0"},
+				"up": {"uv": [13, 3.5, 13.5, 12.5], "texture": "#0"},
+				"down": {"uv": [13, 12.5, 13.5, 3.5], "texture": "#0"}
+			}
+		}
+	],
+	"display": {},
+	"groups": [0,
+		{
+			"name": "leftpin",
+			"origin": [8, 8, 8],
+			"children": [1, 2]
+		},
+		{
+			"name": "rightpin",
+			"origin": [8, 8, 8],
+			"children": [3, 4]
+		}
+	]
+}

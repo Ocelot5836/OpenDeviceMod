@@ -97,10 +97,6 @@ public class OpenDevices
     {
         LaptopTileEntityRenderer.addReloadListener();
 
-        // TODO automatically use application instances when no custom renderer is applied
-        ProcessInputRegistry.bindInputHandler(TestProcess.class, new ApplicationInputHandler<>());
-        ProcessInputRegistry.bindWindowRenderer(TestProcess.class, new ApplicationWindowRenderer<>());
-
         if (ModList.get().isLoaded("filters"))
         {
             OpenDevices.LOGGER.warn("Filters is currently not supported ");

@@ -1,6 +1,9 @@
 package com.ocelot.opendevices.api.device.process;
 
 import com.ocelot.opendevices.OpenDevices;
+import com.ocelot.opendevices.api.computer.application.Application;
+import com.ocelot.opendevices.api.computer.application.ApplicationInputHandler;
+import com.ocelot.opendevices.api.computer.application.ApplicationWindowRenderer;
 import com.ocelot.opendevices.api.device.Device;
 
 import javax.annotation.Nullable;
@@ -20,6 +23,9 @@ public class ProcessInputRegistry
 {
     private static final Map<Class<? extends DeviceProcess<? extends Device>>, ProcessInputHandler<?, ?>> INPUT_REGISTRY = new HashMap<>();
     private static final Map<Class<? extends DeviceProcess<? extends Device>>, ProcessWindowRenderer<?, ?>> RENDER_REGISTRY = new HashMap<>();
+
+    private static final ApplicationInputHandler<?, ?> DEFAULT_APPLICATION_INPUT_HANDLER = new ApplicationInputHandler<>();
+    private static final ApplicationWindowRenderer<?, ?> DEFAULT_APPLICATION_WINDOW_RENDERER = new ApplicationWindowRenderer<>();
 
     /**
      * Binds an input handler to the specified process class.
@@ -57,7 +63,11 @@ public class ProcessInputRegistry
     public static <D extends Device> ProcessInputHandler<D, DeviceProcess<D>> getInputHandler(DeviceProcess<D> process)
     {
         if (!INPUT_REGISTRY.containsKey(process.getClass()))
+        {
+            if (process instanceof Application<?>)
+                return (ProcessInputHandler<D, DeviceProcess<D>>) DEFAULT_APPLICATION_INPUT_HANDLER;
             return null;
+        }
         try
         {
             return (ProcessInputHandler<D, DeviceProcess<D>>) INPUT_REGISTRY.get(process.getClass());
@@ -81,7 +91,11 @@ public class ProcessInputRegistry
     public static <D extends Device> ProcessWindowRenderer<D, DeviceProcess<D>> getWindowRenderer(DeviceProcess<D> process)
     {
         if (!RENDER_REGISTRY.containsKey(process.getClass()))
+        {
+            if (process instanceof Application<?>)
+                return (ProcessWindowRenderer<D, DeviceProcess<D>>) DEFAULT_APPLICATION_WINDOW_RENDERER;
             return null;
+        }
         try
         {
             return (ProcessWindowRenderer<D, DeviceProcess<D>>) RENDER_REGISTRY.get(process.getClass());
