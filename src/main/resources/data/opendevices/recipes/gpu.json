@@ -1,0 +1,34 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "result": {
+        "item": "opendevices:gpu"
+    },
+    "pattern": [
+        "IOI",
+        "RGB",
+        "NCN"
+    ],
+    "key": {
+        "I": {
+            "tag": "forge:storage_blocks/iron"
+        },
+        "O": {
+            "tag": "forge:obsidian"
+        },
+        "R": {
+            "tag": "forge:dyes/red"
+        },
+        "G": {
+            "tag": "forge:dyes/green"
+        },
+        "B": {
+            "tag": "forge:dyes/blue"
+        },
+        "N": {
+            "tag": "forge:nuggets/gold"
+        },
+        "C": {
+            "item": "opendevices:green_circuit_board"
+        }
+    }
+}

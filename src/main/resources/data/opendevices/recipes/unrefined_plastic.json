@@ -1,21 +1,31 @@
 {
-    "type": "minecraft:crafting_shapeless",
-    "result": {
-        "item": "opendevices:unrefined_plastic",
+	"type": "minecraft:crafting_shapeless",
+	"result": {
+		"item": "opendevices:unrefined_plastic",
 		"count": 4
-    },
-    "ingredients": [
-        {
-            "tag": "forge:dyes/white"
-        },
-        {
-            "tag": "forge:dyes/black"
-        },
-        {
-            "tag": "forge:slimeballs"
-        },
-        {
-            "tag": "minecraft:coals"
-        }
-    ]
+	},
+	"ingredients": [
+		[
+			{
+				"tag": "forge:dyes/white"
+			},
+			{
+				"tag": "forge:dyes/gray"
+			}
+		],
+		[
+			{
+				"tag": "forge:dyes/black"
+			},
+			{
+				"tag": "forge:dyes/gray"
+			}
+		],
+		{
+			"tag": "forge:slimeballs"
+		},
+		{
+			"tag": "minecraft:coals"
+		}
+	]
 }

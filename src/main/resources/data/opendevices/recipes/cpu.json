@@ -1,0 +1,28 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "result": {
+        "item": "opendevices:cpu"
+    },
+    "pattern": [
+        "IQI",
+        "RBR",
+        "GGG"
+    ],
+    "key": {
+        "I": {
+            "tag": "forge:storage_blocks/iron"
+        },
+        "Q": {
+            "tag": "forge:storage_blocks/quartz"
+        },
+        "R": {
+            "tag": "forge:dusts/redstone"
+        },
+        "B": {
+            "item": "opendevices:green_circuit_board"
+        },
+        "G": {
+            "tag": "forge:nuggets/gold"
+        }
+    }
+}

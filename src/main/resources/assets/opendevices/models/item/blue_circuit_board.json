@@ -1,5 +1,5 @@
 {
-    "parent": "opendevices:item/circuit_board",
+    "parent": "opendevices:item/template_circuit_board",
     "textures": {
         "circuit_board": "opendevices:item/blue_circuit_board"
     }

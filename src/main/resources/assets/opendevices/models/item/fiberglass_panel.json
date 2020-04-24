@@ -1,7 +1,8 @@
 {
-    "parent": "block/thin_block",
+	"parent": "opendevices:item/template_component",
     "textures": {
-        "texture": "opendevices:item/fiberglass_panel"
+        "texture": "opendevices:item/fiberglass_panel",
+		"particle": "opendevices:item/fiberglass_panel"
     },
     "elements": [
 		{

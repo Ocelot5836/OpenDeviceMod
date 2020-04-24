@@ -41,10 +41,12 @@
 	"item.opendevices.red_motherboard": "Ultimate Motherboard",
 	"item.opendevices.cpu": "Central Processing Unit (CPU)",
 	"item.opendevices.ram": "Random Access Memory (RAM)",
-	"item.opendevices.gpu": "Graphics Processing Unit (GPU)",
+	"item.opendevices.gpu": "Graphics Processing Chip",
+	"item.opendevices.mounted_gpu": "Graphics Processing Unit (GPU)",
 
 	"item.opendevices.flash_chip": "Flash Chip",
 	"item.opendevices.controller_chip": "Controller Chip",
+	"item.opendevices.ram_chip": "Random Access Memory (RAM) Chip",
 
 	"item.opendevices.hard_drive": "Hard Drive",
 	"item.opendevices.solid_state_drive": "Solid State Drive",

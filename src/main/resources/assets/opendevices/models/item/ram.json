@@ -1,36 +1,9 @@
 {
     "__comment": "Model generated using MrCrayfish's Model Creator (https://mrcrayfish.com/tools?id=mc)",
-    "parent": "block/thin_block",
+    "parent": "opendevices:item/template_component",
     "textures": {
         "front": "opendevices:item/ram",
         "back": "opendevices:item/ram_back"
-    },
-    "display": {
-        "gui": {
-            "rotation": [ 0, 0, 0 ],
-            "translation": [ 0, 2, 0 ],
-            "scale": [ 0.9375, 0.9375, 0.9375 ]
-        },
-        "ground": {
-            "rotation": [ 0, 0, 0 ],
-            "translation": [ 0, 3, 0 ],
-            "scale": [ 0.3, 0.3, 0.3 ]
-        },
-        "fixed": {
-            "rotation": [ 0, 0, 0 ],
-            "translation": [ 0, 0, 0 ],
-            "scale": [ 0.5, 0.5, 0.5 ]
-        },
-        "thirdperson_righthand": {
-            "rotation": [ 75, 45, 0 ],
-            "translation": [ 0, 2.5, 0 ],
-            "scale": [ 0.375, 0.375, 0.375 ]
-        },
-        "firstperson_righthand": {
-            "rotation": [ 0, 315, 0 ],
-            "translation": [ 0, 3, 0 ],
-            "scale": [ 0.4, 0.4, 0.4 ]
-        }
     },
     "elements": [
         {

@@ -1,5 +1,5 @@
 {
-    "parent": "opendevices:item/motherboard",
+    "parent": "opendevices:item/template_motherboard",
     "textures": {
         "top": "opendevices:item/blue_motherboard",
         "bottom": "opendevices:item/blue_motherboard_bottom"

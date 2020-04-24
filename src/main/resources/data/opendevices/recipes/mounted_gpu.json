@@ -1,0 +1,24 @@
+{
+    "type": "opendevices:component_builder",
+	"layout": "opendevices:cross",
+	"input": {
+        "item": "opendevices:green_circuit_board"
+    },
+    "result": {
+        "item": "opendevices:mounted_gpu"
+    },
+    "solderAmount": 5,
+    "pattern": [
+        " R ",
+        "RGR",
+		" R "
+    ],
+    "key": {
+        "R": {
+            "item": "opendevices:ram_chip"
+        },
+        "G": {
+            "item": "opendevices:gpu"
+        }
+    }
+}

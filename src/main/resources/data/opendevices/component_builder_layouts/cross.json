@@ -1,9 +1,9 @@
 {
-	"title": "Test Cross",
+	"title": "Cross",
 	"icon": {
 		"item": "string"
 	},
-	"texture": "opendevices:test_cross",
+	"texture": "opendevices:cross",
 	"layout": [
 		" # ",
 		"###",

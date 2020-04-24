@@ -15,8 +15,9 @@ public enum DeviceMaterials
     SMALL_ELECTRIC_MOTOR("small_electric_motor"),
     CARRIAGE("carriage"),
 
-//    FLASH_CHIP("flash_chip"),
-//    CONTROLLER_CHIP("controller_chip"),
+    FLASH_CHIP("flash_chip"),
+    CONTROLLER_CHIP("controller_chip"),
+    RAM_CHIP("ram_chip"),
 
     // TODO add colors to drives
     HARD_DRIVE("hard_drive"),
@@ -24,7 +25,11 @@ public enum DeviceMaterials
     FLOPPY_DRIVE("floppy_drive"), // Placeholder
     FLASH_DRIVE("flash_drive"), // Placeholder
 
-    FIBERGLASS_PANEL("fiberglass_panel")
+    FIBERGLASS_PANEL("fiberglass_panel"),
+
+    GPU("gpu")
+
+
 
     ;
 

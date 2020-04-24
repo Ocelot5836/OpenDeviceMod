@@ -1,9 +1,10 @@
 {
     "__comment": "Model generated using MrCrayfish's Model Creator (https://mrcrayfish.com/tools?id=mc)",
-    "parent": "block/thin_block",
+    "parent": "opendevices:item/template_component",
     "textures": {
         "0": "opendevices:item/battery",
-        "1": "opendevices:item/battery_bottom"
+        "1": "opendevices:item/battery_bottom",
+        "particle": "opendevices:item/battery"
     },
     "elements": [
         {

@@ -1,7 +1,8 @@
 {
-	"parent": "block/thin_block",
+	"parent": "opendevices:item/template_component",
 	"textures": {
-		"wires": "opendevices:item/circuit_board_wires"
+		"wires": "opendevices:item/circuit_board_wires",
+		"particle": "#circuit_board"
 	},
 	"elements": [
 		{

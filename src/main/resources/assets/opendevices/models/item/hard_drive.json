@@ -1,5 +1,5 @@
 {
-    "parent": "block/thin_block",
+    "parent": "opendevices:item/template_component",
     "textures": {
         "texture": "opendevices:item/hard_drive"
     },

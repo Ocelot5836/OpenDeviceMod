@@ -41,10 +41,11 @@ public class DeviceItems
     public static final Item RED_COMPONENT_MOTHERBOARD = register(new ComponentItem("red_motherboard", DeviceComponentItem.ULTIMATE));
     public static final Item COMPONENT_CPU = register(new ComponentItem("cpu", DeviceComponentItem.NONE));
     public static final Item COMPONENT_RAM = register(new ComponentItem("ram", DeviceComponentItem.NONE));
-    public static final Item COMPONENT_GPU = register(new ComponentItem("gpu", DeviceComponentItem.NONE));
+    public static final Item COMPONENT_GPU = register(new ComponentItem("mounted_gpu", DeviceComponentItem.NONE));
 
-    public static final Item FLASH_CHIP = register(new ComponentItem("flash_chip", DeviceComponentItem.NONE));
-    public static final Item CONTROLLER_CHIP = register(new ComponentItem("controller_chip", DeviceComponentItem.NONE));
+    public static final Item GREEN_CONTROLLER_BOARD = register(new ComponentItem("green_controller_board", DeviceComponentItem.STANDARD));
+    public static final Item BLUE_CONTROLLER_BOARD = register(new ComponentItem("blue_controller_board", DeviceComponentItem.IMPROVED));
+    public static final Item RED_CONTROLLER_BOARD = register(new ComponentItem("red_controller_board", DeviceComponentItem.ULTIMATE));
 
     public static Item register(Item item)
     {
