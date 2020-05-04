@@ -45,7 +45,10 @@ public class OpenDevicesConfig
     @SubscribeEvent
     public static void onConfigReloaded(ModConfig.Reloading event)
     {
-        DistExecutor.runWhenOn(Dist.CLIENT, () -> LaptopTileEntityRenderer::reload);
+        if (OpenDevices.MOD_ID.equals(event.getConfig().getModId()))
+        {
+            DistExecutor.runWhenOn(Dist.CLIENT, () -> LaptopTileEntityRenderer::reload);
+        }
     }
 
     public static class Client
