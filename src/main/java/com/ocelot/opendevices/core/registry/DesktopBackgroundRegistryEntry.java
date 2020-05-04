@@ -3,6 +3,7 @@ package com.ocelot.opendevices.core.registry;
 import com.ocelot.opendevices.api.computer.desktop.DesktopBackground;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
+@Deprecated
 public class DesktopBackgroundRegistryEntry extends ForgeRegistryEntry<DesktopBackgroundRegistryEntry>
 {
     private Class<? extends DesktopBackground> clazz;

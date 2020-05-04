@@ -29,7 +29,7 @@ public interface TrayItem
      */
     default TrayItemInfo getInfo()
     {
-        return ApplicationManager.getTrayIconInfo(this.getRegistryName());
+        return ApplicationManager.getTrayItemInfo(this.getRegistryName());
     }
 
     /**

@@ -2,9 +2,9 @@ package com.ocelot.opendevices.api.computer.application;
 
 import com.google.gson.*;
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.api.registry.DeviceRegistries;
 import com.ocelot.opendevices.api.computer.Computer;
 import com.ocelot.opendevices.api.computer.taskbar.TrayItemInfo;
+import com.ocelot.opendevices.api.registry.DeviceRegistries;
 import com.ocelot.opendevices.core.computer.AppInfoImpl;
 import com.ocelot.opendevices.core.computer.TrayItemInfoImpl;
 import com.ocelot.opendevices.core.registry.ApplicationRegistryEntry;
@@ -28,6 +28,7 @@ import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -122,14 +123,30 @@ public class ApplicationManager
     }
 
     /**
+     * @return The registry names of each application registered
+     */
+    public static Set<ResourceLocation> getApplications()
+    {
+        return APP_INFO.keySet();
+    }
+
+    /**
      * Checks the loaded tray icon infos for the specified tray icon.
      *
      * @param registryName The id of the tray icon to get the info for
      * @return The info found or {@link TrayItemInfo#EMPTY} if there was no associated info
      */
-    public static TrayItemInfo getTrayIconInfo(ResourceLocation registryName)
+    public static TrayItemInfo getTrayItemInfo(ResourceLocation registryName)
     {
         return TRAY_ITEM_INFO.getOrDefault(registryName, TrayItemInfo.EMPTY);
+    }
+
+    /**
+     * @return The registry names of each tray icon registered
+     */
+    public static Set<ResourceLocation> getTrayIcons()
+    {
+        return TRAY_ITEM_INFO.keySet();
     }
 
     private static class AppInfoDeserializer implements JsonDeserializer<AppInfoImpl>

@@ -1,14 +1,14 @@
 package com.ocelot.opendevices.api;
 
 import com.ocelot.opendevices.OpenDevices;
-import com.ocelot.opendevices.api.registry.DeviceRegistries;
-import com.ocelot.opendevices.core.registry.ComponentBuilderBoardTexture;
-import com.ocelot.opendevices.core.registry.WindowIconRegistryEntry;
+import com.ocelot.opendevices.api.computer.application.AppInfo;
+import com.ocelot.opendevices.api.computer.application.ApplicationManager;
+import com.ocelot.opendevices.api.computer.taskbar.TrayItemInfo;
+import com.ocelot.opendevices.api.registry.DeviceCircuitBoardItem;
 import com.ocelot.opendevices.core.render.sprite.OpenDevicesSpriteUploader;
 import com.ocelot.opendevices.crafting.componentbuilder.ComponentBuilderLayout;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.item.Item;
 import net.minecraft.resources.IReloadableResourceManager;
 import net.minecraft.resources.IResourceManager;
@@ -18,9 +18,9 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -32,6 +32,8 @@ public class IconManager
 {
     public static final ResourceLocation LOCATION_OPENDEVICES_GUI_ATLAS = new ResourceLocation(OpenDevices.MOD_ID, "atlas/textures.png");
     public static final ResourceLocation DEFAULT_WINDOW_ICON = new ResourceLocation(OpenDevices.MOD_ID, "app/icon/default");
+    public static final ResourceLocation DEFAULT_COMPONENT_BUILDER_LAYOUT = new ResourceLocation(OpenDevices.MOD_ID, "app/component_builder_layout/default");
+    public static final ResourceLocation DEFAULT_COMPONENT_BUILDER_BOARD = new ResourceLocation(OpenDevices.MOD_ID, "app/board/default");
 
     @OnlyIn(Dist.CLIENT)
     private static OpenDevicesSpriteUploader openDevicesSpriteUploader;
@@ -41,9 +43,12 @@ public class IconManager
     private static void registerSprites(IResourceManager resourceManager, OpenDevicesSpriteUploader uploader)
     {
         uploader.registerSprite(DEFAULT_WINDOW_ICON);
-        DeviceRegistries.WINDOW_ICONS.getValues().stream().map(WindowIconRegistryEntry::getLocation).filter(Objects::nonNull).distinct().forEach(uploader::registerSprite);
-        DeviceRegistries.COMPONENT_BUILDER_BOARD_TEXTURES.getValues().stream().map(ComponentBuilderBoardTexture::getTextureLocation).filter(Objects::nonNull).distinct().forEach(uploader::registerSprite);
+        uploader.registerSprite(DEFAULT_COMPONENT_BUILDER_LAYOUT);
+        uploader.registerSprite(DEFAULT_COMPONENT_BUILDER_BOARD);
+        uploader.registerSpriteSupplier(() -> ApplicationManager.getApplications().stream().map(ApplicationManager::getAppInfo).filter(info -> info.getIcon() != null).map(AppInfo::getIcon).collect(Collectors.toSet()));
+        uploader.registerSpriteSupplier(() -> ApplicationManager.getTrayIcons().stream().map(ApplicationManager::getTrayItemInfo).filter(info -> info.getIcon() != null).map(TrayItemInfo::getIcon).collect(Collectors.toSet()));
         uploader.registerSpriteSupplier(() -> resourceManager.getAllResourceLocations("textures/component_builder_layout", s -> s.endsWith(".png")).stream().map(resourceLocation -> new ResourceLocation(resourceLocation.getNamespace(), resourceLocation.getPath().substring(9, resourceLocation.getPath().length() - 4))).collect(Collectors.toSet()));
+        uploader.registerSpriteSupplier(() -> ForgeRegistries.ITEMS.getValues().stream().filter(item -> item instanceof DeviceCircuitBoardItem).map(item -> ((DeviceCircuitBoardItem) item).getTextureLocation(item)).collect(Collectors.toSet()));
     }
 
     /**
@@ -87,8 +92,8 @@ public class IconManager
     @OnlyIn(Dist.CLIENT)
     public static TextureAtlasSprite getBoardTexture(Item item)
     {
-        ResourceLocation texture = DeviceRegistries.getBoardTextureLocation(item);
-        return openDevicesSpriteUploader.getSprite(texture == null ? TextureManager.RESOURCE_LOCATION_EMPTY : texture);
+        ResourceLocation texture = item instanceof DeviceCircuitBoardItem ? ((DeviceCircuitBoardItem) item).getTextureLocation(item) : null;
+        return openDevicesSpriteUploader.getSprite(texture == null ? DEFAULT_COMPONENT_BUILDER_BOARD : texture);
     }
 
     /**
@@ -100,6 +105,6 @@ public class IconManager
     @OnlyIn(Dist.CLIENT)
     public static TextureAtlasSprite getLayoutTexture(ComponentBuilderLayout layout)
     {
-        return openDevicesSpriteUploader.getSprite(layout == null || layout.getTextureLocation() == null ? TextureManager.RESOURCE_LOCATION_EMPTY : layout.getTextureLocation());
+        return openDevicesSpriteUploader.getSprite(layout == null || layout.getTextureLocation() == null ? DEFAULT_COMPONENT_BUILDER_LAYOUT : layout.getTextureLocation());
     }
 }

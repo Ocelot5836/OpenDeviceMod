@@ -3,19 +3,15 @@ package com.ocelot.opendevices;
 import com.ocelot.opendevices.api.IconManager;
 import com.ocelot.opendevices.api.computer.Computer;
 import com.ocelot.opendevices.api.computer.application.Application;
-import com.ocelot.opendevices.api.computer.application.ApplicationInputHandler;
 import com.ocelot.opendevices.api.computer.application.ApplicationManager;
-import com.ocelot.opendevices.api.computer.application.ApplicationWindowRenderer;
 import com.ocelot.opendevices.api.computer.settings.LaptopSetting;
 import com.ocelot.opendevices.api.computer.taskbar.TrayItem;
 import com.ocelot.opendevices.api.device.DeviceSerializer;
 import com.ocelot.opendevices.api.device.process.DeviceProcess;
-import com.ocelot.opendevices.api.device.process.ProcessInputRegistry;
 import com.ocelot.opendevices.api.registry.DeviceCircuitBoardItem;
 import com.ocelot.opendevices.api.registry.DeviceRegistries;
 import com.ocelot.opendevices.api.task.Task;
 import com.ocelot.opendevices.core.EventHandler;
-import com.ocelot.opendevices.core.computer.process.TestProcess;
 import com.ocelot.opendevices.core.registry.*;
 import com.ocelot.opendevices.core.render.LaptopTileEntityRenderer;
 import com.ocelot.opendevices.init.*;
@@ -111,14 +107,11 @@ public class OpenDevices
         @SubscribeEvent
         public static void registerRegistries(RegistryEvent.NewRegistry event)
         {
-            makeRegistry("board_textures", ComponentBuilderBoardTexture.class).create();
-
             makeRegistry("settings", LaptopSetting.class).create();
             makeRegistry("tasks", TaskRegistryEntry.class).create();
             makeRegistry("processes", DeviceProcessRegistryEntry.class).create();
             makeRegistry("applications", ApplicationRegistryEntry.class).create();
             makeRegistry("device_serializers", DeviceSerializer.class).disableSync().create();
-            makeRegistry("window_icons", WindowIconRegistryEntry.class).disableSaving().create();
             makeRegistry("desktop_backgrounds", DesktopBackgroundRegistryEntry.class).disableSaving().create();
             makeRegistry("tray_items", TrayItemRegistryEntry.class).disableSaving().create();
         }
@@ -323,13 +316,6 @@ public class OpenDevices
                     OpenDevices.LOGGER.error("Could not register device serializer field " + fieldName + " in " + className + ". Skipping!", e);
                 }
             }
-        }
-
-        @SubscribeEvent
-        public static void registerWindowIcons(RegistryEvent.Register<WindowIconRegistryEntry> event)
-        {
-            event.getRegistry().registerAll(DeviceRegistries.APPLICATIONS.getKeys().stream().map(registryName -> new WindowIconRegistryEntry(ApplicationManager.getAppInfo(registryName).getIcon()).setRegistryName(registryName + "_application")).toArray(WindowIconRegistryEntry[]::new));
-            event.getRegistry().registerAll(DeviceRegistries.TRAY_ITEMS.getKeys().stream().map(registryName -> new WindowIconRegistryEntry(ApplicationManager.getTrayIconInfo(registryName).getIcon()).setRegistryName(registryName + "_tray_item")).toArray(WindowIconRegistryEntry[]::new));
         }
 
         @SuppressWarnings("unchecked")
