@@ -9,6 +9,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraftforge.common.util.Constants;
 
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Function;
 
@@ -26,31 +27,39 @@ public class ListComponent<E> extends StandardComponent implements List<E>
     private float x;
     private float y;
     private final int width;
-    private final int height;
+    private int height;
     private final int visibleHeight;
     private final ScrollHandler scrollHandler;
     private boolean visible;
 
     private Renderer<E> renderer;
+    private int itemHeight;
     private final List<E> items;
     private Function<E, CompoundNBT> serializer;
     private Function<CompoundNBT, E> deserializer;
 
-    public ListComponent(float x, float y, int width, int height, int visibleHeight)
+    public ListComponent(float x, float y, int width, int visibleHeight)
     {
         this.setValueSerializer(this.createSyncHelper());
         this.x = x;
         this.y = y;
         this.width = width;
-        this.height = Math.min(visibleHeight, height);
+        this.height = 0;
         this.visibleHeight = visibleHeight;
-        this.scrollHandler = new ScrollHandler(() -> this.getValueSerializer().markDirty("scroll"), height, visibleHeight);
+        this.scrollHandler = new ScrollHandler(() -> this.getValueSerializer().markDirty("scroll"), this.height, visibleHeight);
         this.visible = true;
 
-        this.renderer = null;
+        this.renderer = new DefaultRenderer<>();
+        this.itemHeight = 16;
         this.items = new ArrayList<>();
         this.serializer = null;
         this.deserializer = null;
+    }
+
+    private void updateHeight()
+    {
+        this.height = Math.max(0, this.items.size() * (this.itemHeight + 1) - 1);
+        this.getValueSerializer().markDirty("height");
     }
 
     protected SyncHelper createSyncHelper()
@@ -59,14 +68,17 @@ public class ListComponent<E> extends StandardComponent implements List<E>
         {
             syncHelper.addSerializer("x", nbt -> nbt.putFloat("x", this.x), nbt -> this.x = nbt.getFloat("x"));
             syncHelper.addSerializer("y", nbt -> nbt.putFloat("y", this.y), nbt -> this.y = nbt.getFloat("y"));
+            syncHelper.addSerializer("height", nbt -> nbt.putInt("height", this.height), nbt -> this.height = nbt.getInt("height"));
             syncHelper.addSerializer("scroll", nbt -> nbt.put("scroll", this.scrollHandler.serializeNBT()), nbt -> this.scrollHandler.deserializeNBT(nbt.getCompound("scroll")));
             syncHelper.addSerializer("visible", nbt -> nbt.putBoolean("visible", this.visible), nbt -> this.visible = nbt.getBoolean("visible"));
 
+            syncHelper.addSerializer("itemHeight", nbt -> nbt.putInt("itemHeight", this.itemHeight), nbt -> this.itemHeight = nbt.getInt("scroll"));
             syncHelper.addSerializer("items", nbt ->
             {
                 if (this.serializer == null)
                 {
-                    OpenDevices.LOGGER.warn("No serializer was defined for component with " + this.items + ".");
+                    if (this.deserializer != null)
+                        OpenDevices.LOGGER.warn("No serializer was defined for component with " + this.items + " but a deserializer was set.");
                     return;
                 }
 
@@ -77,7 +89,8 @@ public class ListComponent<E> extends StandardComponent implements List<E>
             {
                 if (this.deserializer == null)
                 {
-                    OpenDevices.LOGGER.warn("No deserializer was defined for list component with " + this.items + ".");
+                    if (this.serializer != null)
+                        OpenDevices.LOGGER.warn("No deserializer was defined for list component with " + this.items + " but a serializer was set.");
                     return;
                 }
 
@@ -168,16 +181,27 @@ public class ListComponent<E> extends StandardComponent implements List<E>
         return visible;
     }
 
+    /**
+     * @return The current item renderer
+     */
     public Renderer<E> getRenderer()
     {
         return renderer;
     }
 
+    /**
+     * @return The item serializer
+     */
+    @Nullable
     public Function<E, CompoundNBT> getSerializer()
     {
         return serializer;
     }
 
+    /**
+     * @return The item deserializer
+     */
+    @Nullable
     public Function<CompoundNBT, E> getDeserializer()
     {
         return deserializer;
@@ -206,11 +230,16 @@ public class ListComponent<E> extends StandardComponent implements List<E>
     /**
      * Sets the renderer for the items.
      *
-     * @param renderer The new item renderer
+     * @param renderer   The new item renderer
+     * @param itemHeight The new height of each item in the list
      */
-    public void setRenderer(Renderer<E> renderer)
+    public ListComponent<E> setRenderer(@Nullable Renderer<E> renderer, int itemHeight)
     {
         this.renderer = renderer;
+        this.itemHeight = itemHeight;
+        this.updateHeight();
+        this.getValueSerializer().markDirty("itemHeight");
+        return this;
     }
 
     /**
@@ -219,7 +248,7 @@ public class ListComponent<E> extends StandardComponent implements List<E>
      * @param serializer   The function used to turn an item into NBT
      * @param deserializer The function used to turn NBT into an item
      */
-    public void setItemSerializer(Function<E, CompoundNBT> serializer, Function<CompoundNBT, E> deserializer)
+    public void setItemSerializer(@Nullable Function<E, CompoundNBT> serializer, @Nullable Function<CompoundNBT, E> deserializer)
     {
         this.serializer = serializer;
         this.deserializer = deserializer;
@@ -264,15 +293,17 @@ public class ListComponent<E> extends StandardComponent implements List<E>
     @Override
     public boolean add(E e)
     {
-        boolean value = this.items.add(e);
+        this.items.add(e);
+        this.updateHeight();
         this.getValueSerializer().markDirty("items");
-        return value;
+        return true;
     }
 
     @Override
     public boolean remove(Object o)
     {
         boolean value = this.items.remove(o);
+        this.updateHeight();
         this.getValueSerializer().markDirty("items");
         return value;
     }
@@ -287,6 +318,7 @@ public class ListComponent<E> extends StandardComponent implements List<E>
     public boolean addAll(Collection<? extends E> c)
     {
         boolean value = this.items.addAll(c);
+        this.updateHeight();
         this.getValueSerializer().markDirty("items");
         return value;
     }
@@ -295,6 +327,7 @@ public class ListComponent<E> extends StandardComponent implements List<E>
     public boolean addAll(int index, Collection<? extends E> c)
     {
         boolean value = this.items.addAll(index, c);
+        this.updateHeight();
         this.getValueSerializer().markDirty("items");
         return value;
     }
@@ -303,6 +336,7 @@ public class ListComponent<E> extends StandardComponent implements List<E>
     public boolean removeAll(Collection<?> c)
     {
         boolean value = this.items.removeAll(c);
+        this.updateHeight();
         this.getValueSerializer().markDirty("items");
         return value;
     }
@@ -311,6 +345,7 @@ public class ListComponent<E> extends StandardComponent implements List<E>
     public boolean retainAll(Collection<?> c)
     {
         boolean value = this.items.retainAll(c);
+        this.updateHeight();
         this.getValueSerializer().markDirty("items");
         return value;
     }
@@ -319,6 +354,7 @@ public class ListComponent<E> extends StandardComponent implements List<E>
     public void clear()
     {
         this.items.clear();
+        this.updateHeight();
         this.getValueSerializer().markDirty("items");
     }
 
@@ -332,6 +368,7 @@ public class ListComponent<E> extends StandardComponent implements List<E>
     public E set(int index, E element)
     {
         E value = this.items.set(index, element);
+        this.updateHeight();
         this.getValueSerializer().markDirty("items");
         return value;
     }
@@ -340,6 +377,7 @@ public class ListComponent<E> extends StandardComponent implements List<E>
     public void add(int index, E element)
     {
         this.items.add(index, element);
+        this.updateHeight();
         this.getValueSerializer().markDirty("items");
     }
 
@@ -347,6 +385,7 @@ public class ListComponent<E> extends StandardComponent implements List<E>
     public E remove(int index)
     {
         E value = this.items.remove(index);
+        this.updateHeight();
         this.getValueSerializer().markDirty("items");
         return value;
     }
@@ -424,5 +463,25 @@ public class ListComponent<E> extends StandardComponent implements List<E>
          * @param partialTicks The percentage from last update and this update
          */
         void renderOverlay(TooltipRenderer renderer, ListComponent<T> list, T item, float posX, float posY, int width, int height, float partialTicks);
+    }
+
+    private static class DefaultRenderer<E> implements Renderer<E>
+    {
+        @Override
+        public void update(ListComponent<E> list, E item)
+        {
+        }
+
+        @Override
+        public void render(ListComponent<E> list, E item, float posX, float posY, int width, int height, float partialTicks)
+        {
+
+        }
+
+        @Override
+        public void renderOverlay(TooltipRenderer renderer, ListComponent<E> list, E item, float posX, float posY, int width, int height, float partialTicks)
+        {
+
+        }
     }
 }

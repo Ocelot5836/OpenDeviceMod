@@ -70,6 +70,10 @@ public class TestProcessLayoutSupplier implements WindowLayoutManager.LayoutProv
             //                    int y = i / 12;
             //                    layout.addComponent(new ImageComponent(80 + x * 10, 10 + y * 10, 10, 10, ImageComponent.with(Icons.values()[i])));
             //                }
+
+            ListComponent<String> list = new ListComponent<>(4, 4, 30, 30);
+            layout.addComponent(list);
+
             layout1.addComponent(layout);
         }
         return layout1;
