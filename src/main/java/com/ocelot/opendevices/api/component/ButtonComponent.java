@@ -1,6 +1,7 @@
 package com.ocelot.opendevices.api.component;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.handler.ClickListener;
@@ -270,7 +271,7 @@ public class ButtonComponent extends StandardComponent
 
                 ShapeRenderer.end();
             }
-            GlStateManager.color4f(1, 1, 1, 1);
+            RenderSystem.color4f(1, 1, 1, 1);
 
             int contentWidth = (this.iconLocation != null ? this.iconWidth : 0) + this.textWidth;
             if (this.iconLocation != null && !StringUtils.isNullOrEmpty(this.rawText))

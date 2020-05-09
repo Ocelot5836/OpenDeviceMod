@@ -1,10 +1,14 @@
 package com.ocelot.opendevices.api.component;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.ocelot.opendevices.OpenDevices;
 import com.ocelot.opendevices.api.util.SyncHelper;
+import io.github.ocelot.client.FontHelper;
+import io.github.ocelot.client.ScissorHelper;
 import io.github.ocelot.client.TooltipRenderer;
 import io.github.ocelot.common.ScrollHandler;
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraftforge.common.util.Constants;
@@ -29,7 +33,7 @@ public class ListComponent<E> extends StandardComponent implements List<E>
     private final int width;
     private int height;
     private final int visibleHeight;
-    private final ScrollHandler scrollHandler;
+    private ScrollHandler scrollHandler;
     private boolean visible;
 
     private Renderer<E> renderer;
@@ -59,6 +63,11 @@ public class ListComponent<E> extends StandardComponent implements List<E>
     private void updateHeight()
     {
         this.height = Math.max(0, this.items.size() * (this.itemHeight + 1) - 1);
+        float scroll = this.scrollHandler.getScroll();
+        float scrollSpeed = this.scrollHandler.getScrollSpeed();
+        this.scrollHandler = new ScrollHandler(() -> this.getValueSerializer().markDirty("scroll"), this.height, this.visibleHeight);
+        this.scrollHandler.setScroll(scroll);
+        this.scrollHandler.setScrollSpeed(scrollSpeed);
         this.getValueSerializer().markDirty("height");
     }
 
@@ -117,7 +126,16 @@ public class ListComponent<E> extends StandardComponent implements List<E>
     {
         if (this.visible)
         {
+            RenderSystem.pushMatrix();
+            RenderSystem.translatef(posX + this.x, posY + this.y, 0);
+            fill(0, 0, this.width, this.height, 0xFFFF00FF);
+            RenderSystem.popMatrix();
 
+            float interpolatedScroll = this.scrollHandler.getInterpolatedScroll(partialTicks);
+
+            ScissorHelper.push(posX + this.getX(), posY + this.getY(), this.getWidth(), this.getHeight());
+            this.items.forEach(item -> this.renderer.render(this, item, posX + this.getX(), posY + this.getY() - interpolatedScroll, this.width - 2, this.itemHeight, mouseX, mouseY, main, partialTicks));
+            ScissorHelper.pop();
         }
     }
 
@@ -448,7 +466,7 @@ public class ListComponent<E> extends StandardComponent implements List<E>
          * @param height       The height of the box
          * @param partialTicks The percentage from last update and this update
          */
-        void render(ListComponent<T> list, T item, float posX, float posY, int width, int height, float partialTicks);
+        void render(ListComponent<T> list, T item, float posX, float posY, int width, int height, int mouseX, int mouseY, boolean main, float partialTicks);
 
         /**
          * Renders the tooltip of the specified item within the list.
@@ -462,7 +480,7 @@ public class ListComponent<E> extends StandardComponent implements List<E>
          * @param height       The height of the box
          * @param partialTicks The percentage from last update and this update
          */
-        void renderOverlay(TooltipRenderer renderer, ListComponent<T> list, T item, float posX, float posY, int width, int height, float partialTicks);
+        void renderOverlay(TooltipRenderer renderer, ListComponent<T> list, T item, float posX, float posY, int width, int height, int mouseX, int mouseY, float partialTicks);
     }
 
     private static class DefaultRenderer<E> implements Renderer<E>
@@ -473,15 +491,14 @@ public class ListComponent<E> extends StandardComponent implements List<E>
         }
 
         @Override
-        public void render(ListComponent<E> list, E item, float posX, float posY, int width, int height, float partialTicks)
+        public void render(ListComponent<E> list, E item, float posX, float posY, int width, int height, int mouseX, int mouseY, boolean main, float partialTicks)
         {
-
+            FontHelper.drawStringClipped(Minecraft.getInstance().fontRenderer, String.valueOf(item), posX, posY, width, 0xffff00ff, false);
         }
 
         @Override
-        public void renderOverlay(TooltipRenderer renderer, ListComponent<E> list, E item, float posX, float posY, int width, int height, float partialTicks)
+        public void renderOverlay(TooltipRenderer renderer, ListComponent<E> list, E item, float posX, float posY, int width, int height, int mouseX, int mouseY, float partialTicks)
         {
-
         }
     }
 }

@@ -1,5 +1,9 @@
 package com.ocelot.opendevices.api.util;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 import com.ocelot.opendevices.OpenDevices;
 import io.github.ocelot.common.OnlineRequest;
 import net.minecraft.client.Minecraft;
@@ -64,12 +68,9 @@ public class OnlineImageCache
         if (!cache.containsKey(hash))
             return null;
         OpenDevices.LOGGER.debug("Reading image with hash '" + hash + "' from cache");
-        try
+        try(FileInputStream stream = new FileInputStream(cache.get(hash).getFile()))
         {
-            FileInputStream stream = new FileInputStream(cache.get(hash).getFile());
-            NativeImage image = NativeImage.read(stream);
-            stream.close();
-            return image;
+            return NativeImage.read(stream);
         }
         catch (Exception e)
         {

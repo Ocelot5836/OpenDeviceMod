@@ -5,15 +5,18 @@ import com.ocelot.opendevices.api.component.*;
 import com.ocelot.opendevices.api.util.WindowLayoutManager;
 import com.ocelot.opendevices.api.util.icon.Alphabet;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
 import java.util.Locale;
-import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class TestProcessLayoutSupplier implements WindowLayoutManager.LayoutProvider
 {
-    private TestProcess process;
+    private final TestProcess process;
 
     public TestProcessLayoutSupplier(TestProcess process)
     {
@@ -28,8 +31,8 @@ public class TestProcessLayoutSupplier implements WindowLayoutManager.LayoutProv
         {
             Layout layout = new ScrollableLayout(i * DeviceConstants.LAPTOP_DEFAULT_APPLICATION_WIDTH / 2f, 0, DeviceConstants.LAPTOP_DEFAULT_APPLICATION_WIDTH / 2, DeviceConstants.LAPTOP_DEFAULT_APPLICATION_HEIGHT * 2, DeviceConstants.LAPTOP_DEFAULT_APPLICATION_HEIGHT);
             String url = i == 0 ? "https://cdn.discordapp.com/attachments/447419834632896512/692016522578624592/unknown.png" : "https://pluspng.com/img-png/window-hd-png-open-window-png-400.png";
-            if(i == 0)
-            layout.addComponent(new ImageComponent(0, 0, layout.getWidth(), layout.getHeight(), ImageComponent.with(url)));
+            if (i == 0)
+                layout.addComponent(new ImageComponent(0, 0, layout.getWidth(), layout.getHeight(), ImageComponent.with(url)));
             Alphabet[] characters = Alphabet.getCharSequence(url.toUpperCase(Locale.ROOT));
             int xOffset = 0;
             int yOffset = 0;
@@ -43,7 +46,7 @@ public class TestProcessLayoutSupplier implements WindowLayoutManager.LayoutProv
                 layout.addComponent(new ImageComponent(xOffset, yOffset, character.getWidth(), character.getHeight(), ImageComponent.with(character)));
                 xOffset += character.getWidth();
             }
-            if(i == 1)
+            if (i == 1)
                 layout.addComponent(new ImageComponent(0, 0, layout.getWidth(), layout.getHeight(), ImageComponent.with(url)));
             //        SpinnerComponent spinner = new SpinnerComponent(64, 64);
             //        layout.addComponent(spinner);
@@ -71,7 +74,8 @@ public class TestProcessLayoutSupplier implements WindowLayoutManager.LayoutProv
             //                    layout.addComponent(new ImageComponent(80 + x * 10, 10 + y * 10, 10, 10, ImageComponent.with(Icons.values()[i])));
             //                }
 
-            ListComponent<String> list = new ListComponent<>(4, 4, 30, 30);
+            ListComponent<String> list = new ListComponent<>(4, 4, 80, 40);
+            list.addAll(new ItemStack(Blocks.DIAMOND_ORE).getTooltip(Minecraft.getInstance().player, ITooltipFlag.TooltipFlags.ADVANCED).stream().map(ITextComponent::getFormattedText).collect(Collectors.toList()));
             layout.addComponent(list);
 
             layout1.addComponent(layout);
