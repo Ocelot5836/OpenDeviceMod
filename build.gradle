@@ -4,19 +4,13 @@ buildscript {
         jcenter()
         mavenCentral()
     }
-    configurations.classpath {
-        resolutionStrategy {
-            cacheDynamicVersionsFor 10, "seconds"
-            cacheChangingModulesFor 0, "seconds"
-        }
-    }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
     }
 }
 
 plugins {
-    id 'com.github.johnrengelman.shadow' version '5.2.0'
+    id 'com.github.johnrengelman.shadow' version '4.0.4'
 }
 
 apply plugin: 'net.minecraftforge.gradle'
@@ -24,9 +18,9 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-version = project.opendevices
-group = 'io.github.ocelot' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = 'opendevices'
+version = project.modVersion
+group = "io.github.ocelot.${project.modId}" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = project.modId
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
@@ -36,7 +30,7 @@ minecraft {
     // stable_#            Stables are built at the discretion of the MCP team.
     // Use non-default mappings at your own risk. they may not always work.
     // Simply re-run your setup task after changing the mappings to update your workspace.
-    mappings channel: 'snapshot', version: project.mcp_mappings
+    mappings channel: project.mappingsChannel, version: project.mappings
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 
     // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
@@ -141,12 +135,11 @@ dependencies {
     // TODO update to 1.15
 
     // Patchouli
-    compile fg.deobf("vazkii.patchouli:Patchouli:${project.minecraft}-${project.patchouli}")
+    compile fg.deobf("vazkii.patchouli:Patchouli:${project.patchouli}")
 
     // Fish Lib
-    def fishLib = "com.github.Ocelot5836:FishLib:${project.minecraft}-${project.fishLib}"
-    implementation fg.deobf(fishLib)
-    shade fishLib
+    implementation fg.deobf("com.github.Ocelot5836:Sonar:${project.sonar}")
+    shade "com.github.Ocelot5836.Sonar:${project.sonar}"
 }
 
 reobf {
@@ -159,20 +152,37 @@ build.dependsOn reobfShadowJar
 jar {
     manifest {
         attributes([
-                "Specification-Title"     : "opendevices",
-                "Specification-Vendor"    : "opendevicessareus",
+                "Specification-Title"     : project.modId,
+                "Specification-Vendor"    : "${project.modId}sareus",
                 "Specification-Version"   : "1", // We are version 1 of ourselves
                 "Implementation-Title"    : project.name,
-                "Implementation-Version"  : archiveVersion,
-                "Implementation-Vendor"   : "opendevicessareus",
+                "Implementation-Version"  : project.modVersion,
+                "Implementation-Vendor"   : "${project.modId}sareus",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
+    }
+}
+
+processResources {
+    inputs.property("modVersion", project.modVersion)
+    inputs.property("modId", project.modId)
+    from(sourceSets.main.resources.srcDirs) {
+        include 'META-INF/mods.toml'
+        expand 'modVersion': version, 'modId': project.modId
+    }
+
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'META-INF/mods.toml'
     }
 }
 
 shadowJar {
     configurations = [project.configurations.shade]
     relocate 'io.github.ocelot', 'io.github.ocelot.lib'
+}
+
+reobf {
+    shadowJar {}
 }
 
 artifacts {

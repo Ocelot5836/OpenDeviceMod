@@ -1,6 +1,6 @@
 {
     "pack": {
-        "description": "Open Devices Resources",
+        "description": "${modId} resources",
         "pack_format": 4
     }
 }

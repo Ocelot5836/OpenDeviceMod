@@ -12,9 +12,9 @@ issueTrackerURL="https://github.com/Ocelot5836/OpenDeviceMod/issues" #optional
 # A list of mods - how many allowed here is determined by the individual mod loader
 [[mods]] #mandatory
 # The modid of the mod
-modId="opendevices" #mandatory
+modId="${modId}" #mandatory
 # The version number of the mod - there's a few well known ${} variables useable here or just hardcode it
-version="${file.jarVersion}" #mandatory
+version="${modVersion}" #mandatory
  # A display name for the mod
 displayName="Open Device Mod" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification <here>
