@@ -1,3 +1,6 @@
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
+
 buildscript {
     repositories {
         maven { url = 'https://files.minecraftforge.net/maven' }
@@ -106,10 +109,6 @@ repositories {
         url = "modmaven.k-4u.nl"
     }
     maven {
-        name = "CurseForge"
-        url = "https://minecraft.curseforge.com/api/maven/"
-    }
-    maven {
         name = "Patchouli"
         url = "https://maven.blamejared.com"
     }
@@ -135,10 +134,11 @@ dependencies {
     // TODO update to 1.15
 
     // Patchouli
-    compile fg.deobf("vazkii.patchouli:Patchouli:${project.patchouli}")
+//    compile fg.deobf("vazkii.patchouli:Patchouli:${project.patchouli}")
+    // TODO re-add once it's not broken
 
     // Fish Lib
-    implementation fg.deobf("com.github.Ocelot5836:Sonar:${project.sonar}")
+    implementation fg.deobf("com.github.Ocelot5836:Sonar:${project.sonar}:api")
     shade "com.github.Ocelot5836.Sonar:${project.sonar}"
 }
 
@@ -168,17 +168,23 @@ processResources {
     inputs.property("modId", project.modId)
     from(sourceSets.main.resources.srcDirs) {
         include 'META-INF/mods.toml'
-        expand 'modVersion': version, 'modId': project.modId
+        expand 'modVersion': project.modVersion, 'modId': project.modId
     }
 
     from(sourceSets.main.resources.srcDirs) {
         exclude 'META-INF/mods.toml'
     }
+
+    // Minify json resources
+    doLast {
+        fileTree(dir: outputs.files.asPath, include: "**/*.json").each {
+            File file -> file.text = JsonOutput.toJson(new JsonSlurper().parse(file))
+        }
+    }
 }
 
 shadowJar {
     configurations = [project.configurations.shade]
-    relocate 'io.github.ocelot', 'io.github.ocelot.lib'
 }
 
 reobf {
