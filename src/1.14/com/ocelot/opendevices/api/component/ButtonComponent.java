@@ -7,13 +7,12 @@ import com.ocelot.opendevices.api.DeviceConstants;
 import com.ocelot.opendevices.api.handler.ClickListener;
 import com.ocelot.opendevices.api.util.RenderUtil;
 import com.ocelot.opendevices.api.util.SyncHelper;
+import com.ocelot.opendevices.api.util.TooltipRenderer;
 import com.ocelot.opendevices.api.util.icon.IIcon;
-import io.github.ocelot.client.ShapeRenderer;
-import io.github.ocelot.client.TooltipRenderer;
+import io.github.ocelot.sonar.client.render.ShapeRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvents;
@@ -83,7 +82,7 @@ public class ButtonComponent extends StandardComponent
         this.y = y;
         this.padding = 5;
         this.updateSize();
-        this.fontRenderer = Minecraft.getInstance().getFontResourceManager().getFontRenderer(Minecraft.DEFAULT_FONT_RENDERER_NAME);
+        this.fontRenderer = Minecraft.getInstance().getRenderManager().getFontRenderer();
         this.fontRendererLocation = Minecraft.DEFAULT_FONT_RENDERER_NAME;
         this.tooltipDelay = DeviceConstants.DEFAULT_TOOLTIP_DELAY;
         this.lastTooltip = Long.MAX_VALUE;
@@ -106,11 +105,6 @@ public class ButtonComponent extends StandardComponent
             syncHelper.addSerializer("width", nbt -> nbt.putInt("width", this.width), nbt -> this.width = nbt.getInt("width"));
             syncHelper.addSerializer("height", nbt -> nbt.putInt("height", this.height), nbt -> this.height = nbt.getInt("height"));
 
-            syncHelper.addSerializer("fontRenderer", nbt -> nbt.putString("fontRenderer", this.fontRendererLocation.toString()), nbt ->
-            {
-                this.fontRendererLocation = new ResourceLocation(nbt.getString("fontRenderer"));
-                this.fontRenderer = Minecraft.getInstance().getFontResourceManager().getFontRenderer(this.fontRendererLocation);
-            });
             syncHelper.addSerializer("text", nbt -> nbt.putString("text", new String(Base64.getEncoder().encode(ITextComponent.Serializer.toJson(this.text).getBytes()))), nbt -> this.text = ITextComponent.Serializer.fromJson(new String(Base64.getDecoder().decode(nbt.getString("text")))));
             syncHelper.addSerializer("tooltipDelay", nbt -> nbt.putLong("tooltipDelay", this.tooltipDelay), nbt -> this.tooltipDelay = nbt.getLong("tooltipDelay"));
 
@@ -153,7 +147,7 @@ public class ButtonComponent extends StandardComponent
     {
         if (this.text != null)
         {
-            this.rawText = this.text.getFormattedText();
+            this.rawText = this.text.getString();
             this.textWidth = this.fontRenderer.getStringWidth(this.rawText);
         }
     }
