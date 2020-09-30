@@ -1,6 +1,10 @@
 package io.github.ocelot.opendevices;
 
+import io.github.ocelot.opendevices.core.init.DeviceBlocks;
+import io.github.ocelot.opendevices.core.init.DeviceItems;
 import io.github.ocelot.opendevices.core.init.DeviceMessages;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -15,11 +19,23 @@ public class OpenDevices
 {
     public static final String MOD_ID = "opendevices";
 
+    public static final ItemGroup TAB = new ItemGroup(MOD_ID)
+    {
+        @Override
+        public ItemStack createIcon()
+        {
+            return new ItemStack(DeviceBlocks.RED_LAPTOP.get());
+        }
+    };
+
     public OpenDevices()
     {
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         modBus.addListener(this::init);
         modBus.addListener(this::initClient);
+        DeviceItems.ITEMS.register(modBus);
+        DeviceBlocks.BLOCKS.register(modBus);
+        DeviceBlocks.TILE_ENTITIES.register(modBus);
     }
 
     private void init(FMLCommonSetupEvent event)

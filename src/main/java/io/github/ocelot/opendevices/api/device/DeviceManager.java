@@ -41,25 +41,31 @@ public class DeviceManager extends WorldSavedData
     /**
      * Removes the specified device if it exists.
      *
-     * @param id The id of the device to remove
+     * @param address The id of the device to remove
      */
-    public void remove(UUID id)
+    public void remove(UUID address)
     {
-        this.deviceCache.remove(id);
-        if (this.devices.remove(id) != null)
+        this.deviceCache.remove(address);
+        if (this.devices.remove(address) != null)
         {
             this.markDirty();
             // TODO notify listeners
         }
     }
 
+    /**
+     * Adds the specified device to the device manager.
+     *
+     * @param device The device to add
+     * @param <T>    The type of device being added
+     */
     @SuppressWarnings("unchecked")
     public <T extends Device> void add(T device)
     {
-        UUID id = device.getId();
-        if (this.devices.containsKey(id))
+        UUID address = device.getAddress();
+        if (this.devices.containsKey(address))
         {
-            LOGGER.warn("Failed to add device with id '" + id + "' as it has already been added.");
+            LOGGER.warn("Failed to add device with address '" + address + "' as it has already been added.");
             return;
         }
 
@@ -71,31 +77,44 @@ public class DeviceManager extends WorldSavedData
 
             CompoundNBT data = new CompoundNBT();
             serializer.serialize(this.world, device, data);
-            this.devices.put(id, data);
-            this.deviceCache.put(id, device);
+            this.devices.put(address, data);
+            this.deviceCache.put(address, device);
+            this.markDirty();
+            // TODO notify listeners
         }
         catch (Exception e)
         {
-            LOGGER.error("Error writing device location for '" + id + "' to NBT. Skipping!", e);
+            LOGGER.error("Error writing device location for '" + address + "' to NBT. Skipping!", e);
         }
+    }
+
+    /**
+     * Checks to see if a device with the specified address is already added.
+     *
+     * @param address The address to check
+     * @return Whether or not the address is already added
+     */
+    public boolean exists(UUID address)
+    {
+        return this.devices.containsKey(address);
     }
 
     /**
      * Fetches the device by the specified id.
      *
-     * @param id  The id of the device to get
-     * @param <T> The type of device requested
+     * @param address The id of the device to get
+     * @param <T>     The type of device requested
      * @return An optional with that device
      */
     @SuppressWarnings("unchecked")
-    public <T extends Device> Optional<T> get(UUID id)
+    public <T extends Device> Optional<T> get(UUID address)
     {
-        if (this.deviceCache.containsKey(id))
-            return (Optional<T>) Optional.of(this.deviceCache.get(id));
-        if (!this.devices.containsKey(id))
+        if (this.deviceCache.containsKey(address))
+            return (Optional<T>) Optional.of(this.deviceCache.get(address));
+        if (!this.devices.containsKey(address))
             return Optional.empty();
 
-        CompoundNBT nbt = this.devices.get(id);
+        CompoundNBT nbt = this.devices.get(address);
         try
         {
             DeviceSerializer<?> serializer = DeviceRegistries.DEVICE_SERIALIZERS.getValue(new ResourceLocation(nbt.getString("Serializer")));
@@ -106,13 +125,14 @@ public class DeviceManager extends WorldSavedData
             if (device == null)
                 throw new IllegalStateException("Could not locate device");
 
-            this.deviceCache.put(id, device);
+            this.deviceCache.put(address, device);
             return Optional.of(device);
         }
         catch (Exception e)
         {
-            LOGGER.error("Error reading device location for '" + id + "' from NBT. Skipping!", e);
-            this.devices.remove(id);
+            LOGGER.error("Error reading device with address '" + address + "' from NBT. Skipping!", e);
+            this.devices.remove(address);
+            this.markDirty();
         }
 
         return Optional.empty();
@@ -124,11 +144,11 @@ public class DeviceManager extends WorldSavedData
         this.deviceCache.clear();
         this.devices.clear();
 
-        ListNBT devicesNbt = nbt.getList("Devices", Constants.NBT.TAG_LIST);
+        ListNBT devicesNbt = nbt.getList("Devices", Constants.NBT.TAG_COMPOUND);
         for (int i = 0; i < devicesNbt.size(); i++)
         {
             CompoundNBT deviceNbt = devicesNbt.getCompound(i);
-            this.devices.put(deviceNbt.getUniqueId("Id"), deviceNbt.getCompound("Data"));
+            this.devices.put(deviceNbt.getUniqueId("Address"), deviceNbt.getCompound("Data"));
         }
     }
 
@@ -136,11 +156,12 @@ public class DeviceManager extends WorldSavedData
     public CompoundNBT write(CompoundNBT nbt)
     {
         ListNBT devicesNbt = new ListNBT();
-        this.devices.forEach((id, data) ->
+        this.devices.forEach((address, data) ->
         {
             CompoundNBT deviceNbt = new CompoundNBT();
-            deviceNbt.putUniqueId("Id", id);
+            deviceNbt.putUniqueId("Address", address);
             deviceNbt.put("Data", data);
+            devicesNbt.add(deviceNbt);
         });
         nbt.put("Devices", devicesNbt);
 

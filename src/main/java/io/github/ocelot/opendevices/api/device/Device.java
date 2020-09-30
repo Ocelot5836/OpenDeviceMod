@@ -19,5 +19,5 @@ public interface Device
     /**
      * @return The unique id of this device
      */
-    UUID getId();
+    UUID getAddress();
 }

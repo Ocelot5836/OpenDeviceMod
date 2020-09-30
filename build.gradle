@@ -129,16 +129,13 @@ dependencies {
     // at runtime, use the full JEI jar
     runtimeOnly fg.deobf("mezz.jei:jei-${project.minecraft}:${project.jei}")
 
-    // Filters
-    // compileOnly fg.deobf("filters:Filters-${project.filters}:1.14.4:deobf")
-    // TODO update to 1.15
-
     // Patchouli
 //    compile fg.deobf("vazkii.patchouli:Patchouli:${project.patchouli}")
     // TODO re-add once it's not broken
 
-    // Fish Lib
-    implementation fg.deobf("com.github.Ocelot5836:Sonar:${project.sonar}:api")
+    // Sonar
+    compileOnly fg.deobf("com.github.Ocelot5836:Sonar:${project.sonar}:api")
+    runtimeOnly fg.deobf("com.github.Ocelot5836:Sonar:${project.sonar}")
     shade "com.github.Ocelot5836.Sonar:${project.sonar}"
 }
 

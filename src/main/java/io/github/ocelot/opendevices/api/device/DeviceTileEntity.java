@@ -5,11 +5,13 @@ import io.github.ocelot.opendevices.api.device.serializer.DeviceSerializers;
 import io.github.ocelot.opendevices.api.device.serializer.TileEntityDevice;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.RegistryKey;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IServerWorld;
 import net.minecraft.world.World;
 
 import java.util.Objects;
@@ -22,27 +24,87 @@ import java.util.UUID;
  */
 public class DeviceTileEntity extends TileEntity implements TileEntityDevice
 {
-    private UUID id;
+    private UUID address;
 
     public DeviceTileEntity(TileEntityType<? extends DeviceTileEntity> tileEntityType)
     {
         super(tileEntityType);
-        this.id = UUID.randomUUID();
+        this.address = UUID.randomUUID();
     }
 
     @Override
     public void read(BlockState state, CompoundNBT nbt)
     {
         super.read(state, nbt);
-        this.id = nbt.hasUniqueId("Id") ? nbt.getUniqueId("Id") : UUID.randomUUID();
+        this.address = nbt.hasUniqueId("Address") ? nbt.getUniqueId("Address") : UUID.randomUUID();
     }
 
     @Override
     public CompoundNBT write(CompoundNBT nbt)
     {
         super.write(nbt);
-        nbt.putUniqueId("Id", this.id);
+        nbt.putUniqueId("Address", this.address);
         return nbt;
+    }
+
+    /**
+     * Writes all client relating data to the specified tag.
+     *
+     * @param nbt The tag to write to
+     * @return The input tag
+     */
+    protected CompoundNBT writeClient(CompoundNBT nbt)
+    {
+        return this.write(nbt);
+    }
+
+    /**
+     * Reads all client relating data from the specified tag.
+     *
+     * @param state The current block state of the device
+     * @param nbt   The tag to read data from
+     */
+    protected void readClient(BlockState state, CompoundNBT nbt)
+    {
+        this.read(state, nbt);
+    }
+
+    @Override
+    public CompoundNBT getUpdateTag()
+    {
+        return this.writeClient(new CompoundNBT());
+    }
+
+    @Override
+    public SUpdateTileEntityPacket getUpdatePacket()
+    {
+        return new SUpdateTileEntityPacket(this.getPos(), 0, this.getUpdateTag());
+    }
+
+    @Override
+    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt)
+    {
+        this.readClient(this.getBlockState(), pkt.getNbtCompound());
+    }
+
+    @Override
+    public void onLoad()
+    {
+        super.onLoad();
+        if (this.world != null && !this.world.isRemote())
+        {
+            DeviceManager deviceManager = DeviceManager.get((IServerWorld) this.world);
+            if (!deviceManager.exists(this.getAddress()))
+                deviceManager.add(this);
+        }
+    }
+
+    @Override
+    public void remove()
+    {
+        super.remove();
+        if (this.world != null && !this.world.isRemote())
+            DeviceManager.get((IServerWorld) this.world).remove(this.getAddress());
     }
 
     @Override
@@ -64,18 +126,18 @@ public class DeviceTileEntity extends TileEntity implements TileEntityDevice
     }
 
     @Override
-    public UUID getId()
+    public UUID getAddress()
     {
-        return id;
+        return address;
     }
 
     /**
      * Sets the id for this device.
      *
-     * @param id The new device id
+     * @param address The new device id
      */
-    protected void setId(UUID id)
+    protected void setAddress(UUID address)
     {
-        this.id = id;
+        this.address = address;
     }
 }
