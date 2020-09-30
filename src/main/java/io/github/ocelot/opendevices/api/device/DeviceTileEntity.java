@@ -2,7 +2,6 @@ package io.github.ocelot.opendevices.api.device;
 
 import io.github.ocelot.opendevices.api.device.serializer.DeviceSerializer;
 import io.github.ocelot.opendevices.api.device.serializer.DeviceSerializers;
-import io.github.ocelot.opendevices.api.device.serializer.TileEntityDevice;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
@@ -95,7 +94,7 @@ public class DeviceTileEntity extends TileEntity implements TileEntityDevice
         {
             DeviceManager deviceManager = DeviceManager.get((IServerWorld) this.world);
             if (!deviceManager.exists(this.getAddress()))
-                deviceManager.add(this);
+                deviceManager.addDevice(this);
         }
     }
 
@@ -104,7 +103,7 @@ public class DeviceTileEntity extends TileEntity implements TileEntityDevice
     {
         super.remove();
         if (this.world != null && !this.world.isRemote())
-            DeviceManager.get((IServerWorld) this.world).remove(this.getAddress());
+            DeviceManager.get((IServerWorld) this.world).removeDevice(this.getAddress());
     }
 
     @Override

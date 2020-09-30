@@ -21,8 +21,7 @@
 	"block.opendevices.red_laptop": "Red Laptop",
 	"block.opendevices.black_laptop": "Black Laptop",
 
-	"block.opendevices.laptop.using": "Someone is using the Laptop!",
-	"block.opendevices.laptop.using.specific": "%s is using the Laptop!",
+	"block.opendevices.device.using": "%s is using the Device!",
 
 	"item.opendevices.unrefined_plastic": "Raw Plastic",
 	"item.opendevices.plastic": "Plastic",

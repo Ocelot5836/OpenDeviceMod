@@ -1,5 +1,6 @@
 package io.github.ocelot.opendevices.api.device.serializer;
 
+import io.github.ocelot.opendevices.api.device.TileEntityDevice;
 import io.github.ocelot.opendevices.core.device.serializer.TileEntityDeviceSerializer;
 
 /**

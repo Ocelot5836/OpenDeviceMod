@@ -5,6 +5,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.world.IServerWorld;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.World;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import javax.annotation.Nullable;
@@ -23,7 +24,7 @@ public interface DeviceSerializer<T extends Device> extends IForgeRegistryEntry<
      * @param device The device to write
      * @param nbt    The tag to write the device into
      */
-    void serialize(IServerWorld world, T device, CompoundNBT nbt);
+    void serialize(World world, T device, CompoundNBT nbt);
 
     /**
      * Reads a device from NBT.
@@ -32,5 +33,5 @@ public interface DeviceSerializer<T extends Device> extends IForgeRegistryEntry<
      * @return The device at the read position or <code>null</code> if the device could not be found
      */
     @Nullable
-    T deserialize(IServerWorld world, CompoundNBT nbt);
+    T deserialize(World world, CompoundNBT nbt);
 }

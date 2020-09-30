@@ -1,15 +1,14 @@
 package io.github.ocelot.opendevices.core.device.serializer;
 
 import io.github.ocelot.opendevices.OpenDevices;
+import io.github.ocelot.opendevices.api.device.TileEntityDevice;
 import io.github.ocelot.opendevices.api.device.serializer.DeviceSerializer;
-import io.github.ocelot.opendevices.api.device.serializer.TileEntityDevice;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.NBTDynamicOps;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IServerWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.registries.ForgeRegistryEntry;
@@ -28,9 +27,9 @@ public class TileEntityDeviceSerializer extends ForgeRegistryEntry<DeviceSeriali
     }
 
     @Nullable
-    private static TileEntityDevice get(IServerWorld world, RegistryKey<World> dimension, BlockPos pos)
+    private static TileEntityDevice get(World world, RegistryKey<World> dimension, BlockPos pos)
     {
-        ServerWorld deviceWorld = world.getWorld().getServer().getWorld(dimension);
+        World deviceWorld = world.isRemote() ? world : ((ServerWorld) world).getServer().getWorld(dimension);
         if (deviceWorld == null)
             return null;
 
@@ -45,7 +44,7 @@ public class TileEntityDeviceSerializer extends ForgeRegistryEntry<DeviceSeriali
     }
 
     @Override
-    public void serialize(IServerWorld world, TileEntityDevice device, CompoundNBT nbt)
+    public void serialize(World world, TileEntityDevice device, CompoundNBT nbt)
     {
         World.CODEC.encodeStart(NBTDynamicOps.INSTANCE, device.getDeviceDimensionKey()).resultOrPartial(LOGGER::error).ifPresent(dimNbt -> nbt.put("Dimension", dimNbt));
         BlockPos.CODEC.encodeStart(NBTDynamicOps.INSTANCE, device.getDevicePos()).resultOrPartial(LOGGER::error).ifPresent(posNbt -> nbt.put("Pos", posNbt));
@@ -53,7 +52,7 @@ public class TileEntityDeviceSerializer extends ForgeRegistryEntry<DeviceSeriali
 
     @Nullable
     @Override
-    public TileEntityDevice deserialize(IServerWorld world, CompoundNBT nbt)
+    public TileEntityDevice deserialize(World world, CompoundNBT nbt)
     {
         RegistryKey<World> dimension = World.CODEC.parse(NBTDynamicOps.INSTANCE, nbt.get("Dimension")).result().orElseThrow(() -> new IllegalArgumentException("Invalid Device Dimension: " + nbt.get("Dimension")));
         BlockPos pos = BlockPos.CODEC.parse(NBTDynamicOps.INSTANCE, nbt.get("Pos")).resultOrPartial(LOGGER::error).orElseThrow(() -> new IllegalArgumentException("Invalid Device Position: " + nbt.get("Pos")));

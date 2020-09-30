@@ -7,6 +7,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.IServerWorld;
+import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.WorldSavedData;
 import net.minecraftforge.common.util.Constants;
@@ -39,28 +40,13 @@ public class DeviceManager extends WorldSavedData
     }
 
     /**
-     * Removes the specified device if it exists.
-     *
-     * @param address The id of the device to remove
-     */
-    public void remove(UUID address)
-    {
-        this.deviceCache.remove(address);
-        if (this.devices.remove(address) != null)
-        {
-            this.markDirty();
-            // TODO notify listeners
-        }
-    }
-
-    /**
      * Adds the specified device to the device manager.
      *
      * @param device The device to add
      * @param <T>    The type of device being added
      */
     @SuppressWarnings("unchecked")
-    public <T extends Device> void add(T device)
+    public <T extends Device> void addDevice(T device)
     {
         UUID address = device.getAddress();
         if (this.devices.containsKey(address))
@@ -77,6 +63,7 @@ public class DeviceManager extends WorldSavedData
 
             CompoundNBT data = new CompoundNBT();
             serializer.serialize(this.world, device, data);
+            data.putString("Serializer", String.valueOf(device.getSerializer().getRegistryName()));
             this.devices.put(address, data);
             this.deviceCache.put(address, device);
             this.markDirty();
@@ -85,6 +72,21 @@ public class DeviceManager extends WorldSavedData
         catch (Exception e)
         {
             LOGGER.error("Error writing device location for '" + address + "' to NBT. Skipping!", e);
+        }
+    }
+
+    /**
+     * Removes the specified device if it exists.
+     *
+     * @param address The id of the device to remove
+     */
+    public void removeDevice(UUID address)
+    {
+        this.deviceCache.remove(address);
+        if (this.devices.remove(address) != null)
+        {
+            this.markDirty();
+            // TODO notify listeners
         }
     }
 
@@ -107,35 +109,36 @@ public class DeviceManager extends WorldSavedData
      * @return An optional with that device
      */
     @SuppressWarnings("unchecked")
-    public <T extends Device> Optional<T> get(UUID address)
+    public <T extends Device> Optional<T> getDevice(UUID address)
     {
         if (this.deviceCache.containsKey(address))
             return (Optional<T>) Optional.of(this.deviceCache.get(address));
         if (!this.devices.containsKey(address))
             return Optional.empty();
 
-        CompoundNBT nbt = this.devices.get(address);
-        try
-        {
-            DeviceSerializer<?> serializer = DeviceRegistries.DEVICE_SERIALIZERS.getValue(new ResourceLocation(nbt.getString("Serializer")));
-            if (serializer == null)
-                throw new IllegalArgumentException("Unknown device serializer '" + nbt.getString("Serializer") + "'");
+        CompoundNBT data = this.devices.get(address);
 
-            T device = (T) serializer.deserialize(this.world, nbt);
-            if (device == null)
-                throw new IllegalStateException("Could not locate device");
-
-            this.deviceCache.put(address, device);
-            return Optional.of(device);
-        }
-        catch (Exception e)
+        Optional<T> device = readDevice(this.world, address, data);
+        if (!device.isPresent())
         {
-            LOGGER.error("Error reading device with address '" + address + "' from NBT. Skipping!", e);
             this.devices.remove(address);
             this.markDirty();
+            return Optional.empty();
         }
 
-        return Optional.empty();
+        this.deviceCache.put(address, device.get());
+        return device;
+    }
+
+    /**
+     * Fetches the data for the specified address.
+     *
+     * @param address The address to get data for
+     * @return The location data at that address
+     */
+    public Optional<CompoundNBT> getData(UUID address)
+    {
+        return Optional.ofNullable(this.devices.get(address));
     }
 
     @Override
@@ -169,6 +172,38 @@ public class DeviceManager extends WorldSavedData
     }
 
     /**
+     * Reads a device from the specified world.
+     *
+     * @param world   The world to get the device from
+     * @param address The address of the device
+     * @param data    The location data associated with the device
+     * @param <T>     The type of device requested
+     * @return An optional with that device
+     */
+    @SuppressWarnings("unchecked")
+    public static <T extends Device> Optional<T> readDevice(World world, UUID address, CompoundNBT data)
+    {
+        try
+        {
+            DeviceSerializer<?> serializer = DeviceRegistries.DEVICE_SERIALIZERS.getValue(new ResourceLocation(data.getString("Serializer")));
+            if (serializer == null)
+                throw new IllegalArgumentException("Unknown device serializer '" + data.getString("Serializer") + "'");
+
+            T device = (T) serializer.deserialize(world, data);
+            if (device == null)
+                throw new IllegalStateException("Could not locate device");
+
+            return Optional.of(device);
+        }
+        catch (Exception e)
+        {
+            LOGGER.error("Error reading device with address '" + address + "' from NBT. Skipping!", e);
+        }
+
+        return Optional.empty();
+    }
+
+    /**
      * Fetches the device manager for the specified world.
      *
      * @param world The world to get the manager from
@@ -176,7 +211,7 @@ public class DeviceManager extends WorldSavedData
      */
     public static DeviceManager get(IServerWorld world)
     {
-        DeviceManager deviceManager = world.getWorld().getSavedData().getOrCreate(DeviceManager::new, NAME);
+        DeviceManager deviceManager = world.getWorld().getServer().func_241755_D_().getSavedData().getOrCreate(DeviceManager::new, NAME);
         deviceManager.world = world.getWorld();
         return deviceManager;
     }
