@@ -1,6 +1,6 @@
 package io.github.ocelot.opendevices.core.tileentity;
 
-import io.github.ocelot.opendevices.api.device.Computer;
+import io.github.ocelot.opendevices.api.computer.Computer;
 import io.github.ocelot.opendevices.api.device.DeviceTileEntity;
 import io.github.ocelot.opendevices.api.device.InteractableDevice;
 import io.github.ocelot.opendevices.core.init.DeviceBlocks;
@@ -138,5 +138,17 @@ public class LaptopTileEntity extends DeviceTileEntity implements ITickableTileE
     public float getScreenAngle(float partialTicks)
     {
         return LAPTOP_OPENED_ANGLE * MathHelper.lerp(partialTicks, this.lastRotation, this.rotation);
+    }
+
+    @Override
+    public int getScreenWidth()
+    {
+        return 364;
+    }
+
+    @Override
+    public int getScreenHeight()
+    {
+        return 216;
     }
 }

@@ -1,6 +1,6 @@
 package io.github.ocelot.opendevices.core.network.play.handler;
 
-import io.github.ocelot.opendevices.api.device.Computer;
+import io.github.ocelot.opendevices.api.computer.Computer;
 import io.github.ocelot.opendevices.api.device.DeviceManager;
 import io.github.ocelot.opendevices.core.client.screen.LaptopScreen;
 import net.minecraft.client.Minecraft;
