@@ -8,7 +8,6 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.RegistryKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IServerWorld;
 import net.minecraft.world.World;
@@ -21,7 +20,7 @@ import java.util.UUID;
  *
  * @author Ocelot
  */
-public class DeviceTileEntity extends TileEntity implements TileEntityDevice
+public abstract class DeviceTileEntity extends TileEntity implements TileEntityDevice
 {
     private UUID address;
 
@@ -107,15 +106,15 @@ public class DeviceTileEntity extends TileEntity implements TileEntityDevice
     }
 
     @Override
-    public RegistryKey<World> getDeviceDimensionKey()
+    public World getDeviceWorld()
     {
-        return Objects.requireNonNull(this.world).getDimensionKey();
+        return Objects.requireNonNull(this.world);
     }
 
     @Override
     public BlockPos getDevicePos()
     {
-        return this.pos;
+        return pos;
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import io.github.ocelot.opendevices.OpenDevices;
 import io.github.ocelot.opendevices.api.computer.Computer;
+import io.github.ocelot.opendevices.core.client.render.ComputerRenderer;
 import io.github.ocelot.opendevices.core.init.DeviceMessages;
 import io.github.ocelot.opendevices.core.network.play.handler.CCloseDeviceMessage;
 import io.github.ocelot.sonar.client.render.ShapeRenderer;
@@ -43,6 +44,11 @@ public class LaptopScreen extends Screen
 
         Minecraft.getInstance().getTextureManager().bindTexture(TEXTURE_LOCATION);
         renderExpanding(matrixStack, left, top, 0, 0, this.computer.getScreenWidth() + BORDER_SIZE * 2, this.computer.getScreenHeight() + BORDER_SIZE * 2, 10);
+
+        matrixStack.push();
+        matrixStack.translate(left + BORDER_SIZE, top + BORDER_SIZE, 0);
+        ComputerRenderer.render(this.computer, matrixStack);
+        matrixStack.pop();
 
         super.render(matrixStack, mouseX, mouseY, partialTicks);
     }

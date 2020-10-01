@@ -9,7 +9,13 @@ import io.github.ocelot.opendevices.api.device.Device;
  */
 public interface Computer extends Device
 {
+    /**
+     * @return The width of the computer display
+     */
     int getScreenWidth();
 
+    /**
+     * @return The height of the computer display
+     */
     int getScreenHeight();
 }

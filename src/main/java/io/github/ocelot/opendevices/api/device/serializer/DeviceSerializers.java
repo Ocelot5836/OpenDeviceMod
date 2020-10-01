@@ -8,7 +8,11 @@ import io.github.ocelot.opendevices.core.device.serializer.TileEntityDeviceSeria
  *
  * @author Ocelot
  */
-public class DeviceSerializers
+public final class DeviceSerializers
 {
     public static final DeviceSerializer<TileEntityDevice> TILE_ENTITY = new TileEntityDeviceSerializer();
+
+    private DeviceSerializers()
+    {
+    }
 }

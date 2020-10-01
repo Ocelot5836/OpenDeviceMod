@@ -1,8 +1,10 @@
 package io.github.ocelot.opendevices.core.tileentity;
 
 import io.github.ocelot.opendevices.api.computer.Computer;
+import io.github.ocelot.opendevices.api.device.Device;
 import io.github.ocelot.opendevices.api.device.DeviceTileEntity;
 import io.github.ocelot.opendevices.api.device.InteractableDevice;
+import io.github.ocelot.opendevices.api.device.process.ProcessManager;
 import io.github.ocelot.opendevices.core.init.DeviceBlocks;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -15,11 +17,14 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
+import java.util.Optional;
 import java.util.UUID;
 
 public class LaptopTileEntity extends DeviceTileEntity implements ITickableTileEntity, Computer, InteractableDevice
 {
     public static final float LAPTOP_OPENED_ANGLE = 102;
+
+    private final ProcessManager<Computer> processManager;
 
     @Nullable
     private UUID user;
@@ -31,6 +36,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements ITickableTileE
     public LaptopTileEntity()
     {
         super(DeviceBlocks.LAPTOP_TILE_ENTITY.get());
+        this.processManager = ProcessManager.create(this);
     }
 
     @Override
@@ -41,6 +47,8 @@ public class LaptopTileEntity extends DeviceTileEntity implements ITickableTileE
 
         if (!this.world.isRemote())
         {
+            this.processManager.tick();
+
             ServerPlayerEntity user = (ServerPlayerEntity) this.getUser();
             if (user != null && !this.canInteract(user))
             {
@@ -54,6 +62,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements ITickableTileE
     {
         super.write(nbt);
         nbt.putBoolean("open", this.open);
+        nbt.put("ProcessManager", this.processManager.serializeNBT());
         return nbt;
     }
 
@@ -62,20 +71,7 @@ public class LaptopTileEntity extends DeviceTileEntity implements ITickableTileE
     {
         super.read(state, nbt);
         this.open = nbt.getBoolean("open");
-    }
-
-
-    @Override
-    protected CompoundNBT writeClient(CompoundNBT nbt)
-    {
-        super.writeClient(nbt);
-        return nbt;
-    }
-
-    @Override
-    protected void readClient(BlockState state, CompoundNBT nbt)
-    {
-        super.readClient(state, nbt);
+        this.processManager.deserializeNBT(nbt.getCompound("ProcessManager"));
     }
 
     public void toggleOpen(PlayerEntity player)
@@ -150,5 +146,11 @@ public class LaptopTileEntity extends DeviceTileEntity implements ITickableTileE
     public int getScreenHeight()
     {
         return 216;
+    }
+
+    @Override
+    public Optional<ProcessManager<? extends Device>> getProcessManager()
+    {
+        return Optional.of(this.processManager);
     }
 }

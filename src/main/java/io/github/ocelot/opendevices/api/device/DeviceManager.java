@@ -185,7 +185,7 @@ public class DeviceManager extends WorldSavedData
     {
         try
         {
-            DeviceSerializer<?> serializer = DeviceRegistries.DEVICE_SERIALIZERS.getValue(new ResourceLocation(data.getString("Serializer")));
+            DeviceSerializer<?> serializer = DeviceRegistries.DEVICE_SERIALIZERS.getValue(ResourceLocation.tryCreate(data.getString("Serializer")));
             if (serializer == null)
                 throw new IllegalArgumentException("Unknown device serializer '" + data.getString("Serializer") + "'");
 

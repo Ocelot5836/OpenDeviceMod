@@ -1,6 +1,8 @@
 package io.github.ocelot.opendevices.core.init;
 
 import io.github.ocelot.opendevices.OpenDevices;
+import io.github.ocelot.opendevices.api.device.process.DeviceProcessSerializer;
+import io.github.ocelot.opendevices.api.device.process.DeviceProcesses;
 import io.github.ocelot.opendevices.api.device.serializer.DeviceSerializer;
 import io.github.ocelot.opendevices.api.device.serializer.DeviceSerializers;
 import net.minecraft.util.ResourceLocation;
@@ -18,6 +20,13 @@ public class DeviceRegistryInit
     {
         IForgeRegistry<DeviceSerializer<?>> registry = event.getRegistry();
         registry.register(DeviceSerializers.TILE_ENTITY);
+    }
+
+    @SubscribeEvent
+    public static void registerDeviceProcesses(RegistryEvent.Register<DeviceProcessSerializer<?>> event)
+    {
+        IForgeRegistry<DeviceProcessSerializer<?>> registry = event.getRegistry();
+        registry.register(DeviceProcesses.TEST);
     }
 
     @SubscribeEvent
